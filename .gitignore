@@ -8,3 +8,7 @@ data/
 *.json
 
 
+# Data related to inputs
+*.xlsx
+*.xls
+*.gdx
