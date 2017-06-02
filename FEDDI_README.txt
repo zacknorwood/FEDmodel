@@ -25,5 +25,4 @@ Instructions to generate unified .json with all meter series:
 "bData.deleteRawTS()" to delete the raw timeserieses before writing, or use 
 bData.deleteIfNot([look at line 446 for details]) to filter certain types of
 dataserieses.
-
 - For questions, contact jens@utilifeed.com
