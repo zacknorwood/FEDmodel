@@ -39,6 +39,8 @@ sw_trans=1;
 sw_BTES=1;
 sw_BES=1;
 sw_PV=1;
+
+
 *-----------------------HP constants and parameters----------------------------
 scalar
 HP_COP                Coefficent of performance of the Heat Pump (HP)/4/
@@ -75,6 +77,8 @@ CHP_eff               Efficiency of CHP /0.95/
 scalar
 TES_chr_eff           TES charging efficiency /0.95/
 TES_dis_eff           TES discharging efficiency/0.95/
+TES_max_cap           Maximum capacity available in m3/1000/
+TES_density           Energy density at 35C temp diff according to BDAB/39/
 ;
 Parameter TES_dis_max(h) Maximum TES discharging capacity at a given time
           TES_ch_max(h)  Maximum TES scharging capacity at a given time

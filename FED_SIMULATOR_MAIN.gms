@@ -20,7 +20,7 @@ model total
 /
 ALL
 /;
-SOLVE total using LP minimizing TC;
+SOLVE total using MIP minimizing TC;
 
 display cooling_demand;
 *execute_unload "power_grid.gdx" P_DH, P_elec;

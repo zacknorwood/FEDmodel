@@ -51,12 +51,15 @@ CHP_cap           maximum capacity of CHP plant
 
 *------------------TES related------------------------------------------------
 positive variable
-TES_ch(h)         Input to the TES-chargin the TES
-TES_dis(h)        Output from the TES-discharging the TES
+TES_ch(h)         input to the TES-chargin the TES
+TES_dis(h)        output from the TES-discharging the TES
 TES_en(h)         energy content of TES at any instant
-TES_cap             Capacity of the TES
+TES_cap           capacity of the TES in m3
 ;
 *TES_cap.up=1000;
+binary variable
+TES_inv          Decision variable for Accumulator investment
+;
 
 *------------------BTES (Building energy storage) related-----------------------
 positive variable

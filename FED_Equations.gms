@@ -23,6 +23,7 @@ equation
            eq_TESen3       for determining the capacity of TES
            eq_TESdis       discharging rate of the TES
            eq_TESch        charging rate of the TES
+           eq_TESinv       investment decision for TES
 
            eq_BTES_Sch      charging rate of shallow part the building
            eq_BTES_Sdis     discharging rate of shallow part the building
@@ -108,11 +109,13 @@ eq_TESen1(h,i)$(ord(h) eq 1)..
 eq_TESen2(h)$(ord(h) gt 1)..
              TES_en(h) =e= TES_en(h-1)+TES_ch(h)-TES_dis(h);
 eq_TESen3(h)..
-             TES_en(h) =l= TES_cap;
+             TES_en(h) =l= TES_cap*TES_density;
 eq_TESch(h)..
              TES_ch(h) =l= TES_ch_max(h);
 eq_TESdis(h)..
              TES_dis(h) =l= TES_dis_max(h);
+eq_TESinv(h)..
+             TES_cap =l= TES_inv * TES_max_cap * TES_density;
 
 *------------------BTES equations (Building srorage)---------------------
 eq_BTES_Sen1(h,i) $ (ord(h) eq 1)..
