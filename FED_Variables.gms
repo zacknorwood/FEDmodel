@@ -2,97 +2,112 @@
 *---------------------Declare variables and equations--------------------------
 *******************************************************************************
 
-variable
-TC                   total cost
-T_in(h,i)            indoor room temperature
-DR_heat_demand(h,i)  demand response of the building
+*------------------HP related------------------------------------------------
+positive variable
+H_HP(h)           heating power available in HP
+el_HP(h)          electricity needed by the HP
+HP_cap            capacity of HP
 ;
 
-****** setting indoor temperature limits *****
-T_in.up(h,i) = 24;
-T_in.lo(h,i) = 19;
-T_in.fx('H1','1')=21;
-
-
-*P_chr_TES.up(i,h)=20;
-*P_dis_TES.up(i,h)=20;
-
-
-********* Limits on heat_demand DR ************
-DR_heat_demand.fx(h,i)=heat_demand(h,i)$(switch_DR ne 1);
-
-*------------------El related------------------------------------------------
-variable
-P_elec(h,i)          electrical power input from grid
-cost_el(h,i)         price of electrical energy
-elec_trans(h,i,j)    actual electricity transmission from 'i' to 'j' at any instant h
-elec_s(h,i)          sum of electricity transmission at any instant n
+*------------------AC(Absorbtion Chiller) related------------------------------------------------
+positive variable
+H_AC(h)           heat demand for Absorbtion Chiller
+C_AC(h)           cooling power available in AR
+AC_cap            capacity of AR
 ;
-P_elec.fx(h,i)=0;
-P_elec.up(h,'1')=1000000;
-*P_elec.lo('1',n)=-10000;
 
-elec_trans.up(h,i,j)=elec_trans_capa(i,j)*10000;
-elec_trans.lo(h,i,j)= -elec_trans_capa(i,j)*10000;
-
-*------------------DH related------------------------------------------------
-variable
-P_DH(h,i)            heat power input from grid
-heat_trans(h,i,j)    actual heat transmission from 'i' to 'j' at any instant h
-heat_s(h,i)          sum of heat transmission at any instant n
+*------------------Refrigerator related------------------------------------------------
+positive variable
+el_R(h)          electricity demand for refrigerator
+C_R(h)           cooling power available from the refrigerator
+R_cap            capacity of refrigerator
 ;
-P_DH.fx(h,i)=0;
-P_DH.up(h,'1')=10000000000000;
-*P_DH.lo('1',n)=-10000;
 
-heat_trans.up(h,i,j)=heat_trans_capa(i,j)*10000;
-heat_trans.lo(h,i,j)= -heat_trans_capa(i,j)*10000;
-
-*------------------DC related------------------------------------------------
-variable
-P_DC(h,i)            cooling from district cooling system
+*------------------CHP related------------------------------------------------
+positive variable
+P_CHP(h)          power available in CHP
+H_CHP(h)          Heat producded by CHP
+el_CHP(h)         Electricity produced by CHP
+CHP_cap           maximum capacity of CHP plant
 ;
-P_DC.fx(h,i)=0;
+*CHP_cap.fx(i)=600;
+*capa_chp.fx('1')=600;
+*P_CHP.up(h,i)=600;
+*P_CHP.lo(h,i)=0;
 
 *------------------TES related------------------------------------------------
 positive variable
-TES_in(h,i)         Input to the TES-chargin the TES
-TES_out(h,i)        Output from the TES-discharging the TES
-TES_en(h,i)         energy content of TES at any instant
-TES_cap(i)           maximum value of charge for a building
+TES_ch(h)         Input to the TES-chargin the TES
+TES_dis(h)        Output from the TES-discharging the TES
+TES_en(h)         energy content of TES at any instant
+TES_cap             Capacity of the TES
 ;
-TES_cap.up(i)=1000;
-*capa_TES.up('1')=100;
+*TES_cap.up=1000;
 
-*------------------BES (Building energy storage) related-----------------------
+*------------------BTES (Building energy storage) related-----------------------
 positive variable
-BS_in(h,i)
-BS_out(h,i)
-BS_en(h,i)
-BD_en(h,i)
-losses_BS(h,i)
-losses_BD(h,i)
+BTES_Sch(h,i)
+BTES_Sdis(h,i)
+BTES_Sen(h,i)
+BTES_Den(h,i)
+BTES_Sloss(h,i)
+BTES_Dloss(h,i)
 ;
 variable
 link_BS_BD(h,i)
 ;
 
-*------------------CHP related------------------------------------------------
+*----------------Solar PV PV relate variables-----------------------------
 positive variable
-P_CHP(h,i)          power available in CHP
-CHP_cap(i)           maximum capacity of CHP plant
+el_PV(h)   elecricity produced by PV
+PV_cap     capacity of solar panal
 ;
-CHP_cap.fx(i)=600;
-*capa_chp.fx('1')=600;
-P_CHP.up(h,i)=600;
-P_CHP.lo(h,i)=0;
 
-*------------------HP related------------------------------------------------
-positive variable
-P_HP(h,i)           power available in HP
-HP_cap(i)            capacity of HP
+*------------------Demand Response (DR) related-----------------------------
+variable DR_heat_demand(h,i)  demand response of the building
 ;
-*capa_hp.fx(i)=0;
-*capa_hp.fx('1')=600;
-HP_cap.up(i)=1000;
-*capa_hp.up('1')=100;
+DR_heat_demand.fx(h,i)=heat_demand(h,i)$(sw_DR ne 1);
+
+*------------------Battery related------------------------------------------
+positive variables
+BES_en(h)       Energy stored in the battry at time t and building i
+BES_ch(h)       Battery charing at time t and building i
+BES_dis(h)      Battery discharging at time t and building i
+BES_cap        Capacity of the battery at building i
+;
+
+*------------------Grid El related---------------------------------------------
+variable
+P_el(h,i)          electrical power input from grid
+el_trans(h,i,j)    actual electricity transmission from 'i' to 'j' at any instant h
+;
+*P_elec.fx(h,i)=0;
+*P_elec.up(h,'1')=1000000;
+P_el.lo(h,i)=0;
+
+el_trans.up(h,i,j)=el_trans_capa(i,j)*10000;
+el_trans.lo(h,i,j)= -el_trans_capa(i,j)*10000;
+
+*------------------Grid DH related---------------------------------------------
+variable
+P_DH(h,i)            heat power input from grid
+heat_trans(h,i,j)    actual heat transmission from 'i' to 'j' at any instant h
+;
+*P_DH.fx(h,i)=0;
+*P_DH.up(h,'1')=10000000000000;
+P_DH.lo(h,i)=0;
+
+heat_trans.up(h,i,j)=heat_trans_capa(i,j)*10000;
+heat_trans.lo(h,i,j)= -heat_trans_capa(i,j)*10000;
+
+*------------------Grid DC related---------------------------------------------
+variable
+P_DC(h,i)             cooling from district cooling system
+cooling_trans(h,i,j)  actual cooling transmission from 'i' to 'j' at any instant h
+;
+P_DC.fx(h,i)=0;
+*cooling_trans.fx(h,i,j)=0;
+
+
+variable
+TC                   total cost;

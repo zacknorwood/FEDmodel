@@ -2,9 +2,9 @@
 *---------------------FED MAIN SIMULATOR--------------------------------------
 *------------------------------------------------------------------------------
 
-$Include C:\Users\modelling\Desktop\FED model\Copy\FEDmodel\FED_Initialize
-$Include C:\Users\modelling\Desktop\FED model\Copy\FEDmodel\FED_Variables
-$Include C:\Users\modelling\Desktop\FED model\Copy\FEDmodel\FED_Equations
+$Include FED_Initialize
+$Include FED_Variables
+$Include FED_Equations
 
 *CASE WITH HP, TES, MICRO-CHP AND EXCHANGE WITHIN BUILDINGS**************
 
@@ -13,16 +13,14 @@ option reslim = 5000;
 OPTION PROFILE=3;
 *// To present the resource usage
 *option workmem=1024;
-option threads = -2
-*// Leave two cores unused
-option mip = cplex
-*// use cplex as default for mip solution
+
 model total
 /
 ALL
 /;
 SOLVE total using LP minimizing TC;
 
+display cooling_demand;
 *execute_unload "power_grid.gdx" P_DH, P_elec;
 *execute_unload "power_technologies.gdx" P_DH, P_HP, P_CHP, TES_out, TES_in;
 *execute_unload "indoor_temperature" T_in;
