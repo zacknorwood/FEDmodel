@@ -46,6 +46,13 @@ HP_COP                Coefficent of performance of the Heat Pump (HP)/4/
 
 *-----------------------VKA4 constants and parameters-----------------------
 scalar
+VKA1_H_COP            Heating coefficient of performance for VKA1/3.3/
+VKA1_C_COP            Cooling coefficient of performance for VKA1/2/
+VKA1_el_cap           Maximum electricity usage by VKA1/300/
+;
+
+*-----------------------VKA4 constants and parameters-----------------------
+scalar
 VKA4_H_COP            Heating coefficient of performance for VKA4/2.6/
 VKA4_C_COP            Cooling coefficient of performance for VKA4/1.7/
 VKA4_el_cap           Maximum electricity usage by VKA4/300/

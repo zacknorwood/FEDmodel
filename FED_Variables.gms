@@ -10,6 +10,11 @@ HP_cap            capacity of HP
 ;
 
 *------------------VKA1 Heatpump related------------------
+positive variable
+H_VKA1(h)         heating power available from VKA1
+C_VKA1(h)         cooling power available from VKA1
+el_VKA1(h)        electricity needed by VKA1
+;
 
 *------------------VKA4 Heatpump related------------------
 positive variable

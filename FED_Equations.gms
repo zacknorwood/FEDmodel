@@ -4,6 +4,9 @@
 equation
            eq_HP1       for determining capacity of HP
            eq_HP2       relate heat from HP
+           eq_VKA11     heating generation of VKA4
+           eq_VKA12     cooling generation of VKA4
+           eq_VKA13     maximum electricity usage by VKA4
            eq_VKA41     heating generation of VKA4
            eq_VKA42     cooling generation of VKA4
            eq_VKA43     maximum electricity usage by VKA4
@@ -58,6 +61,15 @@ eq_HP1(h)..
              H_HP(h) =e= HP_COP*el_HP(h);
 eq_HP2(h)..
              H_HP(h) =l= HP_cap;
+
+********** VKA4 equations **********
+eq_VKA11(h)..
+        H_VKA1(h) =l= VKA1_H_COP*el_VKA1(h);
+eq_VKA12(h)..
+        C_VKA1(h) =l= VKA1_C_COP*el_VKA1(h);
+eq_VKA13(h)..
+        el_VKA1(h) =l= VKA1_el_cap;
+
 
 ********** VKA4 equations **********
 eq_VKA41(h)..
@@ -146,16 +158,16 @@ eq_PV(h)..
 eq_hbalance(h)..
              sum(i,heat_demand(h,i)) =e=sum(i,P_DH(h,i)) + (sum(i,BTES_Sdis(h,i))-sum(i,BTES_Sch(h,i)))*sw_BTES
                                         + H_HP(h)*sw_HP + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)*sw_TES
-                                        + H_CHP(h)*sw_CHP - C_AC(h)*sw_AC + H_VKA4(h);
+                                        + H_CHP(h)*sw_CHP - C_AC(h)*sw_AC + H_VKA1(h) + H_VKA4(h);
 
 ***** Demand supply balance for cooling *******
 eq_cbalance(h)..
-         sum(i,cooling_demand(h,i))=e=sum(i,P_DC(h,i)) + C_AC(h) + C_R(h) + C_VKA4(h);
+         sum(i,cooling_demand(h,i))=e=sum(i,P_DC(h,i)) + C_AC(h) + C_R(h) + C_VKA1(h) + C_VKA4(h);
 
 ******* Demand supply balance for electricity *******
 eq_ebalance(h)..
         sum(i,el_demand(h,i)) =e= sum(i,P_el(h,i)) + sw_CHP*el_CHP(h)
-                                  - sw_HP*el_HP(h) + BES_dis(h) - BES_ch(h) - el_R(h)*sw_R + el_PV(h)*sw_PV - el_VKA4(h);
+                                  - sw_HP*el_HP(h) + BES_dis(h) - BES_ch(h) - el_R(h)*sw_R + el_PV(h)*sw_PV - el_VKA1(h) - el_VKA4(h);
 
 ******** Transmission equations******
 eq_htrans(h,i,j)$(heat_trans_capa(i,j) ne 0)..
