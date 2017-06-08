@@ -33,12 +33,12 @@
 3= C:\> gams trnsport.gms GDX=trnsport.gdx
 
 [MRUFILES]
-1=D:\FED_SIMULATOR\v1\FED_Equations.gms
-2=D:\FED_SIMULATOR\v1\FED_Initialize.gms
-3=D:\FED_SIMULATOR\v1\FED_SIMULATOR_MAIN.gms
-4=D:\FED_SIMULATOR\v1\FED_SIMULATOR_MAIN.lst
-5=D:\FED_SIMULATOR\v1\FED_Variables.gms
-6=D:\FED_SIMULATOR\v1\FED_GENERAGE_GDX_FILE.gms
-7=D:\FED_SIMULATOR\v0\FED_Equations.gms
-8=D:\FED_SIMULATOR\v1\FED_Equations.lst
-9=D:\FED_SIMULATOR\v0\FED_SIMULATOR_MAIN.gms
+1=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_Equations.gms
+2=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_Initialize.gms
+3=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_SIMULATOR_MAIN.gms
+4=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_SIMULATOR_MAIN.lst
+5=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_Variables.gms
+6=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_GENERAGE_GDX_FILE.gms
+7=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_Equations.gms
+8=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_Equations.lst
+9=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_SIMULATOR_MAIN.gms

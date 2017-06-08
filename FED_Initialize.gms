@@ -44,6 +44,12 @@ scalar
 HP_COP                Coefficent of performance of the Heat Pump (HP)/4/
 ;
 
+*-----------------------VKA4 constants and parameters-----------------------
+scalar
+VKA4_H_COP            Heating coefficient of performance for VKA4/2.6/
+VKA4_C_COP            Cooling coefficient of performance for VKA4/1.7/
+VKA4_el_cap           Maximum electricity usage by VKA4/300/
+;
 *----------------------AC(Absorbition Refregerator), cooling source------------
 scalar AC_COP Coefficent of performance of AC /4/
 ;

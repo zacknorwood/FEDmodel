@@ -13,6 +13,8 @@ option reslim = 5000;
 OPTION PROFILE=3;
 *// To present the resource usage
 *option workmem=1024;
+option threads = -2
+*// Leave two cores unused by GAMS
 
 model total
 /

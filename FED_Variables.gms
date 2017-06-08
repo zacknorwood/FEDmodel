@@ -9,6 +9,15 @@ el_HP(h)          electricity needed by the HP
 HP_cap            capacity of HP
 ;
 
+*------------------VKA1 Heatpump related------------------
+
+*------------------VKA4 Heatpump related------------------
+positive variable
+H_VKA4(h)         heating power available from VKA4
+C_VKA4(h)         cooling power available from VKA4
+el_VKA4(h)        electricity needed by VKA4
+;
+
 *------------------AC(Absorbtion Chiller) related------------------------------------------------
 positive variable
 H_AC(h)           heat demand for Absorbtion Chiller
