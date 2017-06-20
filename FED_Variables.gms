@@ -87,10 +87,10 @@ DR_heat_demand.fx(h,i)=heat_demand(h,i)$(sw_DR ne 1);
 
 *------------------Battery related------------------------------------------
 positive variables
-BES_en(h)       Energy stored in the battry at time t and building i
-BES_ch(h)       Battery charing at time t and building i
-BES_dis(h)      Battery discharging at time t and building i
-BES_cap        Capacity of the battery at building i
+BES_en(h)       Energy stored in kWh in the battry at time h
+BES_ch(h)       Battery charing in kWh per hour at time h
+BES_dis(h)      Battery discharging in kWh per hour at time h
+BES_cap         Capacity of the battery in kWh
 ;
 
 *------------------Grid El related---------------------------------------------

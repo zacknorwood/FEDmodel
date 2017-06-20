@@ -122,14 +122,11 @@ display BTES_Sch_max,BTES_Sdis_max
 BTES_kSloss(h,i)= BTES_model(i,'kloss_Sday');
 BTES_kDloss(h,i)= BTES_model(i,'kloss_D');
 *-------------Battery storage characteristics-------------------
-parameter
-BES_ch_max    Maximum charging rate of the battery at building i
-BES_dis_max   Maximum discharging rate of the battery at building i
-BES_cost         Annualized cost of the battery at building i
+scalar
+BES_ch_max    Maximum charge rate of the battery/1000/
+BES_dis_max   Maximum discharge rate of the battery/1000/
+BES_cost      Cost of lithium ion battery storage SEK per kWh/8000/
 ;
-BES_ch_max=0.2;
-BES_dis_max=0.2;
-BES_cost=12060;
 
 *---------------PV data---------------
 parameter nPV_ird(h)  Normalized PV irradiance;
