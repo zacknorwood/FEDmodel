@@ -12,3 +12,13 @@ data/
 *.xlsx
 *.xls
 *.gdx
+*.~gp
+FED_PROJECT.gpr
+*.log
+FED_PROJECT.gpr
+*.lxi
+*.lst
+*.gdx;
+*.~gm
+*.gpr
+FED_PROJECT.gpr

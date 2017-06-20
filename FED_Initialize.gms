@@ -39,11 +39,26 @@ sw_trans=1;
 sw_BTES=1;
 sw_BES=1;
 sw_PV=1;
+
+
 *-----------------------HP constants and parameters----------------------------
 scalar
 HP_COP                Coefficent of performance of the Heat Pump (HP)/4/
 ;
 
+*-----------------------VKA4 constants and parameters-----------------------
+scalar
+VKA1_H_COP            Heating coefficient of performance for VKA1/3.3/
+VKA1_C_COP            Cooling coefficient of performance for VKA1/2/
+VKA1_el_cap           Maximum electricity usage by VKA1/300/
+;
+
+*-----------------------VKA4 constants and parameters-----------------------
+scalar
+VKA4_H_COP            Heating coefficient of performance for VKA4/2.6/
+VKA4_C_COP            Cooling coefficient of performance for VKA4/1.7/
+VKA4_el_cap           Maximum electricity usage by VKA4/300/
+;
 *----------------------AC(Absorbition Refregerator), cooling source------------
 scalar AC_COP Coefficent of performance of AC /4/
 ;
@@ -62,12 +77,14 @@ CHP_eff               Efficiency of CHP /0.95/
 scalar
 TES_chr_eff           TES charging efficiency /0.95/
 TES_dis_eff           TES discharging efficiency/0.95/
+TES_max_cap           Maximum capacity available in m3/1000/
+TES_density           Energy density at 35C temp diff according to BDAB/39/
+TES_fx_cost           Fixed cost attributable to TES investment/4404119/
+TES_vr_cost           Variable cost attributable to TES investment/1887/
+TES_dis_max           Maximum discharge rate in kWh per h/23000/
+TES_ch_max            Maximum charge rate in kWh per h/11000/
 ;
-Parameter TES_dis_max(h) Maximum TES discharging capacity at a given time
-          TES_ch_max(h)  Maximum TES scharging capacity at a given time
-;
-TES_dis_max(h)=TES_dis_max0(h);
-TES_ch_max(h)=TES_ch_max0(h);
+
 
 *---------------------Temprature data------------------------------------------
 Parameter temp_out(h) heat demand in buildings as obtained from metrys for;

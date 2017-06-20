@@ -4,6 +4,12 @@
 equation
            eq_HP1       for determining capacity of HP
            eq_HP2       relate heat from HP
+           eq_VKA11     heating generation of VKA4
+           eq_VKA12     cooling generation of VKA4
+           eq_VKA13     maximum electricity usage by VKA4
+           eq_VKA41     heating generation of VKA4
+           eq_VKA42     cooling generation of VKA4
+           eq_VKA43     maximum electricity usage by VKA4
            eq_AC1       for determining capacity of AR
            eq_AC2       relates cooling from AR
            eq_R1        Refrigerator equation
@@ -17,6 +23,8 @@ equation
            eq_TESen3       for determining the capacity of TES
            eq_TESdis       discharging rate of the TES
            eq_TESch        charging rate of the TES
+           eq_TESinv       investment decision for TES
+           eq_TESmininv    minimum possible investment in TES
 
            eq_BTES_Sch      charging rate of shallow part the building
            eq_BTES_Sdis     discharging rate of shallow part the building
@@ -56,6 +64,23 @@ eq_HP1(h)..
 eq_HP2(h)..
              H_HP(h) =l= HP_cap;
 
+********** VKA4 equations **********
+eq_VKA11(h)..
+        H_VKA1(h) =l= VKA1_H_COP*el_VKA1(h);
+eq_VKA12(h)..
+        C_VKA1(h) =l= VKA1_C_COP*el_VKA1(h);
+eq_VKA13(h)..
+        el_VKA1(h) =l= VKA1_el_cap;
+
+
+********** VKA4 equations **********
+eq_VKA41(h)..
+        H_VKA4(h) =l= VKA4_H_COP*el_VKA4(h);
+eq_VKA42(h)..
+        C_VKA4(h) =l= VKA4_C_COP*el_VKA4(h);
+eq_VKA43(h)..
+        el_VKA4(h) =l= VKA4_el_cap;
+
 ********** AC (Absorbtion Chiller) equations  (Heat => cooling )**************
 eq_AC1(h)..
              C_AC(h) =e= AC_COP*H_AC(h);
@@ -81,15 +106,19 @@ eq_CHP3(h)..
 
 ********** TES equations *************
 eq_TESen1(h,i)$(ord(h) eq 1)..
-             TES_en('H1') =e= TES_cap;
+             TES_en('H1') =e= TES_cap*TES_density;
 eq_TESen2(h)$(ord(h) gt 1)..
              TES_en(h) =e= TES_en(h-1)+TES_ch(h)-TES_dis(h);
 eq_TESen3(h)..
-             TES_en(h) =l= TES_cap;
+             TES_en(h) =l= TES_cap*TES_density;
 eq_TESch(h)..
-             TES_ch(h) =l= TES_ch_max(h);
+             TES_ch(h) =l= TES_inv * TES_ch_max;
 eq_TESdis(h)..
-             TES_dis(h) =l= TES_dis_max(h);
+             TES_dis(h) =l= TES_inv * TES_dis_max;
+eq_TESinv(h)..
+             TES_cap =l= TES_inv * TES_max_cap * TES_density;
+eq_TESmininv..
+             TES_cap =G= TES_inv * 100;
 
 *------------------BTES equations (Building srorage)---------------------
 eq_BTES_Sen1(h,i) $ (ord(h) eq 1)..
@@ -135,16 +164,16 @@ eq_PV(h)..
 eq_hbalance(h)..
              sum(i,heat_demand(h,i)) =e=sum(i,P_DH(h,i)) + (sum(i,BTES_Sdis(h,i))-sum(i,BTES_Sch(h,i)))*sw_BTES
                                         + H_HP(h)*sw_HP + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)*sw_TES
-                                        + H_CHP(h)*sw_CHP - C_AC(h)*sw_AC;
+                                        + H_CHP(h)*sw_CHP - C_AC(h)*sw_AC + H_VKA1(h) + H_VKA4(h);
 
 ***** Demand supply balance for cooling *******
 eq_cbalance(h)..
-         sum(i,cooling_demand(h,i))=e=sum(i,P_DC(h,i)) + C_AC(h) + C_R(h);
+         sum(i,cooling_demand(h,i))=e=sum(i,P_DC(h,i)) + C_AC(h) + C_R(h) + C_VKA1(h) + C_VKA4(h);
 
 ******* Demand supply balance for electricity *******
 eq_ebalance(h)..
         sum(i,el_demand(h,i)) =e= sum(i,P_el(h,i)) + sw_CHP*el_CHP(h)
-                                  - sw_HP*el_HP(h) + BES_dis(h) - BES_ch(h) - el_R(h)*sw_R + el_PV(h)*sw_PV;
+                                  - sw_HP*el_HP(h) + BES_dis(h) - BES_ch(h) - el_R(h)*sw_R + el_PV(h)*sw_PV - el_VKA1(h) - el_VKA4(h);
 
 ******** Transmission equations******
 eq_htrans(h,i,j)$(heat_trans_capa(i,j) ne 0)..
@@ -157,5 +186,7 @@ eq_etrans(h,i,j)$(el_trans_capa(i,j) ne 0)..
 **************** Objective function ***********************
 eq_totCost..
          TC =e= sum((h,i),P_DH(h,i)*fp('WOOD')+P_el(h,i)*el_price(h)) + sum(h,P_CHP(h)*fp('WOOD'))
-                + sw_HP*HP_cap*50+sw_AC*AC_cap*50 + sw_CHP*CHP_cap*100 + sw_TES*TES_cap*50 + BES_cap*BES_cost;
+                + sw_HP*HP_cap*50+sw_AC*AC_cap*50 + sw_CHP*CHP_cap*100 + sw_TES*TES_cap*TES_vr_cost
+                + sw_TES * TES_inv * TES_fx_cost
+                + BES_cap*BES_cost;
 

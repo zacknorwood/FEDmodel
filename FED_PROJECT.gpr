@@ -15,22 +15,22 @@
 [RP:INTERCONNECTION+HP+TES+CHP1]
 1=
 
-[RP:FED_GENERAGE_GDX_FILE]
-1=
-
 [RP:FED_VARIABLES]
-1=
-
-[RP:FED_SIMULATOR_MAIN]
-1=
-
-[RP:FED_INITIALIZE]
 1=
 
 [RP:FED_EQUATIONS]
 1=
 2=GDXVIEWER.EXE
 3= C:\> gams trnsport.gms GDX=trnsport.gdx
+
+[RP:FED_INITIALIZE]
+1=
+
+[RP:FED_SIMULATOR_MAIN]
+1=
+
+[RP:FED_GENERAGE_GDX_FILE]
+1=
 
 [MRUFILES]
 1=D:\FED_SIMULATOR\v1\FED_Equations.gms
@@ -41,4 +41,18 @@
 6=D:\FED_SIMULATOR\v1\FED_GENERAGE_GDX_FILE.gms
 7=D:\FED_SIMULATOR\v0\FED_Equations.gms
 8=D:\FED_SIMULATOR\v1\FED_Equations.lst
-9=D:\FED_SIMULATOR\v0\FED_SIMULATOR_MAIN.gms
+
+[OPENWINDOW_1]
+FILE0=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_Equations.gms
+FILE1=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_GENERAGE_GDX_FILE.gms
+FILE2=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_Initialize.gms
+FILE3=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_PROJECT.gpr
+FILE4=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_SIMULATOR_MAIN.gms
+FILE5=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_SIMULATOR_MAIN.lst
+FILE6=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_Variables.gms
+FILE7=D:\Users\modelling\Desktop\FED_GIT\FEDmodel\FED_Equations.gms
+MAXIM=0
+TOP=2
+LEFT=-1
+HEIGHT=1027
+WIDTH=962

@@ -13,12 +13,14 @@ option reslim = 5000;
 OPTION PROFILE=3;
 *// To present the resource usage
 *option workmem=1024;
+option threads = -2
+*// Leave two cores unused by GAMS
 
 model total
 /
 ALL
 /;
-SOLVE total using LP minimizing TC;
+SOLVE total using MIP minimizing TC;
 
 display cooling_demand;
 *execute_unload "power_grid.gdx" P_DH, P_elec;
