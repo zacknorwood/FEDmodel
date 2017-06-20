@@ -24,6 +24,7 @@ equation
            eq_TESdis       discharging rate of the TES
            eq_TESch        charging rate of the TES
            eq_TESinv       investment decision for TES
+           eq_TESmininv    minimum possible investment in TES
 
            eq_BTES_Sch      charging rate of shallow part the building
            eq_BTES_Sdis     discharging rate of shallow part the building
@@ -105,17 +106,19 @@ eq_CHP3(h)..
 
 ********** TES equations *************
 eq_TESen1(h,i)$(ord(h) eq 1)..
-             TES_en('H1') =e= TES_cap;
+             TES_en('H1') =e= TES_cap*TES_density;
 eq_TESen2(h)$(ord(h) gt 1)..
              TES_en(h) =e= TES_en(h-1)+TES_ch(h)-TES_dis(h);
 eq_TESen3(h)..
              TES_en(h) =l= TES_cap*TES_density;
 eq_TESch(h)..
-             TES_ch(h) =l= TES_ch_max(h);
+             TES_ch(h) =l= TES_inv * TES_ch_max;
 eq_TESdis(h)..
-             TES_dis(h) =l= TES_dis_max(h);
+             TES_dis(h) =l= TES_inv * TES_dis_max;
 eq_TESinv(h)..
              TES_cap =l= TES_inv * TES_max_cap * TES_density;
+eq_TESmininv..
+             TES_cap =G= TES_inv * 100;
 
 *------------------BTES equations (Building srorage)---------------------
 eq_BTES_Sen1(h,i) $ (ord(h) eq 1)..
@@ -183,5 +186,7 @@ eq_etrans(h,i,j)$(el_trans_capa(i,j) ne 0)..
 **************** Objective function ***********************
 eq_totCost..
          TC =e= sum((h,i),P_DH(h,i)*fp('WOOD')+P_el(h,i)*el_price(h)) + sum(h,P_CHP(h)*fp('WOOD'))
-                + sw_HP*HP_cap*50+sw_AC*AC_cap*50 + sw_CHP*CHP_cap*100 + sw_TES*TES_cap*50 + BES_cap*BES_cost;
+                + sw_HP*HP_cap*50+sw_AC*AC_cap*50 + sw_CHP*CHP_cap*100 + sw_TES*TES_cap*TES_vr_cost
+                + sw_TES * TES_inv * TES_fx_cost
+                + BES_cap*BES_cost;
 

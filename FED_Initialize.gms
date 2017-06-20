@@ -79,12 +79,12 @@ TES_chr_eff           TES charging efficiency /0.95/
 TES_dis_eff           TES discharging efficiency/0.95/
 TES_max_cap           Maximum capacity available in m3/1000/
 TES_density           Energy density at 35C temp diff according to BDAB/39/
+TES_fx_cost           Fixed cost attributable to TES investment/4404119/
+TES_vr_cost           Variable cost attributable to TES investment/1887/
+TES_dis_max           Maximum discharge rate in kWh per h/23000/
+TES_ch_max            Maximum charge rate in kWh per h/11000/
 ;
-Parameter TES_dis_max(h) Maximum TES discharging capacity at a given time
-          TES_ch_max(h)  Maximum TES scharging capacity at a given time
-;
-TES_dis_max(h)=TES_dis_max0(h);
-TES_ch_max(h)=TES_ch_max0(h);
+
 
 *---------------------Temprature data------------------------------------------
 Parameter temp_out(h) heat demand in buildings as obtained from metrys for;
