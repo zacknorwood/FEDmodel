@@ -2,10 +2,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.ipynb_checkpoints/
 
 # Related to FED python data import
-data/
+data_parse/data/
 *.json
+*.pkl
 
 
 # Data related to inputs
@@ -22,3 +24,12 @@ FED_PROJECT.gpr
 *.~gm
 *.gpr
 FED_PROJECT.gpr
+
+
+# Data related to outputs
+*.png
+*.csv
+
+
+
+
