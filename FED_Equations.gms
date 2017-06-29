@@ -31,6 +31,10 @@ equation
            eq1_P2       production equation for P2
            eq2_P2       investment equation for P2
 
+           eq1_TURB     production equation for turbine-gen
+           eq2_TURB     energy consumption equation for turbine-gen
+           eq3_TURB     investment equation for turbine-gen
+
            eq_HP1       relate heat from HP
            eq_HP2       for determining capacity of HP
 
@@ -138,12 +142,19 @@ eq_ACC2(h)..
 *****************For new investment optonss-------------------------------------
 *----------------Panna 2 equations ---------------------------------------------
 eq1_P2(h)..
-         H_P2(h) =e= q_P2(h) * P2_eff;
+         H_P2(h) =e= sw_P2 * q_P2(h) * P2_eff;
 eq2_P2(h)..
          q_P2(h) =l= B_P2 * q_P2_cap;
 
 *----------------Refurb turbine equations --------------------------------------
+eq1_TURB(h)..
+         e_TURB(h) =e= sw_TURB * TURB_eff * q_TURB(h);
 
+eq2_TURB(h)..
+         H_P2T(h) =l= H_P2(h) - q_TURB(h);
+
+eq3_TURB(h)..
+         e_TURB(h) =l= TURB_cap * B_TURB;
 
 *----------------HP equations --------------------------------------------------
 
@@ -212,7 +223,7 @@ eq_PV(h)..
 *---------------- Demand supply balance for heating ----------------------------
 
 eq_hbalance(h)..
-             sum(i,q_demand(h,i)) =l=q_DH(h) + q_CHP(h) + tb_2016(h) + H_VKA1(h) + H_VKA4(h) - q_AbsC(h) + H_P1(h) + H_P2(h)
+             sum(i,q_demand(h,i)) =l=q_DH(h) + q_CHP(h) + tb_2016(h) + H_VKA1(h) + H_VKA4(h) - q_AbsC(h) + H_P1(h) + H_P2T(h)
                                      + sw_HP*q_HP(h)
                                      + sw_TES*(TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
                                      + sw_BTES*(sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff);
@@ -225,7 +236,8 @@ eq_cbalance(h)..
 eq_ebalance(h)..
         sum(i,e_demand(h,i)) =l= e_exG(h) + e_CHP(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
                                  + e0_PV(h) + sw_PV*e_PV(h) - sw_HP*e_HP(h)
-                                 + sw_BTES*(BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff);
+                                 + sw_BTES*(BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff)
+                                 + sw_TURB * e_TURB(h);
 *--------------FED Primary energy use-------------------------------------------
 
 eq_PE..
@@ -255,7 +267,8 @@ eq_totCost..
                 + sw_TES*(TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/25
                 + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))
                 + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC')
-                + B_P2 * Acost_sup_unit('P2');
+                + sw_P2 * B_P2 * Acost_sup_unit('P2')
+                + sw_TURB * B_TURB * Acost_sup_unit('TURB');
 
 eq_invCost..
          invCost =e= sw_HP*HP_cap*Acost_sup_unit('HP')*15
@@ -264,5 +277,6 @@ eq_invCost..
                      + sw_TES*((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
                      + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))*30
                      + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC')*20
-                     + B_P2 * Acost_sup_unit('P2') * 30;
+                     + sw_P2 * B_P2 * Acost_sup_unit('P2') * 30
+                     + sw_TURB * B_TURB * Acost_sup_unit('TURB') * 30;
 ********************************************************************************

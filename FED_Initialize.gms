@@ -24,7 +24,7 @@ Parameter
          cap_sup_unit(sup_unit)   operational capacity of the units
          /PV 60, TB 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
          Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
-                                 /PV 410, BES 400, HP 667, TES 50, BTES 1166, RMMC 25000, P2 1533333/
+                                 /PV 410, BES 400, HP 667, TES 50, BTES 1166, RMMC 25000, P2 1533333, TURB 66666/
 ;
 *The annualized cost of the BTES is for a building 35000/30, assuming 30 years of technical life time
 *table technology(n1,head2) technology with annualised investment cost in (SEK per MW or MWh per year for i=5)
@@ -44,6 +44,8 @@ PARAMETERS
          sw_BES       switch to decide whether to include Battery storage or not
          sw_PV        switch to decide whether to include solar PV or not
          sw_RMMC      switch to decide whether investment in connecting refrigeration machines at MC2 to KB0
+         sw_P2        switch to decide whether to include P2 or not
+         sw_TURB      switch to decide whether to include turbine or not
 ;
 *use of switch to determine whether HP, CHP, TES should operate or not
 * 1=in operation, 0=out of operation
@@ -53,6 +55,8 @@ sw_BTES=1;
 sw_BES=1;
 sw_PV=1;
 sw_RMMC = 1;
+sw_P2 = 1;
+sw_TURB = 1;
 ***************Existing units***************************************************
 *--------------Panna 1 constants and parameters (existing unit)-----------------
 scalar
@@ -118,6 +122,12 @@ scalar
 scalar
       P2_eff Efficiency of P2 /0.9/
       q_P2_cap Capacity of P2 /6666/
+;
+
+*----------------Refurbished turbine for Panna 2  ------------------------------
+scalar
+      TURB_eff Efficiency of turbine /0.4/
+      TURB_cap Maximum power output of turbine /600/
 ;
 
 *--------------MC2 Refrigerator Machines, cooling source------------------------

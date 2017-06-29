@@ -74,6 +74,16 @@ positive variable
 binary variable
          B_P2              Decision variable for P2 investment
 ;
+*----------------Refurbished turbine for Panna 2  ------------------------------
+positive variable
+         e_TURB(h)         electricity generated in turbine-gen
+         q_TURB(h)         steam demand in turbine
+         H_P2T(h)            steam generated in P2-turb combo
+;
+binary variable
+         B_TURB            Decision variable for turbine investment
+;
+
 *------------------HP related---------------------------------------------------
 
 positive variable
