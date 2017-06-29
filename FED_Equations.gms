@@ -2,6 +2,8 @@
 *----------------------------Define equations--------------------------------
 ******************************************************************************
 equation
+           eq1_P1       production equation for P1
+           eq2_P1       maximum capacity of P1
            eq_CHP1      total CHP power
            eq_CHP2      electricity from the CHP
 *           eq_CHP3      heating from the CHP
@@ -70,6 +72,14 @@ equation
 *-----------------------------------------------------------------------------
 
 ***************For Existing units***********************************************
+*-----------------Panna1 equations----------------------------------------------
+eq1_P1(h)..
+         H_P1(h) =e= q_P1(h) * P1_eff;
+eq2_P1(h)..
+         H_P1(h) =l= P1_cap;
+
+
+
 *-----------------CHP equations-------------------------------------------------
 
 eq_CHP1(h)..
@@ -189,7 +199,7 @@ eq_PV(h)..
 *---------------- Demand supply balance for heating ----------------------------
 
 eq_hbalance(h)..
-             sum(i,q_demand(h,i)) =l=q_DH(h) + q_CHP(h) + tb_2016(h) + H_VKA1(h) + H_VKA4(h) - q_AbsC(h)
+             sum(i,q_demand(h,i)) =l=q_DH(h) + q_CHP(h) + tb_2016(h) + H_VKA1(h) + H_VKA4(h) - q_AbsC(h) + H_P1(h)
                                      + sw_HP*q_HP(h)
                                      + sw_TES*(TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
                                      + sw_BTES*(sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff);
@@ -208,13 +218,14 @@ eq_ebalance(h)..
 eq_PE..
        FED_PE =e= sum(h,e_exG(h)*PEF_exG(h)) + sum(h,P_CHP(h)*PEF_loc('CHP'))
                   + sum(h,e0_PV(h)*PEF_loc('PV')) + sw_PV*sum(h,e_PV(h)*PEF_loc('PV'))
-                  + sum(h,q_DH(h)*PEF_DH(h)) + sum(h,tb_2016(h)*PEF_loc('TB'));
+                  + sum(h,q_DH(h)*PEF_DH(h)) + sum(h,tb_2016(h)*PEF_loc('TB'))
+                  + sum(h,q_P1(h)*PEF_loc('P1'));
 *---------------FED CO2 emission------------------------------------------------
 
 eq_CO2(h)..
        FED_CO2(h) =e= e_exG(h)*CO2F_exG(h) + P_CHP(h)*CO2F_loc('CHP')
                       + e0_PV(h)*CO2F_loc('PV') + sw_PV*e_PV(h)*CO2F_loc('PV')
-                      + q_DH(h)*CO2F_DH(h) + tb_2016(h)*CO2F_loc('TB');
+                      + q_DH(h)*CO2F_DH(h) + tb_2016(h)*CO2F_loc('TB') + q_P1(h) * CO2F_loc('P1');
 **************** Objective function ***********************
 
 eq_totCost..
@@ -222,6 +233,7 @@ eq_totCost..
                 + sum(h,e_exG(h)*utot_cost('exG',h))
                 + sum(h,P_CHP(h)*utot_cost('CHP',h))
                 + sum(h,tb_2016(h)*utot_cost('TB',h))
+                + sum(h, q_P1(h)*utot_cost('P1',h))
                 + sw_HP*HP_cap*Acost_sup_unit('HP')
                 + sw_PV*PV_cap*Acost_sup_unit('PV')
                 + sw_BES*BES_cap*Acost_sup_unit('BES')
