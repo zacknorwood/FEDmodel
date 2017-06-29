@@ -64,13 +64,6 @@ scalar
          P1_eff                Efficiency of heat generation /0.9/
 ;
 
-*--------------CHP constants and parameters (existing unit)---------------------
-
-scalar
-         CHP_el_heat           Ratio between elec and heat produced in CHP /0.6/
-         chp_fuel_price        fuel price in SEK per kWh/0.325/
-         CHP_eff               Efficiency of CHP /0.95/
-;
 *--------------Existing Solar  constants and parameters (existing unit)---------
 
 parameter

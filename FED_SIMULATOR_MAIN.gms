@@ -44,11 +44,11 @@ display HP_cap.l, inv_HP, PV_cap.l, inv_PV, BES_cap.l, inv_BEV, TES_cap.l, inv_T
 *execute_unload %matout%;
 parameter FED_PE_ft(h)  Primary energy as a function of time
 ;
-FED_PE_ft(h)=e_exG.l(h)*PEF_exG(h) + P_CHP.l(h)*PEF_loc('CHP')
+FED_PE_ft(h)=e_exG.l(h)*PEF_exG(h)
              + e0_PV(h)*PEF_loc('PV') + sw_PV*e_PV.l(h)*PEF_loc('PV')
              + q_DH.l(h)*PEF_DH(h) + tb_2016(h)*PEF_loc('TB');
 
-execute_unload 'GtoM' P_CHP,q_CHP,e_CHP,H_VKA1,C_VKA1,el_VKA1,q_P2, H_P2T, e_TURB, q_TURB,
+execute_unload 'GtoM' H_VKA1,C_VKA1,el_VKA1,q_P2, H_P2T, e_TURB, q_TURB,
                       H_VKA4,C_VKA4,el_VKA4,q_AbsC,k_AbsC,e_RM,k_RM, e_RMMC, k_RMMC,
                       e_AAC,k_AAC, q_HP,e_HP,HP_cap,TES_ch,TES_dis,TES_en,TES_cap,TES_inv,
                       BTES_Sch,BTES_Sdis,BTES_Sen,BTES_Den,BTES_Sloss,BTES_Dloss,
