@@ -3,191 +3,241 @@
 *******************************************************************************
 
 
-*--------------Creat GDX data files(if there not any, fist time)---------------
-$Include FED_GENERAGE_GDX_FILE
+*--------------IMPORT IMPUT DATA TO THE MODEL-----------------------------------
 
-*-------------SET THE LENGTH OF INPUT DATA USED FOR SIMULATION--------------
+$Include FED_GENERAGE_GDX_FILE
+*-------------SET THE LENGTH OF INPUT DATA USED FOR SIMULATION------------------
+
 set
-        h(h0)                 Number of hours                     /H1*H720/
-        i(b0)                 Number of buildings in the system   /1*12/
+        h(h0)                 Number of hours                     /H1*H8760/
+        i(b0)                 Number of buildings in the system   /1*30/
 ;
 alias(i,j);
+*--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
-*---------------------Energy systems included----------------------------------
-PARAMETERS
-sw_DR        switch to decide whether to use building inertia or not
-sw_HP        switch to decide whether to operate HP or not
-sw_AC        switch to decide whether to operate Absobtion Chiller
-sw_R         switch to decide whether to operate Absobtion Chiller
-sw_TES       switch to decide whether whether to operate TES or not
-sw_CHP       switch to decide whether to operate CHP or not
-sw_trans     switch to decide whether to operate transmission or not
-sw_BTES      switch to decide whether to include building storage or not
-sw_BES       switch to decide whether to include Battery storage or not
-sw_PV        switch to decide whether to include solar PV or not
+set
+         sup_unit   supply units /exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM/
+         inv_opt    investment options /PV, BES, HP, TES, BTES/
 ;
 
-*-----use of switch to determine whether HP, CHP, TES should operate or not----
+Parameter
+         cap_sup_unit(sup_unit)   operational capacity of the units
+         /PV 60, TB 9000, RHP 1600, AbsC 2300, AAC 1000, RM 6370/
+         Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW
+                                 /PV 410, BES 400, HP 667, TES 50, BTES 1166/
+;
+*The annualized cost of the BTES is for a building 35000/30, assuming 30 years of technical life time
+*table technology(n1,head2) technology with annualised investment cost in (SEK per MW or MWh per year for i=5)
+*                            Price                    Lifetime      Annualised_Cost1       Annualised_Cost2        Annualised_Cost3
+*HP                          18000000                 15            1728000                2034000                 2358000
+*CHP                         3170000                  20            253600                 310660                  370890
+*TES                         10000                    25            710                    900                     1100
+*Battery                     12060000                 15            1157760                1362780                 1579860
+*Solar_PV                    18000000                 30            1170000                1530000                 1908000
+*--------------CHoice of investment options to consider-------------------------
+
+PARAMETERS
+         sw_HP        switch to decide whether to operate HP or not
+         sw_TES       switch to decide whether whether to operate TES or not
+         sw_BTES     switch to decide whether to include building storage or not
+         sw_BES       switch to decide whether to include Battery storage or not
+         sw_PV        switch to decide whether to include solar PV or not
+;
+*use of switch to determine whether HP, CHP, TES should operate or not
 * 1=in operation, 0=out of operation
-sw_DR=0;
 sw_HP=1;
-sw_AC=1;
-sw_R=1;
 sw_TES=1;
-sw_CHP=1;
-sw_trans=1;
 sw_BTES=1;
 sw_BES=1;
 sw_PV=1;
+***************Existing units***************************************************
+*--------------CHP constants and parameters (existing unit)---------------------
 
-
-*-----------------------HP constants and parameters----------------------------
 scalar
-HP_COP                Coefficent of performance of the Heat Pump (HP)/4/
+         CHP_el_heat           Ratio between elec and heat produced in CHP /0.6/
+         chp_fuel_price        fuel price in SEK per kWh/0.325/
+         CHP_eff               Efficiency of CHP /0.95/
 ;
+*--------------Existing Solar  constants and parameters (existing unit)---------
 
-*-----------------------VKA4 constants and parameters-----------------------
+parameter
+         nPV_ird(h)  Normalized PV irradiance
+         e0_PV(h)    Existing PV power
+;
+nPV_ird(h)=nPV_ird0(h);
+e0_PV(h)=cap_sup_unit('PV')*nPV_ird(h);
+*--------------Existing Thermal boiler constants and parameters-----------------
+
+parameter
+         tb_2016(h)  Total heat power from the thermal boiler
+;
+tb_2016(h) = q_tb_2016(h) + q_fgc_2016(h);
+*--------------VKA4 constants and parameters------------------------------------
+
 scalar
-VKA1_H_COP            Heating coefficient of performance for VKA1/3.3/
-VKA1_C_COP            Cooling coefficient of performance for VKA1/2/
-VKA1_el_cap           Maximum electricity usage by VKA1/300/
+         VKA1_H_COP            Heating coefficient of performance for VKA1/3.3/
+         VKA1_C_COP            Cooling coefficient of performance for VKA1/2/
+         VKA1_el_cap           Maximum electricity usage by VKA1/300/
 ;
+*--------------VKA4 constants and parameters------------------------------------
 
-*-----------------------VKA4 constants and parameters-----------------------
 scalar
-VKA4_H_COP            Heating coefficient of performance for VKA4/2.6/
-VKA4_C_COP            Cooling coefficient of performance for VKA4/1.7/
-VKA4_el_cap           Maximum electricity usage by VKA4/300/
+         VKA4_H_COP            Heating coefficient of performance for VKA4/2.6/
+         VKA4_C_COP            Cooling coefficient of performance for VKA4/1.7/
+         VKA4_el_cap           Maximum electricity usage by VKA4/300/
 ;
-*----------------------AC(Absorbition Refregerator), cooling source------------
-scalar AC_COP Coefficent of performance of AC /4/
-;
+*--------------AbsC(Absorbition Refregerator), cooling source-------------------
 
-*----------------------Refrigerator, coling source----------------------------
-scalar R_COP Coefficent of performance of AC /4/
-;
-
-*----------------------CHP constants and parameters----------------------------
 scalar
-CHP_el_heat           Ratio between elec and heat produced in CHP /0.7/
-CHP_eff               Efficiency of CHP /0.95/
+         AbsC_COP Coefficent of performance of AbsC /1/
+         AbsC_eff Effciency of AbsC /0.95/
 ;
+*--------------AAC(Ambient Air Cooler), cooling source--------------------------
 
-*----------------------TES constants and parameters----------------------------
 scalar
-TES_chr_eff           TES charging efficiency /0.95/
-TES_dis_eff           TES discharging efficiency/0.95/
-TES_max_cap           Maximum capacity available in m3/1000/
-TES_density           Energy density at 35C temp diff according to BDAB/39/
-TES_fx_cost           Fixed cost attributable to TES investment/4404119/
-TES_vr_cost           Variable cost attributable to TES investment/1887/
-TES_dis_max           Maximum discharge rate in kWh per h/23000/
-TES_ch_max            Maximum charge rate in kWh per h/11000/
+         AAC_COP Coefficent of performance of AAC /1/
+         AAC_eff Effciency of AbsC /0.95/
 ;
+*--------------Refrigerator Machines, coling source-----------------------------
+
+scalar
+      RM_COP Coefficent of performance of AC /2/
+      RM_eff Coefficent of performance of AC /0.95/
+;
+**************Investment options************************************************
+*--------------PV data----------------------------------------------------------
 
 
-*---------------------Temprature data------------------------------------------
-Parameter temp_out(h) heat demand in buildings as obtained from metrys for;
-temp_out(h)=temp_out0(h);
-*-------------------Building storage characteristics---------------------------
+*--------------HP constants and parameters (an investment options)-------------
+
+*[COP and eff values need to be checked]
+scalar
+         HP_COP         Coefficent of performance of the Heat Pump (HP)/3.5/
+         HP_eff         Efficiency of the HP /0.95/
+;
+*--------------TES constants and parameters-------------------------------------
+
+scalar
+         TES_chr_eff           TES charging efficiency /0.95/
+         TES_dis_eff           TES discharging efficiency/0.95/
+         TES_max_cap           Maximum capacity available in m3/1000/
+         TES_density           Energy density at 35C temp diff according to BDAB/39/
+         TES_fx_cost           Fixed cost attributable to TES investment/4404119/
+         TES_vr_cost           Variable cost attributable to TES investment/1887/
+         TES_dis_max           Maximum discharge rate in kWh per h/23000/
+         TES_ch_max            Maximum charge rate in kWh per h/11000/
+;
+*--------------Outside Temprature data------------------------------------------
+
+Parameter
+         tout(h) heat demand in buildings as obtained from metrys for
+;
+tout(h)=tout0(h);
+*--------------Building storage characteristics---------------------------------
+
 set
-    BTES_properties(BTES_properties0)  Building termal properties
-                     /BTES_Scap, BTES_Dcap, BTES_Esig, BTES_Sch_hc, BTES_Sdis_hc,
-                      kloss_Sday,  kloss_Snight, kloss_D, K_BS_BD/
+         BTES_properties(BTES_properties0)  Building inertia thermal energy storage properties
+                 /BTES_Scap, BTES_Dcap, BTES_Esig, BTES_Sch_hc, BTES_Sdis_hc,
+                 kloss_Sday,  kloss_Snight, kloss_D, K_BS_BD/
+;
+scalar
+         BTES_chr_eff           BTES charging efficiency /0.95/
+         BTES_dis_eff           BTES discharging efficiency/0.95/
 ;
 Parameters
-BTES_model(i,BTES_properties)
-BTES_Sen_int(i)      Initial energy stored in the shalow medium of the building
-BTES_Den_int(i)      Initial energy stored in the deep medium of the building
-BTES_Sdisch_eff      Discharge efficiency of the shallow midium
-BTES_Sch_eff         Charging efficiency of the shallow midium
-BTES_Sch_max(h,i)    maximum charging limit
-BTES_Sdis_max(h,i)   maximum discharging limit
-BTES_kSloss(h,i)     loss coefficient-shallow
-BTES_kDloss(h,i)     loss coefficient-deep
+         BTES_model(BTES_properties,i)
+         BTES_Sen_int(i)      Initial energy stored in the shalow medium of the building
+         BTES_Den_int(i)      Initial energy stored in the deep medium of the building
+         BTES_Sdis_eff        Discharge efficiency of the shallow midium
+         BTES_Sch_eff         Charging efficiency of the shallow midium
+         BTES_Sch_max(h,i)    maximum charging limit
+         BTES_Sdis_max(h,i)   maximum discharging limit
+         BTES_kSloss(h,i)     loss coefficient-shallow
+         BTES_kDloss(h,i)     loss coefficient-deep
 ;
-
-BTES_model(i,BTES_properties)=BTES_model0(i,BTES_properties);
-BTES_Sen_int(i)=BTES_model(i,'BTES_Scap');
-BTES_Den_int(i)=BTES_model(i,'BTES_Dcap');
-BTES_Sdisch_eff=1;
+BTES_model(BTES_properties,i)=BTES_model0(BTES_properties,i);
+BTES_Sen_int(i)=BTES_model('BTES_Scap',i);
+BTES_Den_int(i)=BTES_model('BTES_Dcap',i);
+BTES_Sdis_eff=1;
 BTES_Sch_eff=1;
 
-BTES_Sch_max(h,i)=Min(BTES_model(i,'BTES_Sch_hc'), BTES_model(i,'BTES_Esig')*Max(Min(temp_out(h) - (-16),15 - (-16)),0));
-BTES_Sdis_max(h,i)=Min(BTES_model(i,'BTES_Sdis_hc'), BTES_model(i,'BTES_Esig')*Max(Min(15 - temp_out(h),15 - (-16)),0));
+BTES_Sch_max(h,i)=Min(BTES_model('BTES_Sch_hc',i), BTES_model('BTES_Esig',i)*Max(Min(tout(h) - (-16),15 - (-16)),0));
+BTES_Sdis_max(h,i)=Min(BTES_model('BTES_Sdis_hc',i), BTES_model('BTES_Esig',i)*Max(Min(15 - tout(h),15 - (-16)),0));
 display BTES_Sch_max,BTES_Sdis_max
 ;
 
-*BTES_kSloss needs to be modified since it different values during day and night
-BTES_kSloss(h,i)= BTES_model(i,'kloss_Sday');
-BTES_kDloss(h,i)= BTES_model(i,'kloss_D');
-*-------------Battery storage characteristics-------------------
-scalar
-BES_ch_max    Maximum charge rate of the battery/1000/
-BES_dis_max   Maximum discharge rate of the battery/1000/
-BES_cost      Cost of lithium ion battery storage SEK per kWh/8000/
-;
-
-*---------------PV data---------------
-parameter nPV_ird(h)  Normalized PV irradiance;
-nPV_ird(h)=nPV_ird0(h);
-
-*-----------------set building energy demands---------------------------------
-Parameter heat_demand(h,i) heat demand in buildings as obtained from metrys for
-          el_demand(h,i) heat demand in buildings as obtained from metrys for
-          cooling_demand(h,i) cool demand in buildings as obtained from metrys for 2016;
-heat_demand(h,i)=heat_demand0(h,i);
-el_demand(h,i)=el_demand0(h,i);
-cooling_demand(h,i)=cooling_demand0(h,i);
-
-*----------------------cost related constants and parameters-------------------
-*------------------set energy prices------------------------------------------
-Parameter heat_price(h) heat demand in buildings as obtained from metrys for
-          el_price(h) heat demand in buildings as obtained from metrys for;
-heat_price(h)=heat_price0(h);
-el_price(h)=el_price0(h);
+*[BTES_kSloss needs to be modified since it has different values during day and night]
+*here, it is assumed that BTES_kSloss is the same and the value for the day is used, which means that the loss is over estimated
+BTES_kSloss(h,i)= BTES_model('kloss_Sday',i);
+BTES_kDloss(h,i)= BTES_model('kloss_D',i);
+*--------------Battery storage characteristics----------------------------------
 
 scalar
-f_price               Fuel price in SEK per KWh/100/
-C_price               Carbon price for fuel burnt in SEK per KWH/10/
+         BES_ch_eff    Charging efficiency /0.95/
+         BES_dis_eff   Discharding efficiency /0.95/
 ;
 
-set     fs                    Fuel source                         /Wood, Naturalgas/
-        fp                    Fuel price                          /24, 6/
-        chp(fs)               Fuel type used in CPH               /Wood/
-        dh(fs)                Fuel type used in DH                /Wood/
-        b_tp                  Building thermal property           /t_r, t_c/
+*--------------set building energy demands--------------------------------------
+
+Parameter
+         q_demand(h,i) heat demand in buildings as obtained from metrys for
+         e_demand(h,i) heat demand in buildings as obtained from metrys for
+         k_demand(h,i) cool demand in buildings as obtained from metrys for 2016
+;
+q_demand(h,i)=1000*q_demand0(h,i);
+e_demand(h,i)=1000*el_demand0(h,i);
+k_demand(h,i)=1000*k_demand0(h,i);
+*--------------unit total cost for all the generating units---------------------
+
+parameter
+         price(sup_unit,h)       unit market price of energy
+         fuel_cost(sup_unit,h)   fuel cost of a production unit
+         var_cost(sup_unit,h)    variable cost of a production unit
+         en_tax(sup_unit,h)      energy tax of a production unit
+         co2_cost(sup_unit,h)    CO2 cost
+         utot_cost(sup_unit,h)   unit total cost of every production unit
+         heat_price(h)    heat price by Göteborg Energi in 2016 sek per MWh
+                 /h1*h2184      519
+                 h2185*h2904    357
+                 h2905*h6576    99
+                 h6577*h8040    357
+                 h8041*h8760    519
+                 /
+;
+price('exG',h)=el_price0(h)/1000;
+price('DH',h)=heat_price(h)/1000;
+fuel_cost('CHP',h)=0.02;
+fuel_cost('TB',h)=0.02;
+var_cost(sup_unit,h)=0;
+en_tax(sup_unit,h)=0;
+co2_cost(sup_unit,h)=0;
+utot_cost(sup_unit,h)=price(sup_unit,h) + fuel_cost(sup_unit,h)
+                      + var_cost(sup_unit,h) + en_tax(sup_unit,h);
+*--------------FED PE and CO2 targets-------------------------------------------
+
+scalar
+         base_PE    Base case value of PE /97729000/
+         PE_lim     Desired or limiting value of PE
+         CO2_ref    Reference value of CO2 peak /1700000/
+         CO2_peak   Peak value of CO2 in the base case /2103000/
+         dCO2       Delta CO2
+         CO2_lim    Desired or limiting value of CO2
 ;
 
-Table heat_trans_capa(i,j) transmission capacity that export or import to other areas[KW]
-         1       2       3       4       5       6       7       8       9       10      11      12
-1        0      100     400      0       0       0       0       0       0       0       0       0
-2       100      0       0      300      0       0       0       0       0       0       0       0
-3       200      0       0       0      100      0       0       0       0       0       0       0
-4        0      300      0       0       0      300      0       0       0       0       0       0
-5        0       0      100      0       0       0      200      0       0       0       0       0
-6        0       0       0      300      0       0       0      300      0       0       0       0
-7        0       0       0       0      200      0       0       0      200      0       0       0
-8        0       0       0       0       0      300      0       0       0      400      0       0
-9        0       0       0       0       0       0      200      0       0       0      200      0
-10       0       0       0       0       0       0       0      400      0       0       0      50
-11       0       0       0       0       0       0       0       0      200      0       0      10
-12       0       0       0       0       0       0       0       0       0      50      10       0
-;
+PE_lim=(1-0.3)*base_PE;
+dCO2=CO2_peak-CO2_ref;
+CO2_lim=CO2_ref+0.2*dCO2;
+*--------------PE and CO2 factors of external grids-----------------------------
 
-**********  Capacity in electricity system **********************************************
-Table el_trans_capa(i,j) transmission capacity that export or import to other areas[KW]
-         1       2       3       4       5       6       7       8       9       10      11      12
-1        0      100     400      0       0       0       0       0       0       0       0       0
-2       100      0       0      300      0       0       0       0       0       0       0       0
-3       200      0       0       0      100      0       0       0       0       0       0       0
-4        0      300      0       0       0      300      0       0       0       0       0       0
-5        0       0      100      0       0       0      200      0       0       0       0       0
-6        0       0       0      300      0       0       0      300      0       0       0       0
-7        0       0       0       0      200      0       0       0      200      0       0       0
-8        0       0       0       0       0      300      0       0       0      400      0       0
-9        0       0       0       0       0       0      200      0       0       0      200      0
-10       0       0       0       0       0       0       0      400      0       0       0      50
-11       0       0       0       0       0       0       0       0      200      0       0      10
-12       0       0       0       0       0       0       0       0       0      50      10       0
+Parameters
+         PEF_DH(h)               Primary energy factor of the external DH system
+         PEF_exG(h)              Primary energy factor of the external electricty grid
+         CO2F_DH(h)              CO2 factor of the external DH system
+         CO2F_exG(h)             CO2 factor of the external electricty grid
+         CO2F_loc(sup_unit)      CO2 factor for a supply unit /'CHP' 177, 'TB' 177/
+         PEF_loc(sup_unit)       PE factor for a supply unit /'CHP' 0.78, 'TB' 0.78/
 ;
+PEF_DH(h)=PEF_DH0(h);
+PEF_exG(h)=PEF_exG0(h);
+CO2F_DH(h)=CO2F_DH0(h);
+CO2F_exG(h)=CO2F_exG0(h);
