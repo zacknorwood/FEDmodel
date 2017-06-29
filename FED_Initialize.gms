@@ -95,7 +95,7 @@ scalar
 *--------------AbsC(Absorbition Refregerator), cooling source-------------------
 
 scalar
-         AbsC_COP Coefficent of performance of AbsC /1/
+         AbsC_COP Coefficent of performance of AbsC /0.5/
          AbsC_eff Effciency of AbsC /0.95/
 ;
 *--------------AAC(Ambient Air Cooler), cooling source--------------------------
