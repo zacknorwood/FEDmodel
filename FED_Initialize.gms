@@ -16,15 +16,15 @@ alias(i,j);
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
-         sup_unit   supply units /exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM, RMMC, P1/
-         inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC/
+         sup_unit   supply units /exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM, RMMC, P1, P2, TURB/
+         inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC, P2, TURB/
 ;
 
 Parameter
          cap_sup_unit(sup_unit)   operational capacity of the units
          /PV 60, TB 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
          Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
-                                 /PV 410, BES 400, HP 667, TES 50, BTES 1166, RMMC 25000/
+                                 /PV 410, BES 400, HP 667, TES 50, BTES 1166, RMMC 25000, P2 1533333/
 ;
 *The annualized cost of the BTES is for a building 35000/30, assuming 30 years of technical life time
 *table technology(n1,head2) technology with annualised investment cost in (SEK per MW or MWh per year for i=5)
@@ -114,6 +114,12 @@ scalar
       RM_eff Coefficent of performance of AC /0.95/
 ;
 **************Investment options************************************************
+*----------------Panna 2  ------------------------------------------------------
+scalar
+      P2_eff Efficiency of P2 /0.9/
+      q_P2_cap Capacity of P2 /6666/
+;
+
 *--------------MC2 Refrigerator Machines, cooling source------------------------
 scalar
       RMCC_COP Coefficient of performance for RM /2.57/
@@ -249,8 +255,8 @@ Parameters
          PEF_exG(h)              Primary energy factor of the external electricty grid
          CO2F_DH(h)              CO2 factor of the external DH system
          CO2F_exG(h)             CO2 factor of the external electricty grid
-         CO2F_loc(sup_unit)      CO2 factor for a supply unit /'CHP' 177, 'TB' 177, 'P1' 0/
-         PEF_loc(sup_unit)       PE factor for a supply unit /'CHP' 0.78, 'TB' 0.78, 'P1' 0/
+         CO2F_loc(sup_unit)      CO2 factor for a supply unit /'CHP' 177, 'TB' 177, 'P1' 0, 'P2' 0/
+         PEF_loc(sup_unit)       PE factor for a supply unit /'CHP' 0.78, 'TB' 0.78, 'P1' 0, 'P2' 0/
 ;
 PEF_DH(h)=PEF_DH0(h);
 PEF_exG(h)=PEF_exG0(h);
