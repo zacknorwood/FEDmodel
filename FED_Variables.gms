@@ -2,129 +2,142 @@
 *---------------------Declare variables and equations--------------------------
 *******************************************************************************
 
-*------------------HP related------------------------------------------------
+*******************Dispaching existing units************************************
+*------------------CHP related--------------------------------------------------
 positive variable
-H_HP(h)           heating power available in HP
-el_HP(h)          electricity needed by the HP
-HP_cap            capacity of HP
+         P_CHP(h)          power available in CHP
+         q_CHP(h)          Heat producded by CHP
+         e_CHP(h)          Electricity produced by CHP
 ;
+e_CHP.up(h)=600;
+q_CHP.up(h)=6000;
+*------------------VKA1 Heatpump related----------------------------------------
 
-*------------------VKA1 Heatpump related------------------
 positive variable
-H_VKA1(h)         heating power available from VKA1
-C_VKA1(h)         cooling power available from VKA1
-el_VKA1(h)        electricity needed by VKA1
+         H_VKA1(h)         heating power available from VKA1
+         C_VKA1(h)         cooling power available from VKA1
+         el_VKA1(h)        electricity needed by VKA1
 ;
+*------------------VKA4 Heatpump related----------------------------------------
 
-*------------------VKA4 Heatpump related------------------
 positive variable
-H_VKA4(h)         heating power available from VKA4
-C_VKA4(h)         cooling power available from VKA4
-el_VKA4(h)        electricity needed by VKA4
+         H_VKA4(h)         heating power available from VKA4
+         C_VKA4(h)         cooling power available from VKA4
+         el_VKA4(h)        electricity needed by VKA4
 ;
+*------------------AbsC(Absorbtion Chiller) related-----------------------------
 
-*------------------AC(Absorbtion Chiller) related------------------------------------------------
 positive variable
-H_AC(h)           heat demand for Absorbtion Chiller
-C_AC(h)           cooling power available in AR
-AC_cap            capacity of AR
+         q_AbsC(h)           heat demand for Absorbtion Chiller
+         k_AbsC(h)           cooling power available in AbsC
+         AbsC_cap            capacity of AbsC
 ;
+AbsC_cap.fx=cap_sup_unit('AbsC');
+*------------------Refrigerator Machine related---------------------------------
 
-*------------------Refrigerator related------------------------------------------------
 positive variable
-el_R(h)          electricity demand for refrigerator
-C_R(h)           cooling power available from the refrigerator
-R_cap            capacity of refrigerator
+         e_RM(h)           electricity demand for refrigerator
+         k_RM(h)           cooling power available from the refrigerator
+         RM_cap            capacity of refrigerator
 ;
+*this is the aggregated capacity of five exisiting RM Units
+RM_cap.fx=cap_sup_unit('RM');
+*------------------Abient Air Cooling Machine related---------------------------
 
-*------------------CHP related------------------------------------------------
 positive variable
-P_CHP(h)          power available in CHP
-H_CHP(h)          Heat producded by CHP
-el_CHP(h)         Electricity produced by CHP
-CHP_cap           maximum capacity of CHP plant
+         e_AAC(h)           electricity demand for refrigerator
+         k_AAC(h)           cooling power available from the refrigerator
+         AAC_cap            capacity of refrigerator
 ;
-*CHP_cap.fx(i)=600;
-*capa_chp.fx('1')=600;
-*P_CHP.up(h,i)=600;
-*P_CHP.lo(h,i)=0;
+AAC_cap.fx=cap_sup_unit('AAC');
+******************New investments***********************************************
+*------------------HP related---------------------------------------------------
 
-*------------------TES related------------------------------------------------
 positive variable
-TES_ch(h)         input to the TES-chargin the TES
-TES_dis(h)        output from the TES-discharging the TES
-TES_en(h)         energy content of TES at any instant
-TES_cap           capacity of the TES in m3
+         q_HP(h)           heating power available in HP
+         e_HP(h)           electricity needed by the HP
+         HP_cap            capacity of HP
+;
+*------------------TES related--------------------------------------------------
+
+positive variable
+         TES_ch(h)         input to the TES-chargin the TES
+         TES_dis(h)        output from the TES-discharging the TES
+         TES_en(h)         energy content of TES at any instant
+         TES_cap           capacity of the TES in m3
 ;
 *TES_cap.up=1000;
 binary variable
-TES_inv          Decision variable for Accumulator investment
+         TES_inv          Decision variable for Accumulator investment
 ;
+*------------------BITES (Building energy storage) related----------------------
 
-*------------------BTES (Building energy storage) related-----------------------
 positive variable
-BTES_Sch(h,i)
-BTES_Sdis(h,i)
-BTES_Sen(h,i)
-BTES_Den(h,i)
-BTES_Sloss(h,i)
-BTES_Dloss(h,i)
+         BTES_Sch(h,i)    charing rate of shallow section of the building
+         BTES_Sdis(h,i)   dischargin rate of shallow section of the building
+         BTES_Sen(h,i)    energy stored in the shallow section of the building
+         BTES_Den(h,i)    energy stored in the deep section of the building
+         BTES_Sloss(h,i)  heat loss from the shallow section of the building
+         BTES_Dloss(h,i)  heat loss from the deep section of the building
 ;
 variable
-link_BS_BD(h,i)
+         link_BS_BD(h,i)  heat flow between the shallow and the deep section
 ;
+binary variable
+         B_BITES(i)       Decision variable weither to invest BITES control sys-
+;
+*Buildings with BITES capability
+B_BITES.fx('2')=0;
+B_BITES.fx('5')=0;
+B_BITES.fx('7')=0;
+B_BITES.fx('18')=0;
+B_BITES.fx('24')=0;
+B_BITES.fx('25')=0;
+B_BITES.fx('26')=0;
+*----------------Solar PV PV relate variables-----------------------------------
 
-*----------------Solar PV PV relate variables-----------------------------
 positive variable
-el_PV(h)   elecricity produced by PV
-PV_cap     capacity of solar panal
+         e_PV(h)    elecricity produced by PV
+         PV_cap     capacity of solar panal
 ;
+*------------------Battery related----------------------------------------------
 
-*------------------Demand Response (DR) related-----------------------------
-variable DR_heat_demand(h,i)  demand response of the building
-;
-DR_heat_demand.fx(h,i)=heat_demand(h,i)$(sw_DR ne 1);
-
-*------------------Battery related------------------------------------------
 positive variables
-BES_en(h)       Energy stored in kWh in the battry at time h
-BES_ch(h)       Battery charing in kWh per hour at time h
-BES_dis(h)      Battery discharging in kWh per hour at time h
-BES_cap         Capacity of the battery in kWh
+         BES_en(h)       Energy stored in the battry at time t and building i
+         BES_ch(h)       Battery charing at time t and building i
+         BES_dis(h)      Battery discharging at time t and building i
+         BES_cap        Capacity of the battery at building i
 ;
+*------------------Grid El related----------------------------------------------
 
-*------------------Grid El related---------------------------------------------
 variable
-P_el(h,i)          electrical power input from grid
-el_trans(h,i,j)    actual electricity transmission from 'i' to 'j' at any instant h
+         e_exG(h)           electrical power input from grid
 ;
-*P_elec.fx(h,i)=0;
-*P_elec.up(h,'1')=1000000;
-P_el.lo(h,i)=0;
+e_exG.lo(h)=0;
+*------------------Grid DH related----------------------------------------------
 
-el_trans.up(h,i,j)=el_trans_capa(i,j)*10000;
-el_trans.lo(h,i,j)= -el_trans_capa(i,j)*10000;
-
-*------------------Grid DH related---------------------------------------------
 variable
-P_DH(h,i)            heat power input from grid
-heat_trans(h,i,j)    actual heat transmission from 'i' to 'j' at any instant h
+         q_DH(h)            heat power input from grid
 ;
-*P_DH.fx(h,i)=0;
-*P_DH.up(h,'1')=10000000000000;
-P_DH.lo(h,i)=0;
-
-heat_trans.up(h,i,j)=heat_trans_capa(i,j)*10000;
-heat_trans.lo(h,i,j)= -heat_trans_capa(i,j)*10000;
-
+q_DH.lo(h)=0;
 *------------------Grid DC related---------------------------------------------
+
 variable
-P_DC(h,i)             cooling from district cooling system
-cooling_trans(h,i,j)  actual cooling transmission from 'i' to 'j' at any instant h
+         P_DC(h)             cooling from district cooling system
 ;
-P_DC.fx(h,i)=0;
-*cooling_trans.fx(h,i,j)=0;
+P_DC.fx(h)=0;
+*-------------------------PE and CO2 related -----------------------------------
 
+positive variables
+         FED_PE         Primery energy limit of the FED system
+         FED_CO2(h)     CO2 limit of the FED system
+;
+
+FED_PE.up=PE_lim;
+FED_CO2.up(h)=CO2_lim;
+*--------------------Objective function-----------------------------------------
 
 variable
-TC                   total cost;
+         TC                   total cost
+         invCost              total investment cost
+;
