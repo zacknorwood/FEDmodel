@@ -2,9 +2,8 @@
 *----------------------------Define equations--------------------------------
 ******************************************************************************
 equation
-           eq_CHP1      total CHP power
-           eq_CHP2      electricity from the CHP
-*           eq_CHP3      heating from the CHP
+           eq1_P1       production equation for P1
+           eq2_P1       maximum capacity of P1
 
            eq_VKA11     heating generation of VKA4
            eq_VKA12     cooling generation of VKA4
@@ -25,8 +24,16 @@ equation
            eq_ACC1      Refrigerator equation
            eq_ACC2      Refrigerator equation
 
-           eq_HP1       relate heat from HP
-           eq_HP2       for determining capacity of HP
+           eq1_P2       production equation for P2
+           eq2_P2       investment equation for P2
+
+           eq1_TURB     production equation for turbine-gen
+           eq2_TURB     energy consumption equation for turbine-gen
+           eq3_TURB     investment equation for turbine-gen
+
+           eq_HP1       heat production from HP
+           eq_HP2       cooling production from HP
+           eq_HP3       for determining capacity of HP
 
            eq_TESen1    initial energy content of the TES
            eq_TESen2    energy content of the TES at hour h
@@ -70,14 +77,12 @@ equation
 *-----------------------------------------------------------------------------
 
 ***************For Existing units***********************************************
-*-----------------CHP equations-------------------------------------------------
+*-----------------Panna1 equations----------------------------------------------
+eq1_P1(h)..
+         H_P1(h) =e= q_P1(h) * P1_eff;
+eq2_P1(h)..
+         H_P1(h) =l= P1_cap;
 
-eq_CHP1(h)..
-             P_CHP(h) =e= (e_CHP(h) + q_CHP(h))/CHP_eff;
-eq_CHP2(h)..
-             e_CHP(h) =l= CHP_eff*CHP_el_heat*P_CHP(h)/(1+CHP_el_heat);
-*eq_CHP3(h)..
-*             q_CHP(h) =e= CHP_eff*P_CHP(h)/(1+CHP_el_heat);
 *-----------------VKA4 equations------------------------------------------------
 
 eq_VKA11(h)..
@@ -122,12 +127,31 @@ eq_ACC2(h)..
              k_AAC(h) =l= AAC_cap;
 
 *****************For new investment optonss-------------------------------------
+*----------------Panna 2 equations ---------------------------------------------
+eq1_P2(h)..
+         H_P2(h) =e= sw_P2 * q_P2(h) * P2_eff;
+eq2_P2(h)..
+         q_P2(h) =l= B_P2 * q_P2_cap;
+
+*----------------Refurb turbine equations --------------------------------------
+eq1_TURB(h)..
+         e_TURB(h) =e= sw_TURB * TURB_eff * q_TURB(h);
+
+eq2_TURB(h)..
+         H_P2T(h) =l= H_P2(h) - q_TURB(h);
+
+eq3_TURB(h)..
+         e_TURB(h) =l= TURB_cap * B_TURB;
+
 *----------------HP equations --------------------------------------------------
 
 eq_HP1(h)$(sw_HP eq 1)..
-             q_HP(h) =e= sw_HP*HP_COP*e_HP(h)*HP_eff;
+             q_HP(h) =e= sw_HP*HP_H_COP*e_HP(h);
 eq_HP2(h)$(sw_HP eq 1)..
+             c_HP(h) =l= sw_HP*HP_C_COP*e_HP(h);
+eq_HP3(h)$(sw_HP eq 1)..
              q_HP(h) =l= sw_HP*HP_cap;
+
 *------------------TES equations------------------------------------------------
 
 eq_TESen1(h,i)$(ord(h) eq 1)..
@@ -189,45 +213,51 @@ eq_PV(h)..
 *---------------- Demand supply balance for heating ----------------------------
 
 eq_hbalance(h)..
-             sum(i,q_demand(h,i)) =l=q_DH(h) + q_CHP(h) + tb_2016(h) + H_VKA1(h) + H_VKA4(h) - q_AbsC(h)
+             sum(i,q_demand(h,i)) =l=q_DH(h) + tb_2016(h) + H_VKA1(h) + H_VKA4(h) - q_AbsC(h) + H_P1(h) + H_P2T(h)
                                      + sw_HP*q_HP(h)
                                      + sw_TES*(TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
                                      + sw_BTES*(sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff);
 *-------------- Demand supply balance for cooling ------------------------------
 
 eq_cbalance(h)..
-         sum(i,k_demand(h,i))=l=P_DC(h) + C_VKA1(h) + C_VKA4(h) +  k_AbsC(h) + k_RM(h) + k_RMMC(h) + k_AAC(h);
+         sum(i,k_demand(h,i))=l=P_DC(h) + C_VKA1(h) + C_VKA4(h) +  k_AbsC(h) + k_RM(h) + k_RMMC(h) + k_AAC(h) + c_HP(h);
 *--------------Demand supply balance for electricity ---------------------------
 
 eq_ebalance(h)..
-        sum(i,e_demand(h,i)) =l= e_exG(h) + e_CHP(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
+        sum(i,e_demand(h,i)) =l= e_exG(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
                                  + e0_PV(h) + sw_PV*e_PV(h) - sw_HP*e_HP(h)
-                                 + sw_BTES*(BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff);
+                                 + sw_BTES*(BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff)
+                                 + sw_TURB * e_TURB(h);
 *--------------FED Primary energy use-------------------------------------------
 
 eq_PE..
-       FED_PE =e= sum(h,e_exG(h)*PEF_exG(h)) + sum(h,P_CHP(h)*PEF_loc('CHP'))
+       FED_PE =e= sum(h,e_exG(h)*PEF_exG(h))
                   + sum(h,e0_PV(h)*PEF_loc('PV')) + sw_PV*sum(h,e_PV(h)*PEF_loc('PV'))
-                  + sum(h,q_DH(h)*PEF_DH(h)) + sum(h,tb_2016(h)*PEF_loc('TB'));
+                  + sum(h,q_DH(h)*PEF_DH(h)) + sum(h,tb_2016(h)*PEF_loc('TB'))
+                  + sum(h,q_P1(h)*PEF_loc('P1'))
+                  + sum(h,q_P2(h)*PEF_loc('P2'));
 *---------------FED CO2 emission------------------------------------------------
 
 eq_CO2(h)..
-       FED_CO2(h) =e= e_exG(h)*CO2F_exG(h) + P_CHP(h)*CO2F_loc('CHP')
+       FED_CO2(h) =e= e_exG(h)*CO2F_exG(h)
                       + e0_PV(h)*CO2F_loc('PV') + sw_PV*e_PV(h)*CO2F_loc('PV')
-                      + q_DH(h)*CO2F_DH(h) + tb_2016(h)*CO2F_loc('TB');
+                      + q_DH(h)*CO2F_DH(h) + tb_2016(h)*CO2F_loc('TB') + q_P1(h) * CO2F_loc('P1')
+                      + q_P2(h) * CO2F_loc('P2');
 **************** Objective function ***********************
 
 eq_totCost..
          TC =e= sum(h,q_DH(h)*utot_cost('DH',h))
                 + sum(h,e_exG(h)*utot_cost('exG',h))
-                + sum(h,P_CHP(h)*utot_cost('CHP',h))
                 + sum(h,tb_2016(h)*utot_cost('TB',h))
+                + sum(h, q_P1(h)*utot_cost('P1',h))
                 + sw_HP*HP_cap*Acost_sup_unit('HP')
                 + sw_PV*PV_cap*Acost_sup_unit('PV')
                 + sw_BES*BES_cap*Acost_sup_unit('BES')
                 + sw_TES*(TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/25
                 + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))
-                + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC');
+                + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC')
+                + sw_P2 * B_P2 * Acost_sup_unit('P2')
+                + sw_TURB * B_TURB * Acost_sup_unit('TURB');
 
 eq_invCost..
          invCost =e= sw_HP*HP_cap*Acost_sup_unit('HP')*15
@@ -235,5 +265,7 @@ eq_invCost..
                      + sw_BES*BES_cap*Acost_sup_unit('BES')*15
                      + sw_TES*((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
                      + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))*30
-                     + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC')*20;
+                     + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC')*20
+                     + sw_P2 * B_P2 * Acost_sup_unit('P2') * 30
+                     + sw_TURB * B_TURB * Acost_sup_unit('TURB') * 30;
 ********************************************************************************
