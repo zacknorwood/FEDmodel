@@ -31,8 +31,9 @@ equation
            eq2_TURB     energy consumption equation for turbine-gen
            eq3_TURB     investment equation for turbine-gen
 
-           eq_HP1       relate heat from HP
-           eq_HP2       for determining capacity of HP
+           eq_HP1       heat production from HP
+           eq_HP2       cooling production from HP
+           eq_HP3       for determining capacity of HP
 
            eq_TESen1    initial energy content of the TES
            eq_TESen2    energy content of the TES at hour h
@@ -145,9 +146,12 @@ eq3_TURB(h)..
 *----------------HP equations --------------------------------------------------
 
 eq_HP1(h)$(sw_HP eq 1)..
-             q_HP(h) =e= sw_HP*HP_COP*e_HP(h)*HP_eff;
+             q_HP(h) =e= sw_HP*HP_H_COP*e_HP(h);
 eq_HP2(h)$(sw_HP eq 1)..
+             c_HP(h) =l= sw_HP*HP_C_COP*e_HP(h);
+eq_HP3(h)$(sw_HP eq 1)..
              q_HP(h) =l= sw_HP*HP_cap;
+
 *------------------TES equations------------------------------------------------
 
 eq_TESen1(h,i)$(ord(h) eq 1)..
@@ -216,7 +220,7 @@ eq_hbalance(h)..
 *-------------- Demand supply balance for cooling ------------------------------
 
 eq_cbalance(h)..
-         sum(i,k_demand(h,i))=l=P_DC(h) + C_VKA1(h) + C_VKA4(h) +  k_AbsC(h) + k_RM(h) + k_RMMC(h) + k_AAC(h);
+         sum(i,k_demand(h,i))=l=P_DC(h) + C_VKA1(h) + C_VKA4(h) +  k_AbsC(h) + k_RM(h) + k_RMMC(h) + k_AAC(h) + c_HP(h);
 *--------------Demand supply balance for electricity ---------------------------
 
 eq_ebalance(h)..

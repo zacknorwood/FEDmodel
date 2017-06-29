@@ -135,8 +135,8 @@ scalar
 
 *[COP and eff values need to be checked]
 scalar
-         HP_COP         Coefficent of performance of the Heat Pump (HP)/3.5/
-         HP_eff         Efficiency of the HP /0.95/
+         HP_H_COP       Coefficent of performance for heat of the Heat Pump (HP)/3.5/
+         HP_C_COP       Coefficent of performance for cooling of the Heat Pump (HP)/2/
 ;
 *--------------TES constants and parameters-------------------------------------
 

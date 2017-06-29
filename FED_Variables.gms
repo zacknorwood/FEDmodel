@@ -80,6 +80,7 @@ binary variable
 
 positive variable
          q_HP(h)           heating power available in HP
+         c_HP(h)           cooling power available from HP
          e_HP(h)           electricity needed by the HP
          HP_cap            capacity of HP
 ;
