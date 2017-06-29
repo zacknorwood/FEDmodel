@@ -19,6 +19,9 @@ equation
            eq_RM1       Refrigerator equation
            eq_RM2       Refrigerator equation
 
+           eq_RMMC1     MC2 Refrigerator equation
+           eq_RMMC2     MC2 investment constraint
+
            eq_ACC1      Refrigerator equation
            eq_ACC2      Refrigerator equation
 
@@ -103,6 +106,14 @@ eq_RM1(h)..
              k_RM(h) =e= RM_COP*e_RM(h);
 eq_RM2(h)..
              k_RM(h) =l= RM_cap;
+
+*----------MC2 Refrigerator Machine equations (electricity => cooling)----------
+eq_RMMC1(h)..
+         k_RMMC(h) =e= sw_RMMC * RMCC_COP * e_RMMC(h);
+
+eq_RMMC2(h)..
+         k_RMMC(h) =l= RMMC_inv * cap_sup_unit('RMMC');
+
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
 
 eq_ACC1(h)..
@@ -185,11 +196,11 @@ eq_hbalance(h)..
 *-------------- Demand supply balance for cooling ------------------------------
 
 eq_cbalance(h)..
-         sum(i,k_demand(h,i))=l=P_DC(h) + C_VKA1(h) + C_VKA4(h) +  k_AbsC(h) + k_RM(h) + k_AAC(h);
+         sum(i,k_demand(h,i))=l=P_DC(h) + C_VKA1(h) + C_VKA4(h) +  k_AbsC(h) + k_RM(h) + k_RMMC(h) + k_AAC(h);
 *--------------Demand supply balance for electricity ---------------------------
 
 eq_ebalance(h)..
-        sum(i,e_demand(h,i)) =l= e_exG(h) + e_CHP(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_AAC(h)
+        sum(i,e_demand(h,i)) =l= e_exG(h) + e_CHP(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
                                  + e0_PV(h) + sw_PV*e_PV(h) - sw_HP*e_HP(h)
                                  + sw_BTES*(BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff);
 *--------------FED Primary energy use-------------------------------------------
@@ -215,12 +226,14 @@ eq_totCost..
                 + sw_PV*PV_cap*Acost_sup_unit('PV')
                 + sw_BES*BES_cap*Acost_sup_unit('BES')
                 + sw_TES*(TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/25
-                + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i));
+                + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))
+                + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC');
 
 eq_invCost..
          invCost =e= sw_HP*HP_cap*Acost_sup_unit('HP')*15
                      + sw_PV*PV_cap*Acost_sup_unit('PV')*30
                      + sw_BES*BES_cap*Acost_sup_unit('BES')*15
                      + sw_TES*((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
-                     + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))*30;
+                     + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))*30
+                     + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC')*20;
 ********************************************************************************

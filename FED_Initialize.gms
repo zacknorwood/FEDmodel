@@ -16,15 +16,15 @@ alias(i,j);
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
-         sup_unit   supply units /exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM/
-         inv_opt    investment options /PV, BES, HP, TES, BTES/
+         sup_unit   supply units /exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM, RMMC/
+         inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC/
 ;
 
 Parameter
          cap_sup_unit(sup_unit)   operational capacity of the units
-         /PV 60, TB 9000, RHP 1600, AbsC 2300, AAC 1000, RM 6370/
-         Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW
-                                 /PV 410, BES 400, HP 667, TES 50, BTES 1166/
+         /PV 60, TB 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
+         Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
+                                 /PV 410, BES 400, HP 667, TES 50, BTES 1166, RMMC 25000/
 ;
 *The annualized cost of the BTES is for a building 35000/30, assuming 30 years of technical life time
 *table technology(n1,head2) technology with annualised investment cost in (SEK per MW or MWh per year for i=5)
@@ -34,14 +34,16 @@ Parameter
 *TES                         10000                    25            710                    900                     1100
 *Battery                     12060000                 15            1157760                1362780                 1579860
 *Solar_PV                    18000000                 30            1170000                1530000                 1908000
+*RMMC2                       500000                   20
 *--------------CHoice of investment options to consider-------------------------
 
 PARAMETERS
          sw_HP        switch to decide whether to operate HP or not
          sw_TES       switch to decide whether whether to operate TES or not
-         sw_BTES     switch to decide whether to include building storage or not
+         sw_BTES      switch to decide whether to include building storage or not
          sw_BES       switch to decide whether to include Battery storage or not
          sw_PV        switch to decide whether to include solar PV or not
+         sw_RMMC      switch to decide whether investment in connecting refrigeration machines at MC2 to KB0
 ;
 *use of switch to determine whether HP, CHP, TES should operate or not
 * 1=in operation, 0=out of operation
@@ -50,6 +52,7 @@ sw_TES=1;
 sw_BTES=1;
 sw_BES=1;
 sw_PV=1;
+sw_RMMC = 1;
 ***************Existing units***************************************************
 *--------------CHP constants and parameters (existing unit)---------------------
 
@@ -105,6 +108,11 @@ scalar
       RM_eff Coefficent of performance of AC /0.95/
 ;
 **************Investment options************************************************
+*--------------MC2 Refrigerator Machines, cooling source------------------------
+scalar
+      RMCC_COP Coefficient of performance for RM /2.57/
+      RMMC_cap Maximum cooling capacity for RM in kW/4200/
+;
 *--------------PV data----------------------------------------------------------
 
 

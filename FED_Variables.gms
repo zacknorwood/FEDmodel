@@ -42,6 +42,15 @@ positive variable
 ;
 *this is the aggregated capacity of five exisiting RM Units
 RM_cap.fx=cap_sup_unit('RM');
+*------------------MC2 Refrigerator Machine related-----------------------------
+positive variable
+         e_RMMC(h)          electricity demand for refrigerators
+         k_RMMC(h)          cooling power available from refrigerators
+;
+binary variable
+         RMMC_inv           decision variable for MC2 connection investment
+;
+
 *------------------Abient Air Cooling Machine related---------------------------
 
 positive variable
