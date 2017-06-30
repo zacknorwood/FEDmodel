@@ -25,12 +25,13 @@ ALL
 SOLVE total using MIP minimizing invCost;
 
 parameter
-inv_PV    investmet cost on PV
-inv_BEV   investmet cost on battery storage
-inv_TES   investmet cost on thermal energy storage
-inv_BITES investmet cost on building inertia thermal energy storage
-inv_HP    investmet cost on heat pump
-inv_RMMC  investment cost on connecting MC2 RM
+inv_PV      investmet cost on PV
+inv_BEV     investmet cost on battery storage
+inv_TES     investmet cost on thermal energy storage
+inv_BITES   investmet cost on building inertia thermal energy storage
+inv_HP      investmet cost on heat pump
+inv_RMMC    investment cost on connecting MC2 RM
+inv_AbsCInv investment cost for absorption cooler
 ;
 inv_HP=sw_HP*HP_cap.l*Acost_sup_unit('HP')*15;
 inv_PV= sw_PV*PV_cap.l*Acost_sup_unit('PV')*30;
@@ -38,7 +39,8 @@ inv_BEV=sw_BES*BES_cap.l*Acost_sup_unit('BES')*15;
 inv_TES=sw_TES*(TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
 inv_BITES=sw_BTES**Acost_sup_unit('BTES')*sum(i,B_BITES.l(i))*30;
 inv_RMMC=sw_RMMC*Acost_sup_unit('RMMC')*RMMC_inv.l;
-display HP_cap.l, inv_HP, PV_cap.l, inv_PV, BES_cap.l, inv_BEV, TES_cap.l, inv_TES, inv_BITES, inv_RMMC, invCost.l;
+inv_AbsCInv = sw_AbsCInv * (B_AbsCInv.l *AbsCInv_fx + AbsCInv_cap.l * Acost_sup_unit('AbsCInv'))
+display HP_cap.l, inv_HP, PV_cap.l, inv_PV, BES_cap.l, inv_BEV, TES_cap.l, inv_TES, inv_BITES, inv_RMMC, inv_AbsCInv, invCost.l;
 
 ********************Output data from GAMS to MATLAB*********************
 *execute_unload %matout%;
@@ -53,7 +55,7 @@ execute_unload 'GtoM' H_VKA1,C_VKA1,el_VKA1,q_P2, H_P2T, e_TURB, q_TURB,
                       e_AAC,k_AAC, q_HP,e_HP, c_HP,HP_cap,TES_ch,TES_dis,TES_en,TES_cap,TES_inv,
                       BTES_Sch,BTES_Sdis,BTES_Sen,BTES_Den,BTES_Sloss,BTES_Dloss,
                       link_BS_BD, B_BITES, e_PV,PV_cap,BES_en,BES_ch,BES_dis,BES_cap,
-                      FED_PE,FED_PE_ft,FED_CO2, e_exG, q_DH;
+                      FED_PE,FED_PE_ft,FED_CO2, e_exG, q_DH, q_AbsCInv, k_AbsCInv;
 
 *display k_demand;
 *execute_unload "power_grid.gdx" P_DH, P_elec;

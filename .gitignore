@@ -37,3 +37,5 @@ FED_PROJECT.gpr
 *.par
 *.cmd
 *.tmp
+FED_PROJECT.gpr
+*.gpr

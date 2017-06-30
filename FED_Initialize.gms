@@ -16,15 +16,15 @@ alias(i,j);
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
-         sup_unit   supply units /exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM, RMMC, P2, TURB/
-         inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC, P2, TURB/
+         sup_unit   supply units /exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM, RMMC, P2, TURB, AbsCInv/
+         inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC, P2, TURB, AbsCInv/
 ;
 
 Parameter
          cap_sup_unit(sup_unit)   operational capacity of the units
          /PV 60, TB 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
          Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
-                                 /PV 410, BES 400, HP 667, TES 50, BTES 1166, RMMC 25000, P2 1533333, TURB 66666/
+                                 /PV 410, BES 400, HP 667, TES 50, BTES 1166, RMMC 25000, P2 1533333, TURB 66666, AbsCInv 72.4/
 ;
 *The annualized cost of the BTES is for a building 35000/30, assuming 30 years of technical life time
 *table technology(n1,head2) technology with annualised investment cost in (SEK per MW or MWh per year for i=5)
@@ -46,6 +46,7 @@ PARAMETERS
          sw_RMMC      switch to decide whether investment in connecting refrigeration machines at MC2 to KB0
          sw_P2        switch to decide whether to include P2 or not
          sw_TURB      switch to decide whether to include turbine or not
+         sw_AbsCInv   switch to decide whether to include absorption chiller investments
 ;
 *use of switch to determine whether HP, CHP, TES should operate or not
 * 1=in operation, 0=out of operation
@@ -57,6 +58,7 @@ sw_PV=1;
 sw_RMMC = 1;
 sw_P2 = 1;
 sw_TURB = 1;
+sw_AbsCInv = 1;
 ***************Existing units***************************************************
 *--------------Existing Solar  constants and parameters (existing unit)---------
 
@@ -105,6 +107,16 @@ scalar
       RM_eff Coefficent of performance of AC /0.95/
 ;
 **************Investment options************************************************
+*----------------Absorption Chiller Investment----------------------------------
+*Assumed technical lifetime of 25 years, fixed investment cost 1610 kSek
+scalar
+         AbsCInv_COP    Coefficient of performance for cooling /0.75/
+         AbsCInv_fx     Fixed cost for investment in Abs chiller /64400/
+         AbsCInv_MaxCap Maximum possible investment in kW cooling /1000/
+;
+
+
+
 *----------------Panna 2  ------------------------------------------------------
 scalar
       P2_eff Efficiency of P2 /0.9/
@@ -118,9 +130,11 @@ scalar
 ;
 
 *--------------MC2 Refrigerator Machines, cooling source------------------------
+* Real capacity of RMMC is 4200 but since MC2 internal cooling demand isn't
+* accounted for RMMC capacity is here decreased by 600 kW
 scalar
-      RMCC_COP Coefficient of performance for RM /2.57/
-      RMMC_cap Maximum cooling capacity for RM in kW/4200/
+      RMCC_COP Coefficient of performance for RM /1.94/
+      RMMC_cap Maximum cooling capacity for RM in kW/3600/
 ;
 *--------------PV data----------------------------------------------------------
 
