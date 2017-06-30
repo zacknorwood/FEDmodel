@@ -22,6 +22,10 @@ equation
            eq_ACC1      Refrigerator equation
            eq_ACC2      Refrigerator equation
 
+           eq1_AbsCInv  Production equation
+           eq2_AbsCInv  Investment capacity
+           eq3_AbsCInv  Binary constraint
+
            eq1_P2       production equation for P2
            eq2_P2       investment equation for P2
 
@@ -119,6 +123,14 @@ eq_ACC2(h)..
              k_AAC(h) =l= AAC_cap;
 
 *****************For new investment optonss-------------------------------------
+*----------------Absorption Chiller Investment----------------------------------
+eq1_AbsCInv(h)..
+             k_AbsCInv(h) =e= AbsCInv_COP*q_AbsCInv(h)*AbsC_eff;
+eq2_AbsCInv(h)..
+             k_AbsCInv(h) =l= AbsCInv_cap;
+eq3_AbsCInv(h)..
+             k_AbsCInv(h) =l= B_AbsCInv * AbsCInv_MaxCap;
+
 *----------------Panna 2 equations ---------------------------------------------
 eq1_P2(h)..
          H_P2(h) =e= sw_P2 * q_P2(h) * P2_eff;
@@ -208,11 +220,12 @@ eq_hbalance(h)..
              sum(i,q_demand(h,i)) =l=q_DH(h) + tb_2016(h) + H_VKA1(h) + H_VKA4(h) - q_AbsC(h) + H_P2T(h)
                                      + sw_HP*q_HP(h)
                                      + sw_TES*(TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
-                                     + sw_BTES*(sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff);
+                                     + sw_BTES*(sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
+                                     - sw_AbsCInv * q_AbsCInv(h);
 *-------------- Demand supply balance for cooling ------------------------------
 
 eq_cbalance(h)..
-         sum(i,k_demand(h,i))=l=P_DC(h) + C_VKA1(h) + C_VKA4(h) +  k_AbsC(h) + k_RM(h) + k_RMMC(h) + k_AAC(h) + c_HP(h);
+         sum(i,k_demand(h,i))=l=P_DC(h) + C_VKA1(h) + C_VKA4(h) +  k_AbsC(h) + k_RM(h) + k_RMMC(h) + k_AAC(h) + c_HP(h) + sw_AbsCInv * k_AbsCInv(h);
 *--------------Demand supply balance for electricity ---------------------------
 
 eq_ebalance(h)..
@@ -248,7 +261,9 @@ eq_totCost..
                 + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))
                 + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC')
                 + sw_P2 * B_P2 * Acost_sup_unit('P2')
-                + sw_TURB * B_TURB * Acost_sup_unit('TURB');
+                + sw_TURB * B_TURB * Acost_sup_unit('TURB')
+                + sw_AbsCInv * (B_AbsCInv *AbsCInv_fx + AbsCInv_cap * Acost_sup_unit('AbsCInv'))
+                ;
 
 eq_invCost..
          invCost =e= sw_HP*HP_cap*Acost_sup_unit('HP')*15
@@ -258,5 +273,6 @@ eq_invCost..
                      + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))*30
                      + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC')*20
                      + sw_P2 * B_P2 * Acost_sup_unit('P2') * 30
-                     + sw_TURB * B_TURB * Acost_sup_unit('TURB') * 30;
+                     + sw_TURB * B_TURB * Acost_sup_unit('TURB') * 30
+                     + sw_AbsCInv * (B_AbsCInv *AbsCInv_fx + AbsCInv_cap * Acost_sup_unit('AbsCInv')) * 25 ;
 ********************************************************************************
