@@ -1,9 +1,6 @@
 *------------------------------------------------------------------------------
 *---------------------FED MAIN SIMULATOR--------------------------------------
 *------------------------------------------------------------------------------
-set h Time series
-    i  Bus Id
-;
 
 $Include FED_Initialize
 $Include FED_Variables
@@ -32,19 +29,24 @@ inv_BITES   investmet cost on building inertia thermal energy storage
 inv_HP      investmet cost on heat pump
 inv_RMMC    investment cost on connecting MC2 RM
 inv_AbsCInv investment cost for absorption cooler
-inv_P2      investment cost for new P2
-inv_TURB    investment cost for turbine connected to P2
 ;
 inv_HP=sw_HP*HP_cap.l*Acost_sup_unit('HP')*15;
 inv_PV= sw_PV*PV_cap.l*Acost_sup_unit('PV')*30;
 inv_BEV=sw_BES*BES_cap.l*Acost_sup_unit('BES')*15;
 inv_TES=sw_TES*(TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
-inv_BITES=sw_BTES**Acost_sup_unit('BTES')*sum(i,B_BITES.l(i))*30;
+inv_BITES=sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES.l(i))*30;
 inv_RMMC=sw_RMMC*Acost_sup_unit('RMMC')*RMMC_inv.l;
 inv_AbsCInv = sw_AbsCInv * (B_AbsCInv.l *AbsCInv_fx + AbsCInv_cap.l * Acost_sup_unit('AbsCInv'))
-inv_P2 = sw_P2 * B_P2 * Acost_sup_unit('P2')
-inv_TURB = sw_TURB * B_TURB * Acost_sup_unit('TURB')
-display HP_cap.l, inv_HP, PV_cap.l, inv_PV, BES_cap.l, inv_BEV, TES_cap.l, inv_TES, inv_BITES, inv_RMMC, inv_AbsCInv, inv_P2, inv_TURB invCost.l;
+
+display HP_cap.l, inv_HP,
+        PV_cap.l, inv_PV,
+        BES_cap.l, inv_BEV,
+        TES_cap.l, inv_TES,
+        B_BITES.l, inv_BITES,
+        inv_RMMC, inv_AbsCInv,
+        AbsCInv_cap.l,B_AbsCInv.l,
+        B_P2.l,B_TURB.l
+        invCost.l;
 
 ********************Output data from GAMS to MATLAB*********************
 *execute_unload %matout%;
@@ -80,8 +82,6 @@ put 'district heating Results'// ;
 put  @24, 'P_DH', @48, 'P_HP', @72, 'fuel', @96, 'Ped'
 loop((i,h), put n.tl, @24, P_DH.l(i,h):8:4, @48, P_HP.l(i,h):8:4, @72, fuel.l(i,h):8:4, @96, Ped.l(i,h):8:4  /);
 $offtext
-
-
 
 
 
