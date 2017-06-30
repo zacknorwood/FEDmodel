@@ -5,18 +5,21 @@
 
 *--------------IMPORT IMPUT DATA TO THE MODEL-----------------------------------
 
-$Include FED_GENERAGE_GDX_FILE
+$Include FED_GENERAGE_GDX_FILE_no_gen
 *-------------SET THE LENGTH OF INPUT DATA USED FOR SIMULATION------------------
 
 set
         h(h0)                 Number of hours                     /H1*H8760/
         i(b0)                 Number of buildings in the system   /1*30/
+        m(m0)                 Number of month                     /M1*M12/
+        d(d0)                 Number of days                      /D1*D365/
 ;
+
 alias(i,j);
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
-         sup_unit   supply units /exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM, RMMC, P2, TURB, AbsCInv/
+         sup_unit   supply units /HP,exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM, RMMC, P2, TURB, AbsCInv/
          inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC, P2, TURB, AbsCInv/
 ;
 
@@ -109,29 +112,28 @@ scalar
 **************Investment options************************************************
 *----------------Absorption Chiller Investment----------------------------------
 *Assumed technical lifetime of 25 years, fixed investment cost 1610 kSek
+
 scalar
          AbsCInv_COP    Coefficient of performance for cooling /0.75/
          AbsCInv_fx     Fixed cost for investment in Abs chiller /64400/
          AbsCInv_MaxCap Maximum possible investment in kW cooling /1000/
 ;
-
-
-
 *----------------Panna 2  ------------------------------------------------------
+
 scalar
       P2_eff Efficiency of P2 /0.9/
       q_P2_cap Capacity of P2 /6666/
 ;
-
 *----------------Refurbished turbine for Panna 2  ------------------------------
+
 scalar
       TURB_eff Efficiency of turbine /0.4/
-      TURB_cap Maximum power output of turbine /800/
+      TURB_cap Maximum power output of turbine /600/
 ;
-
 *--------------MC2 Refrigerator Machines, cooling source------------------------
 * Real capacity of RMMC is 4200 but since MC2 internal cooling demand isn't
 * accounted for RMMC capacity is here decreased by 600 kW
+
 scalar
       RMCC_COP Coefficient of performance for RM /1.94/
       RMMC_cap Maximum cooling capacity for RM in kW/3600/
@@ -212,10 +214,17 @@ scalar
 
 Parameter
          q_demand(h,i) heat demand in buildings as obtained from metrys for
+         q_demand_nonAH(h,i) heat demand in non-AH buildings as obtained from metrys for
          e_demand(h,i) heat demand in buildings as obtained from metrys for
          k_demand(h,i) cool demand in buildings as obtained from metrys for 2016
 ;
 q_demand(h,i)=1000*q_demand0(h,i);
+q_demand_nonAH(h,'25')=q_demand(h,'25');
+q_demand_nonAH(h,'26')=q_demand(h,'26');
+q_demand_nonAH(h,'27')=q_demand(h,'27');
+q_demand_nonAH(h,'28')=q_demand(h,'28');
+q_demand_nonAH(h,'29')=q_demand(h,'29');
+q_demand_nonAH(h,'30')=q_demand(h,'30');
 e_demand(h,i)=1000*el_demand0(h,i);
 k_demand(h,i)=1000*k_demand0(h,i);
 *--------------unit total cost for all the generating units---------------------
@@ -227,7 +236,8 @@ parameter
          en_tax(sup_unit,h)      energy tax of a production unit
          co2_cost(sup_unit,h)    CO2 cost
          utot_cost(sup_unit,h)   unit total cost of every production unit
-         heat_price(h)    heat price by Göteborg Energi in 2016 sek per MWh
+         PT_cost(sup_unit)       Power tariff SEK per kW per month
+         heat_price(h)    heat price by GÃ¶teborg Energi in 2016 sek per MWh
                  /h1*h2184      519
                  h2185*h2904    357
                  h2905*h6576    99
@@ -235,23 +245,33 @@ parameter
                  h8041*h8760    519
                  /
 ;
-price('exG',h)=el_price0(h)/1000;
+price('exG',h)=0.0031 + el_price0(h)/1000;
 price('DH',h)=heat_price(h)/1000;
-fuel_cost('CHP',h)=0.02;
-fuel_cost('TB',h)=0.02;
-fuel_cost('P2',h)=0.02;
+fuel_cost('CHP',h)=0.186;
+fuel_cost('TB',h)=0.186;
+fuel_cost('P2',h)=0.186;
 var_cost(sup_unit,h)=0;
+*8.43 is an exhange rate usd to sek 2015
+var_cost('CHP',h)=200*0.65*8.43;
+var_cost('P2',h)=200*0.65*8.43;
+var_cost('TB',h)=200*0.65*8.43;
+var_cost('PV',h)=16*8.43;
+var_cost('HP',h)=16*8.43;
 en_tax(sup_unit,h)=0;
+en_tax('exG',h)=0.295;
 co2_cost(sup_unit,h)=0;
+PT_cost(sup_unit)=0;
+PT_cost('exG')=35.4;
+PT_cost('DH')=452;
 utot_cost(sup_unit,h)=price(sup_unit,h) + fuel_cost(sup_unit,h)
                       + var_cost(sup_unit,h) + en_tax(sup_unit,h);
 *--------------FED PE and CO2 targets-------------------------------------------
 
 scalar
-         base_PE    Base case value of PE /97729000/
+         base_PE    Base case value of PE /98428000/
          PE_lim     Desired or limiting value of PE
          CO2_ref    Reference value of CO2 peak /1700000/
-         CO2_peak   Peak value of CO2 in the base case /2103000/
+         CO2_peak   Peak value of CO2 in the base case /2402700/
          dCO2       Delta CO2
          CO2_lim    Desired or limiting value of CO2
 ;
