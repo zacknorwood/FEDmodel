@@ -118,9 +118,11 @@ scalar
 ;
 
 *--------------MC2 Refrigerator Machines, cooling source------------------------
+* Real capacity of RMMC is 4200 but since MC2 internal cooling demand isn't
+* accounted for RMMC capacity is here decreased by 600 kW
 scalar
-      RMCC_COP Coefficient of performance for RM /2.57/
-      RMMC_cap Maximum cooling capacity for RM in kW/4200/
+      RMCC_COP Coefficient of performance for RM /1.94/
+      RMMC_cap Maximum cooling capacity for RM in kW/3600/
 ;
 *--------------PV data----------------------------------------------------------
 
