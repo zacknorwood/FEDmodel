@@ -16,7 +16,7 @@ alias(i,j);
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
-         sup_unit   supply units /exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM, RMMC, P1, P2, TURB/
+         sup_unit   supply units /exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM, RMMC, P2, TURB/
          inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC, P2, TURB/
 ;
 
@@ -58,12 +58,6 @@ sw_RMMC = 1;
 sw_P2 = 1;
 sw_TURB = 1;
 ***************Existing units***************************************************
-*--------------Panna 1 constants and parameters (existing unit)-----------------
-scalar
-         P1_cap                Maximum heat generation capacity for P1 /8000/
-         P1_eff                Efficiency of heat generation /0.9/
-;
-
 *--------------Existing Solar  constants and parameters (existing unit)---------
 
 parameter
@@ -231,8 +225,7 @@ price('exG',h)=el_price0(h)/1000;
 price('DH',h)=heat_price(h)/1000;
 fuel_cost('CHP',h)=0.02;
 fuel_cost('TB',h)=0.02;
-fuel_cost('P1',h)=0.02;
-fuel_cost('P2',h)=0.02
+fuel_cost('P2',h)=0.02;
 var_cost(sup_unit,h)=0;
 en_tax(sup_unit,h)=0;
 co2_cost(sup_unit,h)=0;
@@ -259,8 +252,8 @@ Parameters
          PEF_exG(h)              Primary energy factor of the external electricty grid
          CO2F_DH(h)              CO2 factor of the external DH system
          CO2F_exG(h)             CO2 factor of the external electricty grid
-         CO2F_loc(sup_unit)      CO2 factor for a supply unit /'CHP' 177, 'TB' 177, 'P1' 177, 'P2' 177/
-         PEF_loc(sup_unit)       PE factor for a supply unit /'CHP' 0.78, 'TB' 0.78, 'P1' 0.78, 'P2' 0.78/
+         CO2F_loc(sup_unit)      CO2 factor for a supply unit /'CHP' 177, 'TB' 177, 'P2' 177/
+         PEF_loc(sup_unit)       PE factor for a supply unit /'CHP' 0.78, 'TB' 0.78, 'P2' 0.78/
 ;
 PEF_DH(h)=PEF_DH0(h);
 PEF_exG(h)=PEF_exG0(h);
