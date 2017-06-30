@@ -165,6 +165,15 @@ positive variables
 
 FED_PE.up=PE_lim;
 FED_CO2.up(h)=CO2_lim;
+
+*-------------------- Power tariffs ---------------------------------
+positive variables
+max_exG(m)         hourly peak demand per month
+PT_exG(m)          Monthly peak demand charge
+mean_DH(d)         daily mean demand DH
+PT_DH              peak demand charge DH
+;
+
 *--------------------Objective function-----------------------------------------
 
 variable
