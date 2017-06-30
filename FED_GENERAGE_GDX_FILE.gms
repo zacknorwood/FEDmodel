@@ -6,7 +6,18 @@
 
 *----------------PREPARE THE FULL INPUT DATA-------------------------------
 SET h0 length of the input data in hours /H1*H8760/
-    b0  number of buildings considered    /1*30/;
+    b0  number of buildings considered    /1*30/
+    m0  Number of month                  /M1*M12/
+    d0  Number of days                   /D1*D365/
+;
+*load date vectors for power tariffs
+PARAMETERS  HoD(h0,d0)      Hour of the day
+PARAMETERS  HoM(h0,m0)      Hour of the month
+;
+$GDXIN FED_date_vector.gdx
+$LOAD HoD
+$LOAD HoM
+$GDXIN
 
 *Load FED el demand
 $CALL GDXXRW.EXE FED_el_demand.xlsx par=el_demand0 rng=el_demand_2016_gams!A1:AE8761
