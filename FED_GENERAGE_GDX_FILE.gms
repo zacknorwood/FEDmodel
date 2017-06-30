@@ -75,7 +75,7 @@ $include tout0.gdx;
 display tout0;
 
 *Normalized PV irradiance
-$call =xls2gms "I=pv_data.xlsx" R=Irradiance!A1:B8760 "O=nPV_ird0.gdx";
+$call =xls2gms "I=pv_data.xlsx" R=Irradiance!A2:B8761 "O=nPV_ird0.gdx";
 Parameter nPV_ird0(h0) heat demand in buildings as obtained from metrys for
 /
 $include nPV_ird0.gdx;
