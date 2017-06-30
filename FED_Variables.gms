@@ -92,7 +92,7 @@ positive variable
          TES_en(h)         energy content of TES at any instant
          TES_cap           capacity of the TES in m3
 ;
-TES_cap.up=380;
+*TES_cap.up=380;
 binary variable
          TES_inv          Decision variable for Accumulator investment
 ;

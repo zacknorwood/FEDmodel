@@ -249,7 +249,7 @@ eq_totCost..
          TC =e= sum(h,q_DH(h)*utot_cost('DH',h))
                 + sum(h,e_exG(h)*utot_cost('exG',h))
                 + sum(h,tb_2016(h)*utot_cost('TB',h))
-                + sum(h, q_P1(h)*utot_cost('P1',h))
+                + sum(h, q_P2(h)*utot_cost('P2',h))
                 + sw_HP*HP_cap*Acost_sup_unit('HP')
                 + sw_PV*PV_cap*Acost_sup_unit('PV')
                 + sw_BES*BES_cap*Acost_sup_unit('BES')

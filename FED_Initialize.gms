@@ -232,6 +232,7 @@ price('DH',h)=heat_price(h)/1000;
 fuel_cost('CHP',h)=0.02;
 fuel_cost('TB',h)=0.02;
 fuel_cost('P1',h)=0.02;
+fuel_cost('P2',h)=0.02
 var_cost(sup_unit,h)=0;
 en_tax(sup_unit,h)=0;
 co2_cost(sup_unit,h)=0;
@@ -258,8 +259,8 @@ Parameters
          PEF_exG(h)              Primary energy factor of the external electricty grid
          CO2F_DH(h)              CO2 factor of the external DH system
          CO2F_exG(h)             CO2 factor of the external electricty grid
-         CO2F_loc(sup_unit)      CO2 factor for a supply unit /'CHP' 177, 'TB' 177, 'P1' 0, 'P2' 0/
-         PEF_loc(sup_unit)       PE factor for a supply unit /'CHP' 0.78, 'TB' 0.78, 'P1' 0, 'P2' 0/
+         CO2F_loc(sup_unit)      CO2 factor for a supply unit /'CHP' 177, 'TB' 177, 'P1' 177, 'P2' 177/
+         PEF_loc(sup_unit)       PE factor for a supply unit /'CHP' 0.78, 'TB' 0.78, 'P1' 0.78, 'P2' 0.78/
 ;
 PEF_DH(h)=PEF_DH0(h);
 PEF_exG(h)=PEF_exG0(h);
