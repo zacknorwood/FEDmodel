@@ -126,7 +126,7 @@ scalar
 *----------------Refurbished turbine for Panna 2  ------------------------------
 scalar
       TURB_eff Efficiency of turbine /0.4/
-      TURB_cap Maximum power output of turbine /600/
+      TURB_cap Maximum power output of turbine /800/
 ;
 
 *--------------MC2 Refrigerator Machines, cooling source------------------------
