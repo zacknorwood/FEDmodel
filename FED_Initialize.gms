@@ -286,8 +286,8 @@ Parameters
          PEF_exG(h)              Primary energy factor of the external electricty grid
          CO2F_DH(h)              CO2 factor of the external DH system
          CO2F_exG(h)             CO2 factor of the external electricty grid
-         CO2F_loc(sup_unit)      CO2 factor for a supply unit /'CHP' 177, 'TB' 177, 'P2' 177/
-         PEF_loc(sup_unit)       PE factor for a supply unit /'CHP' 0.78, 'TB' 0.78, 'P2' 0.78/
+         CO2F_loc(sup_unit)      CO2 factor for a supply unit /'CHP' 177, 'TB' 177, 'P2' 177, 'PV' 45/
+         PEF_loc(sup_unit)       PE factor for a supply unit /'CHP' 0.78, 'TB' 0.78, 'P2' 0.78, 'PV' 1.25/
 ;
 PEF_DH(h)=PEF_DH0(h);
 PEF_exG(h)=PEF_exG0(h);
