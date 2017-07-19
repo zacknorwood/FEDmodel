@@ -26,6 +26,8 @@ set
 Parameter
          cap_sup_unit(sup_unit)   operational capacity of the units
          /PV 60, TB 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
+
+// Remove hard coding of lifetimes, make this a set and show the calculation here  
          Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
                                  /PV 410, BES 400, HP 667, TES 50, BTES 1166, RMMC 25000, P2 1533333, TURB 66666, AbsCInv 72.4/
 ;
@@ -139,6 +141,34 @@ scalar
       RMMC_cap Maximum cooling capacity for RM in kW/3600/
 ;
 *--------------PV data----------------------------------------------------------
+scalar
+      Tstc Temperature at standard temperature and conditions in degree Celsius /25/
+      Gstc Irradiance at standard temperature and conditions in kW per m^2 /1/
+      PV_cap_density kW per m^2 for a mono-Si PV module Sunpower SPR-E20-327 dimensions 1.558*1.046 327W /0.20065/
+
+;
+
+set
+      coef_Si Si solar PV coefficient /-0.017162, -0.040289, -0.004681, 0.000148, 0.000169, 0.000005/
+;
+
+parameter
+      Gekv_roof(BID,h) Equivalent irradiance parameter for solar PV on roof
+      Gekv_facade(BID,h) Equivalent irradiance parameter for solar PV on facade
+      Tmod_roof(BID,h) Module temperature roof
+      Tmod_facade(BID,h) Module temperature facade
+      Tekv_roof(BID,h) Equivalent temperature parameter for solar PV on roof
+      Tekv_facade(BID,h) Equivalent temperature parameter for solar PV on facade
+
+;
+      Gekv_roof(BID,h)=G_roof(BID,h)/Gstc
+      Gekv_facade(BID,h)=G_facade(BID,h)/Gstc
+      Tmod_roof(BID,h)=tout(h)+0.035*G_roof(BID,h)
+      Tmod_facade(BID,h)=tout(h)+0.035*G_facade(BID,h)
+      Tekv_roof(BID,h)=Tmod_roof(BID,h) - Tstc;
+      Tekv_facade(BID,h)=Tmod_facade(BID,h) - Tstc;
+
+
 
 
 *--------------HP constants and parameters (an investment options)-------------
