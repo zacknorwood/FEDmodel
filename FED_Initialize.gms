@@ -27,7 +27,7 @@ Parameter
          cap_sup_unit(sup_unit)   operational capacity of the units
          /PV 60, TB 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
 
-// Remove hard coding of lifetimes, make this a set and show the calculation here  
+// Remove hard coding of lifetimes, make this a set and show the calculation here
          Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
                                  /PV 410, BES 400, HP 667, TES 50, BTES 1166, RMMC 25000, P2 1533333, TURB 66666, AbsCInv 72.4/
 ;
@@ -189,6 +189,7 @@ scalar
          TES_vr_cost           Variable cost attributable to TES investment/1887/
          TES_dis_max           Maximum discharge rate in kWh per h/23000/
          TES_ch_max            Maximum charge rate in kWh per h/11000/
+         TES_hourly_loss_fac   Hourly loss factor/0.999208093/
 ;
 *--------------Outside Temprature data------------------------------------------
 
