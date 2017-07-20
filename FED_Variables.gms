@@ -130,8 +130,6 @@ positive variable
          e_PV(h)    electricity produced by PV
          PV_cap_roof(BID) capacity of solar modules on roof
          PV_cap_facade(BID) capacity of solar modules on facade
-         area_roof(BID) building roof areas
-         area_facade(BID) buildings facade areas
 ;
 *------------------Battery related----------------------------------------------
 

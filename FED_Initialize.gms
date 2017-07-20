@@ -5,7 +5,8 @@
 
 *--------------IMPORT IMPUT DATA TO THE MODEL-----------------------------------
 
-$Include FED_GENERAGE_GDX_FILE_no_gen
+$Include FED_GENERAGE_GDX_FILE
+*_no_gen
 *-------------SET THE LENGTH OF INPUT DATA USED FOR SIMULATION------------------
 
 set
@@ -22,12 +23,12 @@ set
          sup_unit   supply units /HP,exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM, RMMC, P2, TURB, AbsCInv/
          inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC, P2, TURB, AbsCInv/
 ;
-
+* Remove hard coding of lifetimes in Acost_sup_unit and make this a set and show the calculation here
 Parameter
          cap_sup_unit(sup_unit)   operational capacity of the units
          /PV 60, TB 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
 
-// Remove hard coding of lifetimes, make this a set and show the calculation here
+
          Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
                                  /PV 410, BES 400, HP 667, TES 50, BTES 1166, RMMC 25000, P2 1533333, TURB 66666, AbsCInv 72.4/
 ;
@@ -112,6 +113,12 @@ scalar
       RM_eff Coefficent of performance of AC /0.95/
 ;
 **************Investment options************************************************
+*--------------Outside Temprature data------------------------------------------
+
+Parameter
+         tout(h) heat demand in buildings as obtained from metrys for
+;
+tout(h)=tout0(h);
 *----------------Absorption Chiller Investment----------------------------------
 *Assumed technical lifetime of 25 years, fixed investment cost 1610 kSek
 
@@ -146,27 +153,31 @@ scalar
       Gstc Irradiance at standard temperature and conditions in kW per m^2 /1/
       PV_cap_density kW per m^2 for a mono-Si PV module e.g. Sunpower SPR-E20-327 dimensions 1.558*1.046 of 327Wp /0.20065/
       eta_Inverter efficiency of solar PV inverter and balance of system /0.96/
+      eta_roof_data compensating for overestimated roof data /0.5/
+      eta_facade_data compensating for underestimated facade data/3.0/
 ;
 
-set
-      coef_Si Si solar PV coefficient /-0.017162, -0.040289, -0.004681, 0.000148, 0.000169, 0.000005/
+set coefs Coefficient numbering for PV calculations /1*6/
+parameter
+      coef_Si(coefs) Si solar PV coefficient
+      /1 -0.017162, 2 -0.040289, 3 -0.004681, 4 0.000148, 5 0.000169, 6 0.000005/
 ;
 
 parameter
-      Gekv_roof(BID,h) Equivalent irradiance parameter for solar PV on roof in kW per m^2
-      Gekv_facade(BID,h) Equivalent irradiance parameter for solar PV on facade in kW per m^2
-      Tmod_roof(BID,h) Module temperature roof in Celsius
-      Tmod_facade(BID,h) Module temperature facade in Celsius
-      Tekv_roof(BID,h) Equivalent temperature parameter for solar PV on roof
-      Tekv_facade(BID,h) Equivalent temperature parameter for solar PV on facade
+      Gekv_roof(h,BID) Equivalent irradiance parameter for solar PV on roof in kW per m^2
+      Gekv_facade(h,BID) Equivalent irradiance parameter for solar PV on facade in kW per m^2
+      Tmod_roof(h,BID) Module temperature roof in Celsius
+      Tmod_facade(h,BID) Module temperature facade in Celsius
+      Tekv_roof(h,BID) Equivalent temperature parameter for solar PV on roof
+      Tekv_facade(h,BID) Equivalent temperature parameter for solar PV on facade
 
 ;
-      Gekv_roof(BID,h)=G_roof(BID,h)/Gstc
-      Gekv_facade(BID,h)=G_facade(BID,h)/Gstc
-      Tmod_roof(BID,h)=tout(h)+0.035*G_roof(BID,h)
-      Tmod_facade(BID,h)=tout(h)+0.035*G_facade(BID,h)
-      Tekv_roof(BID,h)=Tmod_roof(BID,h) - Tstc;
-      Tekv_facade(BID,h)=Tmod_facade(BID,h) - Tstc;
+      Gekv_roof(h,BID)=G_roof(h,BID)/Gstc;
+      Gekv_facade(h,BID)=G_facade(h,BID)/Gstc;
+      Tmod_roof(h,BID)=tout(h)+0.035*G_roof(h,BID);
+      Tmod_facade(h,BID)=tout(h)+0.035*G_facade(h,BID);
+      Tekv_roof(h,BID)=Tmod_roof(h,BID) - Tstc;
+      Tekv_facade(h,BID)=Tmod_facade(h,BID) - Tstc;
 
 
 
@@ -191,12 +202,7 @@ scalar
          TES_ch_max            Maximum charge rate in kWh per h/11000/
          TES_hourly_loss_fac   Hourly loss factor/0.999208093/
 ;
-*--------------Outside Temprature data------------------------------------------
 
-Parameter
-         tout(h) heat demand in buildings as obtained from metrys for
-;
-tout(h)=tout0(h);
 *--------------Building storage characteristics---------------------------------
 
 set
