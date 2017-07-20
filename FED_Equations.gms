@@ -222,18 +222,21 @@ eq_PV(h)..
             // e_PV(h)=e= nPV_ird(h)*PV_cap;
 
              eq_PV(h)=e= sum(BID, area_roof(BID)*Gekv_roof(BID,h)*(1 + coef_Si(1)*log10(Gekv_roof(BID,h)) + coef_Si(2).*sqr(log10(Gekv_roof(BID,h))) + coef_Si(3)*Tekv_roof(BID,h) + coef_Si(4)*Tekv_roof(BID,h)*log10(Gekv_roof(BID,h)) + coef_Si(5)*sqr(Tekv_roof(BID,h)*log10(Gekv_roof(BID,h))) + coef_Si(6).*sqr(Tekv_roof(BID,h))
-                            +    area_facade(BID)*Gekv_facade(BID,h)*(1 + coef_Si(1)*log10(Gekv_facade(BID,h)) + coef_Si(2).*sqr(log10(Gekv_facade(BID,h))) + coef_Si(3)*Tekv_facade(BID,h) + coef_Si(4)*Tekv_facade(BID,h)*log10(Gekv_facade(BID,h)) + coef_Si(5)*sqr(Tekv_facade(BID,h)*log10(Gekv_facade(BID,h))) + coef_Si(6).*sqr(Tekv_facade(BID,h)));
+             eq_PV(h) =e= sum(BID, eta_Inverter*(PV_cap_roof(BID)*Gekv_roof(BID,h)*(1 + coef_Si(1)*log10(Gekv_roof(BID,h)) + coef_Si(2).*sqr(log10(Gekv_roof(BID,h))) + coef_Si(3)*Tekv_roof(BID,h) + coef_Si(4)*Tekv_roof(BID,h)*log10(Gekv_roof(BID,h)) + coef_Si(5)*sqr(Tekv_roof(BID,h)*log10(Gekv_roof(BID,h))) + coef_Si(6).*sqr(Tekv_roof(BID,h))
+                            + PV_cap_facade(BID)*Gekv_facade(BID,h)*(1 + coef_Si(1)*log10(Gekv_facade(BID,h)) + coef_Si(2).*sqr(log10(Gekv_facade(BID,h))) + coef_Si(3)*Tekv_facade(BID,h) + coef_Si(4)*Tekv_facade(BID,h)*log10(Gekv_facade(BID,h)) + coef_Si(5)*sqr(Tekv_facade(BID,h)*log10(Gekv_facade(BID,h))) + coef_Si(6).*sqr(Tekv_facade(BID,h))));
+
 eq_PV_cap_roof(BID)..
-             PV_cap_roof(BID)=e=area_roof(BID)*PV_cap_density;
+             PV_cap_roof(BID) =L= area_roof_max(BID)*PV_cap_density;
 
 eq_PV_cap_facade(BID)..
              PV_cap_facade(BID)=e=area_facade(BID)*PV_cap_density;
+             PV_cap_facade(BID) =L= area_facade_max(BID)*PV_cap_density;
 
-eq_area_roof(BID)..
-             area_roof(BID)=L=area_roof_max(BID);
+//eq_area_roof(BID)..
+//             area_roof(BID)=L=area_roof_max(BID);
 
-eq_area_facade(BID)..
-             area_facade(BID)=L=area_facade_max(BID);
+//eq_area_facade(BID)..
+//             area_facade(BID)=L=area_facade_max(BID);
 
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------

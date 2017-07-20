@@ -144,8 +144,8 @@ scalar
 scalar
       Tstc Temperature at standard temperature and conditions in degree Celsius /25/
       Gstc Irradiance at standard temperature and conditions in kW per m^2 /1/
-      PV_cap_density kW per m^2 for a mono-Si PV module Sunpower SPR-E20-327 dimensions 1.558*1.046 327W /0.20065/
-
+      PV_cap_density kW per m^2 for a mono-Si PV module e.g. Sunpower SPR-E20-327 dimensions 1.558*1.046 of 327Wp /0.20065/
+      eta_Inverter efficiency of solar PV inverter and balance of system /0.96/
 ;
 
 set
@@ -153,10 +153,10 @@ set
 ;
 
 parameter
-      Gekv_roof(BID,h) Equivalent irradiance parameter for solar PV on roof
-      Gekv_facade(BID,h) Equivalent irradiance parameter for solar PV on facade
-      Tmod_roof(BID,h) Module temperature roof
-      Tmod_facade(BID,h) Module temperature facade
+      Gekv_roof(BID,h) Equivalent irradiance parameter for solar PV on roof in kW per m^2
+      Gekv_facade(BID,h) Equivalent irradiance parameter for solar PV on facade in kW per m^2
+      Tmod_roof(BID,h) Module temperature roof in Celsius
+      Tmod_facade(BID,h) Module temperature facade in Celsius
       Tekv_roof(BID,h) Equivalent temperature parameter for solar PV on roof
       Tekv_facade(BID,h) Equivalent temperature parameter for solar PV on facade
 
