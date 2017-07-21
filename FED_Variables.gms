@@ -160,19 +160,23 @@ P_DC.fx(h)=0;
 *-------------------------PE and CO2 related -----------------------------------
 
 positive variables
-         FED_PE         Primery energy limit of the FED system
          FED_CO2(h)     CO2 limit of the FED system
+
+;
+variable
+         tot_CO2        Total CO2 emissions of the FED system
+         FED_PE         Primery energy limit of the FED system
 ;
 
-FED_PE.up=PE_lim;
-FED_CO2.up(h)=CO2_lim;
+*FED_PE.up=PE_lim;
+*FED_CO2.up(h)=CO2_lim;
 
 *-------------------- Power tariffs ---------------------------------
 positive variables
-max_exG(m)         hourly peak demand per month
-PT_exG(m)          Monthly peak demand charge
-mean_DH(d)         daily mean demand DH
-PT_DH              peak demand charge DH
+         max_exG(m)         hourly peak demand per month
+         PT_exG(m)          Monthly peak demand charge
+         mean_DH(d)         daily mean demand DH
+         PT_DH              peak demand charge DH
 ;
 
 *--------------------Objective function-----------------------------------------
@@ -181,3 +185,4 @@ variable
          TC                   total cost
          invCost              total investment cost
 ;
+invCost.up = 76761000;
