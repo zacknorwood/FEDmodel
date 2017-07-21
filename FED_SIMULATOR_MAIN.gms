@@ -19,7 +19,7 @@ model total
 /
 ALL
 /;
-SOLVE total using MIP minimizing InvCost;
+SOLVE total using MIP minimizing FED_PE;
 
 parameter
 inv_PV      investment cost of PV
@@ -29,6 +29,9 @@ inv_BITES   investment cost of building inertia thermal energy storage
 inv_HP      investment cost of heat pump
 inv_RMMC    investment cost of connecting MC2 RM
 inv_AbsCInv investment cost of absorption cooler
+
+total_cap_PV_roof   total capacity in kW
+total_cap_PV_facade total capacity in kW
 ;
 inv_HP=sw_HP*HP_cap.l*Acost_sup_unit('HP')*15;
 inv_PV=sw_PV*(sum(BID, PV_cap_roof.l(BID))+sum(BID, PV_cap_facade.l(BID)))*Acost_sup_unit('PV')*30;
@@ -37,6 +40,8 @@ inv_TES=sw_TES*(TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
 inv_BITES=sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES.l(i))*30;
 inv_RMMC=sw_RMMC*Acost_sup_unit('RMMC')*RMMC_inv.l;
 inv_AbsCInv = sw_AbsCInv * (B_AbsCInv.l *AbsCInv_fx + AbsCInv_cap.l * Acost_sup_unit('AbsCInv'));
+total_cap_PV_roof=sum(BID, PV_cap_roof.l(BID));
+total_cap_PV_facade=sum(BID, PV_cap_facade.l(BID));
 
 display HP_cap.l, inv_HP,
         PV_cap_roof.l,PV_cap_facade.l, inv_PV,
@@ -46,6 +51,7 @@ display HP_cap.l, inv_HP,
         inv_RMMC, inv_AbsCInv,
         AbsCInv_cap.l,B_AbsCInv.l,
         B_P2.l,B_TURB.l
+        total_cap_PV_facade, total_cap_PV_roof,
         invCost.l;
 
 ********************Output data from GAMS to MATLAB*********************

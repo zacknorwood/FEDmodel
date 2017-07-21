@@ -72,6 +72,7 @@ equation
 
            eq_PE         FED PE(Primary energy) use
            eq_CO2        FED CO2 emission
+           eq_totCO2     FED total CO2 emissions
 
            eq_max_exG(h,m) maximum monthly peak demand
            eq_PTexG(m)   monthly power tariff
@@ -168,16 +169,16 @@ eq_TESen1(h,i)$(ord(h) eq 1)..
              TES_en('H1') =e= sw_TES*TES_cap*TES_density;
 eq_TESen2(h)$(ord(h) gt 1)..
              TES_en(h) =e= sw_TES*TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
-eq_TESen3(h)$(sw_HP eq 1)..
-             TES_en(h) =l= sw_HP*TES_cap*TES_density;
-eq_TESch(h)$(sw_HP eq 1)..
-             TES_ch(h) =l= sw_HP*TES_inv * TES_ch_max;
-eq_TESdis(h)$(sw_HP eq 1)..
-             TES_dis(h) =l= sw_HP*TES_inv * TES_dis_max;
-eq_TESinv(h)$(sw_HP eq 1)..
-             TES_cap =l= sw_HP*TES_inv * TES_max_cap * TES_density;
-eq_TESmininv $(sw_HP eq 1)..
-             TES_cap =G= sw_HP*TES_inv * 100;
+eq_TESen3(h)$(sw_TES eq 1)..
+             TES_en(h) =l= sw_TES*TES_cap*TES_density;
+eq_TESch(h)$(sw_TES eq 1)..
+             TES_ch(h) =l= sw_TES*TES_inv * TES_ch_max;
+eq_TESdis(h)$(sw_TES eq 1)..
+             TES_dis(h) =l= sw_TES*TES_inv * TES_dis_max;
+eq_TESinv(h)$(sw_TES eq 1)..
+             TES_cap =l= sw_TES*TES_inv * TES_max_cap * TES_density;
+eq_TESmininv $(sw_TES eq 1)..
+             TES_cap =G= sw_TES*TES_inv * 100;
 *------------------BTES equations (Building srorage)----------------------------
 
 eq_BTES_Sen1(h,i) $ (ord(h) eq 1)..
@@ -187,14 +188,14 @@ eq_BTES_Sch(h,i) $ (sw_BTES ne 0)..
 eq_BTES_Sdis(h,i) $ (sw_BTES ne 0)..
          BTES_Sdis(h,i) =l= sw_BTES*B_BITES(i)*BTES_Sdis_max(h,i);
 eq_BTES_Sloss(h,i)$ (ord(h) gt 1)..
-         BTES_Sloss(h,i) =e= sw_BTES*BTES_Sen(h-1,i)*BTES_kSloss(h-1,i);
+         BTES_Sloss(h,i) =e= sw_BTES*BTES_Sen(h-1,i)*(1-BTES_kSloss(h-1,i));
 eq_BTES_Sen2(h,i) $ (ord(h) gt 1)..
          BTES_Sen(h,i) =e= sw_BTES*(BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
                            + BTES_Sch(h,i)*BTES_Sch_eff - link_BS_BD(h,i) - BTES_Sloss(h,i));
 eq_BTES_Den1(h,i) $ (ord(h) eq 1)..
          BTES_Den(h,i) =e= sw_BTES*BTES_Den_int(i);
 eq_BTES_Dloss(h,i) $ (ord(h) gt 1)..
-         BTES_Dloss(h,i) =e= sw_BTES*BTES_Den(h-1,i)*BTES_kDloss(h-1,i);
+         BTES_Dloss(h,i) =e= sw_BTES*BTES_Den(h-1,i)*(1-BTES_kDloss(h-1,i));
 eq_BTES_Den2(h,i) $ (ord(h) gt 1)..
          BTES_Den(h,i) =e= sw_BTES*(BTES_Den(h-1,i) + link_BS_BD(h,i) - BTES_Dloss(h,i));
 eq_BS_BD(h,i) $ (BTES_model('BTES_Scap',i) ne 0)..
@@ -218,7 +219,7 @@ eq_BES_dis(h)..
 *-----------------Solar PV equations--------------------------------------------
 
 eq_PV(h)..
-             e_PV(h) =e= eta_Inverter * (sum(BID$(Gekv_roof(h,BID) ne 0), eta_roof_data*PV_cap_roof(BID)*Gekv_roof(h,BID)*(1
+             e_PV(h) =e= sw_PV*eta_Inverter * (sum(BID$(Gekv_roof(h,BID) ne 0), eta_roof_data*PV_cap_roof(BID)*Gekv_roof(h,BID)*(1
                                                                                                                          + coef_Si('1')*log10(Gekv_roof(h,BID))
                                                                                                                          + coef_Si('2')*sqr(log10(Gekv_roof(h,BID)))
                                                                                                                          + coef_Si('3')*Tekv_roof(h,BID)
@@ -281,6 +282,8 @@ eq_CO2(h)..
                       + e0_PV(h)*CO2F_loc('PV') + sw_PV*e_PV(h)*CO2F_loc('PV')
                       + q_DH(h)*CO2F_DH(h) + tb_2016(h)*CO2F_loc('TB')
                       + q_P2(h) * CO2F_loc('P2');
+eq_totCO2..
+         tot_CO2 =e= sum(h, FED_CO2(h));
 **************** Power tariffs *******************
 eq_max_exG(h,m)..
 max_exG(m) =g=   e_exG(h)*HoM(h,m);
