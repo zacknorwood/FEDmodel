@@ -154,7 +154,7 @@ scalar
       PV_cap_density kW per m^2 for a mono-Si PV module e.g. Sunpower SPR-E20-327 dimensions 1.558*1.046 of 327Wp /0.20065/
       eta_Inverter efficiency of solar PV inverter and balance of system /0.96/
       eta_roof_data compensating for overestimated roof data /0.5/
-      eta_facade_data compensating for underestimated facade data/3.0/
+      eta_facade_data compensating for underestimated facade data/2.0/
 ;
 
 set coefs Coefficient numbering for PV calculations /1*6/
