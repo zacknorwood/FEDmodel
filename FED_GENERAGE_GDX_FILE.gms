@@ -15,10 +15,10 @@ SET h0 length of the input data in hours /H1*H8760/
 PARAMETERS  HoD(h0,d0)      Hour of the day
 PARAMETERS  HoM(h0,m0)      Hour of the month
 ;
-*$GDXIN FED_date_vector.gdx
-*$LOAD HoD
-*$LOAD HoM
-*$GDXIN
+$GDXIN FED_date_vector.gdx
+$LOAD HoD
+$LOAD HoM
+$GDXIN
 
 *Load FED el demand
 $CALL GDXXRW.EXE FED_el_demand.xlsx par=el_demand0 rng=el_demand_2016_gams!A1:AE8761
@@ -80,7 +80,7 @@ display q_price0;
 
 *outdoor temprature
 $call =xls2gms "I=tout_2016.xlsx" R=tout_2016_gams!A2:E8761 "O=tout0.gdx"
-Parameter tout0(h0) heat demand in buildings as obtained from metrys for
+Parameter tout0(h0) outdoor temperature as obtained from metry
 /
 $include tout0.gdx;
 /;
@@ -103,7 +103,7 @@ $GDXIN
 display area_facade_max;
 
 *Load roof solar irradiance
-$CALL GDXXRW.EXE irradianceRoofs.xls Squeeze=N par=G_roof rng='TotalFlux'!A1:BS8785 trace=3
+$CALL GDXXRW.EXE irradianceRoofs.xls Squeeze=N par=G_roof rng='TotalFlux(kWhperm2)'!A1:BS8785 trace=3
 PARAMETERS  G_roof(h0,BID) irradiance on building facades;
 $GDXIN irradianceRoofs.gdx
 $LOAD G_roof

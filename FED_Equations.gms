@@ -216,24 +216,26 @@ eq_BES_dis(h)..
              BES_dis(h)=l=sw_BES*BES_en(h);
 *-----------------Solar PV equations--------------------------------------------
 eq_PV(h)..
-             e_PV(h) =e= sum(BID, eta_Inverter*(eta_roof_data*PV_cap_roof(BID)*Gekv_roof(h,BID)*(1
-                                                                                                 + coef_Si('1')*log10(Gekv_roof(h,BID))
-                                                                                                 + coef_Si('2')*sqr(log10(Gekv_roof(h,BID)))
-                                                                                                 + coef_Si('3')*Tekv_roof(h,BID)
-                                                                                                 + coef_Si('4')*Tekv_roof(h,BID)*log10(Gekv_roof(h,BID))
-                                                                                                 + coef_Si('5')*sqr(Tekv_roof(h,BID)*log10(Gekv_roof(h,BID)))
-                                                                                                 + coef_Si('6')*sqr(Tekv_roof(h,BID))
-                                                                                                 )
-                                                 + eta_facade_data*PV_cap_facade(BID)*Gekv_facade(h,BID)*(1
-                                                                                                       + coef_Si('1')*log10(Gekv_facade(h,BID))
-                                                                                                       + coef_Si('2')*sqr(log10(Gekv_facade(h,BID)))
-                                                                                                       + coef_Si('3')*Tekv_facade(h,BID)
-                                                                                                       + coef_Si('4')*Tekv_facade(h,BID)*log10(Gekv_facade(h,BID))
-                                                                                                       + coef_Si('5')*sqr(Tekv_facade(h,BID)*log10(Gekv_facade(h,BID)))
-                                                                                                       + coef_Si('6')*sqr(Tekv_facade(h,BID))
-                                                                                                       )
-                                                 )
-                            );
+             e_PV(h) =e= eta_Inverter * (sum(BID$(Gekv_roof(h,BID) ne 0), eta_roof_data*PV_cap_roof(BID)*Gekv_roof(h,BID)*(1
+                                                                                                                         + coef_Si('1')*log10(Gekv_roof(h,BID))
+                                                                                                                         + coef_Si('2')*sqr(log10(Gekv_roof(h,BID)))
+                                                                                                                         + coef_Si('3')*Tekv_roof(h,BID)
+                                                                                                                         + coef_Si('4')*Tekv_roof(h,BID)*log10(Gekv_roof(h,BID))
+                                                                                                                         + coef_Si('5')*sqr(Tekv_roof(h,BID)*log10(Gekv_roof(h,BID)))
+                                                                                                                         + coef_Si('6')*sqr(Tekv_roof(h,BID))
+                                                                                                                         )
+                                            )
+                                                 + sum(BID$(Gekv_facade(h,BID) ne 0), eta_facade_data*PV_cap_facade(BID)*Gekv_facade(h,BID)*(1
+                                                                                                                                           + coef_Si('1')*log10(Gekv_facade(h,BID))
+                                                                                                                                           + coef_Si('2')*sqr(log10(Gekv_facade(h,BID)))
+                                                                                                                                           + coef_Si('3')*Tekv_facade(h,BID)
+                                                                                                                                           + coef_Si('4')*Tekv_facade(h,BID)*log10(Gekv_facade(h,BID))
+                                                                                                                                           + coef_Si('5')*sqr(Tekv_facade(h,BID)*log10(Gekv_facade(h,BID)))
+                                                                                                                                           + coef_Si('6')*sqr(Tekv_facade(h,BID))
+                                                                                                                                           )
+                                                      )
+                                        );
+
 
 eq_PV_cap_roof(BID)..
              area_roof_max(BID)*PV_cap_density =g= PV_cap_roof(BID);
@@ -313,7 +315,7 @@ eq_totCost..
 
 eq_invCost..
          invCost =e= sw_HP*HP_cap*Acost_sup_unit('HP')*15
-                     + sw_PV*(sum(BID, PV_cap_roof.l(BID))+sum(BID, PV_cap_facade.l(BID)))*Acost_sup_unit('PV')*30
+                     + sw_PV*(sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*Acost_sup_unit('PV')*30
                      + sw_BES*BES_cap*Acost_sup_unit('BES')*15
                      + sw_TES*((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
                      + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))*30

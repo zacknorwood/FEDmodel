@@ -172,8 +172,8 @@ parameter
       Tekv_facade(h,BID) Equivalent temperature parameter for solar PV on facade
 
 ;
-      Gekv_roof(h,BID)=G_roof(h,BID)/Gstc;
-      Gekv_facade(h,BID)=G_facade(h,BID)/Gstc;
+      Gekv_roof(h,BID)=abs(G_roof(h,BID))/Gstc;
+      Gekv_facade(h,BID)=abs(G_facade(h,BID))/Gstc;
       Tmod_roof(h,BID)=tout(h)+0.035*G_roof(h,BID);
       Tmod_facade(h,BID)=tout(h)+0.035*G_facade(h,BID);
       Tekv_roof(h,BID)=Tmod_roof(h,BID) - Tstc;
