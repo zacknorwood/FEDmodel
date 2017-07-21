@@ -43,7 +43,7 @@ binary variable
          RMMC_inv           decision variable for MC2 connection investment
 ;
 
-*------------------Abient Air Cooling Machine related---------------------------
+*------------------Ambient Air Cooling Machine related---------------------------
 
 positive variable
          e_AAC(h)           electricity demand for refrigerator
@@ -127,8 +127,9 @@ B_BITES.fx('26')=0;
 *----------------Solar PV PV relate variables-----------------------------------
 
 positive variable
-         e_PV(h)    elecricity produced by PV
-         PV_cap     capacity of solar panal
+         e_PV(h)    electricity produced by PV
+         PV_cap_roof(BID) capacity of solar modules on roof
+         PV_cap_facade(BID) capacity of solar modules on facade
 ;
 *------------------Battery related----------------------------------------------
 
