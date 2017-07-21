@@ -214,7 +214,9 @@ eq_BES_ch(h) $ (sw_BTES ne 0)..
 eq_BES_dis(h)..
 *Assuming 1C discharging
              BES_dis(h)=l=sw_BES*BES_en(h);
+
 *-----------------Solar PV equations--------------------------------------------
+
 eq_PV(h)..
              e_PV(h) =e= eta_Inverter * (sum(BID$(Gekv_roof(h,BID) ne 0), eta_roof_data*PV_cap_roof(BID)*Gekv_roof(h,BID)*(1
                                                                                                                          + coef_Si('1')*log10(Gekv_roof(h,BID))
