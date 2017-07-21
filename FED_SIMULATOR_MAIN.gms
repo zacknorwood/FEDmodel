@@ -11,7 +11,7 @@ $Include FED_Equations
 option reslim = 500000;
 *// Set the max resource usage
 OPTION PROFILE=3;
-OPTION threads = -2
+OPTION threads = -2;
 *// To present the resource usage
 *option workmem=1024;
 
@@ -19,7 +19,7 @@ model total
 /
 ALL
 /;
-SOLVE total using MIP minimizing TC;
+SOLVE total using MIP minimizing InvCost;
 
 parameter
 inv_PV      investment cost of PV

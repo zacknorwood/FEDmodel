@@ -87,36 +87,32 @@ $include tout0.gdx;
 display tout0;
 
 *Load facade solar irradiance
-$CALL GDXXRW.EXE irradianceFacades.xls par=G_facade rng=Blad1!A1:BS8785 trace=3
-PARAMETERS  G_facade(h0,BID) irradiance on building facades
-;
+$CALL GDXXRW.EXE irradianceFacades.xls Squeeze=N par=G_facade rng='TotalFlux(kWhperm2)'!A1:BS8785 trace=3
+PARAMETERS  G_facade(h0,BID) irradiance on building facades;
 $GDXIN irradianceFacades.gdx
 $LOAD G_facade
 $GDXIN
 display G_facade;
 
 *Load facade areas
-$CALL GDXXRW.EXE irradianceFacades.xls o=irradianceFacadesArea.gdx par=area_facade_max cdim=1 rng=Blad2!A1:BR2 trace=3
-PARAMETERS  area_facade_max(BID) irradiance on building facades
-;
+$CALL GDXXRW.EXE irradianceFacades.xls o=irradianceFacadesArea.gdx par=area_facade_max cdim=1 rng=='Area(m2)'!A1:BR2 trace=3
+PARAMETERS  area_facade_max(BID) irradiance on building facades;
 $GDXIN irradianceFacadesArea.gdx
 $LOAD area_facade_max
 $GDXIN
 display area_facade_max;
 
 *Load roof solar irradiance
-$CALL GDXXRW.EXE irradianceRoofs.xls par=G_roof rng=Blad1!A1:BS8785 trace=3
-PARAMETERS  G_roof(h0,BID) irradiance on building facades
-;
+$CALL GDXXRW.EXE irradianceRoofs.xls Squeeze=N par=G_roof rng='TotalFlux'!A1:BS8785 trace=3
+PARAMETERS  G_roof(h0,BID) irradiance on building facades;
 $GDXIN irradianceRoofs.gdx
 $LOAD G_roof
 $GDXIN
 display G_roof;
 
 *Load roof areas
-$CALL GDXXRW.EXE irradianceRoofs.xls o=irradianceRoofsArea.gdx par=area_roof_max cdim=1 rng=Blad2!A1:BR2 trace=3
-PARAMETERS  area_roof_max(BID) irradiance on building facades
-;
+$CALL GDXXRW.EXE irradianceRoofs.xls o=irradianceRoofsArea.gdx par=area_roof_max cdim=1 rng=='Area(m2)'!A1:BR2 trace=3
+PARAMETERS  area_roof_max(BID) irradiance on building facades;
 $GDXIN irradianceRoofsArea.gdx
 $LOAD area_roof_max
 $GDXIN

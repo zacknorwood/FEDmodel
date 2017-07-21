@@ -236,10 +236,10 @@ eq_PV(h)..
                             );
 
 eq_PV_cap_roof(BID)..
-             PV_cap_roof(BID) =L= area_roof_max(BID)*PV_cap_density;
+             area_roof_max(BID)*PV_cap_density =g= PV_cap_roof(BID);
 
 eq_PV_cap_facade(BID)..
-             PV_cap_facade(BID) =L= area_facade_max(BID)*PV_cap_density;
+             area_facade_max(BID)*PV_cap_density =g= PV_cap_facade(BID);
 
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
