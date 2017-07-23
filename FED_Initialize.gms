@@ -5,8 +5,7 @@
 
 *--------------IMPORT IMPUT DATA TO THE MODEL-----------------------------------
 
-$Include FED_GENERAGE_GDX_FILE
-*_no_gen
+$Include FED_GET_GDX
 *-------------SET THE LENGTH OF INPUT DATA USED FOR SIMULATION------------------
 
 set
