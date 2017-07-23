@@ -49,10 +49,8 @@ equation
            eq_BTES_Sdis  discharging rate of shallow part the building
            eq_BTES_Sen1  initial energy content of shallow part of the building
            eq_BTES_Sen2  energy content of shallow part of the building at hour h
-           eq_BTES_Sloss loss of the shallow part of the building at hour h [8-17]
            eq_BTES_Den1  initial energy content of deep part of the building
-           eq_BTES_Den2  energy content of deep part of the building at hour h
-           eq_BTES_Dloss loss of the deep part of the building at hour h
+           eq_BTES_Den2  energy content of deep part of the building at hour h           
            eq_BS_BD      energy flow between the shallow and deep part of the building
 
            eq_BES1       intial energy in the Battery
@@ -67,13 +65,12 @@ equation
 
            eq_hbalance   heating supply-demand balance
            eq_hbalance2  heating supply-demand balance excluding nonAH buildings
-           eq_cbalance   Balance equation cooling
+           eq_kbalance   Balance equation cooling
            eq_ebalance   electrical supply-demand balance
 
            eq_PE         FED PE(Primary energy) use
            eq_CO2        FED CO2 emission
-           eq_totCO2     FED total CO2 emissions
-
+           
            eq_max_exG(h,m) maximum monthly peak demand
            eq_PTexG(m)   monthly power tariff
 
@@ -82,6 +79,7 @@ equation
 
            eq_invCost    with aim to minimize total cost
            eq_totCost    with aim to minimize total cost
+           eq_CO2_tot    with aim to minimize total FED CO2 emission
 ;
 
 *-----------------------------------------------------------------------------
@@ -123,7 +121,7 @@ eq_RMMC1(h)..
          k_RMMC(h) =e= sw_RMMC * RMCC_COP * e_RMMC(h);
 
 eq_RMMC2(h)..
-         k_RMMC(h) =l= RMMC_inv * cap_sup_unit('RMMC');
+         k_RMMC(h) =l= RMMC_inv * RMMC_cap;
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
 
 eq_ACC1(h)..
@@ -187,17 +185,13 @@ eq_BTES_Sch(h,i) $ (sw_BTES ne 0)..
          BTES_Sch(h,i) =l= sw_BTES*B_BITES(i)*BTES_Sch_max(h,i);
 eq_BTES_Sdis(h,i) $ (sw_BTES ne 0)..
          BTES_Sdis(h,i) =l= sw_BTES*B_BITES(i)*BTES_Sdis_max(h,i);
-eq_BTES_Sloss(h,i)$ (ord(h) gt 1)..
-         BTES_Sloss(h,i) =e= sw_BTES*BTES_Sen(h-1,i)*(1-BTES_kSloss(h-1,i));
 eq_BTES_Sen2(h,i) $ (ord(h) gt 1)..
-         BTES_Sen(h,i) =e= sw_BTES*(BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
-                           + BTES_Sch(h,i)*BTES_Sch_eff - link_BS_BD(h,i) - BTES_Sloss(h,i));
+         BTES_Sen(h,i) =e= sw_BTES*(BTES_kSloss(i)*BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
+                           + BTES_Sch(h,i)*BTES_Sch_eff - link_BS_BD(h,i));
 eq_BTES_Den1(h,i) $ (ord(h) eq 1)..
          BTES_Den(h,i) =e= sw_BTES*BTES_Den_int(i);
-eq_BTES_Dloss(h,i) $ (ord(h) gt 1)..
-         BTES_Dloss(h,i) =e= sw_BTES*BTES_Den(h-1,i)*(1-BTES_kDloss(h-1,i));
 eq_BTES_Den2(h,i) $ (ord(h) gt 1)..
-         BTES_Den(h,i) =e= sw_BTES*(BTES_Den(h-1,i) + link_BS_BD(h,i) - BTES_Dloss(h,i));
+         BTES_Den(h,i) =e= sw_BTES*(BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));
 eq_BS_BD(h,i) $ (BTES_model('BTES_Scap',i) ne 0)..
          link_BS_BD(h,i) =e= sw_BTES*((BTES_Sen(h,i)/BTES_model('BTES_Scap',i)
                               - BTES_Den(h,i)/BTES_model('BTES_Dcap',i))*BTES_model('K_BS_BD',i));
@@ -219,33 +213,28 @@ eq_BES_dis(h)..
 *-----------------Solar PV equations--------------------------------------------
 
 eq_PV(h)..
-             e_PV(h) =e= sw_PV*eta_Inverter * (sum(BID$(Gekv_roof(h,BID) ne 0), eta_roof_data*PV_cap_roof(BID)*Gekv_roof(h,BID)*(1
-                                                                                                                         + coef_Si('1')*log10(Gekv_roof(h,BID))
-                                                                                                                         + coef_Si('2')*sqr(log10(Gekv_roof(h,BID)))
-                                                                                                                         + coef_Si('3')*Tekv_roof(h,BID)
-                                                                                                                         + coef_Si('4')*Tekv_roof(h,BID)*log10(Gekv_roof(h,BID))
-                                                                                                                         + coef_Si('5')*sqr(Tekv_roof(h,BID)*log10(Gekv_roof(h,BID)))
-                                                                                                                         + coef_Si('6')*sqr(Tekv_roof(h,BID))
-                                                                                                                         )
-                                            )
-                                                 + sum(BID$(Gekv_facade(h,BID) ne 0), eta_facade_data*PV_cap_facade(BID)*Gekv_facade(h,BID)*(1
-                                                                                                                                           + coef_Si('1')*log10(Gekv_facade(h,BID))
-                                                                                                                                           + coef_Si('2')*sqr(log10(Gekv_facade(h,BID)))
-                                                                                                                                           + coef_Si('3')*Tekv_facade(h,BID)
-                                                                                                                                           + coef_Si('4')*Tekv_facade(h,BID)*log10(Gekv_facade(h,BID))
-                                                                                                                                           + coef_Si('5')*sqr(Tekv_facade(h,BID)*log10(Gekv_facade(h,BID)))
-                                                                                                                                           + coef_Si('6')*sqr(Tekv_facade(h,BID))
-                                                                                                                                           )
-                                                      )
-                                        );
-
+             e_PV(h) =e= sw_PV*eta_Inverter * (sum(BID$(Gekv_roof(h,BID) ne 0), 
+                                                        eta_roof_data*PV_cap_roof(BID)*Gekv_roof(h,BID)*(1
+                                                        + coef_Si('1')*log10(Gekv_roof(h,BID))
+                                                        + coef_Si('2')*sqr(log10(Gekv_roof(h,BID)))
+                                                        + coef_Si('3')*Tekv_roof(h,BID)
+                                                        + coef_Si('4')*Tekv_roof(h,BID)*log10(Gekv_roof(h,BID))
+                                                        + coef_Si('5')*sqr(Tekv_roof(h,BID)*log10(Gekv_roof(h,BID)))
+                                                        + coef_Si('6')*sqr(Tekv_roof(h,BID))))
+                                              + sum(BID$(Gekv_facade(h,BID) ne 0), 
+                                                         eta_facade_data*PV_cap_facade(BID)*Gekv_facade(h,BID)*
+                                                         (1 + coef_Si('1')*log10(Gekv_facade(h,BID))
+                                                          + coef_Si('2')*sqr(log10(Gekv_facade(h,BID)))
+                                                          + coef_Si('3')*Tekv_facade(h,BID)
+                                                          + coef_Si('4')*Tekv_facade(h,BID)*log10(Gekv_facade(h,BID))
+                                                          + coef_Si('5')*sqr(Tekv_facade(h,BID)*log10(Gekv_facade(h,BID)))
+                                                          + coef_Si('6')*sqr(Tekv_facade(h,BID)))));
 
 eq_PV_cap_roof(BID)..
              area_roof_max(BID)*PV_cap_density =g= PV_cap_roof(BID);
 
 eq_PV_cap_facade(BID)..
              area_facade_max(BID)*PV_cap_density =g= PV_cap_facade(BID);
-
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
 
@@ -256,7 +245,9 @@ eq_hbalance(h)..
                                      + sw_BTES*(sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
                                      - sw_AbsCInv * q_AbsCInv(h);
 eq_hbalance2(h)..
-             q_DH(h)=g=sum(i,q_demand_nonAH(h,i));
+             q_DH(h)=g=sum(i,q_demand_nonAH(h,i))
+                       - sw_BTES*(sum(i_nonAH,BTES_Sdis(h,i_nonAH))*BTES_dis_eff
+                                   - sum(i_nonAH,BTES_Sch(h,i_nonAH))/BTES_chr_eff);
 *-------------- Demand supply balance for cooling ------------------------------
 
 eq_cbalance(h)..
@@ -282,53 +273,51 @@ eq_CO2(h)..
                       + e0_PV(h)*CO2F_loc('PV') + sw_PV*e_PV(h)*CO2F_loc('PV')
                       + q_DH(h)*CO2F_DH(h) + tb_2016(h)*CO2F_loc('TB')
                       + q_P2(h) * CO2F_loc('P2');
-eq_totCO2..
-         tot_CO2 =e= sum(h, FED_CO2(h));
 **************** Power tariffs *******************
+
 eq_max_exG(h,m)..
 max_exG(m) =g=   e_exG(h)*HoM(h,m);
 eq_PTexG(m)..
 PT_exG(m) =e= max_exG(m)*PT_cost('exG');
-
 
 eq_mean_DH(d)..
 mean_DH(d) =g=   sum(h,q_DH(h)*HoD(h,d))/24;
 
 eq_PT_DH(d)..
 PT_DH      =g=   mean_DH(d)*PT_cost('DH');
-
 **************** Objective function ***********************
 
 eq_totCost..
-         TC =e= sum(h,q_DH(h)*utot_cost('DH',h))
+         totCost =e= sum(h,q_DH(h)*utot_cost('DH',h))
                 + sum(h,e_exG(h)*utot_cost('exG',h))
-                + sum(h,tb_2016(h)*utot_cost('TB',h)/0.9)
+                + sum(h,q_P1(h)*utot_cost('P1',h))
                 + sum(h, q_P2(h)*utot_cost('P2',h))
-                + sum(m,PT_exG(m)) + PT_DH
-                + sw_HP*HP_cap*Acost_sup_unit('HP')
-                + sum(BID, sw_PV*PV_cap_roof(BID)*Acost_sup_unit('PV'))
-                + sum(BID, sw_PV*PV_cap_facade(BID)*Acost_sup_unit('PV'))
-                + sw_BES*BES_cap*Acost_sup_unit('BES')
-                + sw_TES*(TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/25
-                + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))
-                + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC')
-                + sw_P2 * B_P2 * Acost_sup_unit('P2')
-                + sw_TURB * B_TURB * Acost_sup_unit('TURB')
-                + sw_AbsCInv * (B_AbsCInv *AbsCInv_fx + AbsCInv_cap * Acost_sup_unit('AbsCInv'))
-                ;
 
+                + sum(m,PT_exG(m)) + PT_DH
+
+                + sw_HP*HP_cap*cost_inv_opt('HP')/lifT_inv_opt('HP')
+                + sw_PV*PV_cap*cost_inv_opt('PV')/lifT_inv_opt('PV')
+                + sw_BES*BES_cap*cost_inv_opt('BES')/lifT_inv_opt('BES')
+                + sw_TES*(TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/lifT_inv_opt('TES')
+                + sw_BTES*cost_inv_opt('BTES')*sum(i,B_BITES(i))/lifT_inv_opt('BTES')
+                + sw_RMMC*RMMC_inv*cost_inv_opt('RMMC')/lifT_inv_opt('RMMC')
+                + sw_P2 * B_P2 * cost_inv_opt('P2')/lifT_inv_opt('P2')
+                + sw_TURB * B_TURB * cost_inv_opt('TURB')/lifT_inv_opt('TURB')
+                + sw_AbsCInv * (B_AbsCInv *AbsCInv_fx + AbsCInv_cap * cost_inv_opt('AbsCInv'))/lifT_inv_opt('AbsCInv');
+****************Total investment cost*******************************************
 
 eq_invCost..
-         invCost =e= sw_HP*HP_cap*Acost_sup_unit('HP')*15
-                     + sw_PV*(sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*Acost_sup_unit('PV')*30
-                     + sw_BES*BES_cap*Acost_sup_unit('BES')*15
+         invCost =e= sw_HP*HP_cap*cost_inv_opt('HP')
+                     + sw_PV*PV_cap*cost_inv_opt('PV')
+                     + sw_BES*BES_cap*cost_inv_opt('BES')
                      + sw_TES*((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
-                     + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))*30
-                     + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC')*20
-                     + sw_P2 * B_P2 * Acost_sup_unit('P2') * 30
-                     + sw_TURB * B_TURB * Acost_sup_unit('TURB') * 30
-                     + sw_AbsCInv * (B_AbsCInv *AbsCInv_fx + AbsCInv_cap * Acost_sup_unit('AbsCInv')) * 25
-                     ;
+                     + sw_BTES*cost_inv_opt('BTES')*sum(i,B_BITES(i))
+                     + sw_RMMC*RMMC_inv*cost_inv_opt('RMMC')
+                     + sw_P2 * B_P2 * cost_inv_opt('P2')
+                     + sw_TURB * B_TURB * cost_inv_opt('TURB')
+                     + sw_AbsCInv * (B_AbsCInv *AbsCInv_fx + AbsCInv_cap * cost_inv_opt('AbsCInv'));
+****************Total CO2 emission in the FED system****************************
 
-* Remove hard coding of lifetimes and make it a set instead
+eq_CO2_TOT..
+         FED_CO2_tot =e= sum(h, FED_CO2(h));
 ********************************************************************************
