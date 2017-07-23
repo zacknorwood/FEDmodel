@@ -62,16 +62,16 @@ Parameter q_P1_FGC0(h0) SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER
 $include q_P1_FGC0.gdx
 /;
 display q_P1_FGC0;
+*----------------ELECTRICITY PRICE----------------------------------------------
 
-*ELECTRICITY PRICE
 $call =xls2gms "I=data\el_heat_price_2016.xlsx" R=el_price_2016_gams!A2:B8761 "O=el_price0.gdx"
 Parameter el_price0(h0) ELECTRICTY PRICE IN THE SYSTEM
 /
 $include el_price0.gdx
 /;
 display el_price0;
+*----------------HEAT PRICE-----------------------------------------------------
 
-*HEAT PRICE
 $call =xls2gms "I=data\el_heat_price_2016.xlsx" R=heat_price_2012_gams!A2:B8761 "O=q_price0.gdx"
 Parameter q_price0(h0) HEAT PRICE IN THE EXTERNAL DH SYSTEM
 q_price0(h0)           heat price by GÃ¶teborg Energi in 2016 sek per MWh
@@ -87,8 +87,8 @@ q_price0(h0)=q_price0(h0)/1000;
 *$include q_price0.gdx
 */;
 display q_price0;
+*----------------outdoor temprature---------------------------------------------
 
-*outdoor temprature
 $call =xls2gms "I=data\tout_2016.xlsx" R=tout_2016_gams!A2:E8761 "O=tout0.gdx"
 Parameter tout0(h0) outdoor temperature as obtained from metry
 /
@@ -135,8 +135,8 @@ Parameter nPV_ird0(h0) heat demand in buildings as obtained from metrys for
 $include nPV_ird0.gdx;
 /;
 display nPV_ird0;
+*----------------Building INERTIA storage parameters(=BS_cap, BD_cap, BS_ch_max, BS_dis_max,)
 
-*Building INERTIA storage parameters(=BS_cap, BD_cap, BS_ch_max, BS_dis_max,)
 $CALL GDXXRW.EXE UFO_TES.xlsx par=BTES_model0 rng=BITES_gams!A1:AE10
 set
     BTES_properties0  Building Inertia TES properties
