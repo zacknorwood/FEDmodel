@@ -5,42 +5,68 @@
 
 *--------------IMPORT IMPUT DATA TO THE MODEL-----------------------------------
 
-$Include FED_GENERAGE_GDX_FILE
-*_no_gen
+$Include FED_GET_GDX_FILE
 *-------------SET THE LENGTH OF INPUT DATA USED FOR SIMULATION------------------
 
 set
-        h(h0)                 Number of hours                     /H1*H8760/
-        i(b0)                 Number of buildings in the system   /1*30/
-        m(m0)                 Number of month                     /M1*M12/
-        d(d0)                 Number of days                      /D1*D365/
+        h(h0)                 Number of hours                     /1*8760/
+        i(b0)                 Buildings considered in the FED system
+                              /O0007001-Fysikorigo, O0007005-Polymerteknologi,
+                              O0007006-NyaMatte,  O0007012-Elkraftteknik,
+                              O0007014-GibraltarHerrgrd, O0007017-Chalmersbibliotek,
+                              O0007018-Idelra,  O0007019-CentralaAdministrationen,
+                              O0007021-HrsalarHC,  O0007022-HrsalarHA,
+                              O0007023-Vg-och-vatten1,   O0007024-EDIT,
+                              O0007025-HrsalarHB,   O0007026-Arkitektur,
+                              O0007027-Vg-och-vatten2, O0007028-Maskinteknik,
+                              O0007040-GamlaMatte,  O0007043-PhusCampusJohanneberg,
+                              O0007888-LokalkontorAH, O0011001-FysikSoliden,
+                              O0013001-Keramforskning, O3060132-Kemi-och-bioteknik-cfab,
+                              O3060133-FysikMC2,  O3060150_1-Krhuset,
+                              O3060137-CTP,  O3060138-JSP, O3060101-Vasa1,
+                              O3060102_3-Vasa-2-3, O3060104_15-Vasa-4-15, O4002700-Chabo
+                              /
+        i_AH(i)               AH buildings
+                              /O0007001-Fysikorigo, O0007005-Polymerteknologi
+                              O0007006-NyaMatte,  O0007012-Elkraftteknik,
+                              O0007014-GibraltarHerrgrd, O0007017-Chalmersbibliotek,
+                              O0007018-Idelra,  O0007019-CentralaAdministrationen,
+                              O0007021-HrsalarHC,  O0007022-HrsalarHA,
+                              O0007023-Vg-och-vatten1,   O0007024-EDIT,
+                              O0007025-HrsalarHB,   O0007026-Arkitektur,
+                              O0007027-Vg-och-vatten2, O0007028-Maskinteknik,
+                              O0007040-GamlaMatte,  O0007043-PhusCampusJohanneberg,
+                              O0007888-LokalkontorAH, O0011001-FysikSoliden,
+                              O0013001-Keramforskning, O3060132-Kemi-och-bioteknik-cfab,
+                              O3060133-FysikMC2,  O3060150_1-Krhuset
+                              /
+        i_nonAH(i)            non-AH buildings
+                             /O3060137-CTP,  O3060138-JSP, O3060101-Vasa1,
+                              O3060102_3-Vasa-2-3, O3060104_15-Vasa-4-15, O4002700-Chabo
+                             /
+        i_nonBITES(i)         Buildings not applicable for BITES
+                             /O0007005-Polymerteknologi,O0007014-GibraltarHerrgrd,
+                              O0007018-Idelra,O0007888-LokalkontorAH,
+                              O3060150_1-Krhuset,O3060137-CTP,O3060138-JSP/
+        m(m0)                 Number of month                     /1*12/
+        d(d0)                 Number of days                      /1*365/
 ;
 
 alias(i,j);
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
-         sup_unit   supply units /HP,exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM, RMMC, P2, TURB, AbsCInv/
+         sup_unit   supply units /HP,exG, DH, CHP, PV, P1, RHP, AbsC, AAC, RM, RMMC, P2, TURB, AbsCInv/
          inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC, P2, TURB, AbsCInv/
 ;
-* Remove hard coding of lifetimes in Acost_sup_unit and make this a set and show the calculation here
+
 Parameter
          cap_sup_unit(sup_unit)   operational capacity of the units
-         /PV 60, TB 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
-
-
-         Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
-                                 /PV 410, BES 400, HP 667, TES 50, BTES 1166, RMMC 25000, P2 1533333, TURB 66666, AbsCInv 72.4/
-;
-*The annualized cost of the BTES is for a building 35000/30, assuming 30 years of technical life time
-*table technology(n1,head2) technology with annualised investment cost in (SEK per MW or MWh per year for i=5)
-*                            Price                    Lifetime      Annualised_Cost1       Annualised_Cost2        Annualised_Cost3
-*HP                          18000000                 15            1728000                2034000                 2358000
-*CHP                         3170000                  20            253600                 310660                  370890
-*TES                         10000                    25            710                    900                     1100
-*Battery                     12060000                 15            1157760                1362780                 1579860
-*Solar_PV                    18000000                 30            1170000                1530000                 1908000
-*RMMC2                       500000                   20
+                     /PV 60, P1 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
+         cost_inv_opt(inv_opt)    Investment costs of FED investment options in SEK per kW except RMMC which is a fixed cost
+                     /PV 12300, BES 6000, HP 10000, BTES 35000, RMMC 500000, P2 46000000, TURB 2000000, AbsCInv 1.81/
+         lifT_inv_opt(inv_opt)    Life time of invetment options
+                     /PV 30, BES 10, HP 15, TES 50, BTES 30, RMMC 20, P2 40, TURB 30, AbsCInv 25/;
 *--------------CHoice of investment options to consider-------------------------
 
 PARAMETERS
@@ -56,30 +82,38 @@ PARAMETERS
 ;
 *use of switch to determine whether HP, CHP, TES should operate or not
 * 1=in operation, 0=out of operation
-sw_HP=1;
-sw_TES=1;
-sw_BTES=1;
-sw_BES=1;
-sw_PV=1;
+sw_HP = 1;
+sw_TES = 1;
+sw_BTES = 1;
+sw_BES = 1;
+sw_PV = 1;
 sw_RMMC = 1;
 sw_P2 = 1;
 sw_TURB = 1;
 sw_AbsCInv = 1;
 ***************Existing units***************************************************
-*--------------Existing Solar  constants and parameters (existing unit)---------
+*--------------Existing Solar PV  constants and parameters (existing unit)---------
 
 parameter
          nPV_ird(h)  Normalized PV irradiance
          e0_PV(h)    Existing PV power
 ;
-nPV_ird(h)=nPV_ird0(h);
+nPV_ird(h)=nPV_el0(h);
 e0_PV(h)=cap_sup_unit('PV')*nPV_ird(h);
-*--------------Existing Thermal boiler constants and parameters-----------------
+*--------------Existing Thermal boiler constants and parameters (P1)------------
 
-parameter
-         tb_2016(h)  Total heat power from the thermal boiler
+scalar
+         p1_eff_TB   Efficiency of primary heat converssion /0.9/
+         p1_eff_FGC  Efficiency of secondary heat converssion /0.9/
 ;
-tb_2016(h) = q_tb_2016(h) + q_fgc_2016(h);
+Parameter
+         q_p1_TB(h)  PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
+         q_p1_FGC(h) SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER
+         q_p1(h)     Input fuel of THE THERMAL BOILER
+;
+q_p1_TB(h) = q_p1_TB0(h);
+q_p1_FGC(h) = q_p1_FGC0(h);
+q_p1(h)=(q_p1_TB(h)/p1_eff_TB) + (q_p1_FGC(h)/p1_eff_FGC);
 *--------------VKA4 constants and parameters------------------------------------
 
 scalar
@@ -103,7 +137,7 @@ scalar
 *--------------AAC(Ambient Air Cooler), cooling source--------------------------
 
 scalar
-         AAC_COP Coefficent of performance of AAC /1/
+         AAC_COP Coefficent of performance of AAC /10/
          AAC_eff Effciency of AbsC /0.95/
 ;
 *--------------Refrigerator Machines, coling source-----------------------------
@@ -113,18 +147,12 @@ scalar
       RM_eff Coefficent of performance of AC /0.95/
 ;
 **************Investment options************************************************
-*--------------Outside Temprature data------------------------------------------
-
-Parameter
-         tout(h) heat demand in buildings as obtained from metrys for
-;
-tout(h)=tout0(h);
 *----------------Absorption Chiller Investment----------------------------------
 *Assumed technical lifetime of 25 years, fixed investment cost 1610 kSek
 
 scalar
          AbsCInv_COP    Coefficient of performance for cooling /0.75/
-         AbsCInv_fx     Fixed cost for investment in Abs chiller /64400/
+         AbsCInv_fx     Fixed cost for investment in Abs chiller /1610000/
          AbsCInv_MaxCap Maximum possible investment in kW cooling /1000/
 ;
 *----------------Panna 2  ------------------------------------------------------
@@ -148,6 +176,7 @@ scalar
       RMMC_cap Maximum cooling capacity for RM in kW/3600/
 ;
 *--------------PV data----------------------------------------------------------
+
 scalar
       Tstc Temperature at standard temperature and conditions in degree Celsius /25/
       Gstc Irradiance at standard temperature and conditions in kW per m^2 /1/
@@ -174,14 +203,10 @@ parameter
 ;
       Gekv_roof(h,BID)=abs(G_roof(h,BID))/Gstc;
       Gekv_facade(h,BID)=abs(G_facade(h,BID))/Gstc;
-      Tmod_roof(h,BID)=tout(h)+0.035*G_roof(h,BID);
-      Tmod_facade(h,BID)=tout(h)+0.035*G_facade(h,BID);
+      Tmod_roof(h,BID)=tout0(h)+0.035*G_roof(h,BID);
+      Tmod_facade(h,BID)=tout0(h)+0.035*G_facade(h,BID);
       Tekv_roof(h,BID)=Tmod_roof(h,BID) - Tstc;
       Tekv_facade(h,BID)=Tmod_facade(h,BID) - Tstc;
-
-
-
-
 *--------------HP constants and parameters (an investment options)-------------
 
 *[COP and eff values need to be checked]
@@ -202,7 +227,12 @@ scalar
          TES_ch_max            Maximum charge rate in kWh per h/11000/
          TES_hourly_loss_fac   Hourly loss factor/0.999208093/
 ;
+*--------------Outside Temprature data------------------------------------------
 
+Parameter
+         tout(h) heat demand in buildings as obtained from metrys for
+;
+tout(h)=tout0(h);
 *--------------Building storage characteristics---------------------------------
 
 set
@@ -222,48 +252,50 @@ Parameters
          BTES_Sch_eff         Charging efficiency of the shallow midium
          BTES_Sch_max(h,i)    maximum charging limit
          BTES_Sdis_max(h,i)   maximum discharging limit
-         BTES_kSloss(h,i)     loss coefficient-shallow
-         BTES_kDloss(h,i)     loss coefficient-deep
+         BTES_kSloss(i)      loss coefficient-shallow
+         BTES_kDloss(i)      loss coefficient-deep
 ;
 BTES_model(BTES_properties,i)=BTES_model0(BTES_properties,i);
-BTES_Sen_int(i)=BTES_model('BTES_Scap',i);
-BTES_Den_int(i)=BTES_model('BTES_Dcap',i);
-BTES_Sdis_eff=1;
-BTES_Sch_eff=1;
+BTES_Sen_int(i)=1000*BTES_model('BTES_Scap',i);
+BTES_Den_int(i)=1000*BTES_model('BTES_Dcap',i);
+BTES_Sdis_eff=0.95;
+BTES_Sch_eff=0.95;
 
-BTES_Sch_max(h,i)=Min(BTES_model('BTES_Sch_hc',i), BTES_model('BTES_Esig',i)*Max(Min(tout(h) - (-16),15 - (-16)),0));
-BTES_Sdis_max(h,i)=Min(BTES_model('BTES_Sdis_hc',i), BTES_model('BTES_Esig',i)*Max(Min(15 - tout(h),15 - (-16)),0));
+BTES_Sch_max(h,i)=1000*Min(BTES_model('BTES_Sch_hc',i), BTES_model('BTES_Esig',i)*Max(Min(tout(h) - (-16),15 - (-16)),0));
+BTES_Sdis_max(h,i)=1000*Min(BTES_model('BTES_Sdis_hc',i), BTES_model('BTES_Esig',i)*Max(Min(15 - tout(h),15 - (-16)),0));
 display BTES_Sch_max,BTES_Sdis_max
 ;
 
 *[BTES_kSloss needs to be modified since it has different values during day and night]
 *here, it is assumed that BTES_kSloss is the same and the value for the day is used, which means that the loss is over estimated
-BTES_kSloss(h,i)= BTES_model('kloss_Sday',i);
-BTES_kDloss(h,i)= BTES_model('kloss_D',i);
+BTES_kSloss(i)= BTES_model('kloss_Sday',i);
+BTES_kDloss(i)= BTES_model('kloss_D',i);
 *--------------Battery storage characteristics----------------------------------
 
 scalar
          BES_ch_eff    Charging efficiency /0.95/
          BES_dis_eff   Discharding efficiency /0.95/
 ;
-
 *--------------set building energy demands--------------------------------------
 
 Parameter
-         q_demand(h,i) heat demand in buildings as obtained from metrys for
-         q_demand_nonAH(h,i) heat demand in non-AH buildings as obtained from metrys for
-         e_demand(h,i) heat demand in buildings as obtained from metrys for
-         k_demand(h,i) cool demand in buildings as obtained from metrys for 2016
+         q_demand(h,i)             heat demand in buildings as obtained from metrys for
+         q_demand_AH(h,i_AH)       heat demand in AH buildings as obtained from metrys for
+         q_demand_nonAH(h,i_nonAH) heat demand in non-AH buildings as obtained from metrys for
+         e_demand(h,i)             heat demand in buildings as obtained from metrys for
+         k_demand(h,i)             demand in buildings as obtained from metrys for 2016
+         k_demand_AH(h,i)          cool demand in AH buildings as obtained from metrys for 2016
+         k_demand_nonAH(h,i)       cool demand in nonAH buildings as obtained from metrys for 2016
 ;
-q_demand(h,i)=1000*q_demand0(h,i);
-q_demand_nonAH(h,'25')=q_demand(h,'25');
-q_demand_nonAH(h,'26')=q_demand(h,'26');
-q_demand_nonAH(h,'27')=q_demand(h,'27');
-q_demand_nonAH(h,'28')=q_demand(h,'28');
-q_demand_nonAH(h,'29')=q_demand(h,'29');
-q_demand_nonAH(h,'30')=q_demand(h,'30');
-e_demand(h,i)=1000*el_demand0(h,i);
-k_demand(h,i)=1000*k_demand0(h,i);
+q_demand(h,i)=q_demand0(h,i);
+q_demand_AH(h,i_AH)=q_demand(h,i_AH);
+q_demand_nonAH(h,i_nonAH)=q_demand(h,i_nonAH);
+
+e_demand(h,i)=el_demand0(h,i);
+
+k_demand(h,i)=k_demand0(h,i);
+k_demand_AH(h,i_AH)=k_demand(h,i_AH);
+k_demand_nonAH(h,i_nonAH)=k_demand(h,i_nonAH);
 *--------------unit total cost for all the generating units---------------------
 
 parameter
@@ -274,59 +306,48 @@ parameter
          co2_cost(sup_unit,h)    CO2 cost
          utot_cost(sup_unit,h)   unit total cost of every production unit
          PT_cost(sup_unit)       Power tariff SEK per kW per month
-         heat_price(h)    heat price by GÃ¶teborg Energi in 2016 sek per MWh
-                 /h1*h2184      519
-                 h2185*h2904    357
-                 h2905*h6576    99
-                 h6577*h8040    357
-                 h8041*h8760    519
-                 /
 ;
-price('exG',h)=0.0031 + el_price0(h)/1000;
-price('DH',h)=heat_price(h)/1000;
+price('exG',h)=0.0031 + el_price0(h);
+price('DH',h)=q_price0(h);
+
+*the data is obtained from ENTSO-E
 fuel_cost('CHP',h)=0.186;
-fuel_cost('TB',h)=0.186;
+fuel_cost('P1',h)=0.186;
 fuel_cost('P2',h)=0.186;
 var_cost(sup_unit,h)=0;
-*8.43 is an exhange rate usd to sek 2015
+
+*the data is obtained from IEA
+*An exchange rate of 8.43 (average in 2015) is used to convert usd to sek
 var_cost('CHP',h)=200*0.65*8.43;
 var_cost('P2',h)=200*0.65*8.43;
-var_cost('TB',h)=200*0.65*8.43;
+var_cost('P1',h)=200*0.65*8.43;
 var_cost('PV',h)=16*8.43;
 var_cost('HP',h)=16*8.43;
+
 en_tax(sup_unit,h)=0;
 en_tax('exG',h)=0.295;
+
 co2_cost(sup_unit,h)=0;
+
 PT_cost(sup_unit)=0;
 PT_cost('exG')=35.4;
 PT_cost('DH')=452;
+
 utot_cost(sup_unit,h)=price(sup_unit,h) + fuel_cost(sup_unit,h)
                       + var_cost(sup_unit,h) + en_tax(sup_unit,h);
 *--------------FED PE and CO2 targets-------------------------------------------
 
 scalar
-         base_PE    Base case value of PE /98428000/
          PE_lim     Desired or limiting value of PE
-         CO2_ref    Reference value of CO2 peak /1700000/
-         CO2_peak   Peak value of CO2 in the base case /2402700/
+         CO2_ref    Reference value of CO2 peak
          dCO2       Delta CO2
          CO2_lim    Desired or limiting value of CO2
 ;
 
-PE_lim=(1-0.3)*base_PE;
-dCO2=CO2_peak-CO2_ref;
+PE_lim=(1-0.3)*FED_PE_base;
+CO2_ref=0.95*FED_CO2Peak_base;
+dCO2=FED_CO2Peak_base-CO2_ref;
 CO2_lim=CO2_ref+0.2*dCO2;
-*--------------PE and CO2 factors of external grids-----------------------------
+*--------------Limit on investment----------------------------------------------
 
-Parameters
-         PEF_DH(h)               Primary energy factor of the external DH system
-         PEF_exG(h)              Primary energy factor of the external electricty grid
-         CO2F_DH(h)              CO2 factor of the external DH system
-         CO2F_exG(h)             CO2 factor of the external electricty grid
-         CO2F_loc(sup_unit)      CO2 factor for a supply unit /'CHP' 177, 'TB' 177, 'P2' 177, 'PV' 45/
-         PEF_loc(sup_unit)       PE factor for a supply unit /'CHP' 0.78, 'TB' 0.78, 'P2' 0.78, 'PV' 1.25/
-;
-PEF_DH(h)=PEF_DH0(h);
-PEF_exG(h)=PEF_exG0(h);
-CO2F_DH(h)=CO2F_DH0(h);
-CO2F_exG(h)=CO2F_exG0(h);
+scalar inv_lim  Maximum value of the investment in SEK /76761000/;
