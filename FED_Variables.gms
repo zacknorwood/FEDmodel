@@ -123,6 +123,8 @@ B_BITES.fx(i_nonBITES)=0;
 
 positive variable
          e_PV(h)            electricity produced by PV
+         e_PV_temp(h)
+         PV_cap_temp
          PV_cap_roof(BID)   capacity of solar modules on roof
          PV_cap_facade(BID) capacity of solar modules on facade
 ;
@@ -145,7 +147,7 @@ e_exG.lo(h)=0;
 variable
          q_DH(h)            heat power input from grid
 ;
-*q_DH.lo(h)=0;
+q_DH.lo(h)=0;
 *------------------Grid DC related---------------------------------------------
 
 variable
@@ -179,5 +181,6 @@ variable
          totCost              total cost
          invCost              total investment cost
          FED_CO2_tot          Total CO2 emission of the FED system
+         obj                  objective function
 ;
-invCost.up = inv_lim;
+invCost.up $ (min_invCOst eq 0) = inv_lim;
