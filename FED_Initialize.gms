@@ -330,8 +330,8 @@ en_tax('exG',h)=0.295;
 co2_cost(sup_unit,h)=0;
 
 PT_cost(sup_unit)=0;
-PT_cost('exG')=35.4/1000;
-PT_cost('DH')=452/1000;
+PT_cost('exG')=35.4;
+PT_cost('DH')=452;
 
 utot_cost(sup_unit,h)=price(sup_unit,h) + fuel_cost(sup_unit,h)
                       + var_cost(sup_unit,h) + en_tax(sup_unit,h);
