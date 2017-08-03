@@ -9,28 +9,62 @@ $Include FED_GET_GDX_FILE
 *-------------SET THE LENGTH OF INPUT DATA USED FOR SIMULATION------------------
 
 set
-        h(h0)                 Number of hours                     /H1*H8760/
-        i(b0)                 Number of buildings in the system   /1*30/
-        i_AH(i)               AH buildings                        /1*24/
-        i_nonAH(i)            non-AH buildings                    /25*30/
-        i_nonBITES(i)         Buildings not applicable for BITES  /2,5,7,18,24,25,26/
-        m(m0)                 Number of month                     /M1*M12/
-        d(d0)                 Number of days                      /D1*D365/
+        h(h0)                 Number of hours                     /1*8760/
+        i(b0)                 Buildings considered in the FED system
+                              /O0007001-Fysikorigo, O0007005-Polymerteknologi,
+                              O0007006-NyaMatte,  O0007012-Elkraftteknik,
+                              O0007014-GibraltarHerrgrd, O0007017-Chalmersbibliotek,
+                              O0007018-Idelra,  O0007019-CentralaAdministrationen,
+                              O0007021-HrsalarHC,  O0007022-HrsalarHA,
+                              O0007023-Vg-och-vatten1,   O0007024-EDIT,
+                              O0007025-HrsalarHB,   O0007026-Arkitektur,
+                              O0007027-Vg-och-vatten2, O0007028-Maskinteknik,
+                              O0007040-GamlaMatte,  O0007043-PhusCampusJohanneberg,
+                              O0007888-LokalkontorAH, O0011001-FysikSoliden,
+                              O0013001-Keramforskning, O3060132-Kemi-och-bioteknik-cfab,
+                              O3060133-FysikMC2,  O3060150_1-Krhuset,
+                              O3060137-CTP,  O3060138-JSP, O3060101-Vasa1,
+                              O3060102_3-Vasa-2-3, O3060104_15-Vasa-4-15, O4002700-Chabo
+                              /
+        i_AH(i)               AH buildings
+                              /O0007001-Fysikorigo, O0007005-Polymerteknologi
+                              O0007006-NyaMatte,  O0007012-Elkraftteknik,
+                              O0007014-GibraltarHerrgrd, O0007017-Chalmersbibliotek,
+                              O0007018-Idelra,  O0007019-CentralaAdministrationen,
+                              O0007021-HrsalarHC,  O0007022-HrsalarHA,
+                              O0007023-Vg-och-vatten1,   O0007024-EDIT,
+                              O0007025-HrsalarHB,   O0007026-Arkitektur,
+                              O0007027-Vg-och-vatten2, O0007028-Maskinteknik,
+                              O0007040-GamlaMatte,  O0007043-PhusCampusJohanneberg,
+                              O0007888-LokalkontorAH, O0011001-FysikSoliden,
+                              O0013001-Keramforskning, O3060132-Kemi-och-bioteknik-cfab,
+                              O3060133-FysikMC2,  O3060150_1-Krhuset
+                              /
+        i_nonAH(i)            non-AH buildings
+                             /O3060137-CTP,  O3060138-JSP, O3060101-Vasa1,
+                              O3060102_3-Vasa-2-3, O3060104_15-Vasa-4-15, O4002700-Chabo
+                             /
+        i_nonBITES(i)         Buildings not applicable for BITES
+                             /O0007005-Polymerteknologi,O0007014-GibraltarHerrgrd,
+                              O0007018-Idelra,O0007888-LokalkontorAH,
+                              O3060150_1-Krhuset,O3060137-CTP,O3060138-JSP/
+        m(m0)                 Number of month                     /1*12/
+        d(d0)                 Number of days                      /1*365/
 ;
 
 alias(i,j);
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
-         sup_unit   supply units /HP,exG, DH, CHP, PV, TB, RHP, AbsC, AAC, RM, RMMC, P2, TURB, AbsCInv/
+         sup_unit   supply units /HP,exG, DH, CHP, PV, P1, RHP, AbsC, AAC, RM, RMMC, P2, TURB, AbsCInv/
          inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC, P2, TURB, AbsCInv/
 ;
 
 Parameter
          cap_sup_unit(sup_unit)   operational capacity of the units
-                     /PV 60, TB 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
+                     /PV 60, P1 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
          cost_inv_opt(inv_opt)    Investment costs of FED investment options in SEK per kW except RMMC which is a fixed cost
-                     /PV 12300, BES 6000, HP 10000, BTES 35000, RMMC 500000, P2 46000000, TURB 2000000/
+                     /PV 12300, BES 6000, HP 10000, BTES 35000, RMMC 500000, P2 46000000, TURB 2000000, AbsCInv 1.81/
          lifT_inv_opt(inv_opt)    Life time of invetment options
                      /PV 30, BES 10, HP 15, TES 50, BTES 30, RMMC 20, P2 40, TURB 30, AbsCInv 25/;
 *--------------CHoice of investment options to consider-------------------------
@@ -48,11 +82,11 @@ PARAMETERS
 ;
 *use of switch to determine whether HP, CHP, TES should operate or not
 * 1=in operation, 0=out of operation
-sw_HP=1;
-sw_TES=1;
-sw_BTES=1;
-sw_BES=1;
-sw_PV=1;
+sw_HP = 1;
+sw_TES = 1;
+sw_BTES = 1;
+sw_BES = 1;
+sw_PV = 1;
 sw_RMMC = 1;
 sw_P2 = 1;
 sw_TURB = 1;
@@ -64,7 +98,7 @@ parameter
          nPV_ird(h)  Normalized PV irradiance
          e0_PV(h)    Existing PV power
 ;
-nPV_ird(h)=nPV_ird0(h);
+nPV_ird(h)=nPV_el0(h);
 e0_PV(h)=cap_sup_unit('PV')*nPV_ird(h);
 *--------------Existing Thermal boiler constants and parameters (P1)------------
 
@@ -103,7 +137,7 @@ scalar
 *--------------AAC(Ambient Air Cooler), cooling source--------------------------
 
 scalar
-         AAC_COP Coefficent of performance of AAC /4/
+         AAC_COP Coefficent of performance of AAC /10/
          AAC_eff Effciency of AbsC /0.95/
 ;
 *--------------Refrigerator Machines, coling source-----------------------------
@@ -169,8 +203,8 @@ parameter
 ;
       Gekv_roof(h,BID)=abs(G_roof(h,BID))/Gstc;
       Gekv_facade(h,BID)=abs(G_facade(h,BID))/Gstc;
-      Tmod_roof(h,BID)=tout(h)+0.035*G_roof(h,BID);
-      Tmod_facade(h,BID)=tout(h)+0.035*G_facade(h,BID);
+      Tmod_roof(h,BID)=tout0(h)+0.035*G_roof(h,BID);
+      Tmod_facade(h,BID)=tout0(h)+0.035*G_facade(h,BID);
       Tekv_roof(h,BID)=Tmod_roof(h,BID) - Tstc;
       Tekv_facade(h,BID)=Tmod_facade(h,BID) - Tstc;
 *--------------HP constants and parameters (an investment options)-------------
@@ -222,13 +256,13 @@ Parameters
          BTES_kDloss(i)      loss coefficient-deep
 ;
 BTES_model(BTES_properties,i)=BTES_model0(BTES_properties,i);
-BTES_Sen_int(i)=BTES_model('BTES_Scap',i);
-BTES_Den_int(i)=BTES_model('BTES_Dcap',i);
+BTES_Sen_int(i)=1000*BTES_model('BTES_Scap',i);
+BTES_Den_int(i)=1000*BTES_model('BTES_Dcap',i);
 BTES_Sdis_eff=0.95;
 BTES_Sch_eff=0.95;
 
-BTES_Sch_max(h,i)=Min(BTES_model('BTES_Sch_hc',i), BTES_model('BTES_Esig',i)*Max(Min(tout(h) - (-16),15 - (-16)),0));
-BTES_Sdis_max(h,i)=Min(BTES_model('BTES_Sdis_hc',i), BTES_model('BTES_Esig',i)*Max(Min(15 - tout(h),15 - (-16)),0));
+BTES_Sch_max(h,i)=1000*Min(BTES_model('BTES_Sch_hc',i), BTES_model('BTES_Esig',i)*Max(Min(tout(h) - (-16),15 - (-16)),0));
+BTES_Sdis_max(h,i)=1000*Min(BTES_model('BTES_Sdis_hc',i), BTES_model('BTES_Esig',i)*Max(Min(15 - tout(h),15 - (-16)),0));
 display BTES_Sch_max,BTES_Sdis_max
 ;
 
@@ -296,16 +330,11 @@ en_tax('exG',h)=0.295;
 co2_cost(sup_unit,h)=0;
 
 PT_cost(sup_unit)=0;
-PT_cost('exG')=35.4;
-PT_cost('DH')=452;
+PT_cost('exG')=35.4/1000;
+PT_cost('DH')=452/1000;
 
 utot_cost(sup_unit,h)=price(sup_unit,h) + fuel_cost(sup_unit,h)
                       + var_cost(sup_unit,h) + en_tax(sup_unit,h);
-*--------------PE and CO2 factors of local generation---------------------------
-
-Parameters
-         CO2F_loc(sup_unit)      CO2 factor for a supply unit /'CHP' 23, 'P1' 23, 'P2' 23, 'PV' 45/
-         PEF_loc(sup_unit)       PE factor for a supply unit /'CHP' 1.39, 'P1' 1.39, 'P2' 1.39,'PV' 1.25/;
 *--------------FED PE and CO2 targets-------------------------------------------
 
 scalar
@@ -316,10 +345,9 @@ scalar
 ;
 
 PE_lim=(1-0.3)*FED_PE_base;
-CO2_ref=0.9*FED_CO2Peak_base;
+CO2_ref=0.95*FED_CO2Peak_base;
 dCO2=FED_CO2Peak_base-CO2_ref;
 CO2_lim=CO2_ref+0.2*dCO2;
 *--------------Limit on investment----------------------------------------------
 
 scalar inv_lim  Maximum value of the investment in SEK /76761000/;
-
