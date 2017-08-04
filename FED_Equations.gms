@@ -328,7 +328,7 @@ eq_invCost..
                      + sw_RMMC*RMMC_inv*cost_sup_unit('RMMC')
                      + sw_P2 * B_P2 * cost_sup_unit('P2')
                      + sw_TURB * B_TURB * cost_sup_unit('TURB')
-                     + sw_AbsCInv * (B_AbsCInv *AbsCInv_fx + AbsCInv_cap * Acost_sup_unit('AbsCInv')) * 25
+                     + sw_AbsCInv * (B_AbsCInv *AbsCInv_fx + AbsCInv_cap * 72.4) * 25
                      ;
 
 

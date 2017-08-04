@@ -24,8 +24,6 @@ set
          inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC, P2, TURB, AbsCInv/
 ;
 * FIX: Remove hard coding of lifetimes in Acost_sup_unit and make this a set and show the calculation here
-* Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
-*                               /PV 410, BES 400, HP 667, TES 50, BTES 1166, RMMC 25000, P2 1533333, TURB 66666, AbsCInv 72.4/
 
 Parameter
 
@@ -37,8 +35,8 @@ Parameter
 * PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 600, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
 * note: check AbsCInv and HP, sources?
 cost_sup_unit(inv_opt) cost of the investment options in SEK per kW or kWh for battery or SEK per building in the case of BTES and RMMC
-         /PV 14196, BES 6000, HP 10000, BTES 35000, RMMC 500000, P2 7666, Turb 2250, AbsCInv 1800/
-*         Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
+         /PV 14196, BES 6000, HP 10000, BTES 35000, RMMC 500000, P2 7666, Turb 2250/
+         Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
 *                                 /PV 410, BES 400, HP 667, BTES 1166, RMMC 25000, P2 1533333, TURB 66666, AbsCInv 72.4/
 ;
 Acost_sup_unit(inv_opt) = cost_sup_unit(inv_opt) / lifetime_sup_unit(inv_opt);
