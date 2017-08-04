@@ -80,8 +80,8 @@ equation
            eq_mean_DH(d) daily mean power DH
            eq_PT_DH(d)      power tariff DH
 
-           eq_invCost    with aim to minimize total cost
-           eq_totCost    with aim to minimize total cost
+           eq_invCost    with aim to minimize investment cost
+           eq_totCost    with aim to minimize total cost including fuel and O&M
 ;
 
 *-----------------------------------------------------------------------------
@@ -166,11 +166,11 @@ eq_HP3(h)$(sw_HP eq 1)..
 *------------------TES equations------------------------------------------------
 
 eq_TESen1(h,i)$(ord(h) eq 1)..
-             TES_en('H1') =e= sw_TES*TES_cap*TES_density;
+             TES_en('H1') =e= sw_TES* TES_cap * TES_density;
 eq_TESen2(h)$(ord(h) gt 1)..
-             TES_en(h) =e= sw_TES*TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
+             TES_en(h) =e= sw_TES* TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
 eq_TESen3(h)$(sw_TES eq 1)..
-             TES_en(h) =l= sw_TES*TES_cap*TES_density;
+             TES_en(h) =l= sw_TES* TES_cap * TES_density;
 eq_TESch(h)$(sw_TES eq 1)..
              TES_ch(h) =l= sw_TES*TES_inv * TES_ch_max;
 eq_TESdis(h)$(sw_TES eq 1)..
@@ -317,18 +317,19 @@ eq_totCost..
                 + sw_AbsCInv * (B_AbsCInv *AbsCInv_fx + AbsCInv_cap * Acost_sup_unit('AbsCInv'))
                 ;
 
-
+* FIX: Remove hard coding of lifetimes and make it a set instead
+* check AbsCInv, needs work still.
 eq_invCost..
-         invCost =e= sw_HP*HP_cap*Acost_sup_unit('HP')*15
-                     + sw_PV*(sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*Acost_sup_unit('PV')*30
-                     + sw_BES*BES_cap*Acost_sup_unit('BES')*15
+         invCost =e= sw_HP*HP_cap*cost_sup_unit('HP')
+                     + sw_PV*(sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*cost_sup_unit('PV')
+                     + sw_BES*BES_cap*cost_sup_unit('BES')
                      + sw_TES*((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
-                     + sw_BTES*Acost_sup_unit('BTES')*sum(i,B_BITES(i))*30
-                     + sw_RMMC*RMMC_inv*Acost_sup_unit('RMMC')*20
-                     + sw_P2 * B_P2 * Acost_sup_unit('P2') * 30
-                     + sw_TURB * B_TURB * Acost_sup_unit('TURB') * 30
+                     + sw_BTES*cost_sup_unit('BTES')*sum(i,B_BITES(i))
+                     + sw_RMMC*RMMC_inv*cost_sup_unit('RMMC')
+                     + sw_P2 * B_P2 * cost_sup_unit('P2')
+                     + sw_TURB * B_TURB * cost_sup_unit('TURB')
                      + sw_AbsCInv * (B_AbsCInv *AbsCInv_fx + AbsCInv_cap * Acost_sup_unit('AbsCInv')) * 25
                      ;
 
-* Remove hard coding of lifetimes and make it a set instead
+
 ********************************************************************************

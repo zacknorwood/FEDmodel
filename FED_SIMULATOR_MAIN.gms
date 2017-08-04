@@ -64,10 +64,21 @@ FED_PE_ft(h)=e_exG.l(h)*PEF_exG(h)
 
 execute_unload 'GtoM' H_VKA1,C_VKA1,el_VKA1,q_P2, H_P2T, e_TURB, q_TURB,
                       H_VKA4,C_VKA4,el_VKA4,q_AbsC,k_AbsC,e_RM,k_RM, e_RMMC, k_RMMC,
-                      e_AAC,k_AAC, q_HP,e_HP, c_HP,HP_cap,TES_ch,TES_dis,TES_en,TES_cap,TES_inv,
+                      e_AAC,k_AAC, q_HP,e_HP, c_HP,HP_cap,TES_ch,TES_dis,TES_en,TES_cap,
                       BTES_Sch,BTES_Sdis,BTES_Sen,BTES_Den,BTES_Sloss,BTES_Dloss,
                       link_BS_BD, B_BITES, e_PV,PV_cap_roof,PV_cap_facade,BES_en,BES_ch,BES_dis,BES_cap,
                       FED_PE,FED_PE_ft,FED_CO2, e_exG, q_DH, q_AbsCInv, k_AbsCInv;
+
+execute_unload 'Display' HP_cap.l, inv_HP,
+                         PV_cap_roof.l,PV_cap_facade.l, inv_PV,
+                         BES_cap.l, inv_BEV,
+                         TES_cap.l, inv_TES,
+                         B_BITES.l, inv_BITES,
+                         inv_RMMC, inv_AbsCInv,
+                         AbsCInv_cap.l,B_AbsCInv.l,
+                         B_P2.l,B_TURB.l
+                         total_cap_PV_facade, total_cap_PV_roof,
+                         invCost.l;
 
 *display k_demand;
 *execute_unload "power_grid.gdx" P_DH, P_elec;
