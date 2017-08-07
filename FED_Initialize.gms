@@ -61,12 +61,32 @@ set
 ;
 
 Parameter
+
+* Investment costs from WP4_D4.2.1 prestudy report
+* PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 600, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
+* note: check AbsCInv and HP, sources?
+* cost_sup_unit(inv_opt) cost of the investment options in SEK per kW or kWh for battery or SEK per building in the case of BTES and RMMC
+*         /PV 14196, BES 6000, HP 10000, BTES 35000, RMMC 500000, P2 7666, Turb 2250/
+*         Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
+*                                 /PV 410, BES 400, HP 667, BTES 1166, RMMC 25000, P2 1533333, TURB 66666, AbsCInv 72.4/
+
+* Acost_sup_unit(inv_opt) = cost_sup_unit(inv_opt) / lifetime_sup_unit(inv_opt);
+*The annualized cost of the BTES is for a building 35000/30, assuming 30 years of technical life time
+*table technology(n1,head2) technology with annualised investment cost in (SEK per MW or MWh per year for i=5)
+*                            Price                    Lifetime      Annualised_Cost1       Annualised_Cost2        Annualised_Cost3
+*HP                          18000000                 15            1728000                2034000                 2358000
+*CHP                         3170000                  20            253600                 310660                  370890
+*TES                         10000                    25            710                    900                     1100
+*Battery                     12060000                 15            1157760                1362780                 1579860
+*Solar_PV                    18000000                 30            1170000                1530000                 1908000
+*RMMC2                       500000                   20
          cap_sup_unit(sup_unit)   operational capacity of the units
                      /PV 60, P1 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
          cost_inv_opt(inv_opt)    Investment costs of FED investment options in SEK per kW except RMMC which is a fixed cost
-                     /PV 12300, BES 6000, HP 10000, BTES 35000, RMMC 500000, P2 46000000, TURB 2000000, AbsCInv 1.81/
+                     /PV 14196, BES 6000, HP 10000, BTES 35000, RMMC 500000, P2 46000000, TURB 2000000, AbsCInv 1.81/
          lifT_inv_opt(inv_opt)    Life time of invetment options
                      /PV 30, BES 10, HP 15, TES 50, BTES 30, RMMC 20, P2 40, TURB 30, AbsCInv 25/;
+
 *--------------CHoice of investment options to consider-------------------------
 
 PARAMETERS
@@ -147,13 +167,17 @@ scalar
       RM_eff Coefficent of performance of AC /0.95/
 ;
 **************Investment options************************************************
+
 *----------------Absorption Chiller Investment----------------------------------
 *Assumed technical lifetime of 25 years, fixed investment cost 1610 kSek
 
 scalar
          AbsCInv_COP    Coefficient of performance for cooling /0.75/
+
+*        AbsCInv_fx     Fixed cost for investment in Abs chiller /64400/
+         AbsCInv_MaxCap Maximum possible investment in kW cooling /100000/
          AbsCInv_fx     Fixed cost for investment in Abs chiller /1610000/
-         AbsCInv_MaxCap Maximum possible investment in kW cooling /1000/
+
 ;
 *----------------Panna 2  ------------------------------------------------------
 
@@ -165,7 +189,7 @@ scalar
 
 scalar
       TURB_eff Efficiency of turbine /0.4/
-      TURB_cap Maximum power output of turbine /600/
+      TURB_cap Maximum power output of turbine /800/
 ;
 *--------------MC2 Refrigerator Machines, cooling source------------------------
 * Real capacity of RMMC is 4200 but since MC2 internal cooling demand isn't
@@ -184,6 +208,7 @@ scalar
       eta_Inverter efficiency of solar PV inverter and balance of system /0.96/
       eta_roof_data compensating for overestimated roof data /0.5/
       eta_facade_data compensating for underestimated facade data/2.0/
+      coef_temp_PV coefficient coupling irradiance and PV temperature /0.035/
 ;
 
 set coefs Coefficient numbering for PV calculations /1*6/
@@ -203,8 +228,10 @@ parameter
 ;
       Gekv_roof(h,BID)=abs(G_roof(h,BID))/Gstc;
       Gekv_facade(h,BID)=abs(G_facade(h,BID))/Gstc;
-      Tmod_roof(h,BID)=tout0(h)+0.035*G_roof(h,BID);
-      Tmod_facade(h,BID)=tout0(h)+0.035*G_facade(h,BID);
+
+      Tmod_roof(h,BID)=tout0(h)+coef_temp_PV*G_roof(h,BID);
+      Tmod_facade(h,BID)=tout0(h)+coef_temp_PV*G_facade(h,BID);
+
       Tekv_roof(h,BID)=Tmod_roof(h,BID) - Tstc;
       Tekv_facade(h,BID)=Tmod_facade(h,BID) - Tstc;
 *--------------HP constants and parameters (an investment options)-------------
@@ -219,9 +246,9 @@ scalar
 scalar
          TES_chr_eff           TES charging efficiency /0.95/
          TES_dis_eff           TES discharging efficiency/0.95/
-         TES_max_cap           Maximum capacity available in m3/1000/
+         TES_max_cap           Maximum capacity available in m3/100000/
          TES_density           Energy density at 35C temp diff according to BDAB/39/
-         TES_fx_cost           Fixed cost attributable to TES investment/4404119/
+         TES_fx_cost           Fixed cost attributable to TES investment/5732000/
          TES_vr_cost           Variable cost attributable to TES investment/1887/
          TES_dis_max           Maximum discharge rate in kWh per h/23000/
          TES_ch_max            Maximum charge rate in kWh per h/11000/
@@ -248,8 +275,8 @@ Parameters
          BTES_model(BTES_properties,i)
          BTES_Sen_int(i)      Initial energy stored in the shalow medium of the building
          BTES_Den_int(i)      Initial energy stored in the deep medium of the building
-         BTES_Sdis_eff        Discharge efficiency of the shallow midium
-         BTES_Sch_eff         Charging efficiency of the shallow midium
+         BTES_Sdis_eff        Discharge efficiency of the shallow medium
+         BTES_Sch_eff         Charging efficiency of the shallow medium
          BTES_Sch_max(h,i)    maximum charging limit
          BTES_Sdis_max(h,i)   maximum discharging limit
          BTES_kSloss(i)      loss coefficient-shallow
@@ -279,13 +306,15 @@ scalar
 *--------------set building energy demands--------------------------------------
 
 Parameter
-         q_demand(h,i)             heat demand in buildings as obtained from metrys for
-         q_demand_AH(h,i_AH)       heat demand in AH buildings as obtained from metrys for
-         q_demand_nonAH(h,i_nonAH) heat demand in non-AH buildings as obtained from metrys for
-         e_demand(h,i)             heat demand in buildings as obtained from metrys for
-         k_demand(h,i)             demand in buildings as obtained from metrys for 2016
-         k_demand_AH(h,i)          cool demand in AH buildings as obtained from metrys for 2016
-         k_demand_nonAH(h,i)       cool demand in nonAH buildings as obtained from metrys for 2016
+
+         q_demand(h,i)             heat demand in buildings as obtained from metry
+         q_demand_AH(h,i_AH)       heat demand in AH buildings as obtained from metry
+         q_demand_nonAH(h,i_nonAH) heat demand in non-AH buildings as obtained from metry
+         e_demand(h,i)             heat demand in buildings as obtained from metry
+         k_demand(h,i)             cool demand in buildings as obtained from metry and many estimations
+         k_demand_AH(h,i)          cool demand in AH buildings as obtained from metry and many estimations
+         k_demand_nonAH(h,i)       cool demand in non-AH buildings as obtained from metry and many estimations
+
 ;
 q_demand(h,i)=q_demand0(h,i);
 q_demand_AH(h,i_AH)=q_demand(h,i_AH);
@@ -306,6 +335,9 @@ parameter
          co2_cost(sup_unit,h)    CO2 cost
          utot_cost(sup_unit,h)   unit total cost of every production unit
          PT_cost(sup_unit)       Power tariff SEK per kW per month
+         
+         USD_to_SEK_2015 Exchange rate usd to sek 2015 /8.43/
+
 ;
 price('exG',h)=0.0031 + el_price0(h);
 price('DH',h)=q_price0(h);
@@ -316,13 +348,13 @@ fuel_cost('P1',h)=0.186;
 fuel_cost('P2',h)=0.186;
 var_cost(sup_unit,h)=0;
 
-*the data is obtained from IEA
-*An exchange rate of 8.43 (average in 2015) is used to convert usd to sek
-var_cost('CHP',h)=200*0.65*8.43;
-var_cost('P2',h)=200*0.65*8.43;
-var_cost('P1',h)=200*0.65*8.43;
-var_cost('PV',h)=16*8.43;
-var_cost('HP',h)=16*8.43;
+*O&M costs for CHP and PV from World Energy Outlook Power Generation Assumptions, turbine set to same as NG turbine, HP set to PV, and boiler to CHP - turbine.
+*WEO_2016_PG_Assumptions_NPSand450_Scenario.xlsb http://www.worldenergyoutlook.org/weomodel/investmentcosts/
+var_cost('CHP',h)=200*0.65*USD_to_SEK_2015;
+*var_cost('P2',h)=(var_cost('CHP',h)-20)*0.65*USD_to_SEK_2015;
+var_cost('P1',h)=(var_cost('CHP',h)-20)*0.65*USD_to_SEK_2015;
+var_cost('PV',h)=16*USD_to_SEK_2015;
+var_cost('HP',h)=16*USD_to_SEK_2015;
 
 en_tax(sup_unit,h)=0;
 en_tax('exG',h)=0.295;

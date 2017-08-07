@@ -78,8 +78,8 @@ equation
            eq_mean_DH(d) daily mean power DH
            eq_PT_DH(d)      power tariff DH
 
-           eq_invCost    with aim to minimize total cost
-           eq_totCost    with aim to minimize total cost
+           eq_invCost    with aim to minimize investment cost
+           eq_totCost    with aim to minimize total cost including fuel and O&M
            eq_CO2_tot    with aim to minimize total FED CO2 emission
 
            eq_obj        Objective function
@@ -167,11 +167,13 @@ eq_HP3(h)$(sw_HP eq 1)..
 *------------------TES equations------------------------------------------------
 
 eq_TESen1(h,i)$(ord(h) eq 1)..
+
              TES_en('1') =e= sw_TES*TES_cap*TES_density;
+
 eq_TESen2(h)$(ord(h) gt 1)..
-             TES_en(h) =e= sw_TES*TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
+             TES_en(h) =e= sw_TES* TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
 eq_TESen3(h)$(sw_TES eq 1)..
-             TES_en(h) =l= sw_TES*TES_cap*TES_density;
+             TES_en(h) =l= sw_TES* TES_cap * TES_density;
 eq_TESch(h)$(sw_TES eq 1)..
              TES_ch(h) =l= sw_TES*TES_inv * TES_ch_max;
 eq_TESdis(h)$(sw_TES eq 1)..
@@ -300,7 +302,7 @@ eq_totCost..
                 + sum(m,PT_exG(m)) + PT_DH
 
                 + sw_HP*HP_cap*cost_inv_opt('HP')/lifT_inv_opt('HP')
-                + sw_PV*PV_cap_temp*cost_inv_opt('PV')/lifT_inv_opt('PV')
+                + sw_PV*(sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*cost_sup_unit('PV')
                 + sw_BES*BES_cap*cost_inv_opt('BES')/lifT_inv_opt('BES')
                 + sw_TES*(TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/lifT_inv_opt('TES')
                 + sw_BTES*cost_inv_opt('BTES')*sum(i,B_BITES(i))/lifT_inv_opt('BTES')
@@ -328,4 +330,5 @@ eq_CO2_TOT..
 
 eq_obj..
          obj =e= min_totCost*totCost + min_invCost*invCost + min_totCO2*FED_CO2_tot;
+
 ********************************************************************************
