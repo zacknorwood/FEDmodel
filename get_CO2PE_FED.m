@@ -73,7 +73,7 @@ fgc_heat_2016(isnan(fgc_heat_2016))=0;
 q_P1=tb_heat_2016+fgc_heat_2016;         %total heat production
 
 tb_eff=0.9;  %assumed efficiency of the boiler, can be modified
-fgc_eff=0.9; %assumed efficiency of the fuel gas condencer, can be modified
+fgc_eff=0.4; %assumed efficiency of the fuel gas condencer, can be modified
 P1=tb_heat_2016/tb_eff + fgc_heat_2016/fgc_eff;   %estimated fuel consumption
 %% Calculate the CO2 and PE of FED
 
