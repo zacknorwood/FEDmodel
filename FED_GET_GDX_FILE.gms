@@ -44,30 +44,6 @@ PARAMETERS  HoD(h0,d0)        Hour of the day
             CO2F_exG0(h0)     CO2 FACTOR of external ELECTRICTY GRID
 
 ;
-
-*load date vectors for power tariffs
-PARAMETERS  HoD(h0,d0)        Hour of the day
-PARAMETERS  HoM(h0,m0)        Hour of the month
-PARAMETERS  el_demand0(h0,b0) ELECTRICITY DEMAND IN THE FED BUILDINGS
-PARAMETERS  q_demand0(h0,b0)  Heating DEMAND IN THE FED BUILDINGS
-PARAMETERS  k_demand0(h0,b0)  Heating DEMAND IN THE FED BUILDINGS
-Parameter   q_p1_TB0(h0)      PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
-Parameter   q_p1_FGC0(h0)     SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER (FUEL GAS CONDENCER)
-Parameter   el_price0(h0)     ELECTRICTY PRICE IN THE EXTERNAL GRID
-Parameter   q_price0(h0)      ELECTRICTY PRICE IN THE IN THE EXTERNAL DH SYSTEM
-Parameter   tout0(h0)         OUT DOOR TEMPRATTURE
-PARAMETERS  G_facade(h0,BID)  irradiance on building facades
-PARAMETERS  area_facade_max(BID) irradiance on building facades
-PARAMETERS  G_roof(h0,BID)    irradiance on building facades
-PARAMETERS  area_roof_max(BID) irradiance on building facades
-Parameter   nPV_el0(h0)       ELECTRICTY OUTPUT FROM A UNIT PV PANAEL
-parameter   BTES_model0(BTES_properties0,b0) BUILDING INERTIA TES PROPERTIES
-Parameter   PEF_DH0(h0)       PE FACTOR of external DH system
-Parameter   PEF_exG0(h0)      PE FACTOR of external electrical system
-Parameter   CO2F_DH0(h0)      CO2 FACTOR of external DH system
-Parameter   CO2F_exG0(h0)     CO2 FACTOR of external ELECTRICTY GRID
-
-;
 $GDXIN FED_INPUT_DATA.gdx
 $LOAD HoD
 $LOAD HoM
@@ -85,6 +61,7 @@ $LOAD nPV_el0
 $LOAD BTES_model0
 $GDXIN
 display el_demand0,q_demand0, k_demand0;
+
 parameters  FED_PE_base        Primary energy use in the FED system in the base case
             FED_CO2Peak_base   Peak CO2 emission in the FED system in the base case
             CO2F_PV            CO2 factor of solar PV
@@ -97,9 +74,14 @@ parameters  FED_PE_base        Primary energy use in the FED system in the base 
             PEF_exG(h0)        PE factor of the electricity grid
             CO2F_DH(h0)        CO2 factor of the electricity grid
             PEF_DH(h0)         PE factor of the electricity grid
+            q_p1_TB0(h0)       PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
+            q_p1_FGC0(h0)      SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER (FUEL GAS CONDENCER)
+            fuel_P1(h0)        Input fuel of THE THERMAL BOILER
             min_totCost        Option to minimize total cost
             min_invCost        OPtion to minimize investment cost
             min_totCO2         OPtion to minimize total CO2 emission
+            CO2_ref            Reference value of CO2 peak
+            inv_lim            Maximum value of the investment in SEK
 ;
 $GDXIN MtoG.gdx
 $LOAD FED_PE_base
@@ -114,12 +96,18 @@ $LOAD CO2F_exG
 $LOAD PEF_exG
 $LOAD CO2F_DH
 $LOAD PEF_DH
+$LOAD q_p1_TB0
+$LOAD q_p1_FGC0
+$LOAD fuel_P1
 $LOAD min_totCost
 $LOAD min_invCost
 $LOAD min_totCO2
+$LOAD CO2_ref
+$LOAD inv_lim
 $GDXIN
 
-display HoD, HoM,
+display min_totCost,min_invCost, min_totCO2
+        HoD, HoM,
         el_demand0, q_demand0, k_demand0,
         q_p1_TB0, q_p1_FGC0,
         el_price0, q_price0, tout0,
