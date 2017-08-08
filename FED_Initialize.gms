@@ -8,24 +8,11 @@
 $Include FED_GET_GDX_FILE
 *-------------SET THE LENGTH OF INPUT DATA USED FOR SIMULATION------------------
 
+alias (h0,h);
+alias (b0,i);
+display h0,i;
+
 set
-        h(h0)                 Number of hours                     /1*8760/
-        i(b0)                 Buildings considered in the FED system
-                              /O0007001-Fysikorigo, O0007005-Polymerteknologi,
-                              O0007006-NyaMatte,  O0007012-Elkraftteknik,
-                              O0007014-GibraltarHerrgrd, O0007017-Chalmersbibliotek,
-                              O0007018-Idelra,  O0007019-CentralaAdministrationen,
-                              O0007021-HrsalarHC,  O0007022-HrsalarHA,
-                              O0007023-Vg-och-vatten1,   O0007024-EDIT,
-                              O0007025-HrsalarHB,   O0007026-Arkitektur,
-                              O0007027-Vg-och-vatten2, O0007028-Maskinteknik,
-                              O0007040-GamlaMatte,  O0007043-PhusCampusJohanneberg,
-                              O0007888-LokalkontorAH, O0011001-FysikSoliden,
-                              O0013001-Keramforskning, O3060132-Kemi-och-bioteknik-cfab,
-                              O3060133-FysikMC2,  O3060150_1-Krhuset,
-                              O3060137-CTP,  O3060138-JSP, O3060101-Vasa1,
-                              O3060102_3-Vasa-2-3, O3060104_15-Vasa-4-15, O4002700-Chabo
-                              /
         i_AH(i)               AH buildings
                               /O0007001-Fysikorigo, O0007005-Polymerteknologi
                               O0007006-NyaMatte,  O0007012-Elkraftteknik,
@@ -102,18 +89,7 @@ nPV_ird(h)=nPV_el0(h);
 e0_PV(h)=cap_sup_unit('PV')*nPV_ird(h);
 *--------------Existing Thermal boiler constants and parameters (P1)------------
 
-scalar
-         p1_eff_TB   Efficiency of primary heat converssion /0.9/
-         p1_eff_FGC  Efficiency of secondary heat converssion /0.9/
-;
-Parameter
-         q_p1_TB(h)  PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
-         q_p1_FGC(h) SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER
-         q_p1(h)     Input fuel of THE THERMAL BOILER
-;
-q_p1_TB(h) = q_p1_TB0(h);
-q_p1_FGC(h) = q_p1_FGC0(h);
-q_p1(h)=(q_p1_TB(h)/p1_eff_TB) + (q_p1_FGC(h)/p1_eff_FGC);
+*This data is imported from MATLAB and stored in MtoG
 *--------------VKA4 constants and parameters------------------------------------
 
 scalar
