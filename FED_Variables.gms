@@ -123,8 +123,6 @@ B_BITES.fx(i_nonBITES)=0;
 
 positive variable
          e_PV(h)            electricity produced by PV
-         e_PV_temp(h)
-         PV_cap_temp
          PV_cap_roof(BID)   capacity of solar modules on roof
          PV_cap_facade(BID) capacity of solar modules on facade
 ;
