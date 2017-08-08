@@ -63,28 +63,26 @@ heat_Exmport_2016=1000*xlsread('Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx',she
 
 sheet=4;
 xlRange = 'B4:B8763';
-tb_heat_2016=xlsread('Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx',sheet,xlRange); %electricity demand in the FED system, 2016 kWh
+tb_heat_2016=1000*xlsread('Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx',sheet,xlRange); %electricity demand in the FED system, 2016 kWh
 tb_heat_2016(isnan(tb_heat_2016))=0;
 
 sheet=4;
 xlRange = 'C4:C8763';
-fgc_heat_2016=xlsread('Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx',sheet,xlRange); %electricity demand in the FED system, 2016 kWh
+fgc_heat_2016=1000*xlsread('Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx',sheet,xlRange); %electricity demand in the FED system, 2016 kWh
 fgc_heat_2016(isnan(fgc_heat_2016))=0;
 q_P1=tb_heat_2016+fgc_heat_2016;         %total heat production
 
-tb_eff=0.9;  %assumed efficiency of the boiler, can be modified
-fgc_eff=0.4; %assumed efficiency of the fuel gas condencer, can be modified
-P1=tb_heat_2016/tb_eff + fgc_heat_2016/fgc_eff;   %estimated fuel consumption
+fuel_P1=tb_heat_2016/tb_eff + fgc_heat_2016/fgc_eff;   %estimated fuel consumption
 %% Calculate the CO2 and PE of FED
 
 % Calculate FED CO2 emission
 %the existing CHP unit is assumed to be out of survice
 FED_CO2=el_Import_2016.*el_exGCO2F + el_pv.*CO2F_PV...
-        + heat_Import_2016.*DH_CO2F + P1*CO2F_P1;
+        + heat_Import_2016.*DH_CO2F + fuel_P1*CO2F_P1;
 FED_CO2(isnan(FED_CO2))=0;
 
 % Calculate FED PE use
 %the existing CHP unit is assumed to be out of survice
 FED_PE=el_Import_2016.*el_exGPEF + el_pv.*PEF_PV ...
-      + heat_Import_2016.*DH_PEF + P1*PEF_P1;
+      + heat_Import_2016.*DH_PEF + fuel_P1*PEF_P1;
 FED_PE(isnan(FED_PE))=0;
