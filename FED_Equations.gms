@@ -213,8 +213,6 @@ eq_BES_dis(h)..
              BES_dis(h)=l=sw_BES*BES_en(h);
 
 *-----------------Solar PV equations--------------------------------------------
-eq_PV_temp(h)..
-             e_PV_temp(h) =e=PV_cap_temp*nPV_el0(h);
 eq_PV(h)..
              e_PV(h) =e= sw_PV*eta_Inverter * (sum(BID$(Gekv_roof(h,BID) ne 0),
                                                         eta_roof_data*PV_cap_roof(BID)*Gekv_roof(h,BID)*(1
@@ -259,7 +257,7 @@ eq_kbalance(h)..
 
 eq_ebalance(h)..
         sum(i,e_demand(h,i)) =l= e_exG(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
-                                 + e0_PV(h) + sw_PV*e_PV_temp(h) - sw_HP*e_HP(h)
+                                 + e0_PV(h) + sw_PV*e_PV(h) - sw_HP*e_HP(h)
                                  + sw_BTES*(BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff)
                                  + sw_TURB * e_TURB(h);
 *--------------FED Primary energy use-------------------------------------------
