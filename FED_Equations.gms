@@ -324,6 +324,9 @@ eq_CO2_TOT..
          FED_CO2_tot =e= sum(h, FED_CO2(h));
 ****************Objective function**********************************************
 
+min_totCost=0;
+min_invCost=1;
+min_totCO2=0;
 eq_obj..
          obj =e= min_totCost*totCost + min_invCost*invCost + min_totCO2*FED_CO2_tot;
 ********************************************************************************

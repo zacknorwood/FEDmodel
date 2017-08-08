@@ -52,7 +52,7 @@ parameter FED_PE_ft(h)  Primary energy as a function of time
 ;
 FED_PE_ft(h)=e_exG.l(h)*PEF_exG(h)
              + e0_PV(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
-             + q_DH.l(h)*PEF_DH(h) + q_P1(h)*PEF_P1;
+             + q_DH.l(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1;
 
 
 
