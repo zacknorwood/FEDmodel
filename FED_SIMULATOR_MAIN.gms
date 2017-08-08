@@ -34,14 +34,14 @@ invCost_TURB    investment cost of turbine
 total_cap_PV_roof   total capacity in kW
 total_cap_PV_facade total capacity in kW
 ;
-invCost_HP=sw_HP*HP_cap.l*cost_inv_opt('HP');
-invCost_PV= sw_PV*PV_cap_temp.l*cost_inv_opt('PV');
-invCost_BEV=sw_BES*BES_cap.l*cost_inv_opt('BES');
-invCost_TES=sw_TES*(TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
-invCost_BITES=sw_BTES*cost_inv_opt('BTES')*sum(i,B_BITES.l(i));
-invCost_RMMC=sw_RMMC*cost_inv_opt('RMMC')*RMMC_inv.l;
-invCost_P2=sw_P2 * B_P2.l * cost_inv_opt('P2');
-invCost_TURB=sw_TURB * B_TURB.l * cost_inv_opt('TURB');
+invCost_HP = sw_HP*HP_cap.l*cost_inv_opt('HP');
+invCost_PV = sw_PV*sum(BID, sw_PV*PV_cap_roof.l(BID)*cost_inv_opt('PV')) + sw_PV*sum(BID, sw_PV*PV_cap_facade.l(BID)*cost_inv_opt('PV')) ;
+invCost_BEV = sw_BES*BES_cap.l*cost_inv_opt('BES');
+invCost_TES = sw_TES*(TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
+invCost_BITES = sw_BTES*cost_inv_opt('BTES')*sum(i,B_BITES.l(i));
+invCost_RMMC = sw_RMMC*cost_inv_opt('RMMC')*RMMC_inv.l;
+invCost_P2 = sw_P2 * B_P2.l * cost_inv_opt('P2');
+invCost_TURB = sw_TURB * B_TURB.l * cost_inv_opt('TURB');
 invCost_AbsCInv = sw_AbsCInv * (B_AbsCInv.l *AbsCInv_fx + AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
 *total_cap_PV_roof=sum(BID, PV_cap_roof.l(BID));
 *total_cap_PV_facade=sum(BID, PV_cap_facade.l(BID));
@@ -65,7 +65,7 @@ execute_unload 'GtoM' H_VKA1, C_VKA1, el_VKA1,
                       q_HP, e_HP, c_HP, HP_cap, invCost_HP,
                       TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES,
                       BTES_Sch, BTES_Sdis, BTES_Sen, BTES_Den, BTES_Sloss, BTES_Dloss, link_BS_BD, B_BITES, invCost_BITES,
-                      e_PV, PV_cap_temp, PV_cap_roof,PV_cap_facade, invCost_PV,
+                      e_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
                       BES_en, BES_ch, BES_dis, BES_cap, invCost_BEV,
                       FED_PE, FED_PE_ft,
                       FED_CO2,
