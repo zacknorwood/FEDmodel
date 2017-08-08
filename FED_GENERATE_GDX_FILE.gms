@@ -171,9 +171,9 @@ display BTES_model0;
 
 *----------------Store input data as GDX to be used in the rest of the routines-
 execute_unload 'FED_INPUT_DATA'
+                            h0, b0, m0, d0, BID, BTES_properties0
                             HoD, HoM,
                             el_demand0, q_demand0, k_demand0,
-                            q_p1_TB0, q_p1_FGC0,
                             el_price0, q_price0,
                             tout0,
                             nPV_el0,

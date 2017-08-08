@@ -23,30 +23,26 @@ $LOAD BID
 $LOAD BTES_properties0
 $GDXIN
 
-*----------------Load input parameters of the model-----------------------------
-SET h0  length of the input data in hours /1*8760/
-    b0  buildings considered in the FED system    /O0007001-Fysikorigo, O0007005-Polymerteknologi
-                                           O0007006-NyaMatte,  O0007012-Elkraftteknik,
-                                           O0007014-GibraltarHerrgrd, O0007017-Chalmersbibliotek,
-                                           O0007018-Idelra,  O0007019-CentralaAdministrationen,
-                                           O0007021-HrsalarHC,  O0007022-HrsalarHA,
-                                           O0007023-Vg-och-vatten1,   O0007024-EDIT,
-                                           O0007025-HrsalarHB,   O0007026-Arkitektur,
-                                           O0007027-Vg-och-vatten2, O0007028-Maskinteknik,
-                                           O0007040-GamlaMatte,  O0007043-PhusCampusJohanneberg,
-                                           O0007888-LokalkontorAH, O0011001-FysikSoliden,
-                                           O0013001-Keramforskning, O3060132-Kemi-och-bioteknik-cfab,
-                                           O3060133-FysikMC2,  O3060150_1-Krhuset,
-                                           O3060137-CTP,  O3060138-JSP, O3060101-Vasa1,
-                                           O3060102_3-Vasa-2-3, O3060104_15-Vasa-4-15, O4002700-Chabo
-                                          /
-    m0  Number of month                  /1*12/
-    d0  Number of days                   /1*365/
-    BID Building IDs used for PV calculations /1*70/
+*load date vectors for power tariffs
+PARAMETERS  HoD(h0,d0)        Hour of the day
+            HoM(h0,m0)        Hour of the month
+            el_demand0(h0,b0) ELECTRICITY DEMAND IN THE FED BUILDINGS
+            q_demand0(h0,b0)  Heating DEMAND IN THE FED BUILDINGS
+            k_demand0(h0,b0)  Heating DEMAND IN THE FED BUILDINGS
+            el_price0(h0)     ELECTRICTY PRICE IN THE EXTERNAL GRID
+            q_price0(h0)      ELECTRICTY PRICE IN THE IN THE EXTERNAL DH SYSTEM
+            tout0(h0)         OUT DOOR TEMPRATTURE
+            G_facade(h0,BID)  irradiance on building facades
+            area_facade_max(BID) irradiance on building facades
+            G_roof(h0,BID)    irradiance on building facades
+            area_roof_max(BID) irradiance on building facades
+            nPV_el0(h0)       ELECTRICTY OUTPUT FROM A UNIT PV PANAEL
+            BTES_model0(BTES_properties0,b0) BUILDING INERTIA TES PROPERTIES
+            PEF_DH0(h0)       PE FACTOR of external DH system
+            PEF_exG0(h0)      PE FACTOR of external electrical system
+            CO2F_DH0(h0)      CO2 FACTOR of external DH system
+            CO2F_exG0(h0)     CO2 FACTOR of external ELECTRICTY GRID
 
-    BTES_properties0  Building Inertia TES properties
-                      /BTES_Scap, BTES_Dcap, BTES_Esig, BTES_Sch_hc, BTES_Sdis_hc,
-                      kloss_Sday,  kloss_Snight, kloss_D, K_BS_BD/
 ;
 
 *load date vectors for power tariffs
@@ -78,8 +74,6 @@ $LOAD HoM
 $LOAD el_demand0
 $LOAD q_demand0
 $LOAD k_demand0
-$LOAD q_p1_TB0
-$LOAD q_p1_FGC0
 $LOAD el_price0
 $LOAD q_price0
 $LOAD tout0
