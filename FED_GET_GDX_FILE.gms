@@ -4,9 +4,24 @@
 
 *THIS ROUTINE IS USED TO GET INPUT DATA USED IN THE MAIN MODEL IN GDX FORMAT
 
-*-If there is change in any of the input data (see the parameter list below), uncomment 'FED_GENERATE_GDX_FILE'
+*-If there is change in any of the input data (see the parameter list below), run 'FED_GENERATE_GDX_FILE' to update 'FED_INPUT_DATA'
+*----------------Load input parameters of the model-----------------------------
+SET h0  length of the input data in hours
+    b0  buildings considered in the FED system
+    m0  Number of month
+    d0  Number of days
+    BID Building IDs used for PV calculations
+    BTES_properties0  Building Inertia TES properties
+;
 
-*FED_GENERATE_GDX_FILE
+$GDXIN FED_INPUT_DATA.gdx
+$LOAD h0
+$LOAD b0
+$LOAD m0
+$LOAD d0
+$LOAD BID
+$LOAD BTES_properties0
+$GDXIN
 
 *----------------Load input parameters of the model-----------------------------
 SET h0  length of the input data in hours /1*8760/
