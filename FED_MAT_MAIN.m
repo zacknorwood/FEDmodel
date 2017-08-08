@@ -20,7 +20,7 @@ fgc_eff=0.4;         %assumed efficiency of the fuel gas condencer, can be modif
 
 %calculate new values
 SAVE_data=1;
-NEW_data=1;
+NEW_data=0;
 
 while NEW_data==1
     get_CO2PE_FED;   %this routine calculates the CO2 and PE factors of the external grid also
