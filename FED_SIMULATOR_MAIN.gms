@@ -71,7 +71,7 @@ execute_unload 'GtoM' H_VKA1, C_VKA1, el_VKA1,
                       FED_CO2,
                       e_exG,
                       q_DH,
-                      PT_exG, PT_DH;
+                      PT_exG, PT_DH, invCost;
 
 *display k_demand;
 *execute_unload "power_grid.gdx" P_DH, P_elec;
