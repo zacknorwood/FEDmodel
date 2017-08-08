@@ -315,15 +315,11 @@ utot_cost(sup_unit,h)=price(sup_unit,h) + fuel_cost(sup_unit,h)
 
 scalar
          PE_lim     Desired or limiting value of PE
-         CO2_ref    Reference value of CO2 peak
          dCO2       Delta CO2
          CO2_lim    Desired or limiting value of CO2
 ;
 
 PE_lim=(1-0.3)*FED_PE_base;
-CO2_ref=0.95*FED_CO2Peak_base;
 dCO2=FED_CO2Peak_base-CO2_ref;
 CO2_lim=CO2_ref+0.2*dCO2;
 *--------------Limit on investment----------------------------------------------
-
-scalar inv_lim  Maximum value of the investment in SEK /76761000/;
