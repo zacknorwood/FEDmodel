@@ -264,15 +264,15 @@ eq_ebalance(h)..
 
 eq_PE..
        FED_PE =e= sum(h,e_exG(h)*PEF_exG(h))
-                  + sum(h,e0_PV(h)*PEF_PV) + sw_PV*sum(h,e_PV_temp(h)*PEF_PV)
-                  + sum(h,q_DH(h)*PEF_DH(h)) + sum(h,q_P1(h)*PEF_P1)
+                  + sum(h,e0_PV(h)*PEF_PV) + sw_PV*sum(h,e_PV(h)*PEF_PV)
+                  + sum(h,q_DH(h)*PEF_DH(h)) + sum(h,fuel_P1(h)*PEF_P1)
                   + sum(h,q_P2(h)*PEF_P2);
 *---------------FED CO2 emission------------------------------------------------
 
 eq_CO2(h)..
        FED_CO2(h) =e= e_exG(h)*CO2F_exG(h)
-                      + e0_PV(h)*CO2F_PV + sw_PV*e_PV_temp(h)*CO2F_PV
-                      + q_DH(h)*CO2F_DH(h) + q_P1(h)*CO2F_P1
+                      + e0_PV(h)*CO2F_PV + sw_PV*e_PV(h)*CO2F_PV
+                      + q_DH(h)*CO2F_DH(h) + fuel_P1(h)*CO2F_P1
                       + q_P2(h) * CO2F_P2;
 **************** Power tariffs *******************
 
@@ -291,13 +291,14 @@ eq_PT_DH(d)..
 eq_totCost..
          totCost =e= sum(h,q_DH(h)*utot_cost('DH',h))
                 + sum(h,e_exG(h)*utot_cost('exG',h))
-                + sum(h,q_P1(h)*utot_cost('P1',h))
+                + sum(h,fuel_P1(h)*utot_cost('P1',h))
                 + sum(h, q_P2(h)*utot_cost('P2',h))
 
                 + sum(m,PT_exG(m)) + PT_DH
 
                 + sw_HP*HP_cap*cost_inv_opt('HP')/lifT_inv_opt('HP')
-                + sw_PV*PV_cap_temp*cost_inv_opt('PV')/lifT_inv_opt('PV')
+                + sw_PV*sum(BID, sw_PV*PV_cap_roof(BID)*cost_inv_opt('PV'))/lifT_inv_opt('PV')
+                + sw_PV*sum(BID, sw_PV*PV_cap_facade(BID)*cost_inv_opt('PV'))/lifT_inv_opt('PV')
                 + sw_BES*BES_cap*cost_inv_opt('BES')/lifT_inv_opt('BES')
                 + sw_TES*(TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/lifT_inv_opt('TES')
                 + sw_BTES*cost_inv_opt('BTES')*sum(i,B_BITES(i))/lifT_inv_opt('BTES')
@@ -309,7 +310,7 @@ eq_totCost..
 
 eq_invCost..
          invCost =e= sw_HP*HP_cap*cost_inv_opt('HP')
-                     + sw_PV*PV_cap_temp*cost_inv_opt('PV')
+                     + sw_PV*(sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*cost_inv_opt('PV')
                      + sw_BES*BES_cap*cost_inv_opt('BES')
                      + sw_TES*((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
                      + sw_BTES*cost_inv_opt('BTES')*sum(i,B_BITES(i))
