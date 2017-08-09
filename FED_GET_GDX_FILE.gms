@@ -4,57 +4,44 @@
 
 *THIS ROUTINE IS USED TO GET INPUT DATA USED IN THE MAIN MODEL IN GDX FORMAT
 
-*-If there is change in any of the input data (see the parameter list below), uncomment 'FED_GENERATE_GDX_FILE'
-
-*FED_GENERATE_GDX_FILE
-
+*-If there is change in any of the input data (see the parameter list below), run 'FED_GENERATE_GDX_FILE' to update 'FED_INPUT_DATA'
 *----------------Load input parameters of the model-----------------------------
-SET h0  length of the input data in hours /1*8760/
-    b0  buildings considered in the FED system    /O0007001-Fysikorigo, O0007005-Polymerteknologi
-                                           O0007006-NyaMatte,  O0007012-Elkraftteknik,
-                                           O0007014-GibraltarHerrgrd, O0007017-Chalmersbibliotek,
-                                           O0007018-Idelra,  O0007019-CentralaAdministrationen,
-                                           O0007021-HrsalarHC,  O0007022-HrsalarHA,
-                                           O0007023-Vg-och-vatten1,   O0007024-EDIT,
-                                           O0007025-HrsalarHB,   O0007026-Arkitektur,
-                                           O0007027-Vg-och-vatten2, O0007028-Maskinteknik,
-                                           O0007040-GamlaMatte,  O0007043-PhusCampusJohanneberg,
-                                           O0007888-LokalkontorAH, O0011001-FysikSoliden,
-                                           O0013001-Keramforskning, O3060132-Kemi-och-bioteknik-cfab,
-                                           O3060133-FysikMC2,  O3060150_1-Krhuset,
-                                           O3060137-CTP,  O3060138-JSP, O3060101-Vasa1,
-                                           O3060102_3-Vasa-2-3, O3060104_15-Vasa-4-15, O4002700-Chabo
-                                          /
-    m0  Number of month                  /1*12/
-    d0  Number of days                   /1*365/
-    BID Building IDs used for PV calculations /1*70/
-
+SET h0  length of the input data in hours
+    b0  buildings considered in the FED system
+    m0  Number of month
+    d0  Number of days
+    BID Building IDs used for PV calculations
     BTES_properties0  Building Inertia TES properties
-                      /BTES_Scap, BTES_Dcap, BTES_Esig, BTES_Sch_hc, BTES_Sdis_hc,
-                      kloss_Sday,  kloss_Snight, kloss_D, K_BS_BD/
 ;
+
+$GDXIN FED_INPUT_DATA.gdx
+$LOAD h0
+$LOAD b0
+$LOAD m0
+$LOAD d0
+$LOAD BID
+$LOAD BTES_properties0
+$GDXIN
 
 *load date vectors for power tariffs
 PARAMETERS  HoD(h0,d0)        Hour of the day
-PARAMETERS  HoM(h0,m0)        Hour of the month
-PARAMETERS  el_demand0(h0,b0) ELECTRICITY DEMAND IN THE FED BUILDINGS
-PARAMETERS  q_demand0(h0,b0)  Heating DEMAND IN THE FED BUILDINGS
-PARAMETERS  k_demand0(h0,b0)  Heating DEMAND IN THE FED BUILDINGS
-Parameter   q_p1_TB0(h0)      PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
-Parameter   q_p1_FGC0(h0)     SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER (FUEL GAS CONDENCER)
-Parameter   el_price0(h0)     ELECTRICTY PRICE IN THE EXTERNAL GRID
-Parameter   q_price0(h0)      ELECTRICTY PRICE IN THE IN THE EXTERNAL DH SYSTEM
-Parameter   tout0(h0)         OUT DOOR TEMPRATTURE
-PARAMETERS  G_facade(h0,BID)  irradiance on building facades
-PARAMETERS  area_facade_max(BID) irradiance on building facades
-PARAMETERS  G_roof(h0,BID)    irradiance on building facades
-PARAMETERS  area_roof_max(BID) irradiance on building facades
-Parameter   nPV_el0(h0)       ELECTRICTY OUTPUT FROM A UNIT PV PANAEL
-parameter   BTES_model0(BTES_properties0,b0) BUILDING INERTIA TES PROPERTIES
-Parameter   PEF_DH0(h0)       PE FACTOR of external DH system
-Parameter   PEF_exG0(h0)      PE FACTOR of external electrical system
-Parameter   CO2F_DH0(h0)      CO2 FACTOR of external DH system
-Parameter   CO2F_exG0(h0)     CO2 FACTOR of external ELECTRICTY GRID
+            HoM(h0,m0)        Hour of the month
+            el_demand0(h0,b0) ELECTRICITY DEMAND IN THE FED BUILDINGS
+            q_demand0(h0,b0)  Heating DEMAND IN THE FED BUILDINGS
+            k_demand0(h0,b0)  Heating DEMAND IN THE FED BUILDINGS
+            el_price0(h0)     ELECTRICTY PRICE IN THE EXTERNAL GRID
+            q_price0(h0)      ELECTRICTY PRICE IN THE IN THE EXTERNAL DH SYSTEM
+            tout0(h0)         OUT DOOR TEMPRATTURE
+            G_facade(h0,BID)  irradiance on building facades
+            area_facade_max(BID) irradiance on building facades
+            G_roof(h0,BID)    irradiance on building facades
+            area_roof_max(BID) irradiance on building facades
+            nPV_el0(h0)       ELECTRICTY OUTPUT FROM A UNIT PV PANAEL
+            BTES_model0(BTES_properties0,b0) BUILDING INERTIA TES PROPERTIES
+            PEF_DH0(h0)       PE FACTOR of external DH system
+            PEF_exG0(h0)      PE FACTOR of external electrical system
+            CO2F_DH0(h0)      CO2 FACTOR of external DH system
+            CO2F_exG0(h0)     CO2 FACTOR of external ELECTRICTY GRID
 
 ;
 $GDXIN FED_INPUT_DATA.gdx
@@ -63,8 +50,6 @@ $LOAD HoM
 $LOAD el_demand0
 $LOAD q_demand0
 $LOAD k_demand0
-$LOAD q_p1_TB0
-$LOAD q_p1_FGC0
 $LOAD el_price0
 $LOAD q_price0
 $LOAD tout0
@@ -76,6 +61,7 @@ $LOAD nPV_el0
 $LOAD BTES_model0
 $GDXIN
 display el_demand0,q_demand0, k_demand0;
+
 parameters  FED_PE_base        Primary energy use in the FED system in the base case
             FED_CO2Peak_base   Peak CO2 emission in the FED system in the base case
             CO2F_PV            CO2 factor of solar PV
@@ -88,9 +74,14 @@ parameters  FED_PE_base        Primary energy use in the FED system in the base 
             PEF_exG(h0)        PE factor of the electricity grid
             CO2F_DH(h0)        CO2 factor of the electricity grid
             PEF_DH(h0)         PE factor of the electricity grid
+            q_p1_TB0(h0)       PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
+            q_p1_FGC0(h0)      SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER (FUEL GAS CONDENCER)
+            fuel_P1(h0)        Input fuel of THE THERMAL BOILER
             min_totCost        Option to minimize total cost
             min_invCost        OPtion to minimize investment cost
             min_totCO2         OPtion to minimize total CO2 emission
+            CO2_ref            Reference value of CO2 peak
+            inv_lim            Maximum value of the investment in SEK
 ;
 $GDXIN MtoG.gdx
 $LOAD FED_PE_base
@@ -105,12 +96,18 @@ $LOAD CO2F_exG
 $LOAD PEF_exG
 $LOAD CO2F_DH
 $LOAD PEF_DH
+$LOAD q_p1_TB0
+$LOAD q_p1_FGC0
+$LOAD fuel_P1
 $LOAD min_totCost
 $LOAD min_invCost
 $LOAD min_totCO2
+$LOAD CO2_ref
+$LOAD inv_lim
 $GDXIN
 
-display HoD, HoM,
+display min_totCost,min_invCost, min_totCO2
+        HoD, HoM,
         el_demand0, q_demand0, k_demand0,
         q_p1_TB0, q_p1_FGC0,
         el_price0, q_price0, tout0,

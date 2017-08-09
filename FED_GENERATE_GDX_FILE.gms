@@ -67,6 +67,19 @@ k_demand0(h0,b0)=1000*k_demand0(h0,b0);
 display k_demand0;
 *----------------HEAT GENERATION FROM THERMAL BOILER (TB) AND FUEL GAS CONDENCER (FGC)
 
+$call =xls2gms "I=Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx" R=tb_2016_est_gams!A4:B8765 "O=q_P1_TB0.gdx"
+Parameter q_P1_TB0(h0) PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
+/
+$include q_P1_TB0.gdx
+/;
+display q_P1_TB0;
+
+$call =xls2gms "I=Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx" R=fgc_2016_est_gams!A4:B8765 "O=q_P1_FGC0.gdx"
+Parameter q_P1_FGC0(h0) SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER
+/
+$include q_P1_FGC0.gdx
+/;
+display q_P1_FGC0;
 *----------------ELECTRICITY PRICE----------------------------------------------
 
 $call =xls2gms "I=Input_data_FED_SIMULATOR\el_heat_price_2016.xlsx" R=el_price_2016_gams!A2:B8761 "O=el_price0.gdx"
