@@ -34,6 +34,7 @@ invCost_TURB    investment cost of turbine
 total_cap_PV_roof   total capacity in kW
 total_cap_PV_facade total capacity in kW
 ;
+
 invCost_HP = sw_HP*HP_cap.l*cost_inv_opt('HP');
 invCost_PV = sw_PV*sum(BID, sw_PV*PV_cap_roof.l(BID)*cost_inv_opt('PV')) + sw_PV*sum(BID, sw_PV*PV_cap_facade.l(BID)*cost_inv_opt('PV')) ;
 invCost_BEV = sw_BES*BES_cap.l*cost_inv_opt('BES');
@@ -54,11 +55,9 @@ FED_PE_ft(h)=e_exG.l(h)*PEF_exG(h)
              + e0_PV(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
              + q_DH.l(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1;
 
-
-
 execute_unload 'GtoM' H_VKA1, C_VKA1, el_VKA1,
                       H_VKA4, C_VKA4, el_VKA4,
-                      B_P2, invCost_P2, q_P2, H_P2T, B_TURB, invCost_TURB, e_TURB, q_TURB,
+                      B_P2, invCost_P2, fuel_P2, q_P2, H_P2T, B_TURB, invCost_TURB, e_TURB, q_TURB,
                       q_AbsC, k_AbsC, q_AbsCInv, k_AbsCInv, AbsCInv_cap, invCost_AbsCInv,
                       e_RM, k_RM, e_RMMC, k_RMMC, RMMC_inv, invCost_RMMC,
                       e_AAC, k_AAC,
@@ -72,6 +71,7 @@ execute_unload 'GtoM' H_VKA1, C_VKA1, el_VKA1,
                       e_exG,
                       q_DH,
                       PT_exG, PT_DH, invCost;
+
 
 *display k_demand;
 *execute_unload "power_grid.gdx" P_DH, P_elec;

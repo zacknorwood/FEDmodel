@@ -65,8 +65,8 @@ binary variable
 *----------------Panna 2 related -----------------------------------------------
 
 positive variable
-         q_P2(h)           fuel demand in P2
-         H_P2(h)           generated heating in P2
+         fuel_P2(h)           fuel demand in P2
+         q_P2(h)           generated heating in P2
 ;
 binary variable
          B_P2              Decision variable for P2 investment

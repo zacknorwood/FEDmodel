@@ -77,8 +77,8 @@ equation
            eq_mean_DH(d) daily mean power DH
            eq_PT_DH(d)      power tariff DH
 
-           eq_invCost    with aim to minimize total cost
-           eq_totCost    with aim to minimize total cost
+           eq_invCost    with aim to minimize investment cost
+           eq_totCost    with aim to minimize total cost including fuel and O&M
            eq_CO2_tot    with aim to minimize total FED CO2 emission
 
            eq_obj        Objective function
@@ -105,13 +105,13 @@ eq_VKA42(h)..
         C_VKA4(h) =l= VKA4_C_COP*el_VKA4(h);
 eq_VKA43(h)..
         el_VKA4(h) =l= VKA4_el_cap;
-*-----------AbsC (Absorbtion Chiller) equations  (Heat => cooling )-------------
+*-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 
 eq_AbsC1(h)..
              k_AbsC(h) =e= AbsC_COP*q_AbsC(h)*AbsC_eff;
 eq_AbsC2(h)..
              k_AbsC(h) =l= AbsC_cap;
-*----------Refregerator Machine equations (electricity => cooling)--------------
+*----------Refrigerator Machine equations (electricity => cooling)--------------
 
 eq_RM1(h)..
              k_RM(h) =e= RM_COP*e_RM(h);
@@ -130,7 +130,7 @@ eq_ACC1(h)..
              k_AAC(h) =e= AAC_COP*e_AAC(h);
 eq_ACC2(h)..
              k_AAC(h) =l= AAC_cap;
-*****************For new investment optonss-------------------------------------
+*****************For new investment optons-------------------------------------
 *----------------Absorption Chiller Investment----------------------------------
 
 eq1_AbsCInv(h)..
@@ -142,7 +142,7 @@ eq3_AbsCInv(h)..
 *----------------Panna 2 equations ---------------------------------------------
 
 eq1_P2(h)..
-         H_P2(h) =e= sw_P2 * q_P2(h) * P2_eff;
+         q_P2(h) =e= sw_P2 * fuel_P2(h) * P2_eff;
 eq2_P2(h)..
          q_P2(h) =l= B_P2 * q_P2_cap;
 *----------------Refurb turbine equations --------------------------------------
@@ -151,7 +151,7 @@ eq1_TURB(h)..
          e_TURB(h) =e= sw_TURB * TURB_eff * q_TURB(h);
 
 eq2_TURB(h)..
-         H_P2T(h) =l= H_P2(h) - q_TURB(h);
+         H_P2T(h) =l= q_P2(h) - q_TURB(h);
 
 eq3_TURB(h)..
          e_TURB(h) =l= TURB_cap * B_TURB;
@@ -166,11 +166,13 @@ eq_HP3(h)$(sw_HP eq 1)..
 *------------------TES equations------------------------------------------------
 
 eq_TESen1(h,i)$(ord(h) eq 1)..
+
              TES_en('1') =e= sw_TES*TES_cap*TES_density;
+
 eq_TESen2(h)$(ord(h) gt 1)..
-             TES_en(h) =e= sw_TES*TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
+             TES_en(h) =e= sw_TES* TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
 eq_TESen3(h)$(sw_TES eq 1)..
-             TES_en(h) =l= sw_TES*TES_cap*TES_density;
+             TES_en(h) =l= sw_TES* TES_cap * TES_density;
 eq_TESch(h)$(sw_TES eq 1)..
              TES_ch(h) =l= sw_TES*TES_inv * TES_ch_max;
 eq_TESdis(h)$(sw_TES eq 1)..
@@ -206,7 +208,7 @@ eq_BES2(h)$(ord(h) gt 1)..
 eq_BES3(h) $ (sw_BTES ne 0)..
              BES_en(h)=l=sw_BES*BES_cap;
 eq_BES_ch(h) $ (sw_BTES ne 0)..
-*Assuming 1C charding
+*Assuming 1C charging
              BES_ch(h)=l=sw_BES*(BES_cap-BES_en(h));
 eq_BES_dis(h)..
 *Assuming 1C discharging
@@ -266,14 +268,14 @@ eq_PE..
        FED_PE =e= sum(h,e_exG(h)*PEF_exG(h))
                   + sum(h,e0_PV(h)*PEF_PV) + sw_PV*sum(h,e_PV(h)*PEF_PV)
                   + sum(h,q_DH(h)*PEF_DH(h)) + sum(h,fuel_P1(h)*PEF_P1)
-                  + sum(h,q_P2(h)*PEF_P2);
+                  + sum(h,fuel_P2(h)*PEF_P2);
 *---------------FED CO2 emission------------------------------------------------
 
 eq_CO2(h)..
        FED_CO2(h) =e= e_exG(h)*CO2F_exG(h)
                       + e0_PV(h)*CO2F_PV + sw_PV*e_PV(h)*CO2F_PV
                       + q_DH(h)*CO2F_DH(h) + fuel_P1(h)*CO2F_P1
-                      + q_P2(h) * CO2F_P2;
+                      + fuel_P2(h) * CO2F_P2;
 **************** Power tariffs *******************
 
 eq_max_exG(h,m)..
@@ -287,25 +289,27 @@ eq_mean_DH(d)..
 eq_PT_DH(d)..
               PT_DH      =g=   mean_DH(d)*PT_cost('DH');
 **************** Objective function ***********************
-
+*       sup_unit   supply units /HP,exG, DH, CHP, PV, P1, AbsC, AAC, RM, RMMC, P2, TURB, AbsCInv/
+*         inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC, P2, TURB, AbsCInv/
 eq_totCost..
          totCost =e= sum(h,q_DH(h)*utot_cost('DH',h))
                 + sum(h,e_exG(h)*utot_cost('exG',h))
-                + sum(h,fuel_P1(h)*utot_cost('P1',h))
-                + sum(h, q_P2(h)*utot_cost('P2',h))
 
+                + sum(m,PT_exG(m)) + PT_DH
+                
+                + sum(h,q_P1(h)*utot_cost('P1',h))
+                + sum(h,q_P2(h)*utot_cost('P2',h))
                 + sum(m,PT_exG(m)) + PT_DH
 
                 + sw_HP*HP_cap*cost_inv_opt('HP')/lifT_inv_opt('HP')
-                + sw_PV*sum(BID, sw_PV*PV_cap_roof(BID)*cost_inv_opt('PV'))/lifT_inv_opt('PV')
-                + sw_PV*sum(BID, sw_PV*PV_cap_facade(BID)*cost_inv_opt('PV'))/lifT_inv_opt('PV')
+                + sw_PV*(sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*cost_inv_opt('PV')
                 + sw_BES*BES_cap*cost_inv_opt('BES')/lifT_inv_opt('BES')
                 + sw_TES*(TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/lifT_inv_opt('TES')
                 + sw_BTES*cost_inv_opt('BTES')*sum(i,B_BITES(i))/lifT_inv_opt('BTES')
                 + sw_RMMC*RMMC_inv*cost_inv_opt('RMMC')/lifT_inv_opt('RMMC')
                 + sw_P2 * B_P2 * cost_inv_opt('P2')/lifT_inv_opt('P2')
                 + sw_TURB * B_TURB * cost_inv_opt('TURB')/lifT_inv_opt('TURB')
-                + sw_AbsCInv * (B_AbsCInv *AbsCInv_fx + AbsCInv_cap * cost_inv_opt('AbsCInv'))/lifT_inv_opt('AbsCInv');
+                + sw_AbsCInv * B_AbsCInv * cost_inv_opt('AbsCInv')/lifT_inv_opt('AbsCInv');
 ****************Total investment cost*******************************************
 
 eq_invCost..
@@ -317,7 +321,7 @@ eq_invCost..
                      + sw_RMMC*RMMC_inv*cost_inv_opt('RMMC')
                      + sw_P2 * B_P2 * cost_inv_opt('P2')
                      + sw_TURB * B_TURB * cost_inv_opt('TURB')
-                     + sw_AbsCInv * (B_AbsCInv *AbsCInv_fx + AbsCInv_cap * cost_inv_opt('AbsCInv'));
+                     + sw_AbsCInv * B_AbsCInv * cost_inv_opt('AbsCInv');
 ****************Total CO2 emission in the FED system****************************
 
 eq_CO2_TOT..
@@ -326,4 +330,5 @@ eq_CO2_TOT..
 
 eq_obj..
          obj =e= min_totCost*totCost + min_invCost*invCost + min_totCO2*FED_CO2_tot;
+
 ********************************************************************************
