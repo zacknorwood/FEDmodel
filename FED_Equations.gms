@@ -77,6 +77,11 @@ equation
            eq_mean_DH(d) daily mean power DH
            eq_PT_DH(d)      power tariff DH
 
+           eq_fix_cost_existing total fixed cost for existing units
+           eq_fix_cost_new      total fixed cost for new units
+           eq_var_cost_existing total variable cost for existing units
+           eq_var_cost_new      total variable cost for new units
+           eq_Ainv_cost  total annualized investment cost
            eq_invCost    with aim to minimize investment cost
            eq_totCost    with aim to minimize total cost including fuel and O&M
            eq_CO2_tot    with aim to minimize total FED CO2 emission
@@ -289,18 +294,42 @@ eq_mean_DH(d)..
 eq_PT_DH(d)..
               PT_DH      =g=   mean_DH(d)*PT_cost('DH');
 **************** Objective function ***********************
-*       sup_unit   supply units /HP,exG, DH, CHP, PV, P1, AbsC, AAC, RM, RMMC, P2, TURB, AbsCInv/
-*         inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC, P2, TURB, AbsCInv/
-eq_totCost..
-         totCost =e= sum(h,q_DH(h)*utot_cost('DH',h))
-                + sum(h,e_exG(h)*utot_cost('exG',h))
+*       sup_unit   supply units /PV, HP, BES, TES, BTES, RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP/
 
-                + sum(m,PT_exG(m)) + PT_DH
-                
-                + sum(h,q_P1(h)*utot_cost('P1',h))
-                + sum(h,q_P2(h)*utot_cost('P2',h))
-                + sum(m,PT_exG(m)) + PT_DH
+eq_fix_cost_existing..
+         fix_cost_existing =e= sum(sup_unit,fix_cost(sup_unit)*cap_sup_unit(sup_unit));
 
+eq_fix_cost_new..
+         fix_cost_new =e=  sw_PV*(sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*fix_cost('PV')
+                           + sw_HP*HP_cap*fix_cost('HP')
+                           + sw_BES*BES_cap*fix_cost('BES')
+                           + sw_TES*TES_cap*fix_cost('TES')
+                           + sw_BTES*fix_cost('BTES')*sum(i,B_BITES(i))
+                           + sw_P2 * B_P2 * fix_cost('P2')
+                           + sw_TURB * B_TURB * fix_cost('TURB')
+                           + sw_AbsCInv * B_AbsCInv * fix_cost('AbsCInv');
+eq_var_cost_existing..
+         var_cost_existing =e= sum(h,e_exG(h)*utot_cost('exG',h)) + sum(m,PT_exG(m))
+                               + sum(h,q_DH(h)*utot_cost('DH',h))  + PT_DH
+                               + sum(h,H_VKA1(h)*utot_cost('HP',h))
+                               + sum(h,H_VKA4(h)*utot_cost('HP',h))
+                               + sum(h,k_AbsC(h)*utot_cost('AbsC',h))
+                               + sum(h,k_RM(h)*utot_cost('RM',h))
+                               + sum(h,k_RMMC(h)*utot_cost('RM',h))
+                               + sum(h,k_AAC(h)*utot_cost('AAC',h))
+                               + sum(h,e0_PV(h)*utot_cost('PV',h));
+eq_var_cost_new..
+         var_cost_new =e=  sw_PV*sum(h,e_PV(h)*utot_cost('PV',h))
+                           + sw_HP*sum(h,q_HP(h)*utot_cost('HP',h))
+                           + sw_BES*sum(h,BES_dis(h)*utot_cost('BES',h))
+                           + sw_TES*sum(h,TES_dis(h)*utot_cost('TES',h))
+                           + sw_BTES*sum((h,i),BTES_Sch(h,i)*utot_cost('BTES',h))
+                           + sw_P2 * sum(h,q_P2(h)*utot_cost('P2',h))
+                           + sw_TURB * sum(h,e_TURB(h)*utot_cost('TURB',h))
+                           + sw_AbsCInv * sum(h,k_AbsCInv(h)*utot_cost('AbsCInv',h));
+
+eq_Ainv_cost..
+          Ainv_cost =e=
                 + sw_HP*HP_cap*cost_inv_opt('HP')/lifT_inv_opt('HP')
                 + sw_PV*(sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*cost_inv_opt('PV')
                 + sw_BES*BES_cap*cost_inv_opt('BES')/lifT_inv_opt('BES')
@@ -310,6 +339,10 @@ eq_totCost..
                 + sw_P2 * B_P2 * cost_inv_opt('P2')/lifT_inv_opt('P2')
                 + sw_TURB * B_TURB * cost_inv_opt('TURB')/lifT_inv_opt('TURB')
                 + sw_AbsCInv * B_AbsCInv * cost_inv_opt('AbsCInv')/lifT_inv_opt('AbsCInv');
+
+eq_totCost..
+         totCost =e= fix_cost_existing + var_cost_existing
+                     + fix_cost_new + var_cost_new + Ainv_cost;
 ****************Total investment cost*******************************************
 
 eq_invCost..

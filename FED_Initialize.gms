@@ -119,9 +119,10 @@ e0_PV(h)=cap_sup_unit('PV')*nPV_ird(h);
 *This data is imported from MATLAB and stored in MtoG
 
 Parameter
-         q_P1(h)     Total heat output from P1
+          P1_eff      Efficiency of Panna1
+          q_P1(h)     Total heat output from P1
 ;
-
+P1_eff=0.9;
 q_P1(h)= q_P1_TB(h) + q_P1_FGC(h);
 *--------------VKA4 constants and parameters------------------------------------
 
