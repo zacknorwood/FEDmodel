@@ -77,12 +77,12 @@ fuel_P1=tb_heat_2016/tb_eff + fgc_heat_2016/fgc_eff;   %estimated fuel consumpti
 
 % Calculate FED CO2 emission
 %the existing CHP unit is assumed to be out of survice
-FED_CO2=el_Import_2016.*el_exGCO2F + el_pv.*CO2F_PV...
+FED_CO20=el_Import_2016.*el_exGCO2F + el_pv.*CO2F_PV...
         + heat_Import_2016.*DH_CO2F + fuel_P1*CO2F_P1;
-FED_CO2(isnan(FED_CO2))=0;
+FED_CO20(isnan(FED_CO20))=0;
 
 % Calculate FED PE use
 %the existing CHP unit is assumed to be out of survice
-FED_PE=el_Import_2016.*el_exGPEF + el_pv.*PEF_PV ...
+FED_PE0=el_Import_2016.*el_exGPEF + el_pv.*PEF_PV ...
       + heat_Import_2016.*DH_PEF + fuel_P1*PEF_P1;
-FED_PE(isnan(FED_PE))=0;
+FED_PE0(isnan(FED_PE0))=0;

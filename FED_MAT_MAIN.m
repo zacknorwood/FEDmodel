@@ -24,9 +24,11 @@ NEW_data=0;
 
 while NEW_data==1
     get_CO2PE_FED;   %this routine calculates the CO2 and PE factors of the external grid also
-    FED_PE_base=sum(FED_PE);
-    FED_CO2Peak_base=max(FED_CO2);
+    FED_PE_base=sum(FED_PE0);
+    FED_CO2Peak_base=max(FED_CO20);
     if SAVE_data==1
+       save('FED_PE_base','FED_PE0')
+       save('FED_PE_base','FED_CO20')
        save('FED_PE_base','FED_PE_base')
        save('FED_CO2Peak_base','FED_CO2Peak_base');
        save('el_exGCO2F','el_exGCO2F');
@@ -42,6 +44,8 @@ end
 
 %load saved values
 while NEW_data==0
+    load FED_PE0;
+    load FED_CO20;
     load FED_PE_base;
     load FED_CO2Peak_base;
     load el_exGCO2F;
@@ -120,40 +124,48 @@ GET_RESULTS=1;
 while GET_RESULTS==1
     %% Get results from VKA1
     
-    gdxData='GtoM';
-    temp=struct('name','B_BITES','form','full');
+    tic
+    
+    gdxData='GtoM_mintotCost';
+    temp=struct('name','B_BITES');
     temp=rgdx(gdxData,temp);
     temp=temp.uels;
-    temp=temp{1,1};
-    time=temp{1:8760};
-    buildings=temp{8761:end};
+    temp=temp{1:1};
+    tuels=temp(1:8760);
+    buels=temp(8760:end);
     
     %heating output from VKA1
     H_VKA1=struct('name','H_VKA1','form','full');
+    H_VKA1.uels=tuels;
     H_VKA1=rgdx(gdxData,H_VKA1);
-    H_VKA1=H_VKA1.val(1:8760);
+    H_VKA1=H_VKA1.val;    
     %cooling output from VKA1
     C_VKA1=struct('name','C_VKA1','form','full');
+    C_VKA1.uels=tuels;
     C_VKA1=rgdx(gdxData,C_VKA1);
-    C_VKA1=C_VKA1.val(1:8760);
+    C_VKA1=C_VKA1.val;
     %electricty input to VKA1
     el_VKA1=struct('name','el_VKA1','form','full');
+    el_VKA1.uels=tuels;
     el_VKA1=rgdx('GtoM',el_VKA1);
-    el_VKA1=el_VKA1.val(1:8760);
+    el_VKA1=el_VKA1.val;
     %% Get results from VKA4
     
     %heating output from VKA4
     H_VKA4=struct('name','H_VKA4','form','full');
+    H_VKA4.uels=tuels;
     H_VKA4=rgdx('GtoM',H_VKA4);
-    H_VKA4=H_VKA4.val(1:8760);
+    H_VKA4=H_VKA4.val;
     %cooling output from VKA4
     C_VKA4=struct('name','C_VKA4','form','full');
+    C_VKA4.uels=tuels;
     C_VKA4=rgdx('GtoM',C_VKA4);
-    C_VKA4=C_VKA4.val(1:8760);
+    C_VKA4=C_VKA4.val;
     %electricty input to VKA4
     el_VKA4=struct('name','el_VKA4','form','full');
+    el_VKA4.uels=tuels;
     el_VKA4=rgdx('GtoM',el_VKA4);
-    el_VKA4=el_VKA4.val(1:8760);    
+    el_VKA4=el_VKA4.val;    
     %% Get results from Panna2
     
     %Binary decission variable to invest in P2 (is 1 if invested, 0 otherwise)
@@ -166,12 +178,14 @@ while GET_RESULTS==1
     invCost_P2=invCost_P2.val;
     %Fuel input to P2
     q_P2=struct('name','q_P2','form','full');
+    q_P2.uels=tuels;
     q_P2=rgdx('GtoM',q_P2);
-    q_P2=q_P2.val(1:8760);
+    q_P2=q_P2.val;
     %heating output from P2 to DH
     H_P2T=struct('name','H_P2T','form','full');
+    H_P2T.uels=tuels;
     H_P2T=rgdx('GtoM',H_P2T);
-    H_P2T=H_P2T.val(1:8760);
+    H_P2T=H_P2T.val;
     %Binary decission variable to invest in the turbine (is 1 if invested, 0 otherwise)
     B_TURB=struct('name','B_TURB');    
     B_TURB=rgdx('GtoM',B_TURB);
@@ -182,78 +196,90 @@ while GET_RESULTS==1
     invCost_TURB=invCost_TURB.val;
     %electricty output from the turbine
     e_TURB=struct('name','e_TURB','form','full');
+    e_TURB.uels=tuels;
     e_TURB=rgdx('GtoM',e_TURB);
-    e_TURB=e_TURB.val(1:8760);
+    e_TURB=e_TURB.val;
     %heating input to the turbine
     q_TURB=struct('name','q_TURB','form','full');
+    q_TURB.uels=tuels;
     q_TURB=rgdx('GtoM',q_TURB);
-    q_TURB=q_TURB.val(1:8760);    
+    q_TURB=q_TURB.val;    
     %% Get results from Absorbtion Chiller
     
     %heating input to the existing Absorbtion chiller
     q_AbsC=struct('name','q_AbsC','form','full');
+    q_AbsC.uels=tuels;
     q_AbsC=rgdx('GtoM',q_AbsC);
-    q_AbsC=q_AbsC.val(1:8760);
+    q_AbsC=q_AbsC.val;
     %cooling output from the existing Absorbtion chiller
     k_AbsC=struct('name','k_AbsC','form','full');
-    k_AbsC=rgdx('GtoM',k_AbsC);
-    k_AbsC=k_AbsC.val(1:8760);
+    k_AbsC.uels=tuels;
+    k_AbsC=rgdx('GtoM',k_AbsC); 
+    k_AbsC=k_AbsC.val;
     %Capacity of a nwe Absorbtion chiller
-    AbsCInv_cap=struct('name','AbsCInv_cap','form','full');    
+    AbsCInv_cap=struct('name','AbsCInv_cap');    
     AbsCInv_cap=rgdx('GtoM',AbsCInv_cap);
     AbsCInv_cap=AbsCInv_cap.val;
     %Investment cost of the nwe Absorbtion chiller
-    invCost_AbsCInv=struct('name','invCost_AbsCInv','form','full');    
+    invCost_AbsCInv=struct('name','invCost_AbsCInv');    
     invCost_AbsCInv=rgdx('GtoM',invCost_AbsCInv);
     invCost_AbsCInv=invCost_AbsCInv.val;
     %heating input to the new Absorbtion chiller
     q_AbsCInv=struct('name','q_AbsCInv','form','full');
+    q_AbsCInv.uels=tuels;
     q_AbsCInv=rgdx('GtoM',q_AbsCInv);
     q_AbsCInv=q_AbsCInv.val;
     %cooling output from the new Absorbtion chiller
     k_AbsCInv=struct('name','k_AbsCInv','form','full');
+    k_AbsCInv.uels=tuels;
     k_AbsCInv=rgdx('GtoM',k_AbsCInv);
     k_AbsCInv=k_AbsCInv.val;
     %% Get results from refrigerating machines
     
     %Elecricity demand by the refrigerator system in AH building
     e_RM=struct('name','e_RM','form','full');
+    e_RM.uels=tuels;
     e_RM=rgdx('GtoM',e_RM);
     e_RM=e_RM.val;
     %Cooling generated by the refrigerator system in AH building
     k_RM=struct('name','k_RM','form','full');
+    k_RM.uels=tuels;
     k_RM=rgdx('GtoM',k_RM);
     k_RM=k_RM.val;
     %Binary decission variable to invest in the MMC connection (is 1 if invested, 0 otherwise)
-    RMMC_inv=struct('name','RMMC_inv','form','full');    
+    RMMC_inv=struct('name','RMMC_inv');    
     RMMC_inv=rgdx('GtoM',RMMC_inv);
     RMMC_inv=RMMC_inv.val;
     %investment cost in the MMC connection
-    invCost_RMMC=struct('name','invCost_RMMC','form','full');    
+    invCost_RMMC=struct('name','invCost_RMMC');    
     invCost_RMMC=rgdx('GtoM',invCost_RMMC);
     invCost_RMMC=invCost_RMMC.val;
     %Elecricity demand by the refrigerator system in nonAH building
     e_RMMC=struct('name','e_RMMC','form','full');
+    e_RMMC.uels=tuels;
     e_RMMC=rgdx('GtoM',e_RMMC);
     e_RMMC=e_RMMC.val;
     %Cooling generated by the refrigerator system in nonAH building
     k_RMMC=struct('name','k_RMMC','form','full');
+    k_RMMC.uels=tuels;
     k_RMMC=rgdx('GtoM',k_RMMC);
     k_RMMC=k_RMMC.val;
     %% Get results from Ambient Air Cooler (AAC)
     
     %Elecricity demand by the AAC
     e_AAC=struct('name','e_AAC','form','full');
+    e_AAC.uels=tuels;
     e_AAC=rgdx('GtoM',e_AAC);
     e_AAC=e_AAC.val;
     %Cooling generated by the AAC
     k_AAC=struct('name','k_AAC','form','full');
+    k_AAC.uels=tuels;
     k_AAC=rgdx('GtoM',k_AAC);
     k_AAC=k_AAC.val;
     %% Get results from the new reversible heat pump
     
     %Capacity of a nwe HP
-    HP_cap=struct('name','HP_cap','form','full');    
+    HP_cap=struct('name','HP_cap');
     HP_cap=rgdx('GtoM',HP_cap);
     HP_cap=HP_cap.val;
     %Investment cost of the nwe HP
@@ -262,118 +288,138 @@ while GET_RESULTS==1
     invCost_HP=invCost_HP.val;
     %heating output from the new HP
     q_HP=struct('name','q_HP','form','full');
+    q_HP.uels=tuels;
     q_HP=rgdx('GtoM',q_HP);
-    q_HP=q_HP.val;
+    q_HP=q_HP.val(1:8760);
      %cooling output from the new HP
     c_HP=struct('name','c_HP','form','full');
+    c_HP.uels=tuels;
     c_HP=rgdx('GtoM',c_HP);
-    c_HP=c_HP.val;
+    c_HP=c_HP.val(1:8760);
     %electricty input to the new HP
     e_HP=struct('name','e_HP','form','full');
+    e_HP.uels=tuels;
     e_HP=rgdx('GtoM',e_HP);
-    e_HP=e_HP.val;
+    e_HP=e_HP.val(1:8760);
     %% Get results from the new TES
     
     %Binary decission variable to invest in the TES (is 1 if invested, 0 otherwise)
-    TES_inv=struct('name','TES_inv','form','full');    
+    TES_inv=struct('name','TES_inv');    
     TES_inv=rgdx('GtoM',TES_inv);
     TES_inv=TES_inv.val;
     %TES capacity
-    TES_cap=struct('name','TES_cap','form','full');    
+    TES_cap=struct('name','TES_cap');    
     TES_cap=rgdx('GtoM',TES_cap);
     TES_cap=TES_cap.val;
     %investment cost in the TES
-    invCost_TES=struct('name','invCost_TES','form','full');    
+    invCost_TES=struct('name','invCost_TES');    
     invCost_TES=rgdx('GtoM',invCost_TES);
     invCost_TES=invCost_TES.val;
     %TES charging
     TES_ch=struct('name','TES_ch','form','full');
+    TES_ch.uels=tuels;
     TES_ch=rgdx('GtoM',TES_ch);
     TES_ch=TES_ch.val;
     %TES discharging
     TES_dis=struct('name','TES_dis','form','full');
+    TES_dis.uels=tuels;
     TES_dis=rgdx('GtoM',TES_dis);
     TES_dis=TES_dis.val;
     %TES energy stored
     TES_en=struct('name','TES_en','form','full');
+    TES_en.uels=tuels;
     TES_en=rgdx('GtoM',TES_en);
     TES_en=TES_en.val;
     %% Get results from building inertia thermal energy storage (BITES)
     
     %Binary decission variable to invest in the TES (is 1 if invested, 0 otherwise)
     B_BITES=struct('name','B_BITES','form','full'); 
-    B_BITES=rgdx('GtoM',B_BITES);
-    %B_BITES=B_BITES.val;    
+    B_BITES.uels=buels;
+    B_BITES=rgdx('GtoM',B_BITES);    
+    B_BITES=B_BITES.val;    
     %investment cost in the TES
     invCost_BITES=struct('name','invCost_BITES','form','full');    
     invCost_BITES=rgdx('GtoM',invCost_BITES);
     invCost_BITES=invCost_BITES.val;
     %BITES charging (Shallow)
     BTES_Sch=struct('name','BTES_Sch','form','full');
+    BTES_Sch.uels={tuels,buels};
     BTES_Sch=rgdx('GtoM',BTES_Sch);
     BTES_Sch=BTES_Sch.val;
     %BITES discharging (Sahllow)
     BTES_Sdis=struct('name','BTES_Sdis','form','full');
+    BTES_Sdis.uels={tuels,buels};
     BTES_Sdis=rgdx('GtoM',BTES_Sdis);
     BTES_Sdis=BTES_Sdis.val;    
     %BITES energy stored (shallow)
     BTES_Sen=struct('name','BTES_Sen','form','full');
+    BTES_Sen.uels={tuels,buels};
     BTES_Sen=rgdx('GtoM',BTES_Sen);
     BTES_Sen=BTES_Sen.val;
     %BITES energy stored (Deep)
     BTES_Den=struct('name','BTES_Den','form','full');
+    BTES_Sen.uels={tuels,buels};
     BTES_Den=rgdx('GtoM',BTES_Den);
     BTES_Den=BTES_Den.val;
     %BITES energy loss (shallow)
     BTES_Sloss=struct('name','BTES_Sloss','form','full');
+    BTES_Sloss.uels={tuels,buels};
     BTES_Sloss=rgdx('GtoM',BTES_Sloss);
     BTES_Sloss=BTES_Sloss.val;
     %BITES energy loss (Deep)
     BTES_Dloss=struct('name','BTES_Dloss','form','full');
+    BTES_Dloss.uels={tuels,buels};
     BTES_Dloss=rgdx('GtoM',BTES_Dloss);
     BTES_Dloss=BTES_Dloss.val;
     %BITES energy flow between Deep ad shallow
     link_BS_BD=struct('name','link_BS_BD','form','full');
+    link_BS_BD.uels={tuels,buels};
     link_BS_BD=rgdx('GtoM',link_BS_BD);
     link_BS_BD=link_BS_BD.val;
     %% Get results from PV
     
     %PV capacity-roof
-    PV_cap_roof=struct('name','PV_cap_roof','form','full');    
+    PV_cap_roof=struct('name','PV_cap_roof','form','full');
+    PV_cap_roof.uels=num2cell(1:70);
     PV_cap_roof=rgdx('GtoM',PV_cap_roof);
     PV_cap_roof=PV_cap_roof.val;
     %PV capacity-facade
-    PV_cap_facade=struct('name','PV_cap_facade','form','full');    
+    PV_cap_facade=struct('name','PV_cap_facade','form','full');  
+    PV_cap_facade.uels=num2cell(1:70);
     PV_cap_facade=rgdx('GtoM',PV_cap_facade);
     PV_cap_facade=PV_cap_facade.val;
     %investment cost in the PV
-    invCost_PV=struct('name','invCost_PV','form','full');    
+    invCost_PV=struct('name','invCost_PV');    
     invCost_PV=rgdx('GtoM',invCost_PV);
     invCost_PV=invCost_PV.val;
     %Electricty from PV
     e_PV=struct('name','e_PV','form','full');
+    e_PV.uels=tuels;
     e_PV=rgdx('GtoM',e_PV);
     e_PV=e_PV.val;
     %% Get results from battery energy storage
     
     %BES capacity
-    BES_cap=struct('name','BES_cap','form','full');    
+    BES_cap=struct('name','BES_cap');     
     BES_cap=rgdx('GtoM',BES_cap);
     BES_cap=BES_cap.val;
     %investment cost in the BES
-    invCost_BEV=struct('name','invCost_BEV','form','full');    
+    invCost_BEV=struct('name','invCost_BEV');    
     invCost_BEV=rgdx('GtoM',invCost_BEV);
     invCost_BEV=invCost_BEV.val;
     %BES charging
     BES_ch=struct('name','BES_ch','form','full');
+    BES_ch.uels=tuels;
     BES_ch=rgdx('GtoM',BES_ch);
     BES_ch=BES_ch.val;
     %BES discharging
     BES_dis=struct('name','BES_dis','form','full');
+    BES_dis.uels=tuels;
     BES_dis=rgdx('GtoM',BES_dis);
     BES_dis=BES_dis.val;
     %BES energy stored
     BES_en=struct('name','BES_en','form','full');
+    BES_en.uels=tuels;
     BES_en=rgdx('GtoM',BES_en);
     BES_en=BES_en.val;
     %% Get simulated PE use and CO2 emission
@@ -385,11 +431,11 @@ while GET_RESULTS==1
     %Time series PE use in the new FED system
     FED_PE_ft=struct('name','FED_PE_ft','form','full');
     FED_PE_ft=rgdx('GtoM',FED_PE_ft);
-    FED_PE_ft=FED_PE_ft.val;
+    FED_PE_ft=FED_PE_ft.val';
     %Time series CO2 emission in the new FED system
     FED_CO2=struct('name','FED_CO2','form','full');
     FED_CO2=rgdx('GtoM',FED_CO2);
-    FED_CO2=FED_CO2.val;
+    FED_CO2=FED_CO2.val';
     %% Get electricty and heat import
     
     %Electricty import to the new FED system
@@ -400,14 +446,10 @@ while GET_RESULTS==1
     q_DH=struct('name','q_DH','form','full');
     q_DH=rgdx('GtoM',q_DH);
     q_DH=q_DH.val;
-    %% Total investment cost
-    
-%     invCost=struct('name','invCost','form','full');
-%     invCost=rgdx('GtoM',invCost);
-%     invCost=invCost.val;
+    toc
     %% Display results
     
-    DISP_RESULTS=0;
+    DISP_RESULTS=1;
     while DISP_RESULTS==1
         clc;
         close all;
@@ -420,24 +462,56 @@ while GET_RESULTS==1
         lgnd_size=1;
         LineWidth=1;
         LineThickness=2;        
-        %% PLot 
+        %% PLot FED primary energy with and without investment
+        
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        ydata=FED_PE/1000;
-        ydata2=FED_PE_gams/1000;
+        
+        ydata=FED_PE0(1:8760)/1000;
+        ydata2=FED_PE_ft(1:8760)/1000;
+        duration= 0 : 100/(length(ydata)-1) : 100;
+        time=(1:length(ydata))/(24*30);
+        xdata=time;        
+        %plot(duration,sort(ydata,'descend'),'LineWidth',LineThickness);
+        plot(duration,sort(ydata,'descend'),'-.r',...
+            duration,sort(ydata2,'descend'),'g','LineWidth',LineThickness);
+        %plot(time,ydata,'LineWidth',LineThickness);
+        %area(time,ydata);
+        xlabel('Duration [%]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('PE use [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        box off
+        xlim([0 100])
+        legend('Base case','With new investment')
+        
+        %percentage change in PE
+        display('Percentage change in total FED PE use (New/Base)');
+        FED_pPE=FED_PE/sum(FED_PE0)*100
+        %% PLot FED primary energy with and without investment
+        
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)
+        ydata=FED_CO20(1:8760)/1000;
+        ydata2=FED_CO2(1:8760)/1000;
         duration= 0 : 100/(length(ydata)-1) : 100;
         time=(1:length(ydata))/(24*30);
         xdata=time;
         
         %plot(duration,sort(ydata,'descend'),'LineWidth',LineThickness);
-        plot(duration(1:8760),sort(ydata(1:8760),'descend'),'-.r',...
-            duration(1:8760),sort(ydata2(1:8760),'descend'),'g','LineWidth',LineThickness);
+        plot(duration,sort(ydata,'descend'),'-.r',...
+            duration,sort(ydata2,'descend'),'g','LineWidth',LineThickness);
         %plot(time,ydata,'LineWidth',LineThickness);
         %area(time,ydata);
         xlabel('Duration [%]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('CO2eq [kg]','FontSize',Font_Size,'FontName','Times New Roman')
-        %%
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        box off
+        xlim([0 100])
+        legend('Base case','With new investment')
+        return;
+        %% 
 %         fprintf('====================OPtimum Investment Options====================\n')
 %         fprintf('Investment in Panna2 = %d MSEK, Investment in the turbine = %d MSEK\n', invCost_P2/10^6, invCost_TURB/10^6)
 %         fprintf('Investment in New Absorbtion chiller \n Capacity = %d kW, Investment cost = %d MSEK\n', AbsCInv_cap, invCost_AbsCInv/10^6)
@@ -448,11 +522,9 @@ while GET_RESULTS==1
 %         fprintf('Investment in New Solar PV \n Roof Capacity = %d kW, Facade Capacity = %d kW, Investment cost = %d MSEK \n',PV_cap_roof,PV_cap_facade, invCost_PV/10^6)
 %         fprintf('Investment in Batery Energy Storage  \n Capacity = %d kW, Investment cost = %d MSEK \n',BES_cap, invCost_BEV/10^6)
 %         fprintf('Total investment cost  = %d MSEK \n', invCost/10^6)
-        break;
     end
     
-    break;
+    return;
 end
-
 %use the 'plot_results.m' script to plot desired results
 %%
