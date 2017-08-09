@@ -181,4 +181,4 @@ variable
          FED_CO2_tot          Total CO2 emission of the FED system
          obj                  objective function
 ;
-*invCost.up $ (min_invCOst eq 0) = inv_lim;
+invCost.up $ (min_invCOst eq 0) = inv_lim;
