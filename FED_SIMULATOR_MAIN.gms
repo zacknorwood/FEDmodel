@@ -42,7 +42,8 @@ invCost_BITES=sw_BTES*cost_inv_opt('BTES')*sum(i,B_BITES.l(i));
 invCost_RMMC=sw_RMMC*cost_inv_opt('RMMC')*RMMC_inv.l;
 invCost_P2=sw_P2 * B_P2.l * cost_inv_opt('P2');
 invCost_TURB=sw_TURB * B_TURB.l * cost_inv_opt('TURB');
-invCost_AbsCInv = sw_AbsCInv * (B_AbsCInv.l *AbsCInv_fx + AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
+*invCost_AbsCInv = sw_AbsCInv * (B_AbsCInv.l *AbsCInv_fx + AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
+invCost_AbsCInv = sw_AbsCInv * B_AbsCInv.l * cost_inv_opt('AbsCInv');
 *total_cap_PV_roof=sum(BID, PV_cap_roof.l(BID));
 *total_cap_PV_facade=sum(BID, PV_cap_facade.l(BID));
 
@@ -52,11 +53,11 @@ parameter FED_PE_ft(h)  Primary energy as a function of time
 ;
 FED_PE_ft(h)=e_exG.l(h)*PEF_exG(h)
              + e0_PV(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
-             + q_DH.l(h)*PEF_DH(h) + q_P1(h)*PEF_P1;
+             + q_DH.l(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1;
 
 execute_unload 'GtoM' H_VKA1, C_VKA1, el_VKA1,
                       H_VKA4, C_VKA4, el_VKA4,
-                      B_P2, invCost_P2, q_P2, H_P2T, B_TURB, invCost_TURB, e_TURB, q_TURB,
+                      B_P2, invCost_P2, fuel_P2, q_P2, H_P2T, B_TURB, invCost_TURB, e_TURB, q_TURB,
                       q_AbsC, k_AbsC, q_AbsCInv, k_AbsCInv, AbsCInv_cap, invCost_AbsCInv,
                       e_RM, k_RM, e_RMMC, k_RMMC, RMMC_inv, invCost_RMMC,
                       e_AAC, k_AAC,
@@ -71,16 +72,6 @@ execute_unload 'GtoM' H_VKA1, C_VKA1, el_VKA1,
                       q_DH,
                       PT_exG, PT_DH;
 
-execute_unload 'Display' HP_cap.l, inv_HP,
-                         PV_cap_roof.l,PV_cap_facade.l, inv_PV,
-                         BES_cap.l, inv_BEV,
-                         TES_cap.l, inv_TES,
-                         B_BITES.l, inv_BITES,
-                         inv_RMMC, inv_AbsCInv,
-                         AbsCInv_cap.l,B_AbsCInv.l,
-                         B_P2.l,B_TURB.l
-                         total_cap_PV_facade, total_cap_PV_roof,
-                         invCost.l;
 
 *display k_demand;
 *execute_unload "power_grid.gdx" P_DH, P_elec;

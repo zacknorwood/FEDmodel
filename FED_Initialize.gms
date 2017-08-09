@@ -56,8 +56,8 @@ alias(i,j);
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
-         sup_unit   supply units /HP,exG, DH, CHP, PV, P1, RHP, AbsC, AAC, RM, RMMC, P2, TURB, AbsCInv/
-         inv_opt    investment options /PV, BES, HP, TES, BTES, RMMC, P2, TURB, AbsCInv/
+         sup_unit   supply units /PV, HP, BES, TES, BTES, RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP/
+         inv_opt    investment options /PV, HP, BES, TES, BTES, RMMC, P2, TURB, AbsCInv/
 ;
 
 Parameter
@@ -80,12 +80,20 @@ Parameter
 *Battery                     12060000                 15            1157760                1362780                 1579860
 *Solar_PV                    18000000                 30            1170000                1530000                 1908000
 *RMMC2                       500000                   20
-         cap_sup_unit(sup_unit)   operational capacity of the units
-                     /PV 60, P1 9000, RHP 1600, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
-         cost_inv_opt(inv_opt)    Investment costs of FED investment options in SEK per kW except RMMC which is a fixed cost
-                     /PV 14196, BES 6000, HP 10000, BTES 35000, RMMC 500000, P2 46000000, TURB 2000000, AbsCInv 1.81/
-         lifT_inv_opt(inv_opt)    Life time of invetment options
-                     /PV 30, BES 10, HP 15, TES 50, BTES 30, RMMC 20, P2 40, TURB 30, AbsCInv 25/;
+         cap_sup_unit(sup_unit)   operational capacity of the existing units
+                     /PV 60, P1 9000, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
+
+* Investment costs source WP4_D4.2.1 prestudy report, except absorption chiller and HP from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
+* PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 6000, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
+* Exchange rate 2015: Eur to SEK = 9.36; 1.7/0.75 = COPheat / COPcool for an absorption heat pump, for cost conversion from Danish Energy Agency report.
+* HP 700 * 9.36 = 6552 , AbsC 600 * 9.36 * 1.7/0.75= 5616
+
+         cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC P2 and Turbine
+                     /PV 14196, BES 6000, HP 6552, BTES 35000, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 12730/
+
+* Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
+         lifT_inv_opt(inv_opt)    Life time of investment options
+                     /PV 30, BES 15, HP 25, TES 30, BTES 30, RMMC 25, P2 30, TURB 30, AbsCInv 25/;
 
 *--------------CHoice of investment options to consider-------------------------
 
@@ -123,17 +131,20 @@ e0_PV(h)=cap_sup_unit('PV')*nPV_ird(h);
 *--------------Existing Thermal boiler constants and parameters (P1)------------
 
 scalar
-         p1_eff_TB   Efficiency of primary heat converssion /0.9/
-         p1_eff_FGC  Efficiency of secondary heat converssion /0.9/
+         P1_eff   Efficiency of primary heat conversion /0.9/
+*         P1_eff_FGC  Efficiency of secondary heat conversion /0.9/
 ;
 Parameter
-         q_p1_TB(h)  PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
-         q_p1_FGC(h) SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER
-         q_p1(h)     Input fuel of THE THERMAL BOILER
+         q_P1_TB(h)  PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
+         q_P1_FGC(h) SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER
+         fuel_P1(h)  Input fuel of THE THERMAL BOILER
+         q_P1(h)     Total heat output from P1
 ;
-q_p1_TB(h) = q_p1_TB0(h);
-q_p1_FGC(h) = q_p1_FGC0(h);
-q_p1(h)=(q_p1_TB(h)/p1_eff_TB) + (q_p1_FGC(h)/p1_eff_FGC);
+
+q_P1_TB(h) = q_P1_TB0(h);
+q_P1_FGC(h) = q_P1_FGC0(h);
+q_P1(h)= q_P1_TB(h) + q_P1_FGC(h);
+fuel_P1(h)=(q_P1_TB(h)/P1_eff) + (q_P1_FGC(h)/P1_eff);
 *--------------VKA4 constants and parameters------------------------------------
 
 scalar
@@ -148,19 +159,19 @@ scalar
          VKA4_C_COP            Cooling coefficient of performance for VKA4/1.7/
          VKA4_el_cap           Maximum electricity usage by VKA4/300/
 ;
-*--------------AbsC(Absorbition Refregerator), cooling source-------------------
+*--------------AbsC(Absorbition Refrigerator), cooling source-------------------
 
 scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
-         AbsC_eff Effciency of AbsC /0.95/
+         AbsC_eff Efficiency of AbsC /0.95/
 ;
 *--------------AAC(Ambient Air Cooler), cooling source--------------------------
 
 scalar
          AAC_COP Coefficent of performance of AAC /10/
-         AAC_eff Effciency of AbsC /0.95/
+         AAC_eff Efficiency of AbsC /0.95/
 ;
-*--------------Refrigerator Machines, coling source-----------------------------
+*--------------Refrigerator Machines, cooling source-----------------------------
 
 scalar
       RM_COP Coefficent of performance of AC /2/
@@ -169,26 +180,27 @@ scalar
 **************Investment options************************************************
 
 *----------------Absorption Chiller Investment----------------------------------
-*Assumed technical lifetime of 25 years, fixed investment cost 1610 kSek
 
 scalar
-         AbsCInv_COP    Coefficient of performance for cooling /0.75/
+         AbsCInv_COP    Coefficient of performance for absorption cooling investment /0.75/
+         AbsH_COP       Coeffiicent of performance for absorption heating investment /1.7/
 
 *        AbsCInv_fx     Fixed cost for investment in Abs chiller /64400/
          AbsCInv_MaxCap Maximum possible investment in kW cooling /100000/
-         AbsCInv_fx     Fixed cost for investment in Abs chiller /1610000/
+*         AbsCInv_fx     Fixed cost for investment in Abs chiller /1610000/
+
 
 ;
 *----------------Panna 2  ------------------------------------------------------
 
 scalar
       P2_eff Efficiency of P2 /0.9/
-      q_P2_cap Capacity of P2 /6666/
+      q_P2_cap Capacity of P2 /6000/
 ;
 *----------------Refurbished turbine for Panna 2  ------------------------------
 
 scalar
-      TURB_eff Efficiency of turbine /0.4/
+      TURB_eff Efficiency of turbine /0.25/
       TURB_cap Maximum power output of turbine /800/
 ;
 *--------------MC2 Refrigerator Machines, cooling source------------------------
@@ -329,14 +341,17 @@ k_demand_nonAH(h,i_nonAH)=k_demand(h,i_nonAH);
 
 parameter
          price(sup_unit,h)       unit market price of energy
-         fuel_cost(sup_unit,h)   fuel cost of a production unit
-         var_cost(sup_unit,h)    variable cost of a production unit
+         fuel_cost(sup_unit,h)   fuel cost per kWh production
+         var_cost(sup_unit,h)    variable cost O&M per kWh energy produced excluding the cost of the primary fuel
+         fix_cost(sup_unit)      annual fixed cost per kW capacity of production
          en_tax(sup_unit,h)      energy tax of a production unit
          co2_cost(sup_unit,h)    CO2 cost
          utot_cost(sup_unit,h)   unit total cost of every production unit
          PT_cost(sup_unit)       Power tariff SEK per kW per month
-         
-         USD_to_SEK_2015 Exchange rate usd to sek 2015 /8.43/
+
+*         USD_to_SEK_2015 Exchange rate USD to SED 2015 /8.43/
+         EUR_to_SEK_2015 Exchange rate EUR to SEK in 2015 /9.36/
+         kilo Factor of 1000 conversion to kW from MW for example /1000/
 
 ;
 price('exG',h)=0.0031 + el_price0(h);
@@ -344,17 +359,41 @@ price('DH',h)=q_price0(h);
 
 *the data is obtained from ENTSO-E
 fuel_cost('CHP',h)=0.186;
-fuel_cost('P1',h)=0.186;
-fuel_cost('P2',h)=0.186;
+fuel_cost('P1',h)=0.186/P1_eff;
+*fuel_cost('P1',h)=0.186*fuel_P1(h)/q_P1(h);
+fuel_cost('P2',h)=0.186/P2_eff;
 var_cost(sup_unit,h)=0;
+fix_cost(sup_unit)=0;
 
-*O&M costs for CHP and PV from World Energy Outlook Power Generation Assumptions, turbine set to same as NG turbine, HP set to PV, and boiler to CHP - turbine.
-*WEO_2016_PG_Assumptions_NPSand450_Scenario.xlsb http://www.worldenergyoutlook.org/weomodel/investmentcosts/
-var_cost('CHP',h)=200*0.65*USD_to_SEK_2015;
-*var_cost('P2',h)=(var_cost('CHP',h)-20)*0.65*USD_to_SEK_2015;
-var_cost('P1',h)=(var_cost('CHP',h)-20)*0.65*USD_to_SEK_2015;
-var_cost('PV',h)=16*USD_to_SEK_2015;
-var_cost('HP',h)=16*USD_to_SEK_2015;
+* No data in Danish Energy Agency report for TES tank storage, assume costs zero
+* No data in Danish Energy Agency report for BTES building thermal energy, assume costs zero
+* HP variable O&M exclusive electricity costs
+var_cost('HP',h)= 2 / kilo * EUR_to_SEK_2015;
+fix_cost('HP')= 2000 / kilo * EUR_to_SEK_2015;
+* Refrigerating machine assumed same as HP for both variable and O&M and fixed costs
+var_cost('RM',h)= var_cost('HP',h);
+fix_cost('RM')= fix_cost('HP');
+var_cost('CHP',h)= 3.9 / kilo * EUR_to_SEK_2015;
+fix_cost('CHP')= 29000 / kilo * EUR_to_SEK_2015;
+* No data on turbine separate from CHP, assume total O&M costs same as variable for CHP
+var_cost('TURB',h)= 3.9 / kilo * EUR_to_SEK_2015;
+* variable costs of PV are assumed 0.
+fix_cost('PV')= 12540 / kilo * EUR_to_SEK_2015;
+* No data on fixed costs for wood chip boilers, included in variable O&M costs.
+var_cost('P1',h)= 5.4 / kilo * EUR_to_SEK_2015;
+var_cost('P2',h)= 5.4 / kilo * EUR_to_SEK_2015;
+* AbsC variable O&M inclusive electricity, adjusted by COP for absorption heating compared to cooling factors
+var_cost('AbsC',h)= 0.9 / kilo * AbsH_COP/AbsC_COP * EUR_to_SEK_2015;
+fix_cost('AbsC')= 3000 / kilo * EUR_to_SEK_2015;
+* AbsCInv variable O&M inclusive electricity, adjusted by COP for absorption heating compared to cooling factors
+var_cost('AbsCInv',h)= 0.9 / kilo * AbsH_COP/AbsCInv_COP * EUR_to_SEK_2015;
+fix_cost('AbsCInv')= 3000 / kilo * EUR_to_SEK_2015;
+* No data on ambient air chillers, assume same as absorption heater for both variable O&M and fixed costs
+var_cost('AAC',h)= 0.9 / kilo * EUR_to_SEK_2015;
+fix_cost('AAC')= 3000 / kilo * EUR_to_SEK_2015;
+* No data in Danish Energy Agency report for lithium ion, assume costs same as for NaS
+var_cost('BES',h)= 5.3 / kilo * EUR_to_SEK_2015;
+fix_cost('BES')= 51000 / kilo * EUR_to_SEK_2015;
 
 en_tax(sup_unit,h)=0;
 en_tax('exG',h)=0.295;
