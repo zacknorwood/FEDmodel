@@ -96,8 +96,8 @@ $LOAD CO2F_exG
 $LOAD PEF_exG
 $LOAD CO2F_DH
 $LOAD PEF_DH
-$LOAD q_p1_TB0
-$LOAD q_p1_FGC0
+$LOAD q_p1_TB
+$LOAD q_p1_FGC
 $LOAD fuel_P1
 $LOAD min_totCost
 $LOAD min_invCost
