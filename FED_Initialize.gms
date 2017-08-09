@@ -8,24 +8,11 @@
 $Include FED_GET_GDX_FILE
 *-------------SET THE LENGTH OF INPUT DATA USED FOR SIMULATION------------------
 
+alias (h0,h);
+alias (b0,i);
+display h0,i;
+
 set
-        h(h0)                 Number of hours                     /1*8760/
-        i(b0)                 Buildings considered in the FED system
-                              /O0007001-Fysikorigo, O0007005-Polymerteknologi,
-                              O0007006-NyaMatte,  O0007012-Elkraftteknik,
-                              O0007014-GibraltarHerrgrd, O0007017-Chalmersbibliotek,
-                              O0007018-Idelra,  O0007019-CentralaAdministrationen,
-                              O0007021-HrsalarHC,  O0007022-HrsalarHA,
-                              O0007023-Vg-och-vatten1,   O0007024-EDIT,
-                              O0007025-HrsalarHB,   O0007026-Arkitektur,
-                              O0007027-Vg-och-vatten2, O0007028-Maskinteknik,
-                              O0007040-GamlaMatte,  O0007043-PhusCampusJohanneberg,
-                              O0007888-LokalkontorAH, O0011001-FysikSoliden,
-                              O0013001-Keramforskning, O3060132-Kemi-och-bioteknik-cfab,
-                              O3060133-FysikMC2,  O3060150_1-Krhuset,
-                              O3060137-CTP,  O3060138-JSP, O3060101-Vasa1,
-                              O3060102_3-Vasa-2-3, O3060104_15-Vasa-4-15, O4002700-Chabo
-                              /
         i_AH(i)               AH buildings
                               /O0007001-Fysikorigo, O0007005-Polymerteknologi
                               O0007006-NyaMatte,  O0007012-Elkraftteknik,
@@ -129,22 +116,13 @@ parameter
 nPV_ird(h)=nPV_el0(h);
 e0_PV(h)=cap_sup_unit('PV')*nPV_ird(h);
 *--------------Existing Thermal boiler constants and parameters (P1)------------
+*This data is imported from MATLAB and stored in MtoG
 
-scalar
-         P1_eff   Efficiency of primary heat conversion /0.9/
-*         P1_eff_FGC  Efficiency of secondary heat conversion /0.9/
-;
 Parameter
-         q_P1_TB(h)  PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
-         q_P1_FGC(h) SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER
-         fuel_P1(h)  Input fuel of THE THERMAL BOILER
          q_P1(h)     Total heat output from P1
 ;
 
-q_P1_TB(h) = q_P1_TB0(h);
-q_P1_FGC(h) = q_P1_FGC0(h);
 q_P1(h)= q_P1_TB(h) + q_P1_FGC(h);
-fuel_P1(h)=(q_P1_TB(h)/P1_eff) + (q_P1_FGC(h)/P1_eff);
 *--------------VKA4 constants and parameters------------------------------------
 
 scalar
@@ -410,15 +388,11 @@ utot_cost(sup_unit,h)=price(sup_unit,h) + fuel_cost(sup_unit,h)
 
 scalar
          PE_lim     Desired or limiting value of PE
-         CO2_ref    Reference value of CO2 peak
          dCO2       Delta CO2
          CO2_lim    Desired or limiting value of CO2
 ;
 
 PE_lim=(1-0.3)*FED_PE_base;
-CO2_ref=0.95*FED_CO2Peak_base;
 dCO2=FED_CO2Peak_base-CO2_ref;
 CO2_lim=CO2_ref+0.2*dCO2;
 *--------------Limit on investment----------------------------------------------
-
-scalar inv_lim  Maximum value of the investment in SEK /76761000/;

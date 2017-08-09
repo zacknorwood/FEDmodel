@@ -4,20 +4,21 @@
 
 %% CO2 factor and PE factor of external electricty generation system
 
-sheet = 3;
-xlRange = 'C5:F8764';
-el_exGrid=xlsread('Input_data_FED_SIMULATOR\External_Generation.xlsx',sheet,xlRange);
+sheet = 1;
+xlRange = 'C2:L8761';
+el_exGrid=xlsread('Input_data_FED_SIMULATOR\SE.xlsx',sheet,xlRange);
 
 %CO2 and PE factors of the externla electricty generation system
 %For [B12 (HYDRO)	B14 (NUCLEAR)	B19 (WIND)	B20 (OTHER)]
 %These factors could changed when and if needed
-CO2F_el=[24  12   11   700];
-PEF_el=[1.01 3.29 1.03 2.47];
+%        biomass coal  gas   hydro  nuclear oil  solar wind geothermal unknown(other)
+CO2F_el=[230     820   490   24     12      650  45    11   38         700];
+PEF_el=[2.99     2.45  1.93  1.01   3.29    2.75 1.25  1.03 1.02       2.47];
 
 %calculate CO2 emmission for the external grid
 CO2_temp=0;
 PE_temp=0;
-for i=1:4
+for i=1:length(CO2F_el)
     CO2_temp=CO2_temp+el_exGrid(:,i)*CO2F_el(i);
     PE_temp=PE_temp+el_exGrid(:,i)*PEF_el(i);
 end
