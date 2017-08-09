@@ -116,7 +116,7 @@ wgdx('MtoG.gdx', FED_PE_0, FED_CO2Peak_0,CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,...
  end
 %% Get output results
 
-GET_RESULTS=0;
+GET_RESULTS=1;
 while GET_RESULTS==1
     %% Get results from VKA1
     
@@ -410,16 +410,44 @@ while GET_RESULTS==1
     DISP_RESULTS=0;
     while DISP_RESULTS==1
         clc;
-        fprintf('====================OPtimum Investment Options====================\n')
-        fprintf('Investment in Panna2 = %d MSEK, Investment in the turbine = %d MSEK\n', invCost_P2/10^6, invCost_TURB/10^6)
-        fprintf('Investment in New Absorbtion chiller \n Capacity = %d kW, Investment cost = %d MSEK\n', AbsCInv_cap, invCost_AbsCInv/10^6)
-        fprintf('Investment in RMMC = %d MSEK \n', invCost_RMMC/10^6)
-        fprintf('Investment in New Heat Pump \n Capacity = %d kW, Investment cost = %d MSEK \n',HP_cap, invCost_HP/10^6)
-        fprintf('Investment in Termal Energy Storage \n TES Capacity = %d m^3, TES Investment cost = %d MSEK \n',TES_cap, invCost_TES/10^6)
-        fprintf('Investment in Building INertia Termal Energy Storage \n Feasible Buildings = %d , BITES Investment cost = %d MSEK \n',0, invCost_BITES/10^6)
-        fprintf('Investment in New Solar PV \n Roof Capacity = %d kW, Facade Capacity = %d kW, Investment cost = %d MSEK \n',PV_cap_roof,PV_cap_facade, invCost_PV/10^6)
-        fprintf('Investment in Batery Energy Storage  \n Capacity = %d kW, Investment cost = %d MSEK \n',BES_cap, invCost_BEV/10^6)
-        fprintf('Total investment cost  = %d MSEK \n', invCost/10^6)
+        close all;
+        % intialize plot properties
+        properties=finit_plot_properties;   %initialise plot properties
+        properties.legendFontsize = 1;
+        properties.labelFontsize = 1;
+        properties.axelFontsize = 20;
+        Font_Size=properties.axelFontsize;
+        lgnd_size=1;
+        LineWidth=1;
+        LineThickness=2;        
+        %% PLot 
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)
+        ydata=FED_PE/1000;
+        ydata2=FED_PE_gams/1000;
+        duration= 0 : 100/(length(ydata)-1) : 100;
+        time=(1:length(ydata))/(24*30);
+        xdata=time;
+        
+        %plot(duration,sort(ydata,'descend'),'LineWidth',LineThickness);
+        plot(duration(1:8760),sort(ydata(1:8760),'descend'),'-.r',...
+            duration(1:8760),sort(ydata2(1:8760),'descend'),'g','LineWidth',LineThickness);
+        %plot(time,ydata,'LineWidth',LineThickness);
+        %area(time,ydata);
+        xlabel('Duration [%]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('CO2eq [kg]','FontSize',Font_Size,'FontName','Times New Roman')
+        %%
+%         fprintf('====================OPtimum Investment Options====================\n')
+%         fprintf('Investment in Panna2 = %d MSEK, Investment in the turbine = %d MSEK\n', invCost_P2/10^6, invCost_TURB/10^6)
+%         fprintf('Investment in New Absorbtion chiller \n Capacity = %d kW, Investment cost = %d MSEK\n', AbsCInv_cap, invCost_AbsCInv/10^6)
+%         fprintf('Investment in RMMC = %d MSEK \n', invCost_RMMC/10^6)
+%         fprintf('Investment in New Heat Pump \n Capacity = %d kW, Investment cost = %d MSEK \n',HP_cap, invCost_HP/10^6)
+%         fprintf('Investment in Termal Energy Storage \n TES Capacity = %d m^3, TES Investment cost = %d MSEK \n',TES_cap, invCost_TES/10^6)
+%         fprintf('Investment in Building INertia Termal Energy Storage \n Feasible Buildings = %d , BITES Investment cost = %d MSEK \n',0, invCost_BITES/10^6)
+%         fprintf('Investment in New Solar PV \n Roof Capacity = %d kW, Facade Capacity = %d kW, Investment cost = %d MSEK \n',PV_cap_roof,PV_cap_facade, invCost_PV/10^6)
+%         fprintf('Investment in Batery Energy Storage  \n Capacity = %d kW, Investment cost = %d MSEK \n',BES_cap, invCost_BEV/10^6)
+%         fprintf('Total investment cost  = %d MSEK \n', invCost/10^6)
         break;
     end
     
