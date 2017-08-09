@@ -27,8 +27,8 @@ while NEW_data==1
     FED_PE_base=sum(FED_PE0);
     FED_CO2Peak_base=max(FED_CO20);
     if SAVE_data==1
-       save('FED_PE_base','FED_PE0')
-       save('FED_PE_base','FED_CO20')
+       save('FED_PE0','FED_PE0')
+       save('FED_CO20','FED_CO20')
        save('FED_PE_base','FED_PE_base')
        save('FED_CO2Peak_base','FED_CO2Peak_base');
        save('el_exGCO2F','el_exGCO2F');
