@@ -176,9 +176,14 @@ positive variables
 *--------------------Objective function-----------------------------------------
 
 variable
-         totCost              total cost
-         invCost              total investment cost
-         FED_CO2_tot          Total CO2 emission of the FED system
-         obj                  objective function
+         fix_cost_existing  total fixed cost for existing generation
+         fix_cost_new       total fixed cost for new generation
+         var_cost_existing  total variable cost for existing generation
+         var_cost_new       total variable cost for new generation
+         Ainv_cost          total annualized investment cost
+         totCost            total cost
+         invCost            total investment cost
+         FED_CO2_tot        total CO2 emissions from the FED system
+         obj                objective function
 ;
 invCost.up $ (min_invCOst eq 0) = inv_lim;
