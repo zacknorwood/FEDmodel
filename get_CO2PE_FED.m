@@ -72,7 +72,7 @@ fgc_heat_2016=1000*xlsread('Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx',sheet,x
 fgc_heat_2016(isnan(fgc_heat_2016))=0;
 q_P1=tb_heat_2016+fgc_heat_2016;         %total heat production
 
-fuel_P1=tb_heat_2016/tb_eff + fgc_heat_2016/fgc_eff;   %estimated fuel consumption
+fuel_P1=tb_heat_2016/P1_eff + fgc_heat_2016/P1_eff;   %estimated fuel consumption
 %% Calculate the CO2 and PE of FED
 
 % Calculate FED CO2 emission

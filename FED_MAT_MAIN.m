@@ -15,8 +15,7 @@ CO2F_P2=12;
 PEF_P2=1.33;
 
 COP_HP_DH=305/90.1;  %Based on Alexanders data, COP of the HP in DH
-tb_eff=0.9;          %assumed efficiency of the boiler, can be modified
-fgc_eff=0.4;         %assumed efficiency of the fuel gas condencer, can be modified
+P1_eff=0.9;          %assumed efficiency of Panna1
 
 %calculate new values
 SAVE_data=1;
@@ -91,9 +90,9 @@ CO2F_DH = struct('name','CO2F_DH','type','parameter','form','full','val',DH_CO2F
 CO2F_DH.uels=H.uels;
 PEF_DH = struct('name','PEF_DH','type','parameter','form','full','val',DH_PEF);
 PEF_DH.uels=H.uels;
-Q_P1_TB = struct('name','q_P1_TB0','type','parameter','form','full','val',tb_heat_2016);
+Q_P1_TB = struct('name','q_P1_TB','type','parameter','form','full','val',tb_heat_2016);
 Q_P1_TB.uels=H.uels;
-Q_P1_FGC = struct('name','q_P1_FGC0','type','parameter','form','full','val',fgc_heat_2016);
+Q_P1_FGC = struct('name','q_P1_FGC','type','parameter','form','full','val',fgc_heat_2016);
 Q_P1_FGC.uels=H.uels;
 FUEL_P1 = struct('name','fuel_P1','type','parameter','form','full','val',fuel_P1);
 FUEL_P1.uels=H.uels;

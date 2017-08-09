@@ -74,8 +74,8 @@ parameters  FED_PE_base        Primary energy use in the FED system in the base 
             PEF_exG(h0)        PE factor of the electricity grid
             CO2F_DH(h0)        CO2 factor of the electricity grid
             PEF_DH(h0)         PE factor of the electricity grid
-            q_p1_TB0(h0)       PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
-            q_p1_FGC0(h0)      SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER (FUEL GAS CONDENCER)
+            q_p1_TB(h0)       PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
+            q_p1_FGC(h0)      SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER (FUEL GAS CONDENCER)
             fuel_P1(h0)        Input fuel of THE THERMAL BOILER
             min_totCost        Option to minimize total cost
             min_invCost        OPtion to minimize investment cost
@@ -96,8 +96,8 @@ $LOAD CO2F_exG
 $LOAD PEF_exG
 $LOAD CO2F_DH
 $LOAD PEF_DH
-$LOAD q_p1_TB0
-$LOAD q_p1_FGC0
+$LOAD q_p1_TB
+$LOAD q_p1_FGC
 $LOAD fuel_P1
 $LOAD min_totCost
 $LOAD min_invCost
@@ -109,7 +109,7 @@ $GDXIN
 display min_totCost,min_invCost, min_totCO2
         HoD, HoM,
         el_demand0, q_demand0, k_demand0,
-        q_p1_TB0, q_p1_FGC0,
+        q_p1_TB, q_p1_FGC,
         el_price0, q_price0, tout0,
         G_facade, area_facade_max, G_roof, area_roof_max, nPV_el0,
         BTES_model0,

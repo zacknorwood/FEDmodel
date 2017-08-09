@@ -242,7 +242,7 @@ eq_PV_cap_facade(BID)..
 *---------------- Demand supply balance for heating ----------------------------
 
 eq_hbalance(h)..
-             sum(i,q_demand(h,i)) =l=q_DH(h) + q_p1_TB0(h) + q_p1_FGC0(h) + H_VKA1(h) + H_VKA4(h) - q_AbsC(h) + H_P2T(h)
+             sum(i,q_demand(h,i)) =l=q_DH(h) + q_p1_TB(h) + q_p1_FGC(h) + H_VKA1(h) + H_VKA4(h) - q_AbsC(h) + H_P2T(h)
                                      + sw_HP*q_HP(h)
                                      + sw_TES*(TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
                                      + sw_BTES*(sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
