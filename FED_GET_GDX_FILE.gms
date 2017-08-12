@@ -62,8 +62,8 @@ $LOAD BTES_model0
 $GDXIN
 display el_demand0,q_demand0, k_demand0;
 
-parameters  FED_PE_base        Primary energy use in the FED system in the base case
-            FED_CO2Peak_base   Peak CO2 emission in the FED system in the base case
+parameters  FED_PE0            Primary energy use in the FED system in the base case
+            FED_CO20           Peak CO2 emission in the FED system in the base case
             CO2F_PV            CO2 factor of solar PV
             PEF_PV             PE factor of solar PV
             CO2F_P1            CO2 factor of Panna1 (P1)
@@ -74,18 +74,20 @@ parameters  FED_PE_base        Primary energy use in the FED system in the base 
             PEF_exG(h0)        PE factor of the electricity grid
             CO2F_DH(h0)        CO2 factor of the electricity grid
             PEF_DH(h0)         PE factor of the electricity grid
-            q_p1_TB(h0)       PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
-            q_p1_FGC(h0)      SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER (FUEL GAS CONDENCER)
+            q_p1_TB(h0)        PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
+            q_p1_FGC(h0)       SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER (FUEL GAS CONDENCER)
+            P1_eff             Effeciency of Panna1 (assumed to be the same for the boiler and the turbine)
             fuel_P1(h0)        Input fuel of THE THERMAL BOILER
             min_totCost        Option to minimize total cost
-            min_invCost        OPtion to minimize investment cost
+            min_totPE          OPtion to minimize tottal PE use
             min_totCO2         OPtion to minimize total CO2 emission
+            min_totPECO2       OPtion to minimize both total PE use and CO2 emission
             CO2_ref            Reference value of CO2 peak
             inv_lim            Maximum value of the investment in SEK
 ;
 $GDXIN MtoG.gdx
-$LOAD FED_PE_base
-$LOAD FED_CO2Peak_base
+$LOAD FED_PE0
+$LOAD FED_CO20
 $LOAD CO2F_PV
 $LOAD PEF_PV
 $LOAD CO2F_P1
@@ -99,20 +101,22 @@ $LOAD PEF_DH
 $LOAD q_p1_TB
 $LOAD q_p1_FGC
 $LOAD fuel_P1
+$LOAD P1_eff
 $LOAD min_totCost
-$LOAD min_invCost
+$LOAD min_totPE
 $LOAD min_totCO2
+$LOAD min_totPECO2
 $LOAD CO2_ref
 $LOAD inv_lim
 $GDXIN
 
-display min_totCost,min_invCost, min_totCO2
+display min_totCost,min_totPE, min_totCO2
         HoD, HoM,
         el_demand0, q_demand0, k_demand0,
         q_p1_TB, q_p1_FGC,
         el_price0, q_price0, tout0,
         G_facade, area_facade_max, G_roof, area_roof_max, nPV_el0,
         BTES_model0,
-        FED_PE_base, FED_CO2Peak_base,
+        FED_PE0, FED_CO20,
         CO2F_PV, PEF_PV, CO2F_P1, PEF_P1, CO2F_P2, PEF_P2,
         CO2F_exG,PEF_exG,CO2F_DH,PEF_DH;

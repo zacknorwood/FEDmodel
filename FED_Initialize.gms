@@ -119,10 +119,10 @@ e0_PV(h)=cap_sup_unit('PV')*nPV_ird(h);
 *This data is imported from MATLAB and stored in MtoG
 
 Parameter
-          P1_eff      Efficiency of Panna1
+*          P1_eff      Efficiency of Panna1
           q_P1(h)     Total heat output from P1
 ;
-P1_eff=0.9;
+*P1_eff=0.9;
 q_P1(h)= q_P1_TB(h) + q_P1_FGC(h);
 *--------------VKA4 constants and parameters------------------------------------
 
@@ -393,7 +393,7 @@ scalar
          CO2_lim    Desired or limiting value of CO2
 ;
 
-PE_lim=(1-0.3)*FED_PE_base;
-dCO2=FED_CO2Peak_base-CO2_ref;
+PE_lim=(1-0.3)*sum(h,FED_PE0(h));
+dCO2=smax(h,FED_CO20(h))-CO2_ref;
 CO2_lim=CO2_ref+0.2*dCO2;
 *--------------Limit on investment----------------------------------------------

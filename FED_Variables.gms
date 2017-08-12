@@ -163,8 +163,8 @@ variable
          FED_PE         Primery energy limit of the FED system
 ;
 
-*FED_PE.up=PE_lim;
-*FED_CO2.up(h)=CO2_lim;
+FED_PE.up $ (min_totCost eq 1) = PE_lim;
+FED_CO2.up(h) $ (min_totCost eq 1) = CO2_lim;
 *-------------------- Power tariffs -------------------------------------------
 
 positive variables
@@ -186,4 +186,4 @@ variable
          FED_CO2_tot        total CO2 emissions from the FED system
          obj                objective function
 ;
-invCost.up $ (min_invCOst eq 0) = inv_lim;
+invCost.up $ (min_totCost eq 0) = inv_lim;
