@@ -362,6 +362,5 @@ eq_CO2_TOT..
 ****************Objective function**********************************************
 
 eq_obj..
-         obj =e= min_totCost*totCost + min_invCost*invCost + min_totCO2*FED_CO2_tot;
-
+         obj =e= min_totCost*totCost + min_totPE*FED_PE + min_totCO2*FED_CO2_tot + min_totPECO2*((FED_PE/sum(h,FED_PE0(h))) + (FED_CO2_tot/sum(h,FED_CO20(h))));
 ********************************************************************************

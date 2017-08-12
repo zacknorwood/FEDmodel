@@ -53,7 +53,7 @@ parameter FED_PE_ft(h)  Primary energy as a function of time
 ;
 FED_PE_ft(h)=e_exG.l(h)*PEF_exG(h)
              + e0_PV(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
-             + q_DH.l(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1;
+             + q_DH.l(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1 + fuel_P2.l(h)*PEF_P1;
 
 execute_unload 'GtoM' H_VKA1, C_VKA1, el_VKA1,
                       H_VKA4, C_VKA4, el_VKA4,
@@ -71,24 +71,3 @@ execute_unload 'GtoM' H_VKA1, C_VKA1, el_VKA1,
                       e_exG,
                       q_DH,
                       PT_exG, PT_DH, invCost;
-
-
-*display k_demand;
-*execute_unload "power_grid.gdx" P_DH, P_elec;
-*execute_unload "power_technologies.gdx" P_DH, P_HP, P_CHP, TES_out, TES_in;
-*execute_unload "indoor_temperature" T_in;
-
-
-*execute_unload "Demand_2016.gdx" heat_demand, elec_demand;
-
-
-*execute_unload "ind_temp.gdx" T_in.l;
-*execute 'gdxxrw.exe ind_temp.gdx var=T_in.L';
-
-$ontext
-file results /results.dat/ ;
-put results;
-put 'district heating Results'// ;
-put  @24, 'P_DH', @48, 'P_HP', @72, 'fuel', @96, 'Ped'
-loop((i,h), put n.tl, @24, P_DH.l(i,h):8:4, @48, P_HP.l(i,h):8:4, @72, fuel.l(i,h):8:4, @96, Ped.l(i,h):8:4  /);
-$offtext
