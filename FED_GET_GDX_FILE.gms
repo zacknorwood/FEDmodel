@@ -14,7 +14,7 @@ SET h0  length of the input data in hours
     BTES_properties0  Building Inertia TES properties
 ;
 
-$GDXIN FED_INPUT_DATA.gdx
+$GDXIN Input_data_FED_SIMULATOR\FED_INPUT_DATA.gdx
 $LOAD h0
 $LOAD b0
 $LOAD m0
@@ -44,7 +44,7 @@ PARAMETERS  HoD(h0,d0)        Hour of the day
             CO2F_exG0(h0)     CO2 FACTOR of external ELECTRICTY GRID
 
 ;
-$GDXIN FED_INPUT_DATA.gdx
+$GDXIN Input_data_FED_SIMULATOR\FED_INPUT_DATA.gdx
 $LOAD HoD
 $LOAD HoM
 $LOAD el_demand0
