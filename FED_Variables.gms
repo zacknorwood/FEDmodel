@@ -65,7 +65,7 @@ binary variable
 *----------------Panna 2 related -----------------------------------------------
 
 positive variable
-         fuel_P2(h)           fuel demand in P2
+         fuel_P2(h)        fuel demand in P2
          q_P2(h)           generated heating in P2
 ;
 binary variable
@@ -111,6 +111,8 @@ positive variable
          BTES_Sloss(h,i)  heat loss from the shallow section of the building
          BTES_Dloss(h,i)  heat loss from the deep section of the building
 ;
+BTES_Sen.up(h,i)=1000*BTES_model('BTES_Scap',i);
+BTES_Den.up(h,i)=1000*BTES_model('BTES_Dcap',i);
 variable
          link_BS_BD(h,i)  heat flow between the shallow and the deep section
 ;
