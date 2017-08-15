@@ -8,7 +8,7 @@ PORCESS_RESULTS=1;
 while PORCESS_RESULTS==1    
     %% Set results in a gdx file for a given scenario/option    
         
-    gdxData='Sim_Results\GtoM_mintotCost';
+    gdxData='Sim_Results\GtoM_mintotPE';
     PROCESS_DATA=1;
     while PROCESS_DATA==1
     
@@ -348,8 +348,8 @@ while PORCESS_RESULTS==1
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
         
-        ydata=el_Import_2016(1:8760);
-        ydata2=e_exG(1:8760);
+        ydata=el_Import_2016(1:8760)/1000;
+        ydata2=e_exG(1:8760)/1000;
         duration= 0 : 100/(length(ydata)-1) : 100;
         time=(1:length(ydata))/(24*30);
         xdata=time;        
@@ -359,7 +359,7 @@ while PORCESS_RESULTS==1
         %plot(time,ydata,'LineWidth',LineThickness);
         %area(time,ydata);
         xlabel('Duration [%]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('Electricty import [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Electricty import [MW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 100])
@@ -370,8 +370,8 @@ while PORCESS_RESULTS==1
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
         
-        ydata=heat_Import_2016(1:8760);
-        ydata2=q_DH(1:8760);
+        ydata=heat_Import_2016(1:8760)/1000;
+        ydata2=q_DH(1:8760)/1000;
         duration= 0 : 100/(length(ydata)-1) : 100;
         time=(1:length(ydata))/(24*30);
         xdata=time;        
@@ -381,7 +381,7 @@ while PORCESS_RESULTS==1
         %plot(time,ydata,'LineWidth',LineThickness);
         %area(time,ydata);
         xlabel('Duration [%]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('Heat import [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Heat import [MW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size) 
         box off
         xlim([0 100])

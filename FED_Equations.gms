@@ -24,7 +24,6 @@ equation
 
            eq1_AbsCInv  Production equation
            eq2_AbsCInv  Investment capacity
-           eq3_AbsCInv  Binary constraint
 
            eq1_P2       production equation for P2
            eq2_P2       investment equation for P2
@@ -68,7 +67,8 @@ equation
            eq_kbalance   Balance equation cooling
            eq_ebalance   electrical supply-demand balance
 
-           eq_PE         FED PE(Primary energy) use
+           eq_PE         Hourly PE use in the FED system
+           eq_totPE      Total PE use in the FED system
            eq_CO2        FED CO2 emission
 
            eq_max_exG(h,m) maximum monthly peak demand
@@ -142,8 +142,6 @@ eq1_AbsCInv(h)..
              k_AbsCInv(h) =e= AbsCInv_COP*q_AbsCInv(h)*AbsC_eff;
 eq2_AbsCInv(h)..
              k_AbsCInv(h) =l= AbsCInv_cap;
-eq3_AbsCInv(h)..
-             k_AbsCInv(h) =l= B_AbsCInv * AbsCInv_MaxCap;
 *----------------Panna 2 equations ---------------------------------------------
 
 eq1_P2(h)..
@@ -156,7 +154,7 @@ eq1_TURB(h)..
          e_TURB(h) =e= sw_TURB * TURB_eff * q_TURB(h);
 
 eq2_TURB(h)..
-         H_P2T(h) =l= q_P2(h) - q_TURB(h);
+         H_P2T(h) =e= q_P2(h) - q_TURB(h);
 
 eq3_TURB(h)..
          e_TURB(h) =l= TURB_cap * B_TURB;
@@ -247,7 +245,8 @@ eq_PV_cap_facade(BID)..
 *---------------- Demand supply balance for heating ----------------------------
 
 eq_hbalance(h)..
-             sum(i,q_demand(h,i)) =l=q_DH(h) + q_p1_TB(h) + q_p1_FGC(h) + H_VKA1(h) + H_VKA4(h) - q_AbsC(h) + H_P2T(h)
+             sum(i,q_demand(h,i)) =l=q_DH(h) + q_p1_TB(h) + q_p1_FGC(h) + H_VKA1(h)
+                                     + H_VKA4(h) - q_AbsC(h) + H_P2T(h)
                                      + sw_HP*q_HP(h)
                                      + sw_TES*(TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
                                      + sw_BTES*(sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
@@ -259,7 +258,9 @@ eq_hbalance2(h)..
 *-------------- Demand supply balance for cooling ------------------------------
 
 eq_kbalance(h)..
-         sum(i,k_demand(h,i))=l=P_DC(h) + C_VKA1(h) + C_VKA4(h) +  k_AbsC(h) + k_RM(h) + k_RMMC(h) + k_AAC(h) + c_HP(h) + sw_AbsCInv * k_AbsCInv(h);
+         sum(i,k_demand(h,i))=l=P_DC(h) + C_VKA1(h) + C_VKA4(h) +  k_AbsC(h)
+                                + k_RM(h) + k_RMMC(h) + k_AAC(h) + c_HP(h)
+                                + sw_AbsCInv * k_AbsCInv(h);
 *--------------Demand supply balance for electricity ---------------------------
 
 eq_ebalance(h)..
@@ -270,10 +271,14 @@ eq_ebalance(h)..
 *--------------FED Primary energy use-------------------------------------------
 
 eq_PE..
-       FED_PE =e= sum(h,e_exG(h)*PEF_exG(h))
-                  + sum(h,e0_PV(h)*PEF_PV) + sw_PV*sum(h,e_PV(h)*PEF_PV)
-                  + sum(h,q_DH(h)*PEF_DH(h)) + sum(h,fuel_P1(h)*PEF_P1)
-                  + sum(h,fuel_P2(h)*PEF_P2);
+        FED_PE(h)=e= e_exG(h)*PEF_exG(h)
+                     + e0_PV(h)*PEF_PV + sw_PV*e_PV(h)*PEF_PV
+                     + q_DH(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1
+                     + fuel_P2(h)*PEF_P2;
+**********************Total PE use in the FED system****************************
+
+eq_totPE..
+         tot_PE=e=sum(h,FED_PE(h));
 *---------------FED CO2 emission------------------------------------------------
 
 eq_CO2(h)..
@@ -281,6 +286,10 @@ eq_CO2(h)..
                       + e0_PV(h)*CO2F_PV + sw_PV*e_PV(h)*CO2F_PV
                       + q_DH(h)*CO2F_DH(h) + fuel_P1(h)*CO2F_P1
                       + fuel_P2(h) * CO2F_P2;
+****************Total CO2 emission in the FED system****************************
+
+eq_CO2_TOT..
+         FED_CO2_tot =e= sum(h, FED_CO2(h));
 **************** Power tariffs *******************
 
 eq_max_exG(h,m)..
@@ -355,12 +364,8 @@ eq_invCost..
                      + sw_P2 * B_P2 * cost_inv_opt('P2')
                      + sw_TURB * B_TURB * cost_inv_opt('TURB')
                      + sw_AbsCInv * B_AbsCInv * cost_inv_opt('AbsCInv');
-****************Total CO2 emission in the FED system****************************
-
-eq_CO2_TOT..
-         FED_CO2_tot =e= sum(h, FED_CO2(h));
 ****************Objective function**********************************************
 
 eq_obj..
-         obj =e= min_totCost*totCost + min_totPE*FED_PE + min_totCO2*FED_CO2_tot + min_totPECO2*((FED_PE/sum(h,FED_PE0(h))) + (FED_CO2_tot/sum(h,FED_CO20(h))));
+         obj =e= min_totCost*totCost + min_totPE*tot_PE + min_totCO2*FED_CO2_tot + min_totPECO2*((tot_PE/sum(h,FED_PE0(h))) + (FED_CO2_tot/sum(h,FED_CO20(h))));
 ********************************************************************************
