@@ -270,7 +270,7 @@ eq_ebalance(h)..
                                  + sw_TURB * e_TURB(h);
 *--------------FED Primary energy use-------------------------------------------
 
-eq_PE..
+eq_PE(h)..
         FED_PE(h)=e= e_exG(h)*PEF_exG(h)
                      + e0_PV(h)*PEF_PV + sw_PV*e_PV(h)*PEF_PV
                      + q_DH(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1
