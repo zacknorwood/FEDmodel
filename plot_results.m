@@ -8,7 +8,7 @@ PORCESS_RESULTS=1;
 while PORCESS_RESULTS==1    
     %% Set results in a gdx file for a given scenario/option    
         
-    gdxData='Sim_Results\GtoM_mintotPE';
+    gdxData='GtoM';
     PROCESS_DATA=1;
     while PROCESS_DATA==1
     
@@ -298,14 +298,10 @@ while PORCESS_RESULTS==1
     BES_en=BES_en.val(1:8760);
     %% Get simulated PE use and CO2 emission
     
-    %Total PE use in the new FED system
-    FED_PE=struct('name','FED_PE');    
-    FED_PE=rgdx(gdxData,FED_PE);
-    FED_PE=FED_PE.val;
     %Time series PE use in the new FED system
-    FED_PE_ft=struct('name','FED_PE_ft','form','full');
-    FED_PE_ft=rgdx(gdxData,FED_PE_ft);
-    FED_PE_ft=FED_PE_ft.val(1:8760);
+    FED_PE=struct('name','FED_PE','form','full');
+    FED_PE=rgdx(gdxData,FED_PE);
+    FED_PE=FED_PE.val(1:8760);
     %Time series CO2 emission in the new FED system
     FED_CO2=struct('name','FED_CO2','form','full');
     FED_CO2=rgdx(gdxData,FED_CO2);
@@ -347,7 +343,7 @@ while PORCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        
+        load el_Import_2016;
         ydata=el_Import_2016(1:8760)/1000;
         ydata2=e_exG(1:8760)/1000;
         duration= 0 : 100/(length(ydata)-1) : 100;
@@ -369,7 +365,7 @@ while PORCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        
+        load heat_Import_2016;
         ydata=heat_Import_2016(1:8760)/1000;
         ydata2=q_DH(1:8760)/1000;
         duration= 0 : 100/(length(ydata)-1) : 100;
@@ -391,7 +387,7 @@ while PORCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        
+        load q_P1;
         ydata=H_VKA1;
         ydata2=H_VKA4;
         ydata3=q_P1/10;
@@ -469,9 +465,9 @@ while PORCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        
+        load FED_PE0;
         ydata=FED_PE0(1:8760)/1000;
-        ydata2=FED_PE_ft(1:8760)/1000;
+        ydata2=FED_PE(1:8760)/1000;
         duration= 0 : 100/(length(ydata)-1) : 100;
         time=(1:length(ydata))/(24*30);
         xdata=time;        
@@ -489,13 +485,14 @@ while PORCESS_RESULTS==1
         
         %percentage change in PE use in the FED system
         fprintf('*********REDUCTION IN THE FED PRIMARY ENERGY USE********** \n')
-        FED_pPE=FED_PE/sum(FED_PE0)*1;
+        FED_pPE=sum(FED_PE)/sum(FED_PE0)*1;
         fprintf('Change in total FED PE use (New/Base) = %d \n\n', FED_pPE);
         %% PLot FED CO2 emission with and without investment
         
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
+        load FED_CO20;
         ydata=FED_CO20(1:8760)/1000;
         ydata2=FED_CO2(1:8760)/1000;
         duration= 0 : 100/(length(ydata)-1) : 100;
