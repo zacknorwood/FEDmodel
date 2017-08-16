@@ -154,7 +154,7 @@ eq1_TURB(h)..
          e_TURB(h) =e= sw_TURB * TURB_eff * q_TURB(h);
 
 eq2_TURB(h)..
-         H_P2T(h) =e= q_P2(h) - q_TURB(h);
+         H_P2T(h) =l= q_P2(h) - q_TURB(h);
 
 eq3_TURB(h)..
          e_TURB(h) =l= TURB_cap * B_TURB;
@@ -218,14 +218,22 @@ eq_BES_dis(h)..
              BES_dis(h)=l=sw_BES*BES_en(h);
 
 *-----------------Solar PV equations--------------------------------------------
+** Original Matlab Code (P is per WattPeak of Solar PV)
+*P(index)=
+*Gekv(index).*(1 + coef(1).*log(Gekv(index))
+*+ coef(2).*log(Gekv(index)).^2
+*+ coef(3).*Tekv(index)
+*+ coef(4).*Tekv(index).*log(Gekv(index))
+*+ coef(5).*Tekv(index).*log(Gekv(index)).^2
+*+ coef(6).*Tekv(index).^2);
 eq_PV(h)..
              e_PV(h) =e= sw_PV*eta_Inverter * (sum(BID$(Gekv_roof(h,BID) ne 0),
-                                                        eta_roof_data*PV_cap_roof(BID)*Gekv_roof(h,BID)*(1
-                                                        + coef_Si('1')*log10(Gekv_roof(h,BID))
+                                                        eta_roof_data*PV_cap_roof(BID)*Gekv_roof(h,BID)*
+                                                        (1 + coef_Si('1')*log10(Gekv_roof(h,BID))
                                                         + coef_Si('2')*sqr(log10(Gekv_roof(h,BID)))
                                                         + coef_Si('3')*Tekv_roof(h,BID)
                                                         + coef_Si('4')*Tekv_roof(h,BID)*log10(Gekv_roof(h,BID))
-                                                        + coef_Si('5')*sqr(Tekv_roof(h,BID)*log10(Gekv_roof(h,BID)))
+                                                        + coef_Si('5')*Tekv_roof(h,BID)*sqr(log10(Gekv_roof(h,BID)))
                                                         + coef_Si('6')*sqr(Tekv_roof(h,BID))))
                                               + sum(BID$(Gekv_facade(h,BID) ne 0),
                                                          eta_facade_data*PV_cap_facade(BID)*Gekv_facade(h,BID)*
@@ -233,7 +241,7 @@ eq_PV(h)..
                                                           + coef_Si('2')*sqr(log10(Gekv_facade(h,BID)))
                                                           + coef_Si('3')*Tekv_facade(h,BID)
                                                           + coef_Si('4')*Tekv_facade(h,BID)*log10(Gekv_facade(h,BID))
-                                                          + coef_Si('5')*sqr(Tekv_facade(h,BID)*log10(Gekv_facade(h,BID)))
+                                                          + coef_Si('5')*Tekv_facade(h,BID)*sqr(log10(Gekv_facade(h,BID)))
                                                           + coef_Si('6')*sqr(Tekv_facade(h,BID)))));
 
 eq_PV_cap_roof(BID)..
@@ -270,7 +278,7 @@ eq_ebalance(h)..
                                  + sw_TURB * e_TURB(h);
 *--------------FED Primary energy use-------------------------------------------
 
-eq_PE..
+eq_PE(h)..
         FED_PE(h)=e= e_exG(h)*PEF_exG(h)
                      + e0_PV(h)*PEF_PV + sw_PV*e_PV(h)*PEF_PV
                      + q_DH(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1

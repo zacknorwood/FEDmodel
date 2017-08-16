@@ -97,8 +97,8 @@ FUEL_P1.uels=H.uels;
 
 %optimization option
 option1=0; %minimize total cost, PE and CO2 cap
-option2=0; %minimize tottal PE use, investement cost cap
-option3=1; %minimize total CO2 emission, investement cost cap
+option2=1; %minimize tottal PE use, investement cost cap
+option3=0; %minimize total CO2 emission, investement cost cap
 option4=0; %minimize total CO2 and PE (compromise), investement cost cap
 temp_optn1 = struct('name','min_totCost','type','parameter','form','full','val',option1);
 temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',option2);
@@ -111,7 +111,7 @@ wgdx('MtoG.gdx', FED_PE_0, FED_CO2_0,CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,...
      temp_optn1, temp_optn2, temp_optn3, temp_optn4, FED_CO2ref, FED_Inv_lim);
 %% RUN GAMS model
 
- RUN_GAMS_MODEL = 0;
+ RUN_GAMS_MODEL = 1;
  while RUN_GAMS_MODEL==1
      system 'gams FED_SIMULATOR_MAIN lo=3';
      break;
