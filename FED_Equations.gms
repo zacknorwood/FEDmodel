@@ -170,7 +170,7 @@ eq_HP3(h)$(sw_HP eq 1)..
 
 eq_TESen1(h,i)$(ord(h) eq 1)..
 
-             TES_en('1') =e= sw_TES*TES_cap*TES_density;
+             TES_en('1') =e= 0*sw_TES*TES_cap*TES_density;
 
 eq_TESen2(h)$(ord(h) gt 1)..
              TES_en(h) =e= sw_TES* TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
