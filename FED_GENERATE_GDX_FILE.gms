@@ -116,7 +116,7 @@ display tout0;
 *----------------PV data--------------------------------------------------------
 
 *Load facade solar irradiance
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceFacades.xls Squeeze=N par=G_facade rng='TotalFlux(kWhperm2)'!A1:BS8785 trace=3
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceFacades.xlsx Squeeze=N par=G_facade rng='TotalFlux(kWhperm2)'!A1:BS8785 trace=3
 PARAMETERS  G_facade(h0,BID) irradiance on building facades;
 $GDXIN irradianceFacades.gdx
 $LOAD G_facade
@@ -124,24 +124,24 @@ $GDXIN
 display G_facade;
 
 *Load facade areas
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceFacades.xls o=irradianceFacadesArea.gdx par=area_facade_max cdim=1 rng=='Area(m2)'!A1:BR2 trace=3
-PARAMETERS  area_facade_max(BID) irradiance on building facades;
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceFacades.xlsx o=irradianceFacadesArea.gdx par=area_facade_max cdim=1 rng=='Area(m2)'!A1:BR2 trace=3
+PARAMETERS  area_facade_max(BID) area of building facades;
 $GDXIN irradianceFacadesArea.gdx
 $LOAD area_facade_max
 $GDXIN
 display area_facade_max;
 
 *Load roof solar irradiance
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceRoofs.xls Squeeze=N par=G_roof rng='TotalFlux(kWhperm2)'!A1:BS8785 trace=3
-PARAMETERS  G_roof(h0,BID) irradiance on building facades;
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceRoofs.xlsx Squeeze=N par=G_roof rng='TotalFlux(kWhperm2)'!A1:BS8785 trace=3
+PARAMETERS  G_roof(h0,BID) irradiance on building roofs;
 $GDXIN irradianceRoofs.gdx
 $LOAD G_roof
 $GDXIN
 display G_roof;
 
 *Load roof areas
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceRoofs.xls o=irradianceRoofsArea.gdx par=area_roof_max cdim=1 rng=='Area(m2)'!A1:BR2 trace=3
-PARAMETERS  area_roof_max(BID) irradiance on building facades;
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceRoofs.xlsx o=irradianceRoofsArea.gdx par=area_roof_max cdim=1 rng=='Area(m2)'!A1:BR2 trace=3
+PARAMETERS  area_roof_max(BID) area of building roof;
 $GDXIN irradianceRoofsArea.gdx
 $LOAD area_roof_max
 $GDXIN
