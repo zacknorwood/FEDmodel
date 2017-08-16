@@ -324,7 +324,7 @@ eq_fix_cost_new..
                            + sw_BTES*fix_cost('BTES')*sum(i,B_BITES(i))
                            + sw_P2 * B_P2 * fix_cost('P2')
                            + sw_TURB * B_TURB * fix_cost('TURB')
-                           + sw_AbsCInv * B_AbsCInv * fix_cost('AbsCInv');
+                           + sw_AbsCInv * fix_cost('AbsCInv');
 eq_var_cost_existing..
          var_cost_existing =e= sum(h,e_exG(h)*utot_cost('exG',h)) + sum(m,PT_exG(m))
                                + sum(h,q_DH(h)*utot_cost('DH',h))  + PT_DH
@@ -355,7 +355,7 @@ eq_Ainv_cost..
                 + sw_RMMC*RMMC_inv*cost_inv_opt('RMMC')/lifT_inv_opt('RMMC')
                 + sw_P2 * B_P2 * cost_inv_opt('P2')/lifT_inv_opt('P2')
                 + sw_TURB * B_TURB * cost_inv_opt('TURB')/lifT_inv_opt('TURB')
-                + sw_AbsCInv * B_AbsCInv * cost_inv_opt('AbsCInv')/lifT_inv_opt('AbsCInv');
+                + sw_AbsCInv * cost_inv_opt('AbsCInv')/lifT_inv_opt('AbsCInv');
 
 eq_totCost..
          totCost =e= fix_cost_existing + var_cost_existing
@@ -371,7 +371,7 @@ eq_invCost..
                      + sw_RMMC*RMMC_inv*cost_inv_opt('RMMC')
                      + sw_P2 * B_P2 * cost_inv_opt('P2')
                      + sw_TURB * B_TURB * cost_inv_opt('TURB')
-                     + sw_AbsCInv * B_AbsCInv * cost_inv_opt('AbsCInv');
+                     + sw_AbsCInv * cost_inv_opt('AbsCInv');
 ****************Objective function**********************************************
 
 eq_obj..

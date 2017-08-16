@@ -60,9 +60,6 @@ positive variable
          AbsCInv_cap       Installed capacity in kW cooling
 ;
 AbsCInv_cap.up=AbsCInv_MaxCap;
-binary variable
-         B_AbsCInv         Binary decision variable used for fixed part of cost
-;
 *----------------Panna 2 related -----------------------------------------------
 
 positive variable

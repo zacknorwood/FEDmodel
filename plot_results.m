@@ -345,7 +345,7 @@ while PORCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        
+        load el_Import_2016;
         ydata=el_Import_2016(1:8760)/1000;
         ydata2=e_exG(1:8760)/1000;
         duration= 0 : 100/(length(ydata)-1) : 100;
@@ -367,7 +367,7 @@ while PORCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        
+        load heat_Import_2016;
         ydata=heat_Import_2016(1:8760)/1000;
         ydata2=q_DH(1:8760)/1000;
         duration= 0 : 100/(length(ydata)-1) : 100;
@@ -389,7 +389,7 @@ while PORCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        
+        load q_P1;
         ydata=H_VKA1;
         ydata2=H_VKA4;
         ydata3=q_P1/10;
@@ -467,7 +467,7 @@ while PORCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        
+        load FED_PE0;
         ydata=FED_PE0(1:8760)/1000;
         ydata2=FED_PE(1:8760)/1000;
         duration= 0 : 100/(length(ydata)-1) : 100;
@@ -494,6 +494,7 @@ while PORCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
+        load FED_CO20;
         ydata=FED_CO20(1:8760)/1000;
         ydata2=FED_CO2(1:8760)/1000;
         duration= 0 : 100/(length(ydata)-1) : 100;
