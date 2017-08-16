@@ -47,3 +47,5 @@ FED_PROJECT.gpr
 *.gpr
 *.mat
 *.asv
+*.asv
+*.txt
