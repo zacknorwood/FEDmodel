@@ -20,22 +20,22 @@ P1_eff=0.9;          %assumed efficiency of Panna1
 P1_eff_temp = struct('name','P1_eff','type','parameter','form','full','val',P1_eff);
 
 %calculate new values
-SAVE_data=1;
-NEW_data=1;
+NEW_data=0;
 
 while NEW_data==1
-    get_CO2PE_FED;   %this routine calculates the CO2 and PE factors of the external grid also
-    if SAVE_data==1
-       save('FED_PE0','FED_PE0')
-       save('FED_CO20','FED_CO20')
-       save('el_exGCO2F','el_exGCO2F');
-       save('el_exGPEF','el_exGPEF');
-       save('DH_CO2F','DH_CO2F');
-       save('DH_PEF','DH_PEF');
-       save('tb_heat_2016','tb_heat_2016');
-       save('fgc_heat_2016','fgc_heat_2016');
-       save('fuel_P1','fuel_P1');
-    end
+    get_CO2PE_FED;   %this routine calculates the CO2 and PE factors of the external grid also    
+    save('FED_PE0','FED_PE0');
+    save('FED_CO20','FED_CO20');
+    save('el_exGCO2F','el_exGCO2F');
+    save('el_exGPEF','el_exGPEF');
+    save('DH_CO2F','DH_CO2F');
+    save('DH_PEF','DH_PEF');
+    save('tb_heat_2016','tb_heat_2016');
+    save('fgc_heat_2016','fgc_heat_2016');
+    save('fuel_P1','fuel_P1');
+    save('q_P1','q_P1');
+    save('el_Import_2016','el_Import_2016')
+    save('heat_Import_2016','heat_Import_2016')
     break;
 end
 
@@ -50,26 +50,12 @@ while NEW_data==0
     load tb_heat_2016;
     load fgc_heat_2016;
     load fuel_P1;
+    load q_P1;
+    load el_Import_2016;
+    load heat_Import_2016;
     break;
 end
 %% Define GAMS input parameters
-
-%Data to be exported to GAMS
-FED_PE_0 = struct('name','FED_PE0','type','parameter','form','full','val',FED_PE0);
-FED_CO2_0 = struct('name','FED_CO20','type','parameter','form','full','val',FED_CO20);
-temp_CO2F_PV = struct('name','CO2F_PV','type','parameter','form','full','val',CO2F_PV);
-temp_PEF_PV = struct('name','PEF_PV','type','parameter','form','full','val',PEF_PV);
-temp_CO2F_P1 = struct('name','CO2F_P1','type','parameter','form','full','val',CO2F_P1);
-temp_PEF_P1 = struct('name','PEF_P1','type','parameter','form','full','val',PEF_P1);
-temp_CO2F_P2 = struct('name','CO2F_P2','type','parameter','form','full','val',CO2F_P2);
-temp_PEF_P2 = struct('name','PEF_P2','type','parameter','form','full','val',PEF_P2);
-
-pCO2ref=0.95; %Choose the percentage the reference CO2 [this value can be varied for sensetivity analysis]
-FED_CO2ref = struct('name','CO2_ref','type','parameter','form','full','val',pCO2ref*max(FED_CO20));
-FED_inv=76761000;  %this is projected FED investment cost in SEK
-fInv_lim=1;        %multiplication factor [can be varied for sensetivity analysis]
-FED_Inv_lim = struct('name','inv_lim','type','parameter','form','full','val',fInv_lim*FED_inv);
-
 tlen=24*365;                %length the time series data
 %for t=1:tlen
 %    str{t}=(strcat(num2str('H'),num2str(t)));
@@ -77,6 +63,25 @@ tlen=24*365;                %length the time series data
 H.name='H0';
 H.uels=num2cell(1:tlen);
 %H.uels=(str);
+
+%Data to be exported to GAMS
+FED_PE_0 = struct('name','FED_PE0','type','parameter','form','full','val',FED_PE0);
+FED_PE_0.uels=H.uels;
+FED_CO2_0 = struct('name','FED_CO20','type','parameter','form','full','val',FED_CO20);
+FED_CO2_0.uels=H.uels;
+temp_CO2F_PV = struct('name','CO2F_PV','type','parameter','val',CO2F_PV);
+temp_PEF_PV = struct('name','PEF_PV','type','parameter','val',PEF_PV);
+temp_CO2F_P1 = struct('name','CO2F_P1','type','parameter','val',CO2F_P1);
+temp_PEF_P1 = struct('name','PEF_P1','type','parameter','val',PEF_P1);
+temp_CO2F_P2 = struct('name','CO2F_P2','type','parameter','val',CO2F_P2);
+temp_PEF_P2 = struct('name','PEF_P2','type','parameter','val',PEF_P2);
+
+pCO2ref=0.95; %Choose the percentage the reference CO2 [this value can be varied for sensetivity analysis]
+FED_CO2ref = struct('name','CO2_ref','type','parameter','val',pCO2ref*max(FED_CO20));
+FED_inv=76761000;  %this is projected FED investment cost in SEK
+fInv_lim=1;        %multiplication factor [can be varied for sensetivity analysis]
+FED_Inv_lim = struct('name','inv_lim','type','parameter','val',fInv_lim*FED_inv);
+
 
 CO2F_exG = struct('name','CO2F_exG','type','parameter','form','full','val',el_exGCO2F);
 CO2F_exG.uels=H.uels;
@@ -94,7 +99,6 @@ FUEL_P1 = struct('name','fuel_P1','type','parameter','form','full','val',fuel_P1
 FUEL_P1.uels=H.uels;
 %% GAMS Model input
 
-
 %optimization option
 option1=0; %minimize total cost, PE and CO2 cap
 option2=0; %minimize tottal PE use, investement cost cap
@@ -111,7 +115,7 @@ wgdx('MtoG.gdx', FED_PE_0, FED_CO2_0,CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,...
      temp_optn1, temp_optn2, temp_optn3, temp_optn4, FED_CO2ref, FED_Inv_lim);
 %% RUN GAMS model
 
- RUN_GAMS_MODEL = 0;
+ RUN_GAMS_MODEL = 1;
  while RUN_GAMS_MODEL==1
      system 'gams FED_SIMULATOR_MAIN lo=3';
      break;
