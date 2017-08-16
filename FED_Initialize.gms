@@ -82,7 +82,7 @@ Parameter
          lifT_inv_opt(inv_opt)    Life time of investment options
                      /PV 30, BES 15, HP 25, TES 30, BTES 30, RMMC 25, P2 30, TURB 30, AbsCInv 25/;
 
-*--------------CHoice of investment options to consider-------------------------
+*--------------Choice of investment options to consider-------------------------
 
 PARAMETERS
          sw_HP        switch to decide whether to operate HP or not
@@ -148,9 +148,9 @@ scalar
 
 scalar
          AAC_COP Coefficent of performance of AAC /10/
-         AAC_eff Efficiency of AbsC /0.95/
+         AAC_eff Efficiency of AAC /0.95/
 ;
-*--------------Refrigerator Machines, cooling source-----------------------------
+*--------------Refrigerator Machines, cooling source----------------------------
 
 scalar
       RM_COP Coefficent of performance of AC /2/

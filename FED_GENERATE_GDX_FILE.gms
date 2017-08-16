@@ -24,8 +24,9 @@ SET h0 length of the input data in hours /1*8760/
                                           /
     m0  Number of month                  /1*12/
     d0  Number of days                   /1*365/
-    BID Building IDs used for PV calculations /1*70/
+    BID Building IDs used for PV calculations /1*70, 75, 76/
 ;
+display BID
 *----------------load date vectors for power tariffs----------------------------
 PARAMETERS  HoD(h0,d0)      Hour of the day
 PARAMETERS  HoM(h0,m0)      Hour of the month
@@ -67,19 +68,19 @@ k_demand0(h0,b0)=1000*k_demand0(h0,b0);
 display k_demand0;
 *----------------HEAT GENERATION FROM THERMAL BOILER (TB) AND FUEL GAS CONDENCER (FGC)
 
-$call =xls2gms "I=Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx" R=tb_2016_est_gams!A4:B8765 "O=q_P1_TB0.gdx"
-Parameter q_P1_TB0(h0) PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
-/
-$include q_P1_TB0.gdx
-/;
-display q_P1_TB0;
+*$call =xls2gms "I=Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx" R=tb_2016_est_gams!A4:B8765 "O=q_P1_TB0.gdx"
+*Parameter q_P1_TB0(h0) PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
+*/
+*$include q_P1_TB0.gdx
+*/;
+*display q_P1_TB0;
 
-$call =xls2gms "I=Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx" R=fgc_2016_est_gams!A4:B8765 "O=q_P1_FGC0.gdx"
-Parameter q_P1_FGC0(h0) SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER
-/
-$include q_P1_FGC0.gdx
-/;
-display q_P1_FGC0;
+*$call =xls2gms "I=Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx" R=fgc_2016_est_gams!A4:B8765 "O=q_P1_FGC0.gdx"
+*Parameter q_P1_FGC0(h0) SECONDARY HEAT PRODUCED FROM THE THERMAL BOILER
+*/
+*$include q_P1_FGC0.gdx
+*/;
+*display q_P1_FGC0;
 *----------------ELECTRICITY PRICE----------------------------------------------
 
 $call =xls2gms "I=Input_data_FED_SIMULATOR\el_heat_price_2016.xlsx" R=el_price_2016_gams!A2:B8761 "O=el_price0.gdx"
@@ -92,15 +93,14 @@ display el_price0;
 
 *$call =xls2gms "I=Input_data_FED_SIMULATOR\el_heat_price_2016.xlsx" R=heat_price_2012_gams!A2:B8761 "O=q_price0.gdx"
 Parameter q_price0(h0) HEAT PRICE IN THE EXTERNAL DH SYSTEM
-q_price0(h0)           heat price by GÃƒÂ¶teborg Energi in 2016 sek per MWh
-          /1*2184       519
-           2185*2904    357
-           2905*6576    99
-           6577*8040    357
-           8041*8760    519
+q_price0(h0)           heat price by Goteborg Energi in 2016 sek per kWh
+          /1*2184       0.519
+           2185*2904    0.357
+           2905*6576    0.099
+           6577*8040    0.357
+           8041*8760    0.519
           /
 ;
-q_price0(h0)=q_price0(h0)/1000;
 */
 *$include q_price0.gdx
 */;
@@ -116,7 +116,7 @@ display tout0;
 *----------------PV data--------------------------------------------------------
 
 *Load facade solar irradiance
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceFacades.xlsx Squeeze=N par=G_facade rng='TotalFlux(kWhperm2)'!A1:BS8785 trace=3
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceFacades.xlsx Squeeze=N par=G_facade rng='TotalFlux(kWhperm2)'!A1:BU8785 trace=3
 PARAMETERS  G_facade(h0,BID) irradiance on building facades;
 $GDXIN irradianceFacades.gdx
 $LOAD G_facade
@@ -124,15 +124,15 @@ $GDXIN
 display G_facade;
 
 *Load facade areas
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceFacades.xlsx o=irradianceFacadesArea.gdx par=area_facade_max cdim=1 rng=='Area(m2)'!A1:BR2 trace=3
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceFacades.xlsx o=FacadesArea.gdx par=area_facade_max cdim=1 rng=='Area(m2)'!A1:BT2 trace=3
 PARAMETERS  area_facade_max(BID) area of building facades;
-$GDXIN irradianceFacadesArea.gdx
+$GDXIN FacadesArea.gdx
 $LOAD area_facade_max
 $GDXIN
 display area_facade_max;
 
 *Load roof solar irradiance
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceRoofs.xlsx Squeeze=N par=G_roof rng='TotalFlux(kWhperm2)'!A1:BS8785 trace=3
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceRoofs.xlsx Squeeze=N par=G_roof rng='TotalFlux(kWhperm2)'!A1:BU8785 trace=3
 PARAMETERS  G_roof(h0,BID) irradiance on building roofs;
 $GDXIN irradianceRoofs.gdx
 $LOAD G_roof
@@ -140,9 +140,9 @@ $GDXIN
 display G_roof;
 
 *Load roof areas
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceRoofs.xlsx o=irradianceRoofsArea.gdx par=area_roof_max cdim=1 rng=='Area(m2)'!A1:BR2 trace=3
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceRoofs.xlsx o=RoofsArea.gdx par=area_roof_max cdim=1 rng=='Area(m2)'!A1:BT2 trace=3
 PARAMETERS  area_roof_max(BID) area of building roof;
-$GDXIN irradianceRoofsArea.gdx
+$GDXIN RoofsArea.gdx
 $LOAD area_roof_max
 $GDXIN
 display area_roof_max;
@@ -170,8 +170,8 @@ display BTES_model0;
 **********************xxxxxxxxxxxxxxxxxxxxxxxxxxxx******************************
 
 *----------------Store input data as GDX to be used in the rest of the routines-
-execute_unload 'FED_INPUT_DATA'
-                            h0, b0, m0, d0, BID, BTES_properties0
+execute_unload 'Input_data_FED_SIMULATOR\FED_INPUT_DATA'
+                            h0, b0, m0, d0, BID, BTES_properties0,
                             HoD, HoM,
                             el_demand0, q_demand0, k_demand0,
                             el_price0, q_price0,
