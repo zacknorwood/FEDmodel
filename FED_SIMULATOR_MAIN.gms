@@ -43,7 +43,7 @@ invCost_BITES = sw_BTES*cost_inv_opt('BTES')*sum(i,B_BITES.l(i));
 invCost_RMMC = sw_RMMC*cost_inv_opt('RMMC')*RMMC_inv.l;
 invCost_P2 = sw_P2 * B_P2.l * cost_inv_opt('P2');
 invCost_TURB = sw_TURB * B_TURB.l * cost_inv_opt('TURB');
-invCost_AbsCInv = sw_AbsCInv * (B_AbsCInv.l* AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
+invCost_AbsCInv = sw_AbsCInv * (AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
 *total_cap_PV_roof=sum(BID, PV_cap_roof.l(BID));
 *total_cap_PV_facade=sum(BID, PV_cap_facade.l(BID));
 
