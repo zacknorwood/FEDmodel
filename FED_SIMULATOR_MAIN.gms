@@ -55,19 +55,23 @@ FED_PE_ft(h)=e_exG.l(h)*PEF_exG(h)
              + e0_PV(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
              + q_DH.l(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1 + fuel_P2.l(h)*PEF_P1;
 
-execute_unload 'GtoM' H_VKA1, C_VKA1, el_VKA1,
+execute_unload 'GtoM' el_demand0, q_demand0, k_demand0, el_price0, q_price0, tout0, G_facade, area_facade_max, G_roof, area_roof_max, nPV_el0, BTES_model0
+                      FED_PE0, FED_CO20, CO2F_PV, PEF_PV, CO2F_P1, PEF_P1, CO2F_P2, PEF_P2, CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,
+                      q_p1_TB, q_p1_FGC, fuel_P1, P1_eff,
+                      H_VKA1, C_VKA1, el_VKA1,
                       H_VKA4, C_VKA4, el_VKA4,
-                      B_P2, invCost_P2, fuel_P2, q_P2, H_P2T, B_TURB, invCost_TURB, e_TURB, q_TURB,
+                      B_P2, invCost_P2, fuel_P2, q_P2, H_P2T, B_TURB, invCost_TURB, e_TURB, q_TURB, P2_eff, TURB_eff,
                       q_AbsC, k_AbsC, q_AbsCInv, k_AbsCInv, AbsCInv_cap, invCost_AbsCInv,
                       e_RM, k_RM, e_RMMC, k_RMMC, RMMC_inv, invCost_RMMC,
                       e_AAC, k_AAC,
                       q_HP, e_HP, c_HP, HP_cap, invCost_HP,
-                      TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES,
-                      BTES_Sch, BTES_Sdis, BTES_Sen, BTES_Den, BTES_Sloss, BTES_Dloss, link_BS_BD, B_BITES, invCost_BITES,
-                      e_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
-                      BES_en, BES_ch, BES_dis, BES_cap, invCost_BEV,
+                      TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES, TES_dis_eff, TES_chr_eff,
+                      BTES_Sch, BTES_Sdis, BTES_Sen, BTES_Den, BTES_Sloss, BTES_Dloss, link_BS_BD,  BTES_dis_eff, BTES_chr_eff, B_BITES, invCost_BITES, BTES_model,
+                      e0_PV, e_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
+                      BES_en, BES_ch, BES_dis, BES_cap, invCost_BEV, BES_dis_eff, BES_ch_eff,
                       FED_PE,
                       FED_CO2,
                       e_exG,
                       q_DH,
-                      PT_exG, PT_DH, invCost;
+                      PT_exG, PT_DH, invCost,
+                      fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt;

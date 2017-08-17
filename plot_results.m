@@ -7,7 +7,7 @@ close all;
 PORCESS_RESULTS=1;
 while PORCESS_RESULTS==1    
     %% Set results in a gdx file for a given scenario/option    
-        
+    
     gdxData='GtoM';
     PROCESS_DATA=1;
     while PROCESS_DATA==1
@@ -261,11 +261,11 @@ while PORCESS_RESULTS==1
     %PV capacity-roof
     PV_cap_roof=struct('name','PV_cap_roof','form','full');    
     PV_cap_roof=rgdx(gdxData,PV_cap_roof);
-    PV_cap_roof=PV_cap_roof.val(1:70);    
+    PV_cap_roof=PV_cap_roof.val(1:72);    
     %PV capacity-facade
     PV_cap_facade=struct('name','PV_cap_facade','form','full');    
     PV_cap_facade=rgdx(gdxData,PV_cap_facade);
-    PV_cap_facade=PV_cap_facade.val(1:70); 
+    PV_cap_facade=PV_cap_facade.val(1:72); 
     %investment cost in the PV
     invCost_PV=struct('name','invCost_PV');    
     invCost_PV=rgdx(gdxData,invCost_PV);
@@ -273,8 +273,7 @@ while PORCESS_RESULTS==1
     %Electricty from PV
     e_PV=struct('name','e_PV','form','full');    
     e_PV=rgdx(gdxData,e_PV);
-    e_PV=e_PV.val(1:8760);  
-    
+    e_PV=e_PV.val(1:8760);   
     
     %% Get results from battery energy storage
     
@@ -487,7 +486,7 @@ while PORCESS_RESULTS==1
         
         %percentage change in PE use in the FED system
         fprintf('*********REDUCTION IN THE FED PRIMARY ENERGY USE********** \n')
-        FED_pPE=sum(FED_PE)/sum(FED_PE0)*1;
+        FED_pPE=(1-sum(FED_PE)/sum(FED_PE0));
         fprintf('Change in total FED PE use (New/Base) = %d \n\n', FED_pPE);
         %% PLot FED CO2 emission with and without investment
         
@@ -515,8 +514,12 @@ while PORCESS_RESULTS==1
         
         %percentage change in peak CO2 emission in the FED system
         fprintf('*********REDUCTION IN THE FED PEAK CO2 EMISSION********** \n')
-        FED_pCO2=max(FED_CO2)/max(FED_CO20);
-        fprintf('Change in THE FED peak co2 emission (New/Base) = %d \n\n', FED_pCO2);
+        FED_pCO2_peak=(1-max(FED_CO2)/max(FED_CO20));
+        fprintf('Change in THE FED peak co2 emission (New/Base) = %d \n\n', FED_pCO2_peak);
+        %percentage change in total CO2 emission in the FED system
+        fprintf('*********REDUCTION IN THE FED TOTAL CO2 EMISSION********** \n')
+        FED_pCO2_tot=1-sum(FED_CO2)/sum(FED_CO20);
+        fprintf('Change in THE FED total co2 emission (New/Base) = %d \n\n', FED_pCO2_tot);
         %% PLot variation of energy stored in TES
         
         figure('Units','centimeters','PaperUnits','centimeters',...

@@ -197,8 +197,8 @@ scalar
       Gstc Irradiance at standard temperature and conditions in kW per m^2 /1/
       PV_cap_density kW per m^2 for a mono-Si PV module e.g. Sunpower SPR-E20-327 dimensions 1.558*1.046 of 327Wp /0.20065/
       eta_Inverter efficiency of solar PV inverter and balance of system /0.96/
-      eta_roof_data compensating for overestimated roof data /1/
-      eta_facade_data compensating for underestimated facade data /1/
+*     eta_roof_data compensating for overestimated roof data /1/
+*     eta_facade_data compensating for underestimated facade data /1/
       coef_temp_PV coefficient coupling irradiance and PV temperature /0.035/
 ;
 
@@ -215,6 +215,8 @@ parameter
       Tmod_facade(h,BID) Module temperature facade in Celsius
       Tekv_roof(h,BID) Equivalent temperature parameter for solar PV on roof
       Tekv_facade(h,BID) Equivalent temperature parameter for solar PV on facade
+      PV_power_roof(h,BID) Power per watt peak roof (dimensionless parameter)
+      PV_power_facade(h,BID) Power per watt peak facade (dimensionless parameter)
 
 ;
       Gekv_roof(h,BID)=abs(G_roof(h,BID))/Gstc;
@@ -225,6 +227,22 @@ parameter
 
       Tekv_roof(h,BID)=Tmod_roof(h,BID) - Tstc;
       Tekv_facade(h,BID)=Tmod_facade(h,BID) - Tstc;
+
+      PV_power_roof(h,BID) $ ((Gekv_roof(h,BID) ne 0)) =   Gekv_roof(h,BID)*
+                                                        (1 + coef_Si('1')*log10(Gekv_roof(h,BID))
+                                                        + coef_Si('2')*sqr(log10(Gekv_roof(h,BID)))
+                                                        + coef_Si('3')*Tekv_roof(h,BID)
+                                                        + coef_Si('4')*Tekv_roof(h,BID)*log10(Gekv_roof(h,BID))
+                                                        + coef_Si('5')*Tekv_roof(h,BID)*sqr(log10(Gekv_roof(h,BID)))
+                                                        + coef_Si('6')*sqr(Tekv_roof(h,BID)));
+
+     PV_power_facade(h,BID) $ (Gekv_facade(h,BID) ne 0) = Gekv_facade(h,BID)*
+                                                         (1 + coef_Si('1')*log10(Gekv_facade(h,BID))
+                                                          + coef_Si('2')*sqr(log10(Gekv_facade(h,BID)))
+                                                          + coef_Si('3')*Tekv_facade(h,BID)
+                                                          + coef_Si('4')*Tekv_facade(h,BID)*log10(Gekv_facade(h,BID))
+                                                          + coef_Si('5')*Tekv_facade(h,BID)*sqr(log10(Gekv_facade(h,BID)))
+                                                          + coef_Si('6')*sqr(Tekv_facade(h,BID)));
 *--------------HP constants and parameters (an investment options)-------------
 
 *[COP and eff values need to be checked]
@@ -274,8 +292,8 @@ Parameters
          BTES_kDloss(i)      loss coefficient-deep
 ;
 BTES_model(BTES_properties,i)=BTES_model0(BTES_properties,i);
-BTES_Sen_int(i)=1000*BTES_model('BTES_Scap',i);
-BTES_Den_int(i)=1000*BTES_model('BTES_Dcap',i);
+*BTES_Sen_int(i)=1000*BTES_model('BTES_Scap',i);
+*BTES_Den_int(i)=1000*BTES_model('BTES_Dcap',i);
 BTES_Sdis_eff=0.95;
 BTES_Sch_eff=0.95;
 
@@ -397,3 +415,5 @@ PE_lim=(1-0.3)*sum(h,FED_PE0(h));
 dCO2=smax(h,FED_CO20(h))-CO2_ref;
 CO2_lim=CO2_ref+0.2*dCO2;
 *--------------Limit on investment----------------------------------------------
+
+
