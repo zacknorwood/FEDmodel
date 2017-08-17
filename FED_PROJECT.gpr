@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [PROJECT]
 
 [RP:FED_DECLARE]
@@ -55,3 +56,5 @@ WIDTH=928
 7=D:\FED_SIMULATOR\FEDmodel\FED_GENERATE_GDX_FILE.lst
 8=D:\FED_SIMULATOR\FEDmodel\FED_SIMULATOR_MAIN.lst
 9=D:\FED_SIMULATOR\FEDmodel\FED_Equations.lst
+=======
+>>>>>>> master
