@@ -10,6 +10,13 @@ while PORCESS_RESULTS==1
     
     gdxData='GtoM';
     PROCESS_DATA=1;
+    %heating output from VKA1
+    el_demand0=struct('name','el_demand0','form','full');    
+    el_demand0=rgdx(gdxData,el_demand0);
+    
+    el_demand0=el_demand0.val;
+    el_demand0=el_demand0(1:8760,8760+30);
+    %%
     while PROCESS_DATA==1
     
     %% Get results from VKA1
@@ -17,6 +24,7 @@ while PORCESS_RESULTS==1
     %heating output from VKA1
     H_VKA1=struct('name','H_VKA1','form','full');    
     H_VKA1=rgdx(gdxData,H_VKA1);
+    %%
     H_VKA1=H_VKA1.val;
     H_VKA1=H_VKA1(1:8760);    
     %cooling output from VKA1
@@ -261,6 +269,7 @@ while PORCESS_RESULTS==1
     %PV capacity-roof
     PV_cap_roof=struct('name','PV_cap_roof','form','full');    
     PV_cap_roof=rgdx(gdxData,PV_cap_roof);
+    %%
     PV_cap_roof=PV_cap_roof.val(1:72);    
     %PV capacity-facade
     PV_cap_facade=struct('name','PV_cap_facade','form','full');    
@@ -635,6 +644,7 @@ while PORCESS_RESULTS==1
         fprintf('Total Building inertia thermal capacity [MW]= %d, BITES Investment cost = %d MSEK \n',tot_BITES_cap, invCost_BITES/10^6)
         fprintf('                    ===========================                     \n\n')
         %Roof Capacity = %d kW, Facade Capacity = %d kW, Investment cost = %d MSEK \n',PV_cap_roof,PV_cap_facade, invCost_PV/10^6
+ %%
         fprintf('Investment in New Solar PV \n')
         fprintf('Roof Capacity [kw]= ')
         fprintf(' %d ',PV_cap_roof)
