@@ -15,6 +15,8 @@ data_parse/data/
 *.xls
 *.gdx
 *.mat
+*.asv
+*.gpr
 *.~gp
 FED_PROJECT.gpr
 *.log
@@ -39,4 +41,12 @@ FED_PROJECT.gpr
 *.cmd
 *.tmp
 FED_PROJECT.gpr
+*.gpr
+FED_PROJECT.gpr
+*.gpr
+*.gpr
+*.mat
+*.asv
+*.asv
+*.txt
 *.gpr
