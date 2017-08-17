@@ -20,7 +20,7 @@ P1_eff=0.9;          %assumed efficiency of Panna1
 P1_eff_temp = struct('name','P1_eff','type','parameter','form','full','val',P1_eff);
 
 %calculate new values
-NEW_data=0;
+NEW_data=1;
 
 while NEW_data==1
     get_CO2PE_FED;   %this routine calculates the CO2 and PE factors of the external grid also    
@@ -101,8 +101,8 @@ FUEL_P1.uels=H.uels;
 
 %optimization option
 option1=0; %minimize total cost, PE and CO2 cap
-option2=1; %minimize tottal PE use, investement cost cap
-option3=0; %minimize total CO2 emission, investement cost cap
+option2=0; %minimize tottal PE use, investement cost cap
+option3=1; %minimize total CO2 emission, investement cost cap
 option4=0; %minimize total CO2 and PE (compromise), investement cost cap
 temp_optn1 = struct('name','min_totCost','type','parameter','form','full','val',option1);
 temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',option2);

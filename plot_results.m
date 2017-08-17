@@ -6,9 +6,9 @@ close all;
 
 PORCESS_RESULTS=1;
 while PORCESS_RESULTS==1    
-    %% Set results in a gdx file for a given scenario/option    
-        
-    gdxData='Sim_Results\GtoM_mintotPE';
+    %% Set results in a gdx file for a given scenario/option  
+    gdxData='GtoM';
+
     PROCESS_DATA=1;
     while PROCESS_DATA==1
     
@@ -265,7 +265,7 @@ while PORCESS_RESULTS==1
     %PV capacity-facade
     PV_cap_facade=struct('name','PV_cap_facade','form','full');    
     PV_cap_facade=rgdx(gdxData,PV_cap_facade);
-    PV_cap_facade=PV_cap_facade.val(1:BID); 
+    PV_cap_facade=PV_cap_facade.val(1:BID);
     %investment cost in the PV
     invCost_PV=struct('name','invCost_PV');    
     invCost_PV=rgdx(gdxData,invCost_PV);
@@ -274,6 +274,7 @@ while PORCESS_RESULTS==1
     e_PV=struct('name','e_PV','form','full');    
     e_PV=rgdx(gdxData,e_PV);
     e_PV=e_PV.val(1:ttot);    
+
     %% Get results from battery energy storage
     
     %BES capacity
@@ -485,7 +486,7 @@ while PORCESS_RESULTS==1
         
         %percentage change in PE use in the FED system
         fprintf('*********REDUCTION IN THE FED PRIMARY ENERGY USE********** \n')
-        FED_pPE=sum(FED_PE)/sum(FED_PE0)*1;
+        FED_pPE=(1-sum(FED_PE)/sum(FED_PE0));
         fprintf('Change in total FED PE use (New/Base) = %d \n\n', FED_pPE);
         %% PLot FED CO2 emission with and without investment
         
@@ -513,8 +514,12 @@ while PORCESS_RESULTS==1
         
         %percentage change in peak CO2 emission in the FED system
         fprintf('*********REDUCTION IN THE FED PEAK CO2 EMISSION********** \n')
-        FED_pCO2=max(FED_CO2)/max(FED_CO20);
-        fprintf('Change in THE FED peak co2 emission (New/Base) = %d \n\n', FED_pCO2);
+        FED_pCO2_peak=(1-max(FED_CO2)/max(FED_CO20));
+        fprintf('Change in THE FED peak co2 emission (New/Base) = %d \n\n', FED_pCO2_peak);
+        %percentage change in total CO2 emission in the FED system
+        fprintf('*********REDUCTION IN THE FED TOTAL CO2 EMISSION********** \n')
+        FED_pCO2_tot=1-sum(FED_CO2)/sum(FED_CO20);
+        fprintf('Change in THE FED total co2 emission (New/Base) = %d \n\n', FED_pCO2_tot);
         %% PLot variation of energy stored in TES
         
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -756,10 +761,10 @@ set(gca,'FontName','Times New Roman','FontSize',Font_Size)
 box off
 xlim([0 100])
 legend('Base case','Improved case')
-%legend('ANG HP1 ','ANG HP2','ANG HP3','SÄV HP1 + RK1','SÄV HP2',...
-%        'SÄV HP3 (H1) + RK2','ROS HP2','ROS HP3','ROS HP4','ROS HP5',...
+%legend('ANG HP1 ','ANG HP2','ANG HP3','SÃ„V HP1 + RK1','SÃ„V HP2',...
+%        'SÃ„V HP3 (H1) + RK2','ROS HP2','ROS HP3','ROS HP4','ROS HP5',...
 %        'ROS LK1 + del i RK1', 'ROS LK2 + del i RK1', 'RYA HP6',...
-%        'RYA HP7', 'RYA VP','RYA KVV','TYN HVC','HÖG KVV NM1-3','Spillvärme' )
+%        'RYA HP7', 'RYA VP','RYA KVV','TYN HVC','HÃ–G KVV NM1-3','SpillvÃ¤rme' )
 %ylim([0 3])
 %DTyp=['NO'; 'SE'; 'DK'; 'FI'; 'EE'; 'LV'; 'LT'];
 %NPVComp={'C1'; 'C2'; 'C3'; 'C4'; 'C5'};
