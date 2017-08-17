@@ -292,13 +292,8 @@ Parameters
          BTES_kDloss(i)      loss coefficient-deep
 ;
 BTES_model(BTES_properties,i)=BTES_model0(BTES_properties,i);
-<<<<<<< HEAD
-BTES_Sen_int(i)=1000*BTES_model('BTES_Scap',i);
-BTES_Den_int(i)=1000*BTES_model('BTES_Dcap',i);
-=======
 *BTES_Sen_int(i)=1000*BTES_model('BTES_Scap',i);
 *BTES_Den_int(i)=1000*BTES_model('BTES_Dcap',i);
->>>>>>> 8c4e67b456adecc9977c619a0fcaf15f86653ec8
 BTES_Sdis_eff=0.95;
 BTES_Sch_eff=0.95;
 
