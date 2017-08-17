@@ -68,15 +68,16 @@ Parameter
 *Solar_PV                    18000000                 30            1170000                1530000                 1908000
 *RMMC2                       500000                   20
          cap_sup_unit(sup_unit)   operational capacity of the existing units
-                     /PV 60, P1 9000, AbsC 2300, AAC 1000, RM 2170, RMMC 4200/
+                     /PV 65, P1 9000, AbsC 2300, AAC 1000, RM 2670, RMMC 4200/
 
 * Investment costs source WP4_D4.2.1 prestudy report, except absorption chiller and HP from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
 * PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 6000, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
-* Exchange rate 2015: Eur to SEK = 9.36; 1.7/0.75 = COPheat / COPcool for an absorption heat pump, for cost conversion from Danish Energy Agency report.
+* Exchange rate 2015: Eur to SEK = 9.36;
 * HP 700 * 9.36 = 6552 , AbsC 600 * 9.36 * 1.7/0.75= 5616
+* Absorption chiller source: Unders�kning av olika kyll�sningar - inventering och j�mf�relse av utlokaliserade kull�snmignar f�r ume� energi - nils persson 2012
 
          cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC P2 and Turbine
-                     /PV 14196, BES 6000, HP 6552, BTES 35000, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 12730/
+                     /PV 14196, BES 6000, HP 6552, BTES 35000, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 3430/
 
 * Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
          lifT_inv_opt(inv_opt)    Life time of investment options
@@ -125,33 +126,37 @@ Parameter
 *P1_eff=0.9;
 q_P1(h)= q_P1_TB(h) + q_P1_FGC(h);
 *--------------VKA4 constants and parameters------------------------------------
-
+*Calculated from historical data
 scalar
          VKA1_H_COP            Heating coefficient of performance for VKA1/3.3/
          VKA1_C_COP            Cooling coefficient of performance for VKA1/2/
          VKA1_el_cap           Maximum electricity usage by VKA1/300/
 ;
 *--------------VKA4 constants and parameters------------------------------------
-
+*Calculated from historical data
 scalar
          VKA4_H_COP            Heating coefficient of performance for VKA4/2.6/
          VKA4_C_COP            Cooling coefficient of performance for VKA4/1.7/
          VKA4_el_cap           Maximum electricity usage by VKA4/300/
 ;
 *--------------AbsC(Absorbition Refrigerator), cooling source-------------------
-
+* Source for these numbers?
 scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
-         AbsC_eff Efficiency of AbsC /0.95/
+*AbsC_eff Efficiency of AbsC /0.95/
 ;
 *--------------AAC(Ambient Air Cooler), cooling source--------------------------
-
+* Source Per
 scalar
          AAC_COP Coefficent of performance of AAC /10/
          AAC_eff Efficiency of AAC /0.95/
-;
-*--------------Refrigerator Machines, cooling source----------------------------
 
+         AAC_TempLim Temperature limit of AAC/12/
+;
+
+
+*--------------Refrigerator Machines, cooling source----------------------------
+* Source for these numbers?
 scalar
       RM_COP Coefficent of performance of AC /2/
       RM_eff Coefficent of performance of AC /0.95/
@@ -159,13 +164,13 @@ scalar
 **************Investment options************************************************
 
 *----------------Absorption Chiller Investment----------------------------------
-
+* source Unders�kning av olika kyll�sningar - inventering och j�mf�relse av utlokaliserade kyll�sningar f�r Ume� Energi - Nils Persson 2012
 scalar
          AbsCInv_COP    Coefficient of performance for absorption cooling investment /0.75/
          AbsH_COP       Coeffiicent of performance for absorption heating investment /1.7/
 
 *        AbsCInv_fx     Fixed cost for investment in Abs chiller /64400/
-         AbsCInv_MaxCap Maximum possible investment in kW cooling /100000/
+*         AbsCInv_MaxCap Maximum possible investment in kW cooling /100000/
 *         AbsCInv_fx     Fixed cost for investment in Abs chiller /1610000/
 
 
@@ -179,7 +184,9 @@ scalar
 *----------------Refurbished turbine for Panna 2  ------------------------------
 
 scalar
+* turbine efficiency from Danish energy agency reports
       TURB_eff Efficiency of turbine /0.25/
+* Max turbine output from AH WP4.2 report
       TURB_cap Maximum power output of turbine /800/
 ;
 *--------------MC2 Refrigerator Machines, cooling source------------------------
@@ -187,6 +194,7 @@ scalar
 * accounted for RMMC capacity is here decreased by 600 kW
 
 scalar
+* Source, historical data, from Chalmersfastigheter energif�rs�rjning campus johanneberg (BDAB)
       RMCC_COP Coefficient of performance for RM /1.94/
       RMMC_cap Maximum cooling capacity for RM in kW/3600/
 ;
@@ -247,11 +255,12 @@ parameter
 
 *[COP and eff values need to be checked]
 scalar
-         HP_H_COP       Coefficent of performance for heat of the Heat Pump (HP)/3.5/
-         HP_C_COP       Coefficent of performance for cooling of the Heat Pump (HP)/2/
+* Heat pump efficiencies from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
+         HP_H_COP       Coefficent of performance for heat of the Heat Pump (HP)/4/
+         HP_C_COP       Coefficent of performance for cooling of the Heat Pump (HP)/3/
 ;
 *--------------TES constants and parameters-------------------------------------
-
+* Add source for these numbers
 scalar
          TES_chr_eff           TES charging efficiency /0.95/
          TES_dis_eff           TES discharging efficiency/0.95/
@@ -266,7 +275,7 @@ scalar
 *--------------Outside Temprature data------------------------------------------
 
 Parameter
-         tout(h) heat demand in buildings as obtained from metrys for
+         tout(h) Outdoor temperature (C) from metry
 ;
 tout(h)=tout0(h);
 *--------------Building storage characteristics---------------------------------
@@ -299,8 +308,6 @@ BTES_Sch_eff=0.95;
 
 BTES_Sch_max(h,i)=1000*Min(BTES_model('BTES_Sch_hc',i), BTES_model('BTES_Esig',i)*Max(Min(tout(h) - (-16),15 - (-16)),0));
 BTES_Sdis_max(h,i)=1000*Min(BTES_model('BTES_Sdis_hc',i), BTES_model('BTES_Esig',i)*Max(Min(15 - tout(h),15 - (-16)),0));
-display BTES_Sch_max,BTES_Sdis_max
-;
 
 *[BTES_kSloss needs to be modified since it has different values during day and night]
 *here, it is assumed that BTES_kSloss is the same and the value for the day is used, which means that the loss is over estimated
@@ -321,8 +328,8 @@ Parameter
          q_demand_nonAH(h,i_nonAH) heat demand in non-AH buildings as obtained from metry
          e_demand(h,i)             heat demand in buildings as obtained from metry
          k_demand(h,i)             cool demand in buildings as obtained from metry and many estimations
-         k_demand_AH(h,i)          cool demand in AH buildings as obtained from metry and many estimations
-         k_demand_nonAH(h,i)       cool demand in non-AH buildings as obtained from metry and many estimations
+         k_demand_AH(h,i_AH)       cool demand in AH buildings as obtained from metry and many estimations
+         k_demand_nonAH(h,i_nonAH) cool demand in non-AH buildings as obtained from metry and many estimations
 
 ;
 q_demand(h,i)=q_demand0(h,i);
@@ -351,13 +358,16 @@ parameter
          kilo Factor of 1000 conversion to kW from MW for example /1000/
 
 ;
+* 0.0031 is grid tariff per kWh from G�teborg Energi home page
 price('exG',h)=0.0031 + el_price0(h);
 price('DH',h)=q_price0(h);
 
-*the data is obtained from ENTSO-E
+*the data is obtained from Energimyndigheten 2015 wood chips for District Heating Uses
 fuel_cost('CHP',h)=0.186;
+* Divided by efficiency to get actual fuel use when multiplying with heat output
 fuel_cost('P1',h)=0.186/P1_eff;
 *fuel_cost('P1',h)=0.186*fuel_P1(h)/q_P1(h);
+* Divided by efficiency to get actual fuel use when multiplying with heat output
 fuel_cost('P2',h)=0.186/P2_eff;
 var_cost(sup_unit,h)=0;
 fix_cost(sup_unit)=0;
@@ -392,11 +402,12 @@ fix_cost('AAC')= 3000 / kilo * EUR_to_SEK_2015;
 var_cost('BES',h)= 5.3 / kilo * EUR_to_SEK_2015;
 fix_cost('BES')= 51000 / kilo * EUR_to_SEK_2015;
 
+*From G�teborg Energi homepage, tax on a kWh electricity purchased in SEK
 en_tax(sup_unit,h)=0;
 en_tax('exG',h)=0.295;
 
 co2_cost(sup_unit,h)=0;
-
+*Power tariffs from G�teborg Energi
 PT_cost(sup_unit)=0;
 PT_cost('exG')=35.4;
 PT_cost('DH')=452;
