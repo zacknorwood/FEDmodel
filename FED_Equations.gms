@@ -187,7 +187,8 @@ eq_TESmininv $(sw_TES eq 1)..
 *------------------BTES equations (Building srorage)----------------------------
 
 eq_BTES_Sen1(h,i) $ (ord(h) eq 1)..
-         BTES_Sen(h,i) =e= sw_BTES*BTES_Sen_int(i);
+         BTES_Sen(h,i) =e= 0;
+* sw_BTES*BTES_Sen_int(i);
 eq_BTES_Sch(h,i) $ (sw_BTES ne 0)..
          BTES_Sch(h,i) =l= sw_BTES*B_BITES(i)*BTES_Sch_max(h,i);
 eq_BTES_Sdis(h,i) $ (sw_BTES ne 0)..
@@ -196,7 +197,8 @@ eq_BTES_Sen2(h,i) $ (ord(h) gt 1)..
          BTES_Sen(h,i) =e= sw_BTES*(BTES_kSloss(i)*BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
                            + BTES_Sch(h,i)*BTES_Sch_eff - link_BS_BD(h,i));
 eq_BTES_Den1(h,i) $ (ord(h) eq 1)..
-         BTES_Den(h,i) =e= sw_BTES*BTES_Den_int(i);
+         BTES_Den(h,i) =e= 0;
+* sw_BTES*BTES_Den_int(i);
 eq_BTES_Den2(h,i) $ (ord(h) gt 1)..
          BTES_Den(h,i) =e= sw_BTES*(BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));
 eq_BS_BD(h,i) $ (BTES_model('BTES_Scap',i) ne 0)..
@@ -205,7 +207,8 @@ eq_BS_BD(h,i) $ (BTES_model('BTES_Scap',i) ne 0)..
 *-----------------Battery constraints-------------------------------------------
 
 eq_BES1(h) $ (ord(h) eq 1)..
-             BES_en(h)=e=sw_BES*BES_cap;
+             BES_en(h)=e= 0;
+*sw_BES*BES_cap;
 eq_BES2(h)$(ord(h) gt 1)..
              BES_en(h)=e=sw_BES*(BES_en(h-1)+BES_ch(h)-BES_dis(h));
 eq_BES3(h) $ (sw_BTES ne 0)..
@@ -227,22 +230,8 @@ eq_BES_dis(h)..
 *+ coef(5).*Tekv(index).*log(Gekv(index)).^2
 *+ coef(6).*Tekv(index).^2);
 eq_PV(h)..
-             e_PV(h) =e= sw_PV*eta_Inverter * (sum(BID$(Gekv_roof(h,BID) ne 0),
-                                                        eta_roof_data*PV_cap_roof(BID)*Gekv_roof(h,BID)*
-                                                        (1 + coef_Si('1')*log10(Gekv_roof(h,BID))
-                                                        + coef_Si('2')*sqr(log10(Gekv_roof(h,BID)))
-                                                        + coef_Si('3')*Tekv_roof(h,BID)
-                                                        + coef_Si('4')*Tekv_roof(h,BID)*log10(Gekv_roof(h,BID))
-                                                        + coef_Si('5')*Tekv_roof(h,BID)*sqr(log10(Gekv_roof(h,BID)))
-                                                        + coef_Si('6')*sqr(Tekv_roof(h,BID))))
-                                              + sum(BID$(Gekv_facade(h,BID) ne 0),
-                                                         eta_facade_data*PV_cap_facade(BID)*Gekv_facade(h,BID)*
-                                                         (1 + coef_Si('1')*log10(Gekv_facade(h,BID))
-                                                          + coef_Si('2')*sqr(log10(Gekv_facade(h,BID)))
-                                                          + coef_Si('3')*Tekv_facade(h,BID)
-                                                          + coef_Si('4')*Tekv_facade(h,BID)*log10(Gekv_facade(h,BID))
-                                                          + coef_Si('5')*Tekv_facade(h,BID)*sqr(log10(Gekv_facade(h,BID)))
-                                                          + coef_Si('6')*sqr(Tekv_facade(h,BID)))));
+             e_PV(h) =e= sw_PV*eta_Inverter * (sum(BID, PV_cap_roof(BID) * PV_power_roof(h,BID))
+                                              + sum(BID, PV_cap_facade(BID) * PV_power_facade(h,BID)));
 
 eq_PV_cap_roof(BID)..
              area_roof_max(BID)*PV_cap_density =g= PV_cap_roof(BID);
@@ -355,7 +344,7 @@ eq_Ainv_cost..
                 + sw_RMMC*RMMC_inv*cost_inv_opt('RMMC')/lifT_inv_opt('RMMC')
                 + sw_P2 * B_P2 * cost_inv_opt('P2')/lifT_inv_opt('P2')
                 + sw_TURB * B_TURB * cost_inv_opt('TURB')/lifT_inv_opt('TURB')
-                + sw_AbsCInv * cost_inv_opt('AbsCInv')/lifT_inv_opt('AbsCInv');
+                + sw_AbsCInv * AbsCInv_cap * cost_inv_opt('AbsCInv')/lifT_inv_opt('AbsCInv');
 
 eq_totCost..
          totCost =e= fix_cost_existing + var_cost_existing
@@ -371,7 +360,7 @@ eq_invCost..
                      + sw_RMMC*RMMC_inv*cost_inv_opt('RMMC')
                      + sw_P2 * B_P2 * cost_inv_opt('P2')
                      + sw_TURB * B_TURB * cost_inv_opt('TURB')
-                     + sw_AbsCInv * cost_inv_opt('AbsCInv');
+                     + sw_AbsCInv * AbsCInv_cap * cost_inv_opt('AbsCInv');
 ****************Objective function**********************************************
 
 eq_obj..
