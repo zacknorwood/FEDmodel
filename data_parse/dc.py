@@ -28,7 +28,8 @@ class BColl(dict):
     """Dict-like object with a few extra functions for parsing, formatting and 
     handling meter-data
     """
-    def __init__(self, parse=False, source=None, quickRun = False):
+    def __init__(self, parse=False, source=None, quickRun = False,
+                trimSide = True):
         """Initialisation. Will by default create and attach a list of all 
         text files in ./data upon being called. Use parse=True to immediately
         parse all files and add interpolated timeseriess. 
@@ -36,7 +37,8 @@ class BColl(dict):
         use quickRun= True to parse all data, then cut and save it according to 
         default settings (currently a flat structure of fj_en only for R). 
         """        
-
+        self.trimSide = trimSide
+        
         if quickRun:
             parse = True
         
@@ -51,7 +53,7 @@ class BColl(dict):
         if quickRun:
             self.deleteRawTS()
             self.deleteIfNot()
-            self.writeFlatDict(fileName = 'fj_en_ts_flat.json')
+            self.writeFlatDict(fileName = 'all_en_ts_flat_quick.json')
             
     # end def init
     
@@ -86,7 +88,7 @@ class BColl(dict):
         """Load data from json 'source' (or self.source if specified)"""
         if source == None:
             if hasattr(self,'source'):
-                spirce = self.source
+                source = self.source
             else:
                 source = input('Please specify source file path/name')
             
@@ -108,7 +110,8 @@ class BColl(dict):
     def getFileList(self):
         """Searches './data' for all .txt files and adds them to self.files"""
         self.files = list()
-        for fp in glob.glob('data/**/*.txt', recursive=True):
+        #for fp in glob.glob('data/**/*.txt', recursive=True):
+        for fp in glob.iglob(os.path.join('data','**','*.txt'), recursive=True):
             self.files.append(fp)
 
     
@@ -156,7 +159,7 @@ class BColl(dict):
             ipID=3
             ipName=4
             
-        bID = 'b'+re.search('[0-9]+',r0[0]).group()     # Begin with 'b', as keys can't be just numeric
+        bID = re.search('O[0-9]+',r0[0]).group()     # Begin with 'O', then numbers (typically 7)
         bName = r0[0][len(bID)+3:] # The full name is everything in the string, after the ID+" - "
         mID = r0[imID] # Meter ID
         pNr = 'p'+r0[ipID] # Parameter ID
@@ -262,11 +265,12 @@ class BColl(dict):
         # end for
         
         # Remove any span of more than 2 points where resolution is below nHoursMax
-        nDeleted = trimTSSparseSide(tsRaw)
-        if nDeleted > 0:
-            msg = 'INFO: Deleted '+str(nDeleted)+' sparse datapoints from '+str(self.ps[ip])+' (ip = '+str(len(self.ps)-1)+').'
-            print(msg)
-            self.p(ip)['log'] += [msg]
+        if self.trimSide:
+            nDeleted = trimTSSparseSide(tsRaw)
+            if nDeleted > 0:
+                msg = 'INFO: Deleted '+str(nDeleted)+' sparse datapoints from '+str(self.ps[ip])+' (ip = '+str(len(self.ps)-1)+').'
+                print(msg)
+                self.p(ip)['log'] += [msg]
         
         # Note how many times there's more than 25 hours between datapoints:
         nDetected = trimTSSparseSingle(tsRaw)
@@ -443,7 +447,7 @@ class BColl(dict):
         print('Removed all attached raw timeseries')
     
     
-    def deleteIfNot(self, mType=['fj'], pType=['Energy']):
+    def deleteIfNot(self, mType=['fj', 'el', 'kb'], pType=['Energy']):
         """Accepts types of meter ('fj'|'kb'|'el') and parType
         ('Energy'|'Effect'|'Flow'|'TSupply'|'TReturn') and deletes all 
         meters/parTSs not included"""
