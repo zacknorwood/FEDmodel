@@ -2,6 +2,55 @@ clc;
 close all;
 %% Here, results are processed and ploted, displayed and saved when needed
 
+%% Read set GDXes
+h.name = 'h';
+h.form = 'full';
+h = rgdx (h.name, h);
+
+BID.name = 'BID';
+BID.form = 'full';
+BID = rgdx (BID.name, BID);
+
+i_All.name = 'i';
+i_All.form = 'full';
+i_All = rgdx (i_All.name, i_All);
+
+i_AH.name = 'i_AH';
+i_AH.form = 'full';
+i_AH = rgdx (i_AH.name, i_AH);
+
+i_nonAH.name = 'i_nonAH';
+i_nonAH.form = 'full';
+i_nonAH = rgdx (i_nonAH.name, i_nonAH);
+
+i_nonBITES.name = 'i_nonBITES';
+i_nonBITES.form = 'full';
+i_nonBITES = rgdx (i_nonBITES.name, i_nonBITES);
+
+m.name = 'm';
+m.form = 'full';
+m = rgdx (m.name, m);
+
+d.name = 'd';
+d.form = 'full';
+d = rgdx (d.name, d);
+
+sup_unit.name = 'sup_unit';
+sup_unit.form = 'full';
+sup_unit = rgdx (sup_unit.name, sup_unit);
+
+inv_opt.name = 'inv_opt';
+inv_opt.form = 'full';
+inv_opt = rgdx (inv_opt.name, inv_opt);
+
+coefs.name = 'coefs';
+coefs.form = 'full';
+coefs = rgdx (coefs.name, coefs);
+
+BTES_properties.name = 'BTES_properties';
+BTES_properties.form = 'full';
+BTES_properties = rgdx (BTES_properties.name, BTES_properties);
+
 %% Get output results
 
 PORCESS_RESULTS=1;
@@ -727,10 +776,10 @@ set(gca,'FontName','Times New Roman','FontSize',Font_Size)
 box off
 xlim([0 100])
 legend('Base case','Improved case')
-%legend('ANG HP1 ','ANG HP2','ANG HP3','SÄV HP1 + RK1','SÄV HP2',...
-%        'SÄV HP3 (H1) + RK2','ROS HP2','ROS HP3','ROS HP4','ROS HP5',...
+%legend('ANG HP1 ','ANG HP2','ANG HP3','Sï¿½V HP1 + RK1','Sï¿½V HP2',...
+%        'Sï¿½V HP3 (H1) + RK2','ROS HP2','ROS HP3','ROS HP4','ROS HP5',...
 %        'ROS LK1 + del i RK1', 'ROS LK2 + del i RK1', 'RYA HP6',...
-%        'RYA HP7', 'RYA VP','RYA KVV','TYN HVC','HÖG KVV NM1-3','Spillvärme' )
+%        'RYA HP7', 'RYA VP','RYA KVV','TYN HVC','Hï¿½G KVV NM1-3','Spillvï¿½rme' )
 %ylim([0 3])
 %DTyp=['NO'; 'SE'; 'DK'; 'FI'; 'EE'; 'LV'; 'LT'];
 %NPVComp={'C1'; 'C2'; 'C3'; 'C4'; 'C5'};
