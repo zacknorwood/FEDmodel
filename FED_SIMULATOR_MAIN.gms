@@ -9,6 +9,8 @@ $Include FED_Equations
 *CASE WITH HP TES MICRO-CHP AND EXCHANGE WITHIN BUILDINGS**************
 
 option reslim = 500000;
+* Default 0.10 , +- 10% from optimal
+option optcr = 0.001;
 *// Set the max resource usage
 OPTION PROFILE=3;
 OPTION threads = -2;

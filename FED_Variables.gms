@@ -145,7 +145,9 @@ variable
 variable
          q_DH(h)            heat power input from grid
 ;
-*q_DH.lo(h)=0;
+* Set maximum import and export to the grid.
+q_DH.lo(h)=-DH_max_cap;
+q_DH.up(h)=DH_max_cap;
 *------------------Grid DC related---------------------------------------------
 
 variable
