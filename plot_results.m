@@ -57,150 +57,166 @@ PORCESS_RESULTS=1;
 while PORCESS_RESULTS==1    
     %% Set results in a gdx file for a given scenario/option    
     
+    %marginalCostElWeightedAve.name = 'mc_el_weighted_avg';
+    %marginalCostElWeightedAve.form = 'full';
+    %marginalCostElWeightedAve.uels = {regionsInSimulation.uels{1,1}, years.uels{1,1}};
+    %marginalCostElWeightedAve = rgdx(inputFilename, marginalCostElWeightedAve);
+
     gdxData='GtoM';
     PROCESS_DATA=1;
-    %heating output from VKA1
-    el_demand0=struct('name','el_demand0','form','full');    
-    el_demand0=rgdx(gdxData,el_demand0);
+    % el demand
+    el_demand0.name = 'el_demand0'
+    el_demand0.form = 'full'
+    el_demand0.uels = {i_All.uels{1,1}, h.uels{1,1}}
+    el_demand0 = rgdx(gdxData, el_demand0);    
     
-    el_demand0=el_demand0.val;
-    el_demand0=el_demand0(1:8760,8760+30);
-    %%
     while PROCESS_DATA==1
     
     %% Get results from VKA1
     
     %heating output from VKA1
-    H_VKA1=struct('name','H_VKA1','form','full');    
-    H_VKA1=rgdx(gdxData,H_VKA1);
-    %%
-    H_VKA1=H_VKA1.val;
-    H_VKA1=H_VKA1(1:8760);    
+    H_VKA1.name = 'H_VKA1'
+    H_VKA1.form = 'full'
+    H_VKA1.field = 'l'
+    H_VKA1.uels ={h.uels{1,1}}
+    H_VKA1 = rgdx(gdxData, H_VKA1)
+
     %cooling output from VKA1
-    C_VKA1=struct('name','C_VKA1','form','full');    
-    C_VKA1=rgdx(gdxData,C_VKA1);
-    C_VKA1=C_VKA1.val;
-    C_VKA1=C_VKA1(1:8760);
+    C_VKA1.name = 'C_VKA1'
+    C_VKA1.form = 'full'
+    C_VKA1.field = 'l'
+    C_VKA1.uels ={h.uels{1,1}}
+    C_VKA1 = rgdx(gdxData, C_VKA1)
+
     %electricty input to VKA1
-    el_VKA1=struct('name','el_VKA1','form','full');    
-    el_VKA1=rgdx(gdxData,el_VKA1);
-    el_VKA1=el_VKA1.val;
-    el_VKA1=el_VKA1(1:8760);
-    %% Get results from VKA4
+    el_VKA1.name = 'el_VKA1'
+    el_VKA1.form = 'full'
+    el_VKA1.field = 'l'
+    el_VKA1.uels ={h.uels{1,1}}
+    el_VKA1 = rgdx(gdxData, el_VKA1)
     
-    %heating output from VKA4
-    H_VKA4=struct('name','H_VKA4','form','full');    
-    H_VKA4=rgdx(gdxData,H_VKA4);
-    H_VKA4=H_VKA4.val;
-    H_VKA4=H_VKA4(1:8760);
-    %cooling output from VKA4
-    C_VKA4=struct('name','C_VKA4','form','full');    
-    C_VKA4=rgdx(gdxData,C_VKA4);
-    C_VKA4=C_VKA4.val;
-    C_VKA4=C_VKA4(1:8760);
-    %electricty input to VKA4
-    el_VKA4=struct('name','el_VKA4','form','full');    
-    el_VKA4=rgdx(gdxData,el_VKA4);
-    el_VKA4=el_VKA4.val;  
-    el_VKA4=el_VKA4(1:8760);
     %% Get results from Panna2
-    
     %Binary decission variable to invest in P2 (is 1 if invested, 0 otherwise)
-    B_P2=struct('name','B_P2');    
-    B_P2=rgdx(gdxData,B_P2);
-    B_P2=B_P2.val;
+    B_P2.name = 'B_P2'
+    B_P2.form = 'full'
+    B_P2.field = 'l'
+    B_P2.uels = {}
+    B_P2 = rgdx(gdxData, B_P2)
     %investment cost in P2
-    invCost_P2=struct('name','invCost_P2');    
-    invCost_P2=rgdx(gdxData,invCost_P2);
-    invCost_P2=invCost_P2.val;
+    invCost_P2.name = 'invCost_P2'
+    invCost_P2.form = 'full'
+    invCost_P2.uels = {}
+    invCost_P2 = rgdx(gdxData, invCost_P2)
+
     %Fuel input to P2
-    q_P2=struct('name','q_P2','form','full');    
-    q_P2=rgdx(gdxData,q_P2);
-    q_P2=q_P2.val;
-    q_P2=q_P2(1:8760);
+    q_P2.name = 'q_P2'
+    q_P2.form = 'full'
+    q_P2.field = 'l'
+    q_P2.uels = {h.uels{1,1}}
+    q_P2 = rgdx(gdxData, q_P2)
+
     %heating output from P2 to DH
-    H_P2T=struct('name','H_P2T','form','full');    
-    H_P2T=rgdx(gdxData,H_P2T);
-    H_P2T=H_P2T.val;
-    H_P2T=H_P2T(1:8760);
+    H_P2T.name = 'H_P2T'
+    H_P2T.form = 'full'
+    H_P2T.field = 'l'
+    H_P2T.uels = {h.uels{1,1}}
+    H_P2T = rgdx(gdxData, H_P2T)
     %Binary decission variable to invest in the turbine (is 1 if invested, 0 otherwise)
-    B_TURB=struct('name','B_TURB');    
-    B_TURB=rgdx(gdxData,B_TURB);
-    B_TURB=B_TURB.val;
+    B_TURB.name = 'B_TURB'
+    B_TURB.form = 'full'
+    B_TURB.field = 'l'
+    B_TURB.uels = {}
+    B_TURB = rgdx(gdxData, B_TURB)
     %investment cost in the turbine
-    invCost_TURB=struct('name','invCost_TURB');    
-    invCost_TURB=rgdx(gdxData,invCost_TURB);
-    invCost_TURB=invCost_TURB.val;
+    invCost_TURB.name = 'invCost_TURB'
+    invCost_TURB.form = 'full'
+    invCost_TURB.uels = {}
+    invCost_TURB = rgdx(gdxData, invCost_TURB)
     %electricty output from the turbine
-    e_TURB=struct('name','e_TURB','form','full');    
-    e_TURB=rgdx(gdxData,e_TURB);
-    e_TURB=e_TURB.val;
-    e_TURB=e_TURB(1:8760);
+    e_TURB.name = 'e_TURB'
+    e_TURB.form = 'full'
+    e_TURB.field = 'l'
+    e_TURB.uels = {h.uels{1,1}}
+    e_TURB = rgdx(gdxData, e_TURB)
     %heating input to the turbine
-    q_TURB=struct('name','q_TURB','form','full');    
-    q_TURB=rgdx(gdxData,q_TURB);
-    q_TURB=q_TURB.val;
-    q_TURB=q_TURB(1:8760);
+    q_TURB.name = 'q_TURB'
+    q_TURB.form = 'full'
+    q_TURB.field = 'l'
+    q_TURB.uels = {h.uels{1,1}}
+    q_TURB = rgdx(gdxData, q_TURB)
     %% Get results from Absorbtion Chiller
     
     %heating input to the existing Absorbtion chiller
-    q_AbsC=struct('name','q_AbsC','form','full');    
-    q_AbsC=rgdx(gdxData,q_AbsC);
-    q_AbsC=q_AbsC.val;
-    q_AbsC=q_AbsC(1:8760);
+    q_AbsC.name = 'q_AbsC'
+    q_AbsC.form = 'full'
+    q_AbsC.field = 'l'
+    q_AbsC.uels = {h.uels{1,1}}
+    q_AbsC = rgdx(gdxData, q_AbsC)
     %cooling output from the existing Absorbtion chiller
-    k_AbsC=struct('name','k_AbsC','form','full');    
-    k_AbsC=rgdx(gdxData,k_AbsC); 
-    k_AbsC=k_AbsC.val;
-    k_AbsC=k_AbsC(1:8760);
-    %Capacity of a nwe Absorbtion chiller
-    AbsCInv_cap=struct('name','AbsCInv_cap');    
-    AbsCInv_cap=rgdx(gdxData,AbsCInv_cap);
-    AbsCInv_cap=AbsCInv_cap.val;
+    k_AbsC.name = 'k_AbsC'
+    k_AbsC.form = 'full'
+    k_AbsC.field = 'l'
+    k_AbsC.uels = {h.uels{1,1}}
+    k_AbsC = rgdx(gdxData, k_AbsC)
+    %Capacity of a new Absorbtion chiller
+    AbsCInv_cap.name = 'AbsCInv_cap'
+    AbsCInv_cap.form = 'full'
+    AbsCInv_cap.field = 'l'
+    AbsCInv_cap.uels = {}
+    AbsCInv_cap = rgdx(gdxData, AbsCInv_cap)
     %Investment cost of the nwe Absorbtion chiller
-    invCost_AbsCInv=struct('name','invCost_AbsCInv');    
-    invCost_AbsCInv=rgdx(gdxData,invCost_AbsCInv);
-    invCost_AbsCInv=invCost_AbsCInv.val;
+    invCost_AbsCInv.name = 'invCost_AbsCInv'
+    invCost_AbsCInv.form = 'full'
+    invCost_AbsCInv.uels = {}
+    invCost_AbsCInv = rgdx(gdxData, invCost_AbsCInv)
     %heating input to the new Absorbtion chiller
     q_AbsCInv=struct('name','q_AbsCInv','form','full');    
     q_AbsCInv=rgdx(gdxData,q_AbsCInv);
     q_AbsCInv=q_AbsCInv.val;
     q_AbsCInv=q_AbsCInv(1:8760);
     %cooling output from the new Absorbtion chiller
-    k_AbsCInv=struct('name','k_AbsCInv','form','full');    
-    k_AbsCInv=rgdx(gdxData,k_AbsCInv);
-    k_AbsCInv=k_AbsCInv.val;
-    k_AbsCInv=k_AbsCInv(1:8760);
+    k_AbsCInv.name = 'k_AbsCInv'
+    k_AbsCInv.form = 'full'
+    k_AbsCInv.field = 'l'
+    k_AbsCInv.uels = {h.uels{1,1}}
+    k_AbsCInv = rgdx(gdxData, k_AbsCInv)
     %% Get results from refrigerating machines
     
     %Elecricity demand by the refrigerator system in AH building
-    e_RM=struct('name','e_RM','form','full');    
-    e_RM=rgdx(gdxData,e_RM);
-    e_RM=e_RM.val;
-    e_RM=e_RM(1:8760);
+    e_RM.name = 'e_RM'
+    e_RM.form = 'full'
+    e_RM.field = 'l'
+    e_RM.uels = {h.uels{1,1}}
+    e_RM = rgdx(gdxData, e_RM)
     %Cooling generated by the refrigerator system in AH building
-    k_RM=struct('name','k_RM','form','full');    
-    k_RM=rgdx(gdxData,k_RM);
-    k_RM=k_RM.val;
-    k_RM=k_RM(1:8760);
+    k_RM.name = 'k_RM'
+    k_RM.form = 'full'
+    k_RM.field = 'l'
+    k_RM.uels = {h.uels{1,1}}
+    k_RM = rgdx(gdxData, k_RM)
     %Binary decission variable to invest in the MMC connection (is 1 if invested, 0 otherwise)
-    RMMC_inv=struct('name','RMMC_inv');    
-    RMMC_inv=rgdx(gdxData,RMMC_inv);
-    RMMC_inv=RMMC_inv.val;    
+    RMMC_inv.name = 'RMMC_inv'
+    RMMC_inv.form = 'full'
+    RMMC_inv.field = 'l'
+    RMMC_inv.uels = {}
+    RMMC_inv = rgdx(gdxData, RMMC_inv)    
     %investment cost in the MMC connection
-    invCost_RMMC=struct('name','invCost_RMMC');    
-    invCost_RMMC=rgdx(gdxData,invCost_RMMC);
-    invCost_RMMC=invCost_RMMC.val;
+    invCost_RMMC.name = 'invCost_RMMC'
+    invCost_RMMC.form = 'full'
+    invCost_RMMC.uels = {}
+    invCost_RMMC = rgdx(gdxData, invCost_RMMC)
     %Elecricity demand by the refrigerator system in nonAH building
-    e_RMMC=struct('name','e_RMMC','form','full');    
-    e_RMMC=rgdx(gdxData,e_RMMC);
-    e_RMMC=e_RMMC.val;
-    e_RMMC=e_RMMC(1:8760);
+    e_RMMC.name = 'e_RMMC'
+    e_RMMC.form = 'full'
+    e_RMMC.field = 'l'
+    e_RMMC.uels = {h.uels{1,1}}
+    e_RMMC = rgdx(gdxData, e_RMMC)
     %Cooling generated by the refrigerator system in nonAH building
-    k_RMMC=struct('name','k_RMMC','form','full');    
-    k_RMMC=rgdx(gdxData,k_RMMC);
-    k_RMMC=k_RMMC.val;
-    k_RMMC=k_RMMC(1:8760);
+    k_RMMC.name = 'k_RMMC'
+    k_RMMC.form = 'full'
+    k_RMMC.field = 'l'
+    k_RMMC.uels = {h.uels{1,1}}
+    k_RMMC = rgdx(gdxData, k_RMMC)
     %% Get results from Ambient Air Cooler (AAC)
     
     %Elecricity demand by the AAC
