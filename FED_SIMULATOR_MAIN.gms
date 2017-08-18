@@ -77,3 +77,17 @@ execute_unload 'GtoM' el_demand0, q_demand0, k_demand0, k_demand_AH, el_price0, 
                       q_DH,
                       PT_exG, PT_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt;
+
+execute_unload 'h' h;
+execute_unload 'BID' BID;
+execute_unload 'i' i;
+execute_unload 'i_AH' i_AH;
+execute_unload 'i_nonAH' i_nonAH;
+execute_unload 'i_nonBITES' i_nonBITES;
+execute_unload 'm' m;
+execute_unload 'd' d;
+execute_unload 'sup_unit' sup_unit;
+execute_unload 'inv_opt' inv_opt;
+execute_unload 'coefs' coefs;
+execute_unload 'BTES_properties' BTES_properties;
+
