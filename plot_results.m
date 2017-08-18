@@ -1,15 +1,16 @@
+function [] = plot_results(gdxData)
 clc;
 close all;
 %% Here, results are processed and ploted, displayed and saved when needed
 
 %% Get output results
 
-PORCESS_RESULTS=1;
-while PORCESS_RESULTS==1    
+%PROCESS_RESULTS=1;
+%while PROCESS_RESULTS==1    
     %% Set results in a gdx file for a given scenario/option    
     
-    gdxData='GtoM';
-    PROCESS_DATA=1;
+%    gdxData='GtoM';
+%    PROCESS_DATA=1;
     %heating output from VKA1
     el_demand0=struct('name','el_demand0','form','full');    
     el_demand0=rgdx(gdxData,el_demand0);
@@ -17,7 +18,7 @@ while PORCESS_RESULTS==1
     el_demand0=el_demand0.val;
     el_demand0=el_demand0(1:8760,8760+30);
     %%
-    while PROCESS_DATA==1
+%    while PROCESS_DATA==1
     
     %% Get results from VKA1
     
@@ -70,7 +71,8 @@ while PORCESS_RESULTS==1
     q_P2=q_P2.val;
     q_P2=q_P2(1:8760);
     %heating output from P2 to DH
-    H_P2T=struct('name','H_P2T','form','full');    
+    H_P2T=struct('name','H_P2T','form','full');
+    
     H_P2T=rgdx(gdxData,H_P2T);
     H_P2T=H_P2T.val;
     H_P2T=H_P2T(1:8760);
