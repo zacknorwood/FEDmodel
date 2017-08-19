@@ -196,9 +196,7 @@ eq_TESinv(h)..
 eq_BTES_Sen1(h,i) $ (ord(h) eq 1)..
          BTES_Sen(h,i) =e= 0;
 * sw_BTES*BTES_Sen_int(i);
-
 eq_BTES_Sch(h,i) ..
-
          BTES_Sch(h,i) =l= sw_BTES*B_BITES(i)*BTES_Sch_max(h,i);
 eq_BTES_Sdis(h,i)..
          BTES_Sdis(h,i) =l= sw_BTES*B_BITES(i)*BTES_Sdis_max(h,i);
@@ -253,12 +251,10 @@ eq_PV_cap_facade(BID)..
 eq_hbalance(h)..
              sum(i,q_demand(h,i)) =l=q_DH(h) + q_p1_TB(h) + q_p1_FGC(h) + H_VKA1(h)
                                      + H_VKA4(h) - q_AbsC(h) + H_P2T(h)
-
                                      + q_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
                                      + (sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
                                      - q_AbsCInv(h);
-
 eq_hbalance2(h)..
              q_DH(h)=g=sum(i_nonAH,q_demand_nonAH(h,i_nonAH))
                        - (sum(i_nonAH,BTES_Sdis(h,i_nonAH))*BTES_dis_eff
@@ -266,27 +262,21 @@ eq_hbalance2(h)..
 *-------------- Demand supply balance for cooling ------------------------------
 
 eq_kbalance(h)..
-
          sum(i_AH,k_demand_AH(h,i_AH))=l=P_DC(h) + C_VKA1(h) + C_VKA4(h) +  k_AbsC(h)
                                 + k_RM(h) + k_RMMC(h) + k_AAC(h) + c_HP(h)
                                 + k_AbsCInv(h);
-
 *--------------Demand supply balance for electricity ---------------------------
 
 eq_ebalance(h)..
         sum(i,e_demand(h,i)) =l= e_exG(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
-
                                  + e0_PV(h) + e_PV(h) - e_HP(h)
                                  + (BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff)
                                  + e_TURB(h);
-
 *--------------FED Primary energy use-------------------------------------------
 
 eq_PE(h)..
         FED_PE(h)=e= e_exG(h)*PEF_exG(h)
-
                      + e0_PV(h)*PEF_PV + e_PV(h)*PEF_PV
-
                      + q_DH(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1
                      + fuel_P2(h)*PEF_P2;
 **********************Total PE use in the FED system****************************
@@ -297,9 +287,7 @@ eq_totPE..
 
 eq_CO2(h)..
        FED_CO2(h) =e= e_exG(h)*CO2F_exG(h)
-
                       + e0_PV(h)*CO2F_PV + e_PV(h)*CO2F_PV
-
                       + q_DH(h)*CO2F_DH(h) + fuel_P1(h)*CO2F_P1
                       + fuel_P2(h) * CO2F_P2;
 ****************Total CO2 emission in the FED system****************************
@@ -325,7 +313,6 @@ eq_fix_cost_existing..
          fix_cost_existing =e= sum(sup_unit,fix_cost(sup_unit)*cap_sup_unit(sup_unit));
 
 eq_fix_cost_new..
-
          fix_cost_new =e=  (sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*fix_cost('PV')
                            + HP_cap*fix_cost('HP')
                            + BES_cap*fix_cost('BES')
@@ -334,7 +321,6 @@ eq_fix_cost_new..
                            + B_P2 * fix_cost('P2')
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
-
 eq_var_cost_existing..
          var_cost_existing =e= sum(h,e_exG(h)*utot_cost('exG',h)) + sum(m,PT_exG(m))
                                + sum(h,q_DH(h)*utot_cost('DH',h))  + PT_DH
@@ -346,7 +332,6 @@ eq_var_cost_existing..
                                + sum(h,k_AAC(h)*utot_cost('AAC',h))
                                + sum(h,e0_PV(h)*utot_cost('PV',h));
 eq_var_cost_new..
-
          var_cost_new =e=  sum(h,e_PV(h)*utot_cost('PV',h))
                            + sum(h,q_HP(h)*utot_cost('HP',h))
                            + sum(h,BES_dis(h)*utot_cost('BES',h))
@@ -368,14 +353,12 @@ eq_Ainv_cost..
                 + B_TURB * cost_inv_opt('TURB')/lifT_inv_opt('TURB')
                 + AbsCInv_cap * cost_inv_opt('AbsCInv')/lifT_inv_opt('AbsCInv');
 
-
 eq_totCost..
          totCost =e= fix_cost_existing + var_cost_existing
                      + fix_cost_new + var_cost_new + Ainv_cost;
 ****************Total investment cost*******************************************
 
 eq_invCost..
-
          invCost =e= HP_cap*cost_inv_opt('HP')
                      + (sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*cost_inv_opt('PV')
                      + BES_cap*cost_inv_opt('BES')
@@ -385,7 +368,6 @@ eq_invCost..
                      + B_P2 * cost_inv_opt('P2')
                      + B_TURB * cost_inv_opt('TURB')
                      + AbsCInv_cap * cost_inv_opt('AbsCInv');
-
 ****************Objective function**********************************************
 
 eq_obj..
