@@ -12,7 +12,7 @@ while PORCESS_RESULTS==1
     %st desired option
     option='mintotPE\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results\',option);
-    file_name='GtoM_suggested_investments_minPE';
+    file_name='GtoM_minPE';
     gdxData=strcat(path,file_name);
     %% Assign uels
     
@@ -32,10 +32,13 @@ while PORCESS_RESULTS==1
     inv_opt=get_uels('Sim_Results\uels\inv_opt','inv_opt');    
     %% Get parameters and variables from a GDX file 
     
-    PROCESS_DATA=0;
+    PROCESS_DATA=1;
     while PROCESS_DATA==1
+    %% Set the path for the extracted data to be saved in 
+    
+    path_Data=strcat(path,'Data\');    
     %% Electricty, heating and cooling demand data used as inputs in the simulation     
-    path_Data=strcat(path,'Data\');
+    
     %electricity demand in the FED system
     el_demand0=gdx2mat(gdxData,'el_demand0',{h,i});
     q_demand0=gdx2mat(gdxData,'q_demand0',{h,i});
@@ -332,6 +335,14 @@ while PORCESS_RESULTS==1
     invCost=rgdx(gdxData,invCost);
     invCost=invCost.val;
     save(strcat(path_Data,'invCost'),'invCost');
+    %% VAriable and fuel cost     
+    
+    %electricity demand in the FED system
+    fuel_cost=gdx2mat(gdxData,'fuel_cost',{sup_unit,h});
+    var_cost=gdx2mat(gdxData,'var_cost',{sup_unit,h});
+    save(strcat(path_Data,'fuel_cost'),'fuel_cost'); 
+    save(strcat(path_Data,'var_cost'),'var_cost'); 
+    %%
     break;
     end
     %% Display results
@@ -424,7 +435,7 @@ while PORCESS_RESULTS==1
         %save result 
         plot_fname=['CO2_DH'];
         fsave_figure(path_Figures,plot_fname);
-        %% PLot local production and import 
+        %% Plot local production and import 
         
         %Electricity
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -642,6 +653,7 @@ while PORCESS_RESULTS==1
         legend('TURB','Solar PV')        
         %% PLot FED primary energy with and without investment
         
+        %duration curve
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
@@ -659,12 +671,28 @@ while PORCESS_RESULTS==1
         xlim([0 100])
         legend('Base case','With new investment')
         
+        %time series curve
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)        
+        load(strcat(path_Data,'FED_PE'));
+        ydata=FED_PE(1:8760)/1000;
+        xdata= (1:length(ydata))/(24*30);
+        plot(xdata,ydata,'LineWidth',LineThickness);
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('PE use [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        box off
+        xlim([0 12])
+        legend('FED PE use - with investment')
+        
         %percentage change in PE use in the FED system
         fprintf('*********REDUCTION IN THE FED PRIMARY ENERGY USE********** \n')
         FED_pPE=(1-sum(FED_PE)/sum(FED_PE0));
         fprintf('Change in total FED PE use (New/Base) = %d \n\n', FED_pPE);
         %% PLot FED CO2 emission with and without investment
         
+        %duration curve
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
@@ -682,6 +710,22 @@ while PORCESS_RESULTS==1
         box off
         xlim([0 100])
         legend('Base case','With new investment')
+        
+        %time series curve
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)        
+        load(strcat(path_Data,'FED_CO2'));        
+        ydata=FED_CO2(1:8760)/1000;
+        xdata= (1:length(ydata))/(24*30);
+        
+        plot(xdata,ydata,'LineWidth',LineThickness);
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('CO2eq [kg]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        box off
+        xlim([0 12])
+        legend('FED CO2 emission - with investment')
         
         %percentage change in peak CO2 emission in the FED system
         fprintf('*********REDUCTION IN THE FED PEAK CO2 EMISSION********** \n')
@@ -783,7 +827,7 @@ while PORCESS_RESULTS==1
         %xdata=1:30;
         bar(ydata)        
         xlabel('Buildings []','FontSize',Font_Size,'FontName','Times New Roman')        
-        ylabel('BTES Dcap [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('PV Capacity-Roof [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         %xlim([0 30])
@@ -798,7 +842,7 @@ while PORCESS_RESULTS==1
         %xdata=1:30;
         bar(ydata)        
         xlabel('Buildings []','FontSize',Font_Size,'FontName','Times New Roman')        
-        ylabel('BTES Dcap [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('PV Capacity-Wall [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         %xlim([0 30])
@@ -808,17 +852,48 @@ while PORCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
+        
         load(strcat(path_Data,'BES_en'));        
         ydata=BES_en/1000;
         time=(1:length(ydata))/(24*30);
-        xdata=time;
-        
+        xdata=time;        
         plot(xdata,ydata,'LineWidth',LineThickness);
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('BES [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 12])
+        %% PLot Variable cost and fuel cost of local production units
+        
+        %Fuel cost
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)
+        
+        load(strcat(path_Data,'fuel_cost'));        
+        ydata=fuel_cost';
+        xdata=(1:length(ydata))/(24*30);                
+        area(xdata,ydata,'LineWidth',LineThickness);
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Fuel cost [SEK]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        box off
+        %xlim([0 12])
+        
+        %Variable cost
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)
+        
+        load(strcat(path_Data,'fuel_cost'));        
+        ydata=var_cost';
+        xdata=(1:length(ydata))/(24*30);                
+        area(xdata,ydata,'LineWidth',LineThickness);
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Fuel cost [SEK]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        box off
+        %xlim([0 12])
         %% Investment options
         load(strcat(path_Data,'invCost_P2'));
         load(strcat(path_Data,'invCost_TURB'));
