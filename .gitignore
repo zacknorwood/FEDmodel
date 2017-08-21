@@ -53,3 +53,4 @@ FED_PROJECT.gpr
 *.gpr
 *.fig
 *.pdf
+*.emf
