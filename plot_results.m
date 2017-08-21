@@ -10,7 +10,7 @@ while PORCESS_RESULTS==1
     %% Set results in a gdx file for a given scenario/option    
     tic
     %st desired option
-    option='mintotPE\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    option='mintotCost\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results\',option);
     file_name='GtoM_minPE';
     gdxData=strcat(path,file_name);
@@ -32,7 +32,7 @@ while PORCESS_RESULTS==1
     inv_opt=get_uels('Sim_Results\uels\inv_opt','inv_opt');    
     %% Get parameters and variables from a GDX file 
     
-    PROCESS_DATA=1;
+    PROCESS_DATA=0;
     while PROCESS_DATA==1
     %% Set the path for the extracted data to be saved in 
     
@@ -599,8 +599,6 @@ while PORCESS_RESULTS==1
         ydata4=H_P2T;
         ydata5=q_HP;
         duration= 0 : 100/(length(ydata)-1) : 100;
-        time=(1:length(ydata))/(24*30);
-        xdata=time;
         plot(duration,sort(ydata,'descend'),'--',duration,sort(ydata2,'descend'),':',...
              duration,sort(ydata3,'descend'),'-.',duration,sort(ydata4,'descend'),...
              duration,sort(ydata5,'descend'),'LineWidth',LineThickness);
@@ -610,6 +608,9 @@ while PORCESS_RESULTS==1
         box off
         xlim([0 100])
         legend('VKA1','VKA4','P1/10','P2','HP')
+        %save result 
+        plot_fname=['heating_locProduction_duration'];
+        fsave_figure(path_Figures,plot_fname);
         %% PLot cooling sources 
         
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -635,6 +636,9 @@ while PORCESS_RESULTS==1
         box off
         xlim([0 100])
         legend('VKA1','VKA4','AbcC','AbsCInv','RM','RMMC','AAC','HP')
+        %save result 
+        plot_fname=['cooling_locProduction_duration'];
+        fsave_figure(path_Figures,plot_fname);
         %% PLot electricty sources 
         
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -650,7 +654,10 @@ while PORCESS_RESULTS==1
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 100])
-        legend('TURB','Solar PV')        
+        legend('TURB','Solar PV') 
+        %save result 
+        plot_fname=['el_locProduction_duration'];
+        fsave_figure(path_Figures,plot_fname);
         %% PLot FED primary energy with and without investment
         
         %duration curve
@@ -670,6 +677,9 @@ while PORCESS_RESULTS==1
         box off
         xlim([0 100])
         legend('Base case','With new investment')
+        %save result 
+        plot_fname=['FED_PE_PE0_duration'];
+        fsave_figure(path_Figures,plot_fname);
         
         %time series curve
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -685,6 +695,9 @@ while PORCESS_RESULTS==1
         box off
         xlim([0 12])
         legend('FED PE use - with investment')
+        %save result 
+        plot_fname=['FED_PE'];
+        fsave_figure(path_Figures,plot_fname);
         
         %percentage change in PE use in the FED system
         fprintf('*********REDUCTION IN THE FED PRIMARY ENERGY USE********** \n')
@@ -710,6 +723,9 @@ while PORCESS_RESULTS==1
         box off
         xlim([0 100])
         legend('Base case','With new investment')
+        %save result 
+        plot_fname=['FED_CO2_CO20_duration'];
+        fsave_figure(path_Figures,plot_fname);
         
         %time series curve
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -726,6 +742,9 @@ while PORCESS_RESULTS==1
         box off
         xlim([0 12])
         legend('FED CO2 emission - with investment')
+        %save result 
+        plot_fname=['FED_CO2'];
+        fsave_figure(path_Figures,plot_fname);
         
         %percentage change in peak CO2 emission in the FED system
         fprintf('*********REDUCTION IN THE FED PEAK CO2 EMISSION********** \n')
@@ -751,6 +770,9 @@ while PORCESS_RESULTS==1
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 12])
+        %save result 
+        plot_fname=['TES_en'];
+        fsave_figure(path_Figures,plot_fname);
         %% PLot variation of energy stored in the shallow part of BITES
         
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -764,7 +786,10 @@ while PORCESS_RESULTS==1
         ylabel('BITES-Shallow [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
-        xlim([0 12])        
+        xlim([0 12])
+        %save result 
+        plot_fname=['BITES_Sen'];
+        fsave_figure(path_Figures,plot_fname);
         %% PLot variation of energy stored in the deep part of BITES
         
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -783,6 +808,9 @@ while PORCESS_RESULTS==1
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 12])
+        %save result 
+        plot_fname=['BITES_Den'];
+        fsave_figure(path_Figures,plot_fname);
         %% PLot BITES investments (feasible buildings for investment)
         
         %shallow storage
@@ -801,6 +829,9 @@ while PORCESS_RESULTS==1
         box off
         %xlim([0 30])
         %ylim([0 2])
+        %save result 
+        plot_fname=['BITES_Scap'];
+        fsave_figure(path_Figures,plot_fname);
         
         %Deep storage
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -816,6 +847,9 @@ while PORCESS_RESULTS==1
         box off
         %xlim([0 30])
         %ylim([0 2])
+        %save result 
+        plot_fname=['BITES_Dcap'];
+        fsave_figure(path_Figures,plot_fname);
         %% Feasible PV capacities 
          
         %Roof        
@@ -832,6 +866,9 @@ while PORCESS_RESULTS==1
         box off
         %xlim([0 30])
         %ylim([0 2])        
+        %save result 
+        plot_fname=['PV_Roofcap'];
+        fsave_figure(path_Figures,plot_fname);
         
         %Wall        
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -847,6 +884,9 @@ while PORCESS_RESULTS==1
         box off
         %xlim([0 30])
         %ylim([0 2])
+        %save result 
+        plot_fname=['PV_Wallcap'];
+        fsave_figure(path_Figures,plot_fname);
         %% PLot variation of energy stored in the BES
         
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -863,6 +903,9 @@ while PORCESS_RESULTS==1
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 12])
+        %save result 
+        plot_fname=['BES_en'];
+        fsave_figure(path_Figures,plot_fname);
         %% PLot Variable cost and fuel cost of local production units
         
         %Fuel cost
@@ -885,7 +928,7 @@ while PORCESS_RESULTS==1
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
         
-        load(strcat(path_Data,'fuel_cost'));        
+        load(strcat(path_Data,'var_cost'));        
         ydata=var_cost';
         xdata=(1:length(ydata))/(24*30);                
         area(xdata,ydata,'LineWidth',LineThickness);
