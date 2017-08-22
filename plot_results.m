@@ -5,14 +5,14 @@ clear all;
 
 %% Get output results
 tic
-PORCESS_RESULTS=1;
-while PORCESS_RESULTS==1    
+PROCESS_RESULTS=1;
+while PROCESS_RESULTS==1    
     %% Set results in a gdx file for a given scenario/option    
     tic
     %st desired option
-    option='mintotCost\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    option='mintotPECO2\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results\',option);
-    file_name='GtoM_minPE';
+    file_name='GtoM_multiobj_minPE&CO2';
     gdxData=strcat(path,file_name);
     %% Assign uels
     
@@ -32,7 +32,7 @@ while PORCESS_RESULTS==1
     inv_opt=get_uels('Sim_Results\uels\inv_opt','inv_opt');    
     %% Get parameters and variables from a GDX file 
     
-    PROCESS_DATA=0;
+    PROCESS_DATA=1;
     while PROCESS_DATA==1
     %% Set the path for the extracted data to be saved in 
     
@@ -373,11 +373,12 @@ while PORCESS_RESULTS==1
         xdata=(1:length(ydata))/(24*30);
         plot(xdata,ydata,'LineWidth',LineThickness);
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('PEF [kWh_{PE}/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('PE [kWh_{PE}/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 12])
-        legend('PEF of external electricty grid')
+        ylim([0 inf])
+        legend('PE factor of external electricity grid')
         %save result 
         plot_fname=['PEF_exG'];
         fsave_figure(path_Figures,plot_fname);
@@ -391,11 +392,12 @@ while PORCESS_RESULTS==1
         xdata=(1:length(ydata))/(24*30);
         plot(xdata,ydata,'LineWidth',LineThickness);
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('CO2 [g/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('CO_2eq [g/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 12])
-        legend('CO2F of external electricty grid')
+        ylim([0 inf])
+        legend('CO_2 factor of external electricity grid')
         %save result 
         plot_fname=['CO2F_exG'];
         fsave_figure(path_Figures,plot_fname);
@@ -409,11 +411,12 @@ while PORCESS_RESULTS==1
         xdata=(1:length(ydata))/(24*30);
         plot(xdata,ydata,'LineWidth',LineThickness);
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('PEF [kWh_{PE}/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('PE [kWh_{PE}/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 12])
-        legend('PEF of external DH')
+        ylim([0 inf])
+        legend('PE factor of external DH')
         %save result 
         plot_fname=['PEF_DH'];
         fsave_figure(path_Figures,plot_fname);
@@ -427,11 +430,12 @@ while PORCESS_RESULTS==1
         xdata=(1:length(ydata))/(24*30);
         plot(xdata,ydata,'LineWidth',LineThickness);
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('CO2F [g/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('CO_2eq [g/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 12])
-        legend('CO2F of external DH')
+        ylim([0 inf])
+        legend('CO_2 factor of external DH')
         %save result 
         plot_fname=['CO2_DH'];
         fsave_figure(path_Figures,plot_fname);
@@ -502,7 +506,7 @@ while PORCESS_RESULTS==1
         load(strcat(path_Data,'c_HP'));
         
         ydata=zeros(length(C_VKA1),1);
-        ydata2=q_p1_TB+C_VKA1+C_VKA4+k_AbsC+k_AbsCInv+k_RM+k_RMMC+c_HP;        
+        ydata2=C_VKA1+C_VKA4+k_AbsC+k_AbsCInv+k_RM+k_RMMC+c_HP;        
         xdata=(1:length(ydata))/(24*30);                
         plot(xdata,ydata,':',xdata,ydata2,'-.','LineWidth',LineThickness);       
         xlabel('Time [Days]','FontSize',Font_Size,'FontName','Times New Roman')
@@ -525,7 +529,7 @@ while PORCESS_RESULTS==1
         
         ydata=[e_PV  e_TURB];
         xdata=(1:length(ydata))/(24*30);
-        area(xdata,ydata)       
+        area(xdata,ydata,'EdgeColor','none')       
         xlabel('Time [Days]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
@@ -549,7 +553,7 @@ while PORCESS_RESULTS==1
         
         ydata=[(q_p1_TB+q_p1_FGC) H_VKA1 H_VKA4 H_P2T q_HP];       
         xdata=(1:length(ydata))/(24*30);
-        area(xdata,ydata)
+        area(xdata,ydata,'EdgeColor','none')
         xlabel('Time [Days]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Heat [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
@@ -577,7 +581,7 @@ while PORCESS_RESULTS==1
         
         ydata=[C_VKA1 C_VKA4 k_AbsC k_AbsCInv k_RM k_RMMC c_HP];        
         xdata=(1:length(ydata))/(24*30);
-        area(xdata,ydata)
+        area(xdata,ydata,'EdgeColor','none')
         xlabel('Time [Days]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Cooling [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
@@ -595,7 +599,7 @@ while PORCESS_RESULTS==1
         load q_P1;
         ydata=H_VKA1;
         ydata2=H_VKA4;
-        ydata3=q_P1/10;
+        ydata3=q_P1;
         ydata4=H_P2T;
         ydata5=q_HP;
         duration= 0 : 100/(length(ydata)-1) : 100;
@@ -603,11 +607,11 @@ while PORCESS_RESULTS==1
              duration,sort(ydata3,'descend'),'-.',duration,sort(ydata4,'descend'),...
              duration,sort(ydata5,'descend'),'LineWidth',LineThickness);
         xlabel('Duration [%]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('Lokal heat source [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Local heat source [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 100])
-        legend('VKA1','VKA4','P1/10','P2','HP')
+        legend('VKA1','VKA4','P1','P2','HP')
         %save result 
         plot_fname=['heating_locProduction_duration'];
         fsave_figure(path_Figures,plot_fname);
@@ -648,9 +652,9 @@ while PORCESS_RESULTS==1
         ydata2=e_PV;        
         duration= 0 : 100/(length(ydata)-1) : 100;
         plot(duration,sort(ydata,'descend'),'--',duration,sort(ydata2,'descend'),':',...
-             duration,sort(ydata5,'descend'),'LineWidth',LineThickness);
+             'LineWidth',LineThickness);
         xlabel('Duration [%]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('Local electricty source [MW]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Local electricty source [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 100])
@@ -679,6 +683,24 @@ while PORCESS_RESULTS==1
         legend('Base case','With new investment')
         %save result 
         plot_fname=['FED_PE_PE0_duration'];
+        fsave_figure(path_Figures,plot_fname);
+        
+        %time series curve, base case
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)         
+        load(strcat(path_Data,'FED_PE0'));
+        ydata=FED_PE(1:8760)/1000;
+        xdata= (1:length(ydata))/(24*30);
+        plot(xdata,ydata,'LineWidth',LineThickness);
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('PE use [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        box off
+        xlim([0 12])
+        legend('FED PE use - base case')
+        %save result 
+        plot_fname=['FED_PE0'];
         fsave_figure(path_Figures,plot_fname);
         
         %time series curve
@@ -819,12 +841,12 @@ while PORCESS_RESULTS==1
             'PaperSize',properties.PaperSize)
         load(strcat(path_Data,'B_BITES'));
         load(strcat(path_Data,'BTES_Scap'));
-        ydata=BTES_Scap.*B_BITES';
+        ydata=1000*BTES_Scap.*B_BITES';
         xdata=1:30;
         bar(xdata,ydata)
         
         xlabel('Buildings []','FontSize',Font_Size,'FontName','Times New Roman')        
-        ylabel('BTES Scap [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('BTES Scap [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         %xlim([0 30])
@@ -838,11 +860,11 @@ while PORCESS_RESULTS==1
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
         load(strcat(path_Data,'BTES_Dcap'));
-        ydata=BTES_Dcap.*B_BITES';
+        ydata=1000*BTES_Dcap.*B_BITES';
         xdata=1:30;
         bar(xdata,ydata)        
         xlabel('Buildings []','FontSize',Font_Size,'FontName','Times New Roman')        
-        ylabel('BTES Dcap [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('BTES Dcap [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         %xlim([0 30])
