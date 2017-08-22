@@ -101,7 +101,7 @@ FUEL_P1.uels=H.uels;
 
 %optimization option
 option1=0; %minimize total cost, PE and CO2 cap
-option2=2; %minimize tottal PE use, investment cost cap
+option2=1; %minimize tottal PE use, investment cost cap
 option3=0; %minimize total CO2 emission, investment cost cap
 option4=0; %minimize total CO2 and PE (compromise), investement cost cap
 temp_optn1 = struct('name','min_totCost','type','parameter','form','full','val',option1);
