@@ -47,8 +47,10 @@ set
          inv_opt    investment options /PV, HP, BES, TES, BTES, RMMC, P2, TURB, AbsCInv/
 ;
 
+* the technical limit of import/export on heat and electricty is based on feedback from AH
 Parameter
-        DH_max_cap Maximum capacity of import from the external district heating system /15000/
+        DH_max_cap  Maximum capacity of import from the external district heating system /12000/
+        exG_max_cap Maximum capacity of import from the external electricty system /10000/
 * Investment costs from WP4_D4.2.1 prestudy report
 * PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 600, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
 * note: check AbsCInv and HP, sources?
@@ -67,8 +69,9 @@ Parameter
 *Battery                     12060000                 15            1157760                1362780                 1579860
 *Solar_PV                    18000000                 30            1170000                1530000                 1908000
 *RMMC2                       500000                   20
+*RM capacity at AH is set to 900kW which the capacity of RM at Kemi (2*450 kW)
          cap_sup_unit(sup_unit)   operational capacity of the existing units
-                     /PV 65, P1 9000, AbsC 2300, AAC 1000, RM 2670, RMMC 4200/
+                     /PV 65, P1 9000, AbsC 2300, AAC 1000, RM 900, RMMC 4200/
 
 * Investment costs source WP4_D4.2.1 prestudy report, except absorption chiller and HP from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
 * PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 6000, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
@@ -81,7 +84,7 @@ Parameter
 
 * Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
          lifT_inv_opt(inv_opt)    Life time of investment options
-                     /PV 30, BES 15, HP 25, TES 30, BTES 30, RMMC 25, P2 30, TURB 30, AbsCInv 25/;
+                     /PV 30, BES 15, HP 25, TES 30, BTES 15, RMMC 25, P2 30, TURB 30, AbsCInv 25/;
 
 *--------------Choice of investment options to consider-------------------------
 
@@ -126,18 +129,19 @@ Parameter
 *P1_eff=0.9;
 q_P1(h)= q_P1_TB(h) + q_P1_FGC(h);
 *--------------VKA4 constants and parameters------------------------------------
+* Maximum electricty input and the coefficients for VKA1 and VKA4 corresponds to the 800 kW heating capacity for each machine
 *Calculated from historical data
 scalar
-         VKA1_H_COP            Heating coefficient of performance for VKA1/3.3/
-         VKA1_C_COP            Cooling coefficient of performance for VKA1/2/
-         VKA1_el_cap           Maximum electricity usage by VKA1/300/
+         VKA1_H_COP            Heating coefficient of performance for VKA1/3/
+         VKA1_C_COP            Cooling coefficient of performance for VKA1/1.8/
+         VKA1_el_cap           Maximum electricity usage by VKA1/266/
 ;
 *--------------VKA4 constants and parameters------------------------------------
 *Calculated from historical data
 scalar
-         VKA4_H_COP            Heating coefficient of performance for VKA4/2.6/
-         VKA4_C_COP            Cooling coefficient of performance for VKA4/1.7/
-         VKA4_el_cap           Maximum electricity usage by VKA4/300/
+         VKA4_H_COP            Heating coefficient of performance for VKA4/3/
+         VKA4_C_COP            Cooling coefficient of performance for VKA4/1.8/
+         VKA4_el_cap           Maximum electricity usage by VKA4/266/
 ;
 *--------------AbsC(Absorbition Refrigerator), cooling source-------------------
 * Source for these numbers?
@@ -193,8 +197,9 @@ scalar
 
 scalar
 * Source, historical data, from Chalmersfastigheter energiförsörjning campus johanneberg (BDAB)
+* RMMC_cap value is a technical capacity limit of the connetion, according to AH
       RMCC_COP Coefficient of performance for RM /1.94/
-      RMMC_cap Maximum cooling capacity for RM in kW/3600/
+      RMMC_cap Maximum cooling capacity for RM in kW/900/
 ;
 *--------------PV data----------------------------------------------------------
 
