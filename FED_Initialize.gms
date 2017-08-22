@@ -77,7 +77,7 @@ Parameter
 * PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 6000, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
 * Exchange rate 2015: Eur to SEK = 9.36;
 * HP 700 * 9.36 = 6552 , AbsC 600 * 9.36 * 1.7/0.75= 5616
-* Absorption chiller source: Undersökning av olika kyllösningar - inventering och jämförelse av utlokaliserade kullösnmignar för umeå energi - nils persson 2012
+* Absorption chiller source: UndersÃ¶kning av olika kyllÃ¶sningar - inventering och jÃ¤mfÃ¶relse av utlokaliserade kullÃ¶snmignar fÃ¶r umeÃ¥ energi - nils persson 2012
 
          cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC P2 and Turbine
                      /PV 14196, BES 6000, HP 6552, BTES 35000, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 3430/
@@ -131,13 +131,20 @@ q_P1(h)= q_P1_TB(h) + q_P1_FGC(h);
 *--------------VKA4 constants and parameters------------------------------------
 * Maximum electricty input and the coefficients for VKA1 and VKA4 corresponds to the 800 kW heating capacity for each machine
 *Calculated from historical data
+*COP calculated from historical data (on dropbox) max heating capacity
+*(800kW) from BDAB "Utredning ackumulatortank KC 4.0"
+* "Effektiv kylanvÃ¤ndning chalmersfastigheter" BDAB states cooling production of 400-500 kW
+* Model implementation limits cooling production to 480 kW
 scalar
          VKA1_H_COP            Heating coefficient of performance for VKA1/3/
          VKA1_C_COP            Cooling coefficient of performance for VKA1/1.8/
          VKA1_el_cap           Maximum electricity usage by VKA1/266/
 ;
 *--------------VKA4 constants and parameters------------------------------------
-*Calculated from historical data
+*COP calculated from historical data (on dropbox) max heating capacity
+*(800kW) from BDAB "Utredning ackumulatortank KC 4.0", in model max heat generation is 780kW
+* "Effektiv kylanvÃ¤ndning chalmersfastigheter" BDAB states cooling production of 400-500 kW
+* Model implementation limits cooling production to 510 kW
 scalar
          VKA4_H_COP            Heating coefficient of performance for VKA4/3/
          VKA4_C_COP            Cooling coefficient of performance for VKA4/1.8/
@@ -166,7 +173,7 @@ scalar
 **************Investment options************************************************
 
 *----------------Absorption Chiller Investment----------------------------------
-* source Undersökning av olika kyllösningar - inventering och jämförelse av utlokaliserade kyllösningar för Umeå Energi - Nils Persson 2012
+* source UndersÃ¶kning av olika kyllÃ¶sningar - inventering och jÃ¤mfÃ¶relse av utlokaliserade kyllÃ¶sningar fÃ¶r UmeÃ¥ Energi - Nils Persson 2012
 scalar
          AbsCInv_COP    Coefficient of performance for absorption cooling investment /0.75/
          AbsH_COP       Coeffiicent of performance for absorption heating investment /1.7/
@@ -196,7 +203,7 @@ scalar
 * accounted for RMMC capacity is here decreased by 600 kW
 
 scalar
-* Source, historical data, from Chalmersfastigheter energiförsörjning campus johanneberg (BDAB)
+* Source, historical data, from Chalmersfastigheter energifÃ¶rsÃ¶rjning campus johanneberg (BDAB)
 * RMMC_cap value is a technical capacity limit of the connetion, according to AH
       RMCC_COP Coefficient of performance for RM /1.94/
       RMMC_cap Maximum cooling capacity for RM in kW/900/
@@ -361,7 +368,7 @@ parameter
          kilo Factor of 1000 conversion to kW from MW for example /1000/
 
 ;
-* 0.0031 is grid tariff per kWh from Göteborg Energi home page
+* 0.0031 is grid tariff per kWh from GÃ¶teborg Energi home page
 price('exG',h)=0.0031 + el_price0(h);
 price('DH',h)=q_price0(h);
 
@@ -405,12 +412,12 @@ fix_cost('AAC')= 3000 / kilo * EUR_to_SEK_2015;
 var_cost('BES',h)= 5.3 / kilo * EUR_to_SEK_2015;
 fix_cost('BES')= 51000 / kilo * EUR_to_SEK_2015;
 
-*From Göteborg Energi homepage, tax on a kWh electricity purchased in SEK
+*From GÃ¶teborg Energi homepage, tax on a kWh electricity purchased in SEK
 en_tax(sup_unit,h)=0;
 en_tax('exG',h)=0.295;
 
 co2_cost(sup_unit,h)=0;
-*Power tariffs from Göteborg Energi
+*Power tariffs from GÃ¶teborg Energi
 PT_cost(sup_unit)=0;
 PT_cost('exG')=35.4;
 PT_cost('DH')=452;
