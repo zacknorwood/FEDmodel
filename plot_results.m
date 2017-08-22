@@ -864,7 +864,7 @@ while PROCESS_RESULTS==1
         xdata=1:30;
         bar(xdata,ydata)        
         xlabel('Buildings []','FontSize',Font_Size,'FontName','Times New Roman')        
-        ylabel('BTES Dcap [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('BTES Dcap [Wh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         %xlim([0 30])
