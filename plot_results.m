@@ -13,9 +13,9 @@ while PROCESS_RESULTS==1
     %% Set results in a gdx file for a given scenario/option    
     tic
     %st desired option
-    option='mintotPE\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    option='mintotPECO2\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results\',option);
-    file_name='GtoM_mintotPE';
+    file_name='GtoM_mimtotPECO2';
     gdxData=strcat(path,file_name);
     %% Assign uels
     
@@ -810,7 +810,7 @@ while PROCESS_RESULTS==1
         xdata=(1:length(ydata))/(24*30); 
         area(xdata,ydata)
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('BITES-Shallow [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('BITES_{en} - Shallow [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 12])
@@ -831,7 +831,7 @@ while PROCESS_RESULTS==1
         %plot(xdata,ydata,'LineWidth',LineThickness); 
         area(xdata,ydata)
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('BITES-Deep [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('BITES_{en} - Deep [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 12])
@@ -846,12 +846,12 @@ while PROCESS_RESULTS==1
             'PaperSize',properties.PaperSize)
         load(strcat(path_Data,'B_BITES'));
         load(strcat(path_Data,'BTES_Scap'));
-        ydata=1000*BTES_Scap.*B_BITES';
+        ydata=BTES_Scap.*B_BITES';
         xdata=1:30;
         bar(xdata,ydata)
         
         xlabel('Buildings []','FontSize',Font_Size,'FontName','Times New Roman')        
-        ylabel('BTES Scap [kWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('BTES_{cap} Shallow [kWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         %xlim([0 30])
@@ -865,11 +865,11 @@ while PROCESS_RESULTS==1
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
         load(strcat(path_Data,'BTES_Dcap'));
-        ydata=1000*BTES_Dcap.*B_BITES';
+        ydata=BTES_Dcap.*B_BITES';
         xdata=1:30;
         bar(xdata,ydata)        
         xlabel('Buildings []','FontSize',Font_Size,'FontName','Times New Roman')        
-        ylabel('BTES Dcap [Wh]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('BTES_{cap} Deep [kWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         %xlim([0 30])
