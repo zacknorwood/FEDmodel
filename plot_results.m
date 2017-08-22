@@ -841,7 +841,7 @@ while PROCESS_RESULTS==1
             'PaperSize',properties.PaperSize)
         load(strcat(path_Data,'B_BITES'));
         load(strcat(path_Data,'BTES_Scap'));
-        ydata=1000*BTES_Scap.*B_BITES';
+        ydata=BTES_Scap.*B_BITES';
         xdata=1:30;
         bar(xdata,ydata)
         
@@ -860,7 +860,7 @@ while PROCESS_RESULTS==1
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
         load(strcat(path_Data,'BTES_Dcap'));
-        ydata=1000*BTES_Dcap.*B_BITES';
+        ydata=BTES_Dcap.*B_BITES';
         xdata=1:30;
         bar(xdata,ydata)        
         xlabel('Buildings []','FontSize',Font_Size,'FontName','Times New Roman')        
