@@ -126,14 +126,20 @@ Parameter
 *P1_eff=0.9;
 q_P1(h)= q_P1_TB(h) + q_P1_FGC(h);
 *--------------VKA4 constants and parameters------------------------------------
-*Calculated from historical data
+*COP calculated from historical data (on dropbox) max heating capacity
+*(800kW) from BDAB "Utredning ackumulatortank KC 4.0", in model max heat generation is 990kW
+* "Effektiv kylanvändning chalmersfastigheter" BDAB states cooling production of 400-500 kW
+* Model implementation limits cooling production to 600 kW
 scalar
          VKA1_H_COP            Heating coefficient of performance for VKA1/3.3/
          VKA1_C_COP            Cooling coefficient of performance for VKA1/2/
          VKA1_el_cap           Maximum electricity usage by VKA1/300/
 ;
 *--------------VKA4 constants and parameters------------------------------------
-*Calculated from historical data
+*COP calculated from historical data (on dropbox) max heating capacity
+*(800kW) from BDAB "Utredning ackumulatortank KC 4.0", in model max heat generation is 780kW
+* "Effektiv kylanvändning chalmersfastigheter" BDAB states cooling production of 400-500 kW
+* Model implementation limits cooling production to 510 kW
 scalar
          VKA4_H_COP            Heating coefficient of performance for VKA4/2.6/
          VKA4_C_COP            Cooling coefficient of performance for VKA4/1.7/
