@@ -52,10 +52,13 @@ invCost_AbsCInv = sw_AbsCInv * (AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
 ********************Output data from GAMS to MATLAB*********************
 *execute_unload %matout%;
 parameter FED_PE_ft(h)  Primary energy as a function of time
+          model_status  Model status
 ;
 FED_PE_ft(h)=e_exG.l(h)*PEF_exG(h)
              + e0_PV(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
              + q_DH.l(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1 + fuel_P2.l(h)*PEF_P1;
+
+model_status=total.modelstat;
 
 execute_unload 'GtoM' el_demand0, q_demand0, k_demand0, k_demand_AH, el_price0, q_price0, tout0, area_facade_max, area_roof_max, nPV_el0, BTES_model0
                       FED_PE0, FED_CO20, CO2F_PV, PEF_PV, CO2F_P1, PEF_P1, CO2F_P2, PEF_P2, CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,
@@ -76,4 +79,19 @@ execute_unload 'GtoM' el_demand0, q_demand0, k_demand0, k_demand_AH, el_price0, 
                       e_exG,
                       q_DH,
                       PT_exG, PT_DH, invCost,
-                      fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt;
+                      fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
+                      model_status;
+
+execute_unload 'h' h;
+execute_unload 'BID' BID;
+execute_unload 'i' i;
+execute_unload 'i_AH' i_AH;
+execute_unload 'i_nonAH' i_nonAH;
+execute_unload 'i_nonBITES' i_nonBITES;
+execute_unload 'm' m;
+execute_unload 'd' d;
+execute_unload 'sup_unit' sup_unit;
+execute_unload 'inv_opt' inv_opt;
+execute_unload 'coefs' coefs;
+execute_unload 'BTES_properties' BTES_properties;
+

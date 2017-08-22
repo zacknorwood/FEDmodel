@@ -40,6 +40,7 @@ positive variable
          e_RMMC(h)          electricity demand for refrigerators
          k_RMMC(h)          cooling power available from refrigerators
 ;
+
 binary variable
          RMMC_inv           decision variable for MC2 connection investment
 ;
@@ -69,6 +70,7 @@ positive variable
 binary variable
          B_P2              Decision variable for P2 investment
 ;
+B_P2.fx=1;
 *----------------Refurbished turbine for Panna 2  ------------------------------
 
 positive variable
@@ -79,6 +81,7 @@ positive variable
 binary variable
          B_TURB            Decision variable for turbine investment
 ;
+B_TURB.fx=1;
 *------------------HP related---------------------------------------------------
 
 positive variable
@@ -139,7 +142,8 @@ positive variables
 variable
          e_exG(h)           electrical power input from grid
 ;
-*e_exG.lo(h)=0;
+e_exG.lo(h)=-exG_max_cap;
+e_exG.up(h)=exG_max_cap;
 *------------------Grid DH related----------------------------------------------
 
 variable
