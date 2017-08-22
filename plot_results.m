@@ -10,9 +10,9 @@ while PROCESS_RESULTS==1
     %% Set results in a gdx file for a given scenario/option    
     tic
     %st desired option
-    option='mintotPECO2\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    option='mintotPE\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results\',option);
-    file_name='GtoM_multiobj_minPE&CO2';
+    file_name='GtoM_mintotPE';
     gdxData=strcat(path,file_name);
     %% Assign uels
     
@@ -32,7 +32,7 @@ while PROCESS_RESULTS==1
     inv_opt=get_uels('Sim_Results\uels\inv_opt','inv_opt');    
     %% Get parameters and variables from a GDX file 
     
-    PROCESS_DATA=1;
+    PROCESS_DATA=0;
     while PROCESS_DATA==1
     %% Set the path for the extracted data to be saved in 
     
@@ -846,7 +846,7 @@ while PROCESS_RESULTS==1
         bar(xdata,ydata)
         
         xlabel('Buildings []','FontSize',Font_Size,'FontName','Times New Roman')        
-        ylabel('BTES Scap [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('BTES Scap [kWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         %xlim([0 30])
@@ -1021,7 +1021,7 @@ while PROCESS_RESULTS==1
 end
 toc
 %% Convert the data into daily mean
-return
+
 data0=cooling_demand_2016;
 rs=24;
 len=length(data0)/rs;
