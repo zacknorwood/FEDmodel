@@ -1,12 +1,15 @@
+function [] = plot_results(gdxData)
 clc;
 close all;
 clear all;
 %% Here, results are processed and ploted, displayed and saved when needed
 
 %% Get output results
+
 tic
 PROCESS_RESULTS=1;
 while PROCESS_RESULTS==1    
+
     %% Set results in a gdx file for a given scenario/option    
     tic
     %st desired option
@@ -65,6 +68,7 @@ while PROCESS_RESULTS==1
     save(strcat(path_Data,'area_roof_max'),'area_roof_max');
     save(strcat(path_Data,'nPV_el0'),'nPV_el0');
     %% FED PE use and CO2 emission base and simulated case
+
     
     FED_PE0=gdx2mat(gdxData,'FED_PE0',h);
     FED_PE=gdx2mat(gdxData,'FED_PE',h);
@@ -131,6 +135,7 @@ while PROCESS_RESULTS==1
     %heating output from P2 to DH
     H_P2T=gdx2mat(gdxData,'H_P2T',h);
     save(strcat(path_Data,'H_P2T'),'H_P2T');
+
     %Binary decission variable to invest in the turbine (is 1 if invested, 0 otherwise)
     B_TURB=struct('name','B_TURB');    
     B_TURB=rgdx(gdxData,B_TURB);
