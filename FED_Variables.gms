@@ -168,8 +168,8 @@ variable
 
 ;
 
-tot_PE.up $ (min_totCost eq 1) = PE_lim;
-FED_CO2.up(h) $ (min_totCost eq 1) = CO2_lim;
+tot_PE.up $ (min_totCost eq 1)  = PE_lim;
+FED_CO2.up(h) $ (min_totCost eq 1)  = CO2_lim;
 *-------------------- Power tariffs -------------------------------------------
 
 positive variables
@@ -189,6 +189,7 @@ variable
          totCost            total cost
          invCost            total investment cost
          FED_CO2_tot        total CO2 emissions from the FED system
+         peak_CO2           CO2 peak
          obj                objective function
 ;
 invCost.up $ (min_totCost eq 0) = inv_lim;

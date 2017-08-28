@@ -86,6 +86,7 @@ equation
            eq_invCost    with aim to minimize investment cost
            eq_totCost    with aim to minimize total cost including fuel and O&M
            eq_CO2_tot    with aim to minimize total FED CO2 emission
+           eq_peak_CO2   with aim to to reduce CO2 peak
 
            eq_obj        Objective function
 ;
@@ -368,8 +369,14 @@ eq_invCost..
                      + B_P2 * cost_inv_opt('P2')
                      + B_TURB * cost_inv_opt('TURB')
                      + AbsCInv_cap * cost_inv_opt('AbsCInv');
+eq_peak_CO2(h)..
+          peak_CO2=g=FED_CO2(h);
 ****************Objective function**********************************************
 
 eq_obj..
-         obj =e= min_totCost*totCost + min_totPE*tot_PE + min_totCO2*FED_CO2_tot + min_totPECO2*((tot_PE/sum(h,FED_PE0(h))) + (FED_CO2_tot/sum(h,FED_CO20(h))));
+         obj =e= min_totCost*totCost
+                + min_totPE*tot_PE
+                + min_totCO2*FED_CO2_tot
+                + min_peakCO2*peak_CO2
+                + min_totPECO2*((tot_PE/sum(h,FED_PE0(h))) + (FED_CO2_tot/sum(h,FED_CO20(h))));
 ********************************************************************************
