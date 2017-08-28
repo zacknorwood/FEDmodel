@@ -82,6 +82,7 @@ parameters  FED_PE0            Primary energy use in the FED system in the base 
             min_totPE          OPtion to minimize tottal PE use
             min_totCO2         OPtion to minimize total CO2 emission
             min_totPECO2       OPtion to minimize both total PE use and CO2 emission
+            min_peakCO2        OPtion to minimize peak CO2 emission
             CO2_ref            Reference value of CO2 peak
             inv_lim            Maximum value of the investment in SEK
 ;
@@ -106,6 +107,7 @@ $LOAD min_totCost
 $LOAD min_totPE
 $LOAD min_totCO2
 $LOAD min_totPECO2
+$LOAD min_peakCO2
 $LOAD CO2_ref
 $LOAD inv_lim
 $GDXIN

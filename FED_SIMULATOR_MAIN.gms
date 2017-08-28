@@ -80,7 +80,8 @@ execute_unload 'GtoM' el_demand0, q_demand0, k_demand0, k_demand_AH, el_price0, 
                       q_DH,
                       PT_exG, PT_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
-                      model_status;
+                      model_status
+                      fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new;
 
 execute_unload 'h' h;
 execute_unload 'BID' BID;
