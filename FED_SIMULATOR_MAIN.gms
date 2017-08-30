@@ -62,7 +62,7 @@ model_status=total.modelstat;
 
 execute_unload 'GtoM' el_demand0, q_demand0, k_demand0, k_demand_AH, el_price0, q_price0, tout0, area_facade_max, area_roof_max, nPV_el0, BTES_model0
                       FED_PE0, FED_CO20, CO2F_PV, PEF_PV, CO2F_P1, PEF_P1, CO2F_P2, PEF_P2, CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,
-                      q_Pana1, q_p1_TB, q_p1_FGC, fuel_P1, P1_eff,
+                      q_p1_TB, q_p1_FGC, fuel_P1, P1_eff,
                       H_VKA1, C_VKA1, el_VKA1,
                       H_VKA4, C_VKA4, el_VKA4,
                       B_P2, invCost_P2, fuel_P2, q_P2, H_P2T, B_TURB, invCost_TURB, e_TURB, q_TURB, P2_eff, TURB_eff,
