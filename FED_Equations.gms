@@ -10,6 +10,8 @@ equation
            eq_VKA42     cooling generation of VKA4
            eq_VKA43     maximum electricity usage by VKA4
 
+           eq_q_Pana1   Eqauation related to Panna1 heat production
+
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
 
@@ -112,6 +114,10 @@ eq_VKA42(h)..
         C_VKA4(h) =l= VKA4_C_COP*el_VKA4(h);
 eq_VKA43(h)..
         el_VKA4(h) =l= VKA4_el_cap;
+*------------------Panna1 equation(when dispachable)----------------------------
+
+eq_q_Pana1(h)..
+        q_Pana1(h)=l=Panna1_cap;
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 
 eq_AbsC1(h)..

@@ -117,7 +117,7 @@ $GDXIN
 display min_totCost,min_totPE, min_totCO2
         HoD, HoM,
         el_demand0, q_demand0, k_demand0,
-        q_Pana1, q_p1_TB, q_p1_FGC,
+        q_p1_TB, q_p1_FGC,
         el_price0, q_price0, tout0,
         G_facade, area_facade_max, G_roof, area_roof_max, nPV_el0,
         BTES_model0,

@@ -1,4 +1,4 @@
-function [] = plot_results(gdxData)
+
 clc;
 close all;
 clear all;
@@ -13,9 +13,9 @@ while PROCESS_RESULTS==1
     %% Set results in a gdx file for a given scenario/option    
     tic
     %st desired option
-    option='No_investment\dispach_Panna1\mintotCost\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    option='\AH_invest\AH_invest_no_TES_minCO2\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results\',option);
-    file_name='GtoM_mintotCost';
+    file_name='GtoM_minCO2_noTES';
     gdxData=strcat(path,file_name);
     %% Assign uels
     
@@ -42,7 +42,7 @@ while PROCESS_RESULTS==1
     path_Data=strcat(path,'Data\');    
     %% Electricty, heating and cooling demand data used as inputs in the simulation     
     
-    %electricity demand in the FED system
+    %electricity demand in the FED system    
     el_demand0=gdx2mat(gdxData,'el_demand0',{h,i});
     q_demand0=gdx2mat(gdxData,'q_demand0',{h,i});
     k_demand0=gdx2mat(gdxData,'k_demand0',{h,i});
@@ -345,8 +345,10 @@ while PROCESS_RESULTS==1
     %% VAriable and fuel cost     
     
     %electricity demand in the FED system
+    price=gdx2mat(gdxData,'price',{sup_unit,h});
     fuel_cost=gdx2mat(gdxData,'fuel_cost',{sup_unit,h});
     var_cost=gdx2mat(gdxData,'var_cost',{sup_unit,h});
+    save(strcat(path_Data,'price'),'price');
     save(strcat(path_Data,'fuel_cost'),'fuel_cost'); 
     save(strcat(path_Data,'var_cost'),'var_cost'); 
     %%
@@ -479,7 +481,7 @@ while PROCESS_RESULTS==1
         load(strcat(path_Data,'q_DH'));
         load(strcat(path_Data,'H_VKA1'));
         load(strcat(path_Data,'H_VKA4'));
-        load(strcat(path_Data,'q_Pana1'));
+        load(strcat(path_Data,'q_Pana1'));        
         load(strcat(path_Data,'H_P2T'));
         load(strcat(path_Data,'q_HP'));
         
@@ -669,6 +671,7 @@ while PROCESS_RESULTS==1
         fsave_figure(path_Figures,plot_fname);
         %% PLot FED primary energy with and without investment
         
+        txt='Redisp. Pana1';
         %duration curve
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -685,7 +688,7 @@ while PROCESS_RESULTS==1
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 100])
-        legend('Base case','With new investment')
+        legend('Base case',txt)
         %save result 
         plot_fname=['FED_PE_PE0_duration'];
         fsave_figure(path_Figures,plot_fname);
@@ -723,7 +726,7 @@ while PROCESS_RESULTS==1
         box off
         xlim([0 12])
         %ylim([0 30])
-        legend('FED PE use - with investment')
+        legend(strcat('FED PE use - ',txt))
         %save result 
         plot_fname=['FED_PE'];
         fsave_figure(path_Figures,plot_fname);
@@ -752,7 +755,7 @@ while PROCESS_RESULTS==1
         box off
         xlim([0 100])
         %ylim([0 2500])
-        legend('Base case','With new investment')
+        legend('Base case',txt)
         %save result 
         plot_fname=['FED_CO2_CO20_duration'];
         fsave_figure(path_Figures,plot_fname);
@@ -792,23 +795,23 @@ while PROCESS_RESULTS==1
         box off
         xlim([0 12])
         %ylim([0 2500])
-        legend('FED CO2 emission - with investment')
+        legend(strcat('FED CO2 emission - ',txt))
         %save result 
         plot_fname=['FED_CO2'];
         fsave_figure(path_Figures,plot_fname);
         
         %percentage change in peak CO2 emission in the FED system
+        fprintf('*********REDUCTION IN THE FED TOTAL CO2 EMISSION********** \n')
+        FED_pCO2_tot=1-sum(FED_CO2)/sum(FED_CO20);
+        fprintf('Change in THE FED total co2 emission (New/Base) = %d \n\n', FED_pCO2_tot);
         fprintf('*********REDUCTION IN THE FED PEAK CO2 EMISSION********** \n')
         FED_pCO2_peak=(1-max(FED_CO2)/max(FED_CO20));
         fprintf('Change in THE FED peak co2 emission (New/Base) = %d \n\n', FED_pCO2_peak);
         %percentage change in CO2 peak hours in the FED system (this figure make sence if FED_pCO2_peak is posetive)
         fprintf('*********REDUCTION IN THE FED PEAK HOUR CO2 EMISSION********** \n')
-        FED_pCO2_peakh=0.95/(max(FED_CO2)/max(FED_CO20));
+        FED_pCO2_peakh=(1-(max(FED_CO2)/max(FED_CO20)))/0.05;
         fprintf('Change in THE FED peak co2 emission (New/Base) = %d \n\n', FED_pCO2_peakh);
-        %percentage change in total CO2 emission in the FED system
-        fprintf('*********REDUCTION IN THE FED TOTAL CO2 EMISSION********** \n')
-        FED_pCO2_tot=1-sum(FED_CO2)/sum(FED_CO20);
-        fprintf('Change in THE FED total co2 emission (New/Base) = %d \n\n', FED_pCO2_tot);
+        %percentage change in total CO2 emission in the FED system        
         %% PLot variation of energy stored in TES
         
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -977,7 +980,8 @@ while PROCESS_RESULTS==1
         uf_cost=fuel_cost';
         temp_fCost(:,1)=q_Pana1*uf_cost(1,7);
         temp_fCost(:,2)=q_P2*uf_cost(1,8);
-        fCost0=sum(q_P1*uf_cost(1,7))/1000;
+        %fCost0=sum(q_P1*uf_cost(1,7))/1000; % fixed in the base case need
+        %to be calculated to make the comparision
         ydata=sum(temp_fCost,1)/1000;             
         bar(ydata);
         xlabel('Local generating units []','FontSize',Font_Size,'FontName','Times New Roman')
@@ -998,23 +1002,31 @@ while PROCESS_RESULTS==1
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
         
-                load(strcat(path_Data,'var_cost')); 
+        load(strcat(path_Data,'var_cost')); 
+        load(strcat(path_Data,'price'))
         load(strcat(path_Data,'BES_dis'));
         load(strcat(path_Data,'q_P2'));
         load(strcat(path_Data,'k_AAC'));
+        load(strcat(path_Data,'H_VKA1'));
+        load(strcat(path_Data,'H_VKA4'));
+        load(strcat(path_Data,'e_exG'));
+        load(strcat(path_Data,'q_DH'));
         
         uv_Cost=var_cost';
-        temp_varCost=zeros(8760,9);
-        temp_varCost(:,1)=q_HP*uv_Cost(1,2);
+        temp_varCost=zeros(8760,8);
+        temp_varCost(:,1)=q_HP*uv_Cost(1,2)+H_VKA1*uv_Cost(1,2)+H_VKA4*uv_Cost(1,2);
         temp_varCost(:,2)=BES_dis*uv_Cost(1,3);
         temp_varCost(:,3)=q_Pana1*uv_Cost(1,7);
-        varCost0=sum(q_P1*uv_Cost(1,7));
+        %varCost0=sum(q_P1*uv_Cost(1,7));  % variable in the base case need
+        %to be calculated to make the comparision 
         temp_varCost(:,4)=q_P2*uv_Cost(1,8);
         temp_varCost(:,5)=e_TURB*uv_Cost(1,9);
-        temp_varCost(:,6)=k_AbsC*uv_Cost(1,10);
-        temp_varCost(:,7)=k_AbsCInv*uv_Cost(1,11);
-        temp_varCost(:,8)=k_AAC*uv_Cost(1,12);
-        temp_varCost(:,9)=k_RM*uv_Cost(1,13);
+        temp_varCost(:,6)=k_AbsC*uv_Cost(1,10) + k_AbsCInv*uv_Cost(1,11);
+        temp_varCost(:,7)=k_AAC*uv_Cost(1,12);
+        temp_varCost(:,8)=k_RM*uv_Cost(1,13);
+        price=price';
+        temp_varCost(:,9)=e_exG(:).*price(:,14);
+        temp_varCost(:,10)=q_DH(:).*price(:,15);
         ydata=sum(temp_varCost,1)/1000;
         
         bar(ydata');
@@ -1023,7 +1035,7 @@ while PROCESS_RESULTS==1
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         %xlim([0 12])
-        set(gca,'XTickLabel',{'HP','BES','Panna1','Panna2','TURB','AbsC','AbsCInv','AAC','RM'},'FontName','Times New Roman','FontSize',11)
+        set(gca,'XTickLabel',{'HP','BES','P1','P2','TURB','AbsC','AAC','RM','exG','DH'},'FontName','Times New Roman','FontSize',11)
         %save result 
         plot_fname=['var_cost'];
         fsave_figure(path_Figures,plot_fname);
@@ -1031,8 +1043,8 @@ while PROCESS_RESULTS==1
         fprintf('                    Total variable cost = %d kSEK \n', sum(ydata))
         fprintf('                    ===========================                     \n\n')
         optCost=sum(sum(temp_varCost))/1000 + sum(sum(temp_fCost))/1000;
-        optCost0=fCost0+varCost0;
-        fprintf('                    Total change in operation cost = %d \n', optCost/optCost0)
+        %optCost0=fCost0+varCost0;
+        fprintf('                    Total change in operation cost = %d kSEK\n', optCost)
         fprintf('                    ===========================                     \n\n')
         %legend('HP','BES','Panna1','Panna2','TURB','AbsC','AbsCInv','AAC','RM')
         %% Investment options
@@ -1091,14 +1103,14 @@ while PROCESS_RESULTS==1
         fprintf('                    ===========================                     \n')
         fprintf('************************************************************** \n')
         fprintf('************************************************************** \n')
-        return;
+        break;
         %% 
     end    
-    return;
+    break;
 end
 toc
 %% Convert the data into daily mean
-
+return
 data0=el_exGrid;
 rs=24;
 len=length(data0)/rs;

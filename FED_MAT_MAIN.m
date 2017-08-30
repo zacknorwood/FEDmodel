@@ -82,7 +82,6 @@ FED_inv=76761000;  %this is projected FED investment cost in SEK
 fInv_lim=1;        %multiplication factor [can be varied for sensetivity analysis]
 FED_Inv_lim = struct('name','inv_lim','type','parameter','val',fInv_lim*FED_inv);
 
-
 CO2F_exG = struct('name','CO2F_exG','type','parameter','form','full','val',el_exGCO2F);
 CO2F_exG.uels=H.uels;
 PEF_exG = struct('name','PEF_exG','type','parameter','form','full','val',el_exGPEF);
@@ -100,12 +99,12 @@ FUEL_P1.uels=H.uels;
 %% GAMS Model input
 
 %optimization option
-option1=1; %minimize total cost, PE and CO2 cap
+option1=0; %minimize total cost, PE and CO2 cap
 option2=0; %minimize tottal PE use, investment cost cap
 option3=0; %minimize total CO2 emission, investment cost cap
 option4=0; %minimize total CO2 and PE (compromise), investement cost cap
-option5=0; %minimize CO2 peak, with investement cost cap
-p1_dispach=0; %option to dispach pann1 or not
+option5=1; %minimize CO2 peak, with investement cost cap
+p1_dispach=1; %option to dispach pann1 or not
 
 temp_optn1 = struct('name','min_totCost','type','parameter','form','full','val',option1);
 temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',option2);
@@ -117,7 +116,7 @@ p1_disp = struct('name','p1_dispach','type','parameter','form','full','val',p1_d
 wgdx('MtoG.gdx', FED_PE_0, FED_CO2_0,CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,...
      Q_P1_TB, Q_P1_FGC, FUEL_P1, P1_eff_temp,...
      temp_CO2F_PV, temp_PEF_PV, temp_CO2F_P1, temp_PEF_P1, temp_CO2F_P2, temp_PEF_P2,...
-     temp_optn1, temp_optn2, temp_optn3, temp_optn4, temp_optn5, FED_CO2ref, FED_Inv_lim);
+     temp_optn1, temp_optn2, temp_optn3, temp_optn4, temp_optn5, FED_CO2ref, FED_Inv_lim,p1_disp);
 %% RUN GAMS model
 
  RUN_GAMS_MODEL = 1;
