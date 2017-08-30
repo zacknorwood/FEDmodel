@@ -85,6 +85,7 @@ parameters  FED_PE0            Primary energy use in the FED system in the base 
             min_peakCO2        OPtion to minimize peak CO2 emission
             CO2_ref            Reference value of CO2 peak
             inv_lim            Maximum value of the investment in SEK
+            p1_dispach         Option to dispatch Panna1 or not
 ;
 $GDXIN MtoG.gdx
 $LOAD FED_PE0
@@ -110,12 +111,13 @@ $LOAD min_totPECO2
 $LOAD min_peakCO2
 $LOAD CO2_ref
 $LOAD inv_lim
+$LOAD p1_dispach
 $GDXIN
 
 display min_totCost,min_totPE, min_totCO2
         HoD, HoM,
         el_demand0, q_demand0, k_demand0,
-        q_p1_TB, q_p1_FGC,
+        q_Pana1, q_p1_TB, q_p1_FGC,
         el_price0, q_price0, tout0,
         G_facade, area_facade_max, G_roof, area_roof_max, nPV_el0,
         BTES_model0,
