@@ -9,8 +9,12 @@ tic
 CO2F_PV=45;
 PEF_PV=1.25;
 
-CO2F_P1=12;
-PEF_P1=1.33;
+%CO2F_P1=12;
+%PEF_P1=1.33;
+
+CO2F_P1=0;
+PEF_P1=0;
+
 
 CO2F_P2=12;
 PEF_P2=1.33;
@@ -99,12 +103,12 @@ FUEL_P1.uels=H.uels;
 %% GAMS Model input
 
 %optimization option
-option1=0; %minimize total cost, PE and CO2 cap
+option1=1; %minimize total cost, PE and CO2 cap
 option2=0; %minimize tottal PE use, investment cost cap
 option3=0; %minimize total CO2 emission, investment cost cap
 option4=0; %minimize total CO2 and PE (compromise), investement cost cap
-option5=1; %minimize CO2 peak, with investement cost cap
-p1_dispach=1; %option to dispach pann1 or not
+option5=0; %minimize CO2 peak, with investement cost cap
+p1_dispach=0; %option to dispach pann1 or not
 
 temp_optn1 = struct('name','min_totCost','type','parameter','form','full','val',option1);
 temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',option2);
