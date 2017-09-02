@@ -13,9 +13,9 @@ while PROCESS_RESULTS==1
     %% Set results in a gdx file for a given scenario/option    
     tic
     %st desired option
-    option='\AH_invest\AH_invest_no_TES_minCO2\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
-    path=strcat('Sim_Results\',option);
-    file_name='GtoM_minCO2_noTES';
+    option='No_investment\fixed_Panna1\mintotCO2\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    path=strcat('SIm_Results_GEinput\',option);
+    file_name='GtoM_mintotCO2';
     gdxData=strcat(path,file_name);
     %% Assign uels
     
@@ -1139,17 +1139,17 @@ figure('Units','centimeters','PaperUnits','centimeters',...
        'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
        'PaperSize',properties.PaperSize)
 
-ydata=data;
+ydata=DH_PEF;
 duration= 0 : 100/(length(ydata)-1) : 100;
 xdata=(1:length(ydata))/(12);
 %plot(duration,sort(ydata,'descend'),'LineWidth',LineThickness);
 %plot(duration(1:8760),sort(ydata(1:8760),'descend'),'-.r',...
 %     duration(1:8760),sort(ydata2(1:8760),'descend'),'g','LineWidth',LineThickness);
-%plot(time,ydata,'LineWidth',LineThickness);
-area(xdata,ydata);
+plot(time,ydata,'LineWidth',LineThickness);
+%area(xdata,ydata);
 xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
-ylabel('Electricty sorce [%]','FontSize',Font_Size,'FontName','Times New Roman')
-%ylabel('CO2eq [kg]','FontSize',Font_Size,'FontName','Times New Roman')
+%ylabel('Electricty sorce [%]','FontSize',Font_Size,'FontName','Times New Roman')
+ylabel('PE [kWh_{PE}/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
 %set(gca,'XTickLabel',{'','Winter', 'Spring', 'Summer', 'Fall'},'FontName','Times New Roman','FontSize',Font_Size)
 %legend('xL=100km','xL=200km','xL=300km','xL=400km','xL=500km');
 %h=legend('$$\overline{D}$$=3250MW','$$\overline{D}$$=6500MW','$$\overline{D}$$=9750MW','$$\overline{D}$$=13000MW','$$\overline{D}$$=16250MW','$$\overline{D}$$=19500MW');
@@ -1163,8 +1163,8 @@ ylabel('Electricty sorce [%]','FontSize',Font_Size,'FontName','Times New Roman')
 set(gca,'FontName','Times New Roman','FontSize',Font_Size)
 box off
 xlim([0 12])
-ylim([0 100])
-legend('Biomass','Coal', 'Gas','Hydro', 'Nuclear', 'Oil', 'Solar', 'Wind', 'Geothermal', 'Unknown')
+%ylim([0 100])
+%legend('Biomass','Coal', 'Gas','Hydro', 'Nuclear', 'Oil', 'Solar', 'Wind', 'Geothermal', 'Unknown')
 %legend('ANG HP1 ','ANG HP2','ANG HP3','SÄV HP1 + RK1','SÄV HP2',...
 %        'SÄV HP3 (H1) + RK2','ROS HP2','ROS HP3','ROS HP4','ROS HP5',...
 %        'ROS LK1 + del i RK1', 'ROS LK2 + del i RK1', 'RYA HP6',...
