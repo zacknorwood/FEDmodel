@@ -9,8 +9,12 @@ tic
 CO2F_PV=45;
 PEF_PV=1.25;
 
-CO2F_P1=12;
-PEF_P1=1.33;
+%CO2F_P1=12;
+%PEF_P1=1.33;
+
+CO2F_P1=0;
+PEF_P1=0;
+
 
 CO2F_P2=12;
 PEF_P2=1.33;
@@ -20,7 +24,7 @@ P1_eff=0.9;          %assumed efficiency of Panna1
 P1_eff_temp = struct('name','P1_eff','type','parameter','form','full','val',P1_eff);
 
 %calculate new values
-NEW_data=1;
+NEW_data=0;
 
 while NEW_data==1
     get_CO2PE_FED;   %this routine calculates the CO2 and PE factors of the external grid also    
@@ -82,7 +86,6 @@ FED_inv=76761000;  %this is projected FED investment cost in SEK
 fInv_lim=1;        %multiplication factor [can be varied for sensetivity analysis]
 FED_Inv_lim = struct('name','inv_lim','type','parameter','val',fInv_lim*FED_inv);
 
-
 CO2F_exG = struct('name','CO2F_exG','type','parameter','form','full','val',el_exGCO2F);
 CO2F_exG.uels=H.uels;
 PEF_exG = struct('name','PEF_exG','type','parameter','form','full','val',el_exGPEF);
@@ -104,15 +107,20 @@ option1=1; %minimize total cost, PE and CO2 cap
 option2=0; %minimize tottal PE use, investment cost cap
 option3=0; %minimize total CO2 emission, investment cost cap
 option4=0; %minimize total CO2 and PE (compromise), investement cost cap
+option5=0; %minimize CO2 peak, with investement cost cap
+p1_dispach=0; %option to dispach pann1 or not
+
 temp_optn1 = struct('name','min_totCost','type','parameter','form','full','val',option1);
 temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',option2);
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 temp_optn4 = struct('name','min_totPECO2','type','parameter','form','full','val',option4);
+temp_optn5 = struct('name','min_peakCO2','type','parameter','form','full','val',option5);
+p1_disp = struct('name','p1_dispach','type','parameter','form','full','val',p1_dispach);
 
 wgdx('MtoG.gdx', FED_PE_0, FED_CO2_0,CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,...
      Q_P1_TB, Q_P1_FGC, FUEL_P1, P1_eff_temp,...
      temp_CO2F_PV, temp_PEF_PV, temp_CO2F_P1, temp_PEF_P1, temp_CO2F_P2, temp_PEF_P2,...
-     temp_optn1, temp_optn2, temp_optn3, temp_optn4, FED_CO2ref, FED_Inv_lim);
+     temp_optn1, temp_optn2, temp_optn3, temp_optn4, temp_optn5, FED_CO2ref, FED_Inv_lim,p1_disp);
 %% RUN GAMS model
 
  RUN_GAMS_MODEL = 1;

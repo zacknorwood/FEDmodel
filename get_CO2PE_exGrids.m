@@ -29,15 +29,18 @@ el_exGPEF=PE_temp./sum(el_exGrid,2);
 el_exGPEF(isnan(el_exGPEF))=0;
 %% CO2 factor and PE factor of external district heating system
 
-sheet = 1;
-xlRange = 'C5:U8764';
-heat_DH=xlsread('Input_data_FED_SIMULATOR\External_Generation.xlsx',sheet,xlRange);
+sheet = 2;
+xlRange = 'C5:V8764';
+%heat_DH=xlsread('Input_data_FED_SIMULATOR\External_Generation.xlsx',sheet,xlRange);
+heat_DH=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme uppdelad 2016_KY_20170831.xlsx',sheet,xlRange);
 heat_DH(isnan(heat_DH))=0;
 
 %CO2 and PE factors for DH
 %For the different heat generations units in Göteborg DH
-CO2F_DH=[[72 72 72 248 248 6.7 347 347 347 248 0 0 23 23 344.7 177 0 177 98]];
-PEF_DH=[1.41 1.41 1.41 1.09 1.09 0.76 1.31 1.31 1.31 1.09 0 0 1.39 1.39 2.38 0.78 0 0.78 0.03];
+%CO2F_DH=[[72 72 72 248 248 6.7 347 347 347 248 0 0 23 23 344.7 177 0 177 98]];
+%PEF_DH=[1.41 1.41 1.41 1.09 1.09 0.76 1.31 1.31 1.31 1.09 0 0 1.39 1.39 2.38 0.78 0 0.78 0.03];
+CO2F_DH=[72 72 72 248 248 6.7 347 347 347 248 0 0 23 23 344.7 177 0 177 98 0];
+PEF_DH=[1.41 1.41 1.41 1.09 1.09 0.76 1.31 1.31 1.31 1.09 0 0 1.39 1.39 2.38 0.78 0 0.78 0.03 0];
 
 COP_HP_DH=305/90.1;  %Based on Alexanders data, COP of the HP in DH
 

@@ -10,6 +10,8 @@ equation
            eq_VKA42     cooling generation of VKA4
            eq_VKA43     maximum electricity usage by VKA4
 
+           eq_q_Pana1   Eqauation related to Panna1 heat production
+
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
 
@@ -86,6 +88,7 @@ equation
            eq_invCost    with aim to minimize investment cost
            eq_totCost    with aim to minimize total cost including fuel and O&M
            eq_CO2_tot    with aim to minimize total FED CO2 emission
+           eq_peak_CO2   with aim to to reduce CO2 peak
 
            eq_obj        Objective function
 ;
@@ -111,6 +114,10 @@ eq_VKA42(h)..
         C_VKA4(h) =l= VKA4_C_COP*el_VKA4(h);
 eq_VKA43(h)..
         el_VKA4(h) =l= VKA4_el_cap;
+*------------------Panna1 equation(when dispachable)----------------------------
+
+eq_q_Pana1(h)..
+        q_Pana1(h)=l=Panna1_cap;
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 
 eq_AbsC1(h)..
@@ -144,10 +151,10 @@ eq_ACC3(h)$(tout0(h)>AAC_TempLim)..
 *----------------Absorption Chiller Investment----------------------------------
 
 eq1_AbsCInv(h)..
-             k_AbsCInv(h) =e= AbsCInv_COP*q_AbsCInv(h);
+             k_AbsCInv(h) =e= sw_AbsCInv*AbsCInv_COP*q_AbsCInv(h);
 *AbsC_eff;
 eq2_AbsCInv(h)..
-             k_AbsCInv(h) =l= AbsCInv_cap;
+             k_AbsCInv(h) =l= sw_AbsCInv*AbsCInv_cap;
 *----------------Panna 2 equations ---------------------------------------------
 
 eq1_P2(h)..
@@ -249,7 +256,7 @@ eq_PV_cap_facade(BID)..
 *---------------- Demand supply balance for heating ----------------------------
 
 eq_hbalance(h)..
-             sum(i,q_demand(h,i)) =l=q_DH(h) + q_p1_TB(h) + q_p1_FGC(h) + H_VKA1(h)
+             sum(i,q_demand(h,i)) =l=q_DH(h) + q_Pana1(h) + H_VKA1(h)
                                      + H_VKA4(h) - q_AbsC(h) + H_P2T(h)
                                      + q_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
@@ -277,7 +284,7 @@ eq_ebalance(h)..
 eq_PE(h)..
         FED_PE(h)=e= e_exG(h)*PEF_exG(h)
                      + e0_PV(h)*PEF_PV + e_PV(h)*PEF_PV
-                     + q_DH(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1
+                     + q_DH(h)*PEF_DH(h) + (q_Pana1(h)/P1_eff)*PEF_P1
                      + fuel_P2(h)*PEF_P2;
 **********************Total PE use in the FED system****************************
 
@@ -288,7 +295,7 @@ eq_totPE..
 eq_CO2(h)..
        FED_CO2(h) =e= e_exG(h)*CO2F_exG(h)
                       + e0_PV(h)*CO2F_PV + e_PV(h)*CO2F_PV
-                      + q_DH(h)*CO2F_DH(h) + fuel_P1(h)*CO2F_P1
+                      + q_DH(h)*CO2F_DH(h) + (q_Pana1(h)/P1_eff)*CO2F_P1
                       + fuel_P2(h) * CO2F_P2;
 ****************Total CO2 emission in the FED system****************************
 
@@ -324,6 +331,7 @@ eq_fix_cost_new..
 eq_var_cost_existing..
          var_cost_existing =e= sum(h,e_exG(h)*utot_cost('exG',h)) + sum(m,PT_exG(m))
                                + sum(h,q_DH(h)*utot_cost('DH',h))  + PT_DH
+                               + sum(h,q_Pana1(h)*utot_cost('P1',h))
                                + sum(h,H_VKA1(h)*utot_cost('HP',h))
                                + sum(h,H_VKA4(h)*utot_cost('HP',h))
                                + sum(h,k_AbsC(h)*utot_cost('AbsC',h))
@@ -368,8 +376,14 @@ eq_invCost..
                      + B_P2 * cost_inv_opt('P2')
                      + B_TURB * cost_inv_opt('TURB')
                      + AbsCInv_cap * cost_inv_opt('AbsCInv');
+eq_peak_CO2(h)..
+          peak_CO2=g=FED_CO2(h);
 ****************Objective function**********************************************
 
 eq_obj..
-         obj =e= min_totCost*totCost + min_totPE*tot_PE + min_totCO2*FED_CO2_tot + min_totPECO2*((tot_PE/sum(h,FED_PE0(h))) + (FED_CO2_tot/sum(h,FED_CO20(h))));
+         obj =e= min_totCost*totCost
+                + min_totPE*tot_PE
+                + min_totCO2*FED_CO2_tot
+                + min_peakCO2*peak_CO2
+                + min_totPECO2*((tot_PE/sum(h,FED_PE0(h))) + (FED_CO2_tot/sum(h,FED_CO20(h))));
 ********************************************************************************
