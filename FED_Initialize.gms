@@ -43,8 +43,8 @@ alias(i,j);
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
-         sup_unit   supply units /PV, HP, BES, TES, BTES, RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP/
-         inv_opt    investment options /PV, HP, BES, TES, BTES, RMMC, P2, TURB, AbsCInv/
+         sup_unit   supply units /PV, HP, BES, TES, BTES, BAC,RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP/
+         inv_opt    investment options /PV, HP, BES, TES, BTES, BAC,RMMC, P2, TURB, AbsCInv/
 ;
 
 * the technical limit of import/export on heat and electricty is based on feedback from AH
@@ -80,11 +80,12 @@ Parameter
 * Absorption chiller source: Undersökning av olika kyllösningar - inventering och jämförelse av utlokaliserade kullösnmignar för umeå energi - nils persson 2012
 
          cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC P2 and Turbine
-                     /PV 14196, BES 6000, HP 6552, BTES 35000, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 3430/
+                     /PV 14196, BES 6000, HP 6552, BTES 35000,BAC 31533, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 3430/
 
 * Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
+* BAC - Building Advanced Control is assumed to have same lifetime as BTES
          lifT_inv_opt(inv_opt)    Life time of investment options
-                     /PV 30, BES 15, HP 25, TES 30, BTES 15, RMMC 25, P2 30, TURB 30, AbsCInv 25/;
+                     /PV 30, BES 15, HP 25, TES 30, BTES 15, BAC 15,RMMC 25, P2 30, TURB 30, AbsCInv 25/;
 
 *--------------Choice of investment options to consider-------------------------
 
@@ -92,6 +93,7 @@ PARAMETERS
          sw_HP        switch to decide whether to operate HP or not
          sw_TES       switch to decide whether whether to operate TES or not
          sw_BTES      switch to decide whether to include building storage or not
+         sw_BAC       switch to decide whether to include Building Advanced Control or not
          sw_BES       switch to decide whether to include Battery storage or not
          sw_PV        switch to decide whether to include solar PV or not
          sw_RMMC      switch to decide whether investment in connecting refrigeration machines at MC2 to KB0
@@ -104,6 +106,7 @@ PARAMETERS
 sw_HP = 1;
 sw_TES = 1;
 sw_BTES = 1;
+sw_BAC = 1;
 sw_BES = 1;
 sw_PV = 1;
 sw_RMMC = 1;
@@ -323,6 +326,11 @@ BTES_Sdis_max(h,i)=1000*Min(BTES_model('BTES_Sdis_hc',i), BTES_model('BTES_Esig'
 *here, it is assumed that BTES_kSloss is the same and the value for the day is used, which means that the loss is over estimated
 BTES_kSloss(i)= BTES_model('kloss_Sday',i);
 BTES_kDloss(i)= BTES_model('kloss_D',i);
+*--------------Building Advanced Control characteristics------------------------
+scalar
+         BAC_savings Heating savings from BAC /0.2/
+*Assumed savings based on producer brochure and D4.2.1
+
 *--------------Battery storage characteristics----------------------------------
 
 scalar

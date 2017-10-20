@@ -55,6 +55,8 @@ equation
            eq_BTES_Den2  energy content of deep part of the building at hour h
            eq_BS_BD      energy flow between the shallow and deep part of the building
 
+           eq_BAC1       Ensures that BAC can only be invested in if building has invested in BTES
+
            eq_BES1       intial energy in the Battery
            eq_BES2       energy in the Battery at hour h
            eq_BES3       maximum energy in the Battery
@@ -218,6 +220,10 @@ eq_BTES_Den2(h,i) $ (ord(h) gt 1)..
 eq_BS_BD(h,i) $ (BTES_model('BTES_Scap',i) ne 0)..
          link_BS_BD(h,i) =e= sw_BTES*((BTES_Sen(h,i)/BTES_model('BTES_Scap',i)
                               - BTES_Den(h,i)/BTES_model('BTES_Dcap',i))*BTES_model('K_BS_BD',i));
+*-----------------Building Advanced Control Constraints-------------------------
+eq_BAC1(i)..
+         B_BAC(i) =l= sw_BAC * B_BITES(i);
+
 *-----------------Battery constraints-------------------------------------------
 
 eq_BES1(h) $ (ord(h) eq 1)..
@@ -261,11 +267,13 @@ eq_hbalance(h)..
                                      + q_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
                                      + (sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
-                                     - q_AbsCInv(h);
+                                     - q_AbsCInv(h)
+                                     - (sum(i, B_BAC(i)*q_demand(h,i)*BAC_savings);
 eq_hbalance2(h)..
              q_DH(h)=g=sum(i_nonAH,q_demand_nonAH(h,i_nonAH))
                        - (sum(i_nonAH,BTES_Sdis(h,i_nonAH))*BTES_dis_eff
-                                   - sum(i_nonAH,BTES_Sch(h,i_nonAH))/BTES_chr_eff);
+                       -  sum(i_nonAH,BTES_Sch(h,i_nonAH))/BTES_chr_eff)
+                       - (sum(i_nonAH, B_BAC(i_nonAH)*q_demand(h,i_nonAH)*BAC_savings);
 *-------------- Demand supply balance for cooling ------------------------------
 
 eq_kbalance(h)..
@@ -356,6 +364,7 @@ eq_Ainv_cost..
                 + BES_cap*cost_inv_opt('BES')/lifT_inv_opt('BES')
                 + (TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/lifT_inv_opt('TES')
                 + cost_inv_opt('BTES')*sum(i,B_BITES(i))/lifT_inv_opt('BTES')
+                + cost_inv_opt('BAC')*sum(i,B_BAC(i))/lifT_inv_opt('BAC')
                 + RMMC_inv*cost_inv_opt('RMMC')/lifT_inv_opt('RMMC')
                 + B_P2 * cost_inv_opt('P2')/lifT_inv_opt('P2')
                 + B_TURB * cost_inv_opt('TURB')/lifT_inv_opt('TURB')
@@ -372,6 +381,7 @@ eq_invCost..
                      + BES_cap*cost_inv_opt('BES')
                      + ((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
                      + cost_inv_opt('BTES')*sum(i,B_BITES(i))
+                     + cost_inv_opt('BAC')*sum(i,B_BAC(i))
                      + RMMC_inv*cost_inv_opt('RMMC')
                      + B_P2 * cost_inv_opt('P2')
                      + B_TURB * cost_inv_opt('TURB')

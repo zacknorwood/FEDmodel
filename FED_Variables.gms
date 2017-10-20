@@ -130,6 +130,12 @@ binary variable
 ;
 *Buildings with no BITES capability
 B_BITES.fx(i_nonBITES)=0;
+*----------------Building Advanced Control variables----------------------------
+binary variable
+         B_BAC(i)        Decision variable for BAC investment
+;
+B_BAC.fx(i_nonBITES)=0;
+
 *----------------Solar PV PV relate variables-----------------------------------
 
 positive variable
