@@ -6,40 +6,6 @@
 *--------------IMPORT IMPUT DATA TO THE MODEL-----------------------------------
 
 $Include FED_GET_GDX_FILE
-*-------------SET THE LENGTH OF INPUT DATA USED FOR SIMULATION------------------
-
-alias (h0,h);
-alias (b0,i);
-display h0,i;
-
-set
-        i_AH(i)               AH buildings
-                              /O0007001-Fysikorigo, O0007005-Polymerteknologi
-                              O0007006-NyaMatte,  O0007012-Elkraftteknik,
-                              O0007014-GibraltarHerrgrd, O0007017-Chalmersbibliotek,
-                              O0007018-Idelra,  O0007019-CentralaAdministrationen,
-                              O0007021-HrsalarHC,  O0007022-HrsalarHA,
-                              O0007023-Vg-och-vatten1,   O0007024-EDIT,
-                              O0007025-HrsalarHB,   O0007026-Arkitektur,
-                              O0007027-Vg-och-vatten2, O0007028-Maskinteknik,
-                              O0007040-GamlaMatte,  O0007043-PhusCampusJohanneberg,
-                              O0007888-LokalkontorAH, O0011001-FysikSoliden,
-                              O0013001-Keramforskning, O3060132-Kemi-och-bioteknik-cfab,
-                              O3060133-FysikMC2,  O3060150_1-Krhuset
-                              /
-        i_nonAH(i)            non-AH buildings
-                             /O3060137-CTP,  O3060138-JSP, O3060101-Vasa1,
-                              O3060102_3-Vasa-2-3, O3060104_15-Vasa-4-15, O4002700-Chabo
-                             /
-        i_nonBITES(i)         Buildings not applicable for BITES
-                             /O0007005-Polymerteknologi,O0007014-GibraltarHerrgrd,
-                              O0007018-Idelra,O0007888-LokalkontorAH,
-                              O3060150_1-Krhuset,O3060137-CTP,O3060138-JSP/
-        m(m0)                 Number of month                     /1*12/
-        d(d0)                 Number of days                      /1*365/
-;
-
-alias(i,j);
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
@@ -58,21 +24,9 @@ Parameter
 *         /PV 14196, BES 6000, HP 10000, BTES 35000, RMMC 500000, P2 7666, Turb 2250/
 *         Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
 *                                 /PV 410, BES 400, HP 667, BTES 1166, RMMC 25000, P2 1533333, TURB 66666, AbsCInv 72.4/
-
-* Acost_sup_unit(inv_opt) = cost_sup_unit(inv_opt) / lifetime_sup_unit(inv_opt);
-*The annualized cost of the BTES is for a building 35000/30, assuming 30 years of technical life time
-*table technology(n1,head2) technology with annualised investment cost in (SEK per MW or MWh per year for i=5)
-*                            Price                    Lifetime      Annualised_Cost1       Annualised_Cost2        Annualised_Cost3
-*HP                          18000000                 15            1728000                2034000                 2358000
-*CHP                         3170000                  20            253600                 310660                  370890
-*TES                         10000                    25            710                    900                     1100
-*Battery                     12060000                 15            1157760                1362780                 1579860
-*Solar_PV                    18000000                 30            1170000                1530000                 1908000
-*RMMC2                       500000                   20
 *RM capacity at AH is set to 900kW which the capacity of RM at Kemi (2*450 kW)
          cap_sup_unit(sup_unit)   operational capacity of the existing units
                      /PV 65, P1 9000, AbsC 2300, AAC 1000, RM 900, RMMC 4200/
-
 * Investment costs source WP4_D4.2.1 prestudy report, except absorption chiller and HP from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
 * PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 6000, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
 * Exchange rate 2015: Eur to SEK = 9.36;
@@ -117,17 +71,17 @@ parameter
          nPV_ird(h)  Normalized PV irradiance
          e0_PV(h)    Existing PV power
 ;
-nPV_ird(h)=nPV_el0(h);
+nPV_ird(h)=nPV_el(h);
 e0_PV(h)=cap_sup_unit('PV')*nPV_ird(h);
 *--------------Existing Thermal boiler constants and parameters (P1)------------
 *This data is imported from MATLAB and stored in MtoG
 
 Parameter
-*          P1_eff      Efficiency of Panna1
-          q_P1(h)     Total heat output from P1
+          h_P1(h)     Total heat output from P1
 ;
 *P1_eff=0.9;
-q_P1(h)= q_P1_TB(h) + q_P1_FGC(h);
+h_P1(h)= q_P1_TB(h) + q_P1_FGC(h);
+
 *--------------VKA4 constants and parameters------------------------------------
 * Maximum electricty input and the coefficients for VKA1 and VKA4 corresponds to the 800 kW heating capacity for each machine
 *Calculated from historical data
@@ -163,7 +117,6 @@ scalar
          AAC_eff Efficiency of AAC /0.95/
          AAC_TempLim Temperature limit of AAC/12/
 ;
-
 *--------------Refrigerator Machines, cooling source----------------------------
 * Source for these numbers?
 scalar
@@ -181,14 +134,12 @@ scalar
 *        AbsCInv_fx     Fixed cost for investment in Abs chiller /64400/
 *         AbsCInv_MaxCap Maximum possible investment in kW cooling /100000/
 *         AbsCInv_fx     Fixed cost for investment in Abs chiller /1610000/
-
-
 ;
 *----------------Panna 2  ------------------------------------------------------
 
 scalar
-      P2_eff Efficiency of P2 /0.9/
-      q_P2_cap Capacity of P2 /6000/
+      P2_eff   Efficiency of P2 /0.9/
+      h_P2_cap Capacity of P2 /6000/
 ;
 *----------------Refurbished turbine for Panna 2  ------------------------------
 
@@ -240,8 +191,8 @@ parameter
       Gekv_roof(h,BID)=abs(G_roof(h,BID))/Gstc;
       Gekv_facade(h,BID)=abs(G_facade(h,BID))/Gstc;
 
-      Tmod_roof(h,BID)=tout0(h)+coef_temp_PV*G_roof(h,BID);
-      Tmod_facade(h,BID)=tout0(h)+coef_temp_PV*G_facade(h,BID);
+      Tmod_roof(h,BID)=tout(h)+coef_temp_PV*G_roof(h,BID);
+      Tmod_facade(h,BID)=tout(h)+coef_temp_PV*G_facade(h,BID);
 
       Tekv_roof(h,BID)=Tmod_roof(h,BID) - Tstc;
       Tekv_facade(h,BID)=Tmod_facade(h,BID) - Tstc;
@@ -282,25 +233,13 @@ scalar
          TES_ch_max            Maximum charge rate in kWh per h/11000/
          TES_hourly_loss_fac   Hourly loss factor/0.999208093/
 ;
-*--------------Outside Temprature data------------------------------------------
-
-Parameter
-         tout(h) Outdoor temperature (C) from metry
-;
-tout(h)=tout0(h);
 *--------------Building storage characteristics---------------------------------
 
-set
-         BTES_properties(BTES_properties0)  Building inertia thermal energy storage properties
-                 /BTES_Scap, BTES_Dcap, BTES_Esig, BTES_Sch_hc, BTES_Sdis_hc,
-                 kloss_Sday,  kloss_Snight, kloss_D, K_BS_BD/
-;
 scalar
          BTES_chr_eff           BTES charging efficiency /0.95/
          BTES_dis_eff           BTES discharging efficiency/0.95/
 ;
 Parameters
-         BTES_model(BTES_properties,i)
          BTES_Sen_int(i)      Initial energy stored in the shalow medium of the building
          BTES_Den_int(i)      Initial energy stored in the deep medium of the building
          BTES_Sdis_eff        Discharge efficiency of the shallow medium
@@ -310,7 +249,6 @@ Parameters
          BTES_kSloss(i)      loss coefficient-shallow
          BTES_kDloss(i)      loss coefficient-deep
 ;
-BTES_model(BTES_properties,i)=BTES_model0(BTES_properties,i);
 *BTES_Sen_int(i)=1000*BTES_model('BTES_Scap',i);
 *BTES_Den_int(i)=1000*BTES_model('BTES_Dcap',i);
 BTES_Sdis_eff=0.95;
@@ -332,25 +270,22 @@ scalar
 *--------------set building energy demands--------------------------------------
 
 Parameter
-
-         q_demand(h,i)             heat demand in buildings as obtained from metry
-         q_demand_AH(h,i_AH)       heat demand in AH buildings as obtained from metry
-         q_demand_nonAH(h,i_nonAH) heat demand in non-AH buildings as obtained from metry
-         e_demand(h,i)             heat demand in buildings as obtained from metry
-         k_demand(h,i)             cool demand in buildings as obtained from metry and many estimations
-         k_demand_AH(h,i_AH)       cool demand in AH buildings as obtained from metry and many estimations
-         k_demand_nonAH(h,i_nonAH) cool demand in non-AH buildings as obtained from metry and many estimations
-
+         el_demand_AH(h,i_AH_el)       el demand in AH buildings as obtained from metry
+         el_demand_nonAH(h,i_nonAH_el) el demand in non-AH buildings as obtained from metry
+         h_demand_AH(h,i_AH_h)         heat demand in AH buildings as obtained from metry
+         h_demand_nonAH(h,i_nonAH_h)   heat demand in non-AH buildings as obtained from metry
+         c_demand_AH(h,i_AH_c)       cool demand in AH buildings as obtained from metry and many estimations
+         c_demand_nonAH(h,i_nonAH_c) cool demand in non-AH buildings as obtained from metry and many estimations
 ;
-q_demand(h,i)=q_demand0(h,i);
-q_demand_AH(h,i_AH)=q_demand(h,i_AH);
-q_demand_nonAH(h,i_nonAH)=q_demand(h,i_nonAH);
 
-e_demand(h,i)=el_demand0(h,i);
+el_demand_AH(h,i_AH_el)=el_demand(h,i_AH_el);
+el_demand_nonAH(h,i_nonAH_el)=el_demand(h,i_nonAH_el);
 
-k_demand(h,i)=k_demand0(h,i);
-k_demand_AH(h,i_AH)=k_demand(h,i_AH);
-k_demand_nonAH(h,i_nonAH)=k_demand(h,i_nonAH);
+h_demand_AH(h,i_AH_h)=h_demand(h,i_AH_h);
+h_demand_nonAH(h,i_nonAH_h)=h_demand(h,i_nonAH_h);
+
+c_demand_AH(h,i_AH_c)=c_demand(h,i_AH_c);
+c_demand_nonAH(h,i_nonAH_c)=c_demand(h,i_nonAH_c);
 *--------------unit total cost for all the generating units---------------------
 
 parameter
@@ -369,8 +304,8 @@ parameter
 
 ;
 * 0.0031 is grid tariff per kWh from Göteborg Energi home page
-price('exG',h)=0.0031 + el_price0(h);
-price('DH',h)=q_price0(h);
+price('exG',h)=0.0031 + el_price(h);
+price('DH',h)=h_price(h);
 
 *the data is obtained from Energimyndigheten 2015 wood chips for District Heating Uses
 fuel_cost('CHP',h)=0.186;
@@ -436,5 +371,7 @@ PE_lim=(1-0.3)*sum(h,FED_PE0(h));
 dCO2=smax(h,FED_CO20(h))-CO2_ref;
 CO2_lim=CO2_ref+0.2*dCO2;
 *--------------Limit on investment----------------------------------------------
+$Ontext
 
+$Offtext
 

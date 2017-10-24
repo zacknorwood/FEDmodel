@@ -9,12 +9,14 @@ tic
 CO2F_PV=45;
 PEF_PV=1.25;
 
-%CO2F_P1=12;
-%PEF_P1=1.33;
+CO2F_P1=12;
+PEF_P1=1.33;
 
-CO2F_P1=0;
-PEF_P1=0;
+% CO2F_P1=0;
+% PEF_P1=0;
 
+COP_AbsC=0.5;
+COP_AAC=10;
 
 CO2F_P2=12;
 PEF_P2=1.33;
@@ -24,7 +26,7 @@ P1_eff=0.9;          %assumed efficiency of Panna1
 P1_eff_temp = struct('name','P1_eff','type','parameter','form','full','val',P1_eff);
 
 %calculate new values
-NEW_data=0;
+NEW_data=1;
 
 while NEW_data==1
     get_CO2PE_FED;   %this routine calculates the CO2 and PE factors of the external grid also    
@@ -38,8 +40,20 @@ while NEW_data==1
     save('fgc_heat_2016','fgc_heat_2016');
     save('fuel_P1','fuel_P1');
     save('q_P1','q_P1');
-    save('el_Import_2016','el_Import_2016')
+    save('el_Import_2016','el_Import_2016');
+    save('el_import','el_import');
+    save('q_import','q_import');
     save('heat_Import_2016','heat_Import_2016')
+    save('c0_AbsC','c0_AbsC')
+    save('q0_AbsC','q0_AbsC')
+    save('c0_AAC','c0_AAC')
+    save('e0_AAC','e0_AAC')
+    save('e0_VKA1','e0_VKA1')
+    save('q0_VKA1','q0_VKA1')
+    save('c0_VKA1','c0_VKA1')
+    save('e0_VKA4','e0_VKA4')
+    save('q0_VKA4','q0_VKA4')
+    save('c0_VKA4','c0_VKA4')
     break;
 end
 
@@ -100,9 +114,18 @@ Q_P1_FGC = struct('name','q_P1_FGC','type','parameter','form','full','val',fgc_h
 Q_P1_FGC.uels=H.uels;
 FUEL_P1 = struct('name','fuel_P1','type','parameter','form','full','val',fuel_P1);
 FUEL_P1.uels=H.uels;
+q_AbsC0 = struct('name','q0_AbsC','type','parameter','form','full','val',q0_AbsC);
+q_AbsC0.uels=H.uels;
+e_AAC0 = struct('name','e0_AAC','type','parameter','form','full','val',e0_AAC);
+e_AAC0.uels=H.uels;
+e_VKA10 = struct('name','e0_VKA1','type','parameter','form','full','val',e0_VKA1);
+e_VKA10.uels=H.uels;
+e_VKA40 = struct('name','e0_VKA4','type','parameter','form','full','val',e0_VKA4);
+e_VKA40.uels=H.uels;
 %% GAMS Model input
 
 %optimization option
+option0=0; %Base case, Pannn1, q_AbsC, e_AAC, e_VKA1, e_VKA4 fixed to the measured value
 option1=1; %minimize total cost, PE and CO2 cap
 option2=0; %minimize tottal PE use, investment cost cap
 option3=0; %minimize total CO2 emission, investment cost cap
@@ -110,6 +133,7 @@ option4=0; %minimize total CO2 and PE (compromise), investement cost cap
 option5=0; %minimize CO2 peak, with investement cost cap
 p1_dispach=0; %option to dispach pann1 or not
 
+temp_optn0 = struct('name','min_totCost0','type','parameter','form','full','val',option0);
 temp_optn1 = struct('name','min_totCost','type','parameter','form','full','val',option1);
 temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',option2);
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
@@ -118,12 +142,12 @@ temp_optn5 = struct('name','min_peakCO2','type','parameter','form','full','val',
 p1_disp = struct('name','p1_dispach','type','parameter','form','full','val',p1_dispach);
 
 wgdx('MtoG.gdx', FED_PE_0, FED_CO2_0,CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,...
-     Q_P1_TB, Q_P1_FGC, FUEL_P1, P1_eff_temp,...
+     Q_P1_TB, Q_P1_FGC, FUEL_P1, P1_eff_temp,q_AbsC0,e_AAC0,e_VKA10,e_VKA40,...
      temp_CO2F_PV, temp_PEF_PV, temp_CO2F_P1, temp_PEF_P1, temp_CO2F_P2, temp_PEF_P2,...
-     temp_optn1, temp_optn2, temp_optn3, temp_optn4, temp_optn5, FED_CO2ref, FED_Inv_lim,p1_disp);
+     temp_optn0,temp_optn1, temp_optn2, temp_optn3, temp_optn4, temp_optn5, FED_CO2ref, FED_Inv_lim,p1_disp);
 %% RUN GAMS model
 
- RUN_GAMS_MODEL = 1;
+ RUN_GAMS_MODEL = 0;
  while RUN_GAMS_MODEL==1
      system 'gams FED_SIMULATOR_MAIN lo=3';
      break;
