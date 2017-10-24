@@ -268,12 +268,12 @@ eq_hbalance(h)..
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
                                      + (sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
                                      - q_AbsCInv(h)
-                                     - (sum(i, B_BAC(i)*q_demand(h,i)*BAC_savings));
+                                     + (sum(i, B_BAC(i)*q_demand(h,i)*BAC_savings(h)));
 eq_hbalance2(h)..
              q_DH(h)=g=sum(i_nonAH,q_demand_nonAH(h,i_nonAH))
                        - (sum(i_nonAH,BTES_Sdis(h,i_nonAH))*BTES_dis_eff
                        -  sum(i_nonAH,BTES_Sch(h,i_nonAH))/BTES_chr_eff)
-                       - (sum(i_nonAH, B_BAC(i_nonAH)*q_demand(h,i_nonAH)*BAC_savings));
+                       + (sum(i_nonAH, B_BAC(i_nonAH)*q_demand(h,i_nonAH)*BAC_savings(h)));
 *-------------- Demand supply balance for cooling ------------------------------
 
 eq_kbalance(h)..

@@ -80,7 +80,7 @@ Parameter
 * Absorption chiller source: Undersökning av olika kyllösningar - inventering och jämförelse av utlokaliserade kullösnmignar för umeå energi - nils persson 2012
 
          cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC P2 and Turbine
-                     /PV 14196, BES 6000, HP 6552, BTES 35000,BAC 31533, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 3430/
+                     /PV 14196, BES 6000, HP 6552, BTES 35000,BAC 315333, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 3430/
 
 * Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
 * BAC - Building Advanced Control is assumed to have same lifetime as BTES
