@@ -63,7 +63,7 @@ parameter FED_PE_ft(h)  Primary energy as a function of time
           model_status  Model status
 ;
 FED_PE_ft(h)=(e_imp_AH.l(h)-e_exp_AH.l(h) + e_imp_nonAH.l(h))*PEF_exG(h)
-             + e0_PV(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
+             + e_existPV.l(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
              + (h_imp_AH.l(h)-h_exp_AH.l(h) + h_imp_nonAH.l(h))*PEF_DH(h) + fuel_P1(h)*PEF_P1 + fuel_P2.l(h)*PEF_P1;
 
 model_status=total.modelstat;
@@ -81,7 +81,7 @@ execute_unload 'GtoM' el_demand, h_demand, c_demand, c_demand_AH, el_price, h_pr
                       TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES, TES_dis_eff, TES_chr_eff,
                       BTES_Sch, BTES_Sdis, BTES_Sen, BTES_Den, BTES_Sloss, BTES_Dloss, link_BS_BD,  BTES_dis_eff, BTES_chr_eff, B_BITES, invCost_BITES, BTES_model,
                       h_BAC_savings, B_BAC, invCost_BAC
-                      e0_PV, e_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
+                      e_existPV, e_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
                       BES_en, BES_ch, BES_dis, BES_cap, invCost_BEV, BES_dis_eff, BES_ch_eff,
                       FED_PE,
                       FED_CO2,
@@ -92,7 +92,8 @@ execute_unload 'GtoM' el_demand, h_demand, c_demand, c_demand_AH, el_price, h_pr
                       model_status
                       fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new
                       h_demand_nonAH, h_demand, h_demand_nonAH_sum
-                      min_totCost, min_totPE, min_totCO2, min_peakCO2;
+                      min_totCost, min_totPE, min_totCO2, min_peakCO2
+                      exist_PV_cap_roof, exist_PV_cap_facade;
 
 execute_unload 'h' h;
 execute_unload 'BID' BID;

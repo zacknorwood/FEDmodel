@@ -25,6 +25,8 @@ equation
            eq_ACC2      Refrigerator equation
            eq_ACC3      Temperature limit of Ambient Air Cooler
 
+           eq_existPV   Production from existing PV install
+
            eq1_AbsCInv  Production equation
            eq2_AbsCInv  Investment capacity
 
@@ -155,6 +157,12 @@ eq_ACC2(h)..
 
 eq_ACC3(h)$(tout(h)>AAC_TempLim)..
              c_AAC(h) =l= 0;
+
+*----------------Equations for existing PV--------------------------------------
+eq_existPV(h)..
+             e_existPV(h) =e= eta_Inverter * (sum(BID, exist_PV_cap_roof(BID) * PV_power_roof(h,BID))
+                                              + sum(BID, exist_PV_cap_facade(BID) * PV_power_facade(h,BID)));
+
 
 *****************For new investment optons-------------------------------------
 *----------------Absorption Chiller Investment----------------------------------
@@ -297,7 +305,7 @@ eq_cbalance(h)..
 
 eq_ebalance3(h)..
         sum(i_AH_el,el_demand(h,i_AH_el)) =l= e_imp_AH(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
-                                 + e0_PV(h) + e_PV(h) - e_HP(h)
+                                 + e_existPV(h) + e_PV(h) - e_HP(h)
                                  + (BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff)
                                  + e_TURB(h);
 eq_ebalance4(h)..
@@ -306,7 +314,7 @@ eq_ebalance4(h)..
 
 eq_PE(h)..
         FED_PE(h)=e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*PEF_exG(h)
-                     + e0_PV(h)*PEF_PV + e_PV(h)*PEF_PV
+                     + e_existPV(h)*PEF_PV + e_PV(h)*PEF_PV
                      + (h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*PEF_DH(h) + (h_Pana1(h)/P1_eff)*PEF_P1
                      + fuel_P2(h)*PEF_P2;
 **********************Total PE use in the FED system****************************
@@ -317,7 +325,7 @@ eq_totPE..
 
 eq_CO2(h)..
        FED_CO2(h) =e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*CO2F_exG(h)
-                      + e0_PV(h)*CO2F_PV + e_PV(h)*CO2F_PV
+                      + e_existPV(h)*CO2F_PV + e_PV(h)*CO2F_PV
                       + (h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*CO2F_DH(h) + (h_Pana1(h)/P1_eff)*CO2F_P1
                       + fuel_P2(h) * CO2F_P2;
 ****************Total CO2 emission in the FED system****************************
@@ -363,7 +371,7 @@ eq_var_cost_existing..
                                + sum(h,c_RM(h)*utot_cost('RM',h))
                                + sum(h,c_RMMC(h)*utot_cost('RM',h))
                                + sum(h,c_AAC(h)*utot_cost('AAC',h))
-                               + sum(h,e0_PV(h)*utot_cost('PV',h));
+                               + sum(h,e_existPV(h)*utot_cost('PV',h));
 eq_var_cost_new..
          var_cost_new =e=  sum(h,e_PV(h)*utot_cost('PV',h))
                            + sum(h,h_HP(h)*utot_cost('HP',h))
