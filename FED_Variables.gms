@@ -172,9 +172,9 @@ e_exp_AH.up(h)=exG_max_cap;
 *------------------Grid DH related----------------------------------------------
 
 positive variable
-         h_exp_AH(h)        Imported electricty to the AH system
-         h_imp_AH(h)        Imported electricty to the AH system
-         h_imp_nonAH(h)     Imported electricty to the AH system
+         h_exp_AH(h)        Imported heat to the AH system
+         h_imp_AH(h)        Imported heat to the AH system
+         h_imp_nonAH(h)     Imported heat to the AH system
 ;
 * Set maximum import and export to the grid.
 h_imp_AH.up(h)=DH_max_cap;
