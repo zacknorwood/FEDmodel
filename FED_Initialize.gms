@@ -55,15 +55,15 @@ PARAMETERS
 ;
 *use of switch to determine whether HP, CHP, TES should operate or not
 * 1=in operation, 0=out of operation
-sw_HP = 1;
-sw_TES = 1;
-sw_BTES = 1;
-sw_BES = 1;
-sw_PV = 1;
-sw_RMMC = 1;
-sw_P2 = 1;
-sw_TURB = 1;
-sw_AbsCInv = 1;
+sw_HP = 0;
+sw_TES = 0;
+sw_BTES = 0;
+sw_BES = 0;
+sw_PV = 0;
+sw_RMMC = 0;
+sw_P2 = 0;
+sw_TURB = 0;
+sw_AbsCInv = 0;
 ***************Existing units***************************************************
 *--------------Existing Solar PV  constants and parameters (existing unit)---------
 

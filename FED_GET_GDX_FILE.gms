@@ -77,7 +77,6 @@ set i_AH_el(i) buildings considered in the FED system connected the AH el netwro
                                            CTP, Karhuset, JSP, Karhus_studenter
                                          /
 ;
-
 *********************SET THE SIMULATION TIME HERE*******************************
 set h(h0) SIMULATION TIME /1*8760/;
 

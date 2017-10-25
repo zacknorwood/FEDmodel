@@ -35,7 +35,7 @@ positive variable
          AbsC_cap            capacity of AbsC
 ;
 AbsC_cap.fx = cap_sup_unit('AbsC');
-h_AbsC.fx(h) $ (min_totCost0 eq 1) = 1000*q0_AbsC(h);
+h_AbsC.fx(h) $ (min_totCost0 eq 1) = q0_AbsC(h);
 *------------------Refrigerator Machine related---------------------------------
 
 positive variable
@@ -152,19 +152,35 @@ positive variables
 ;
 *------------------Grid El related----------------------------------------------
 
-variable
-         e_exG(h)           electrical power input from grid
+*variable
+*         e_exG(h)           electrical power input from grid
+*;
+
+positive variable
+         e_exp_AH(h)        Imported electricty to the AH system
+         e_imp_AH(h)        Imported electricty to the AH system
+         e_imp_nonAH(h)     Imported electricty to the AH system
 ;
-e_exG.lo(h)=-exG_max_cap;
-e_exG.up(h)=exG_max_cap;
+*e_imp_AH.lo(h)=0;
+e_imp_AH.up(h)=exG_max_cap;
+e_exp_AH.up(h)=exG_max_cap;
+*e_exp_AH.fx(h)=0;
+*e_imp_nonAH.lo(h)=0;
 *------------------Grid DH related----------------------------------------------
 
 variable
-         h_DH(h)            heat power input from grid
+         h_exp_AH(h)        Imported electricty to the AH system
+         h_imp_AH(h)        Imported electricty to the AH system
+         h_imp_nonAH(h)     Imported electricty to the AH system
 ;
 * Set maximum import and export to the grid.
-h_DH.lo(h)=-DH_max_cap;
-h_DH.up(h)=DH_max_cap;
+h_imp_AH.lo(h)=0;
+h_imp_AH.up(h)=DH_max_cap;
+h_exp_AH.lo(h)=0;
+h_exp_AH.up(h)=DH_max_cap;
+h_imp_nonAH.l(h)=0;
+*h_DH.lo(h)=-DH_max_cap;
+*h_DH.up(h)=DH_max_cap;
 *------------------Grid DC related---------------------------------------------
 
 variable

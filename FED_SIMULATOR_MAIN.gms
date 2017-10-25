@@ -12,8 +12,8 @@ option reslim = 500000;
 * Default 0.10 , +- 10% from optimal
 option optcr = 0.001;
 *// Set the max resource usage
-OPTION PROFILE=3;
-OPTION threads = -2;
+OPTION PROFILE = 3;
+OPTION threads =-2;
 *// To present the resource usage
 *option workmem=1024;
 
@@ -23,6 +23,7 @@ ALL
 /;
 
 SOLVE total using MIP minimizing obj;
+*
 *read model.sav
 *conflict
 
@@ -57,9 +58,9 @@ invCost_AbsCInv = sw_AbsCInv * (AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
 parameter FED_PE_ft(h)  Primary energy as a function of time
           model_status  Model status
 ;
-FED_PE_ft(h)=e_exG.l(h)*PEF_exG(h)
+FED_PE_ft(h)=(e_imp_AH.l(h)-e_exp_AH.l(h) + e_imp_nonAH.l(h))*PEF_exG(h)
              + e0_PV(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
-             + h_DH.l(h)*PEF_DH(h) + fuel_P1(h)*PEF_P1 + fuel_P2.l(h)*PEF_P1;
+             + (h_imp_AH.l(h)-h_exp_AH.l(h) + h_imp_nonAH.l(h))*PEF_DH(h) + fuel_P1(h)*PEF_P1 + fuel_P2.l(h)*PEF_P1;
 
 model_status=total.modelstat;
 
@@ -79,8 +80,8 @@ execute_unload 'GtoM' el_demand, h_demand, c_demand, c_demand_AH, el_price, h_pr
                       BES_en, BES_ch, BES_dis, BES_cap, invCost_BEV, BES_dis_eff, BES_ch_eff,
                       FED_PE,
                       FED_CO2,
-                      e_exG,
-                      h_DH,
+                      e_imp_AH, e_exp_AH, e_imp_nonAH,
+                      h_imp_AH, h_exp_AH, h_imp_nonAH,
                       PT_exG, PT_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       model_status

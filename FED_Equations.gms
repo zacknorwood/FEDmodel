@@ -65,10 +65,16 @@ equation
            eq_PV_cap_roof capacity of installed PV on roofs
            eq_PV_cap_facade capacity of installed PV on facades
 
-           eq_hbalance   heating supply-demand balance
-           eq_hbalance2  heating supply-demand balance excluding nonAH buildings
-           eq_cbalance   Balance equation cooling
-           eq_ebalance   electrical supply-demand balance
+           eq_hbalance   equation for imported heat to AH
+           eq_hbalance2  equation for exported heat from AH
+           eq_hbalance3  heating supply-demand balance excluding AH buildings
+           eq_hbalance4  heating supply-demand balance excluding nonAH buildings
+           eq_cbalance  Balance equation cooling
+
+           eq_ebalance   electrical import equation to AH
+           eq_ebalance2  electrical export equation from AH
+           eq_ebalance3  supply demand balance equation from AH
+           eq_ebalance4  electrical import equation to nonAH
 
            eq_PE         Hourly PE use in the FED system
            eq_totPE      Total PE use in the FED system
@@ -246,7 +252,6 @@ eq_BES_dis(h)..
 eq_PV(h)..
              e_PV(h) =e= sw_PV*eta_Inverter * (sum(BID, PV_cap_roof(BID) * PV_power_roof(h,BID))
                                               + sum(BID, PV_cap_facade(BID) * PV_power_facade(h,BID)));
-
 eq_PV_cap_roof(BID)..
              PV_cap_roof(BID) =l= area_roof_max(BID)*PV_cap_density;
 
@@ -254,16 +259,21 @@ eq_PV_cap_facade(BID)..
              PV_cap_facade(BID) =l= area_facade_max(BID)*PV_cap_density;
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
-
 eq_hbalance(h)..
-             sum(i,h_demand(h,i)) =l=h_DH(h) + h_Pana1(h) + H_VKA1(h)
+             h_imp_AH(h) =g= (sum(i,h_demand(h,i)) + h_AbsC(h) + TES_ch(h)/TES_chr_eff + sum(i,BTES_Sch(h,i))/BTES_chr_eff + h_AbsCInv(h))
+                             - (h_Pana1(h) + H_VKA1(h) + H_VKA4(h) + TES_dis_eff*TES_dis(h) + sum(i,BTES_Sdis(h,i))*BTES_dis_eff);
+eq_hbalance2(h)..
+             h_exp_AH(h) =g= -(sum(i,h_demand(h,i)) + h_AbsC(h) + TES_ch(h)/TES_chr_eff + sum(i,BTES_Sch(h,i))/BTES_chr_eff + h_AbsCInv(h))
+                             + (h_Pana1(h) + H_VKA1(h) + H_VKA4(h) + TES_dis_eff*TES_dis(h) + sum(i,BTES_Sdis(h,i))*BTES_dis_eff);
+eq_hbalance3(h)..
+             sum(i,h_demand(h,i)) =l=h_imp_AH(h) - h_exp_AH(h)  + h_Pana1(h) + H_VKA1(h)
                                      + H_VKA4(h) - h_AbsC(h) + H_P2T(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
                                      + (sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
                                      - h_AbsCInv(h);
-eq_hbalance2(h)..
-             h_DH(h)=g=sum(i_nonAH_h,h_demand_nonAH(h,i_nonAH_h))
+eq_hbalance4(h)..
+             h_imp_nonAH(h)=g=sum(i_nonAH_h,h_demand_nonAH(h,i_nonAH_h))
                        - (sum(i_nonAH_h,BTES_Sdis(h,i_nonAH_h))*BTES_dis_eff
                                    - sum(i_nonAH_h,BTES_Sch(h,i_nonAH_h))/BTES_chr_eff);
 *-------------- Demand supply balance for cooling ------------------------------
@@ -275,16 +285,28 @@ eq_cbalance(h)..
 *--------------Demand supply balance for electricity ---------------------------
 
 eq_ebalance(h)..
-        sum(i,el_demand(h,i)) =l= e_exG(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
+                e_imp_AH(h) =g= (sum(i_AH_el,el_demand(h,i_AH_el)) + el_VKA1(h) + el_VKA4(h) + e_RM(h) + e_RMMC(h) + e_AAC(h) + e_HP(h) + BES_ch(h)/BES_ch_eff)
+                                -(e0_PV(h) + e_PV(h) + BES_dis(h)*BES_dis_eff + e_TURB(h));
+eq_ebalance2(h)..
+                e_exp_AH(h) =g= -(sum(i_AH_el,el_demand(h,i_AH_el)) + el_VKA1(h) + el_VKA4(h) + e_RM(h) + e_RMMC(h) + e_AAC(h) + e_HP(h) + BES_ch(h)/BES_ch_eff)
+                                + (e0_PV(h) + e_PV(h) + BES_dis(h)*BES_dis_eff + e_TURB(h));
+*        sum(i_AH_el,el_demand(h,i_AH_el)) =l= -e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
+*                                 + e0_PV(h) + e_PV(h) - e_HP(h)
+*                                 + (BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff)
+*                                 + e_TURB(h);
+eq_ebalance3(h)..
+        sum(i_AH_el,el_demand(h,i_AH_el)) =l= e_imp_AH(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
                                  + e0_PV(h) + e_PV(h) - e_HP(h)
                                  + (BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff)
                                  + e_TURB(h);
+eq_ebalance4(h)..
+        sum(i_nonAH_el,el_demand(h,i_nonAH_el)) =l= e_imp_nonAH(h);
 *--------------FED Primary energy use-------------------------------------------
 
 eq_PE(h)..
-        FED_PE(h)=e= e_exG(h)*PEF_exG(h)
+        FED_PE(h)=e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*PEF_exG(h)
                      + e0_PV(h)*PEF_PV + e_PV(h)*PEF_PV
-                     + h_DH(h)*PEF_DH(h) + (h_Pana1(h)/P1_eff)*PEF_P1
+                     + (h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*PEF_DH(h) + (h_Pana1(h)/P1_eff)*PEF_P1
                      + fuel_P2(h)*PEF_P2;
 **********************Total PE use in the FED system****************************
 
@@ -293,9 +315,9 @@ eq_totPE..
 *---------------FED CO2 emission------------------------------------------------
 
 eq_CO2(h)..
-       FED_CO2(h) =e= e_exG(h)*CO2F_exG(h)
+       FED_CO2(h) =e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*CO2F_exG(h)
                       + e0_PV(h)*CO2F_PV + e_PV(h)*CO2F_PV
-                      + h_DH(h)*CO2F_DH(h) + (h_Pana1(h)/P1_eff)*CO2F_P1
+                      + (h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*CO2F_DH(h) + (h_Pana1(h)/P1_eff)*CO2F_P1
                       + fuel_P2(h) * CO2F_P2;
 ****************Total CO2 emission in the FED system****************************
 
@@ -304,12 +326,12 @@ eq_CO2_TOT..
 **************** Power tariffs *******************
 
 eq_max_exG(h,m)..
-               max_exG(m) =g=   e_exG(h)*HoM(h,m);
+               max_exG(m) =g= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*HoM(h,m);
 eq_PTexG(m)..
                PT_exG(m) =e= max_exG(m)*PT_cost('exG');
 
 eq_mean_DH(d)..
-              mean_DH(d) =g=   sum(h,h_DH(h)*HoD(h,d))/24;
+              mean_DH(d) =g=   sum(h,(h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d))/24;
 
 eq_PT_DH(d)..
               PT_DH      =g=   mean_DH(d)*PT_cost('DH');
@@ -329,8 +351,10 @@ eq_fix_cost_new..
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
 eq_var_cost_existing..
-         var_cost_existing =e= sum(h,e_exG(h)*utot_cost('exG',h)) + sum(m,PT_exG(m))
-                               + sum(h,h_DH(h)*utot_cost('DH',h))  + PT_DH
+         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)) + sum(m,PT_exG(m))
+                               -sum(h,e_exp_AH(h)*price('exG',h))
+                               + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h))  + PT_DH
+                               - sum(h,e_exp_AH(h)*0.3)
                                + sum(h,h_Pana1(h)*utot_cost('P1',h))
                                + sum(h,H_VKA1(h)*utot_cost('HP',h))
                                + sum(h,H_VKA4(h)*utot_cost('HP',h))
