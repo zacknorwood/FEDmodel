@@ -162,21 +162,13 @@ positive variables
          BES_cap        Capacity of the battery at building i
 ;
 *------------------Grid El related----------------------------------------------
-
-*variable
-*         e_exG(h)           electrical power input from grid
-*;
-
 positive variable
          e_exp_AH(h)        Imported electricty to the AH system
          e_imp_AH(h)        Imported electricty to the AH system
          e_imp_nonAH(h)     Imported electricty to the AH system
 ;
-*e_imp_AH.lo(h)=0;
 e_imp_AH.up(h)=exG_max_cap;
 e_exp_AH.up(h)=exG_max_cap;
-*e_exp_AH.fx(h)=0;
-*e_imp_nonAH.lo(h)=0;
 *------------------Grid DH related----------------------------------------------
 
 positive variable
@@ -185,11 +177,9 @@ positive variable
          h_imp_nonAH(h)     Imported electricty to the AH system
 ;
 * Set maximum import and export to the grid.
-h_imp_AH.lo(h)=0;
 h_imp_AH.up(h)=DH_max_cap;
 
-h_exp_AH.up(h)=DH_max_cap;
-h_imp_nonAH.l(h)=0;
+h_exp_AH.up(h)=DH_max_cap
 *h_DH.lo(h)=-DH_max_cap;
 *h_DH.up(h)=DH_max_cap;
 *------------------Grid DC related---------------------------------------------
