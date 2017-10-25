@@ -10,7 +10,7 @@ positive variable
          C_VKA1(h)         cooling power available from VKA1
          el_VKA1(h)        electricity needed by VKA1
 ;
-el_VKA1.fx(h) $ (min_totCost0 eq 1)  = e0_VKA1(h);
+*el_VKA1.fx(h) $ (min_totCost0 eq 1)  = e0_VKA1(h);
 *------------------VKA4 Heatpump related----------------------------------------
 
 positive variable
@@ -18,7 +18,7 @@ positive variable
          C_VKA4(h)         cooling power available from VKA4
          el_VKA4(h)        electricity needed by VKA4
 ;
-el_VKA4.fx(h) $ (min_totCost0 eq 1)  = e0_VKA4(h);
+*el_VKA4.fx(h) $ (min_totCost0 eq 1)  = e0_VKA4(h);
 *------------------Panna1 (if re-dispach is allowed)----------------------------
 
 positive variable
@@ -26,7 +26,7 @@ positive variable
          Panna1_cap           capacity of Panna1
 ;
 Panna1_cap.fx=cap_sup_unit('P1');
-h_Pana1.fx(h) $ (p1_dispach eq 1)  = h_P1(h);
+*h_Pana1.fx(h) $ (p1_dispach eq 1)  = h_P1(h);
 *------------------AbsC(Absorbtion Chiller) related-----------------------------
 
 positive variable
@@ -35,7 +35,7 @@ positive variable
          AbsC_cap            capacity of AbsC
 ;
 AbsC_cap.fx = cap_sup_unit('AbsC');
-h_AbsC.fx(h) $ (min_totCost0 eq 1) = q0_AbsC(h);
+*h_AbsC.fx(h) $ (min_totCost0 eq 1) = q0_AbsC(h);
 *------------------Refrigerator Machine related---------------------------------
 
 positive variable
@@ -45,7 +45,7 @@ positive variable
 ;
 *this is the aggregated capacity of five exisiting RM Units
 
-e_RM.fx(h) $ (min_totCost0 eq 1)  = 0;
+*e_RM.fx(h) $ (min_totCost0 eq 1)  = 0;
 RM_cap.fx =cap_sup_unit('RM');
 *------------------MC2 Refrigerator Machine related-----------------------------
 
@@ -63,7 +63,7 @@ positive variable
          c_AAC(h)           cooling power available from the refrigerator
          AAC_cap            capacity of refrigerator
 ;
-e_AAC.fx(h) $ (min_totCost0 eq 1)  = e0_AAC(h);
+*e_AAC.fx(h) $ (min_totCost0 eq 1)  = e0_AAC(h);
 AAC_cap.fx = cap_sup_unit('AAC');
 ******************New investments***********************************************
 *----------------Absorption Chiller Investment----------------------------------
@@ -135,6 +135,17 @@ binary variable
 ;
 *Buildings with no BITES capability
 B_BITES.fx(i_nonBITES)=0;
+
+*----------------Building Advanced Control (BAC) related------------------------
+positive variable
+         h_BAC_savings(h,i) hourly heat consumption savings per building attributable to BAC investment
+;
+
+binary variable
+         B_BAC(i)   Binary investment decision variable
+;
+B_BAC.fx(i_nonBITES)=0;
+
 *----------------Solar PV PV relate variables-----------------------------------
 
 positive variable
@@ -168,7 +179,7 @@ e_exp_AH.up(h)=exG_max_cap;
 *e_imp_nonAH.lo(h)=0;
 *------------------Grid DH related----------------------------------------------
 
-variable
+positive variable
          h_exp_AH(h)        Imported electricty to the AH system
          h_imp_AH(h)        Imported electricty to the AH system
          h_imp_nonAH(h)     Imported electricty to the AH system
@@ -176,7 +187,7 @@ variable
 * Set maximum import and export to the grid.
 h_imp_AH.lo(h)=0;
 h_imp_AH.up(h)=DH_max_cap;
-h_exp_AH.lo(h)=0;
+
 h_exp_AH.up(h)=DH_max_cap;
 h_imp_nonAH.l(h)=0;
 *h_DH.lo(h)=-DH_max_cap;

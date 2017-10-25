@@ -55,6 +55,9 @@ equation
            eq_BTES_Den2  energy content of deep part of the building at hour h
            eq_BS_BD      energy flow between the shallow and deep part of the building
 
+           eq_BAC         investment decision equation for Building Advanced Control
+           eq_BAC_savings hourly heat saved by BAC investment for each building
+
            eq_BES1       intial energy in the Battery
            eq_BES2       energy in the Battery at hour h
            eq_BES3       maximum energy in the Battery
@@ -224,6 +227,14 @@ eq_BTES_Den2(h,i) $ (ord(h) gt 1)..
 eq_BS_BD(h,i) $ (BTES_model('BTES_Scap',i) ne 0)..
          link_BS_BD(h,i) =e= sw_BTES*((BTES_Sen(h,i)/BTES_model('BTES_Scap',i)
                               - BTES_Den(h,i)/BTES_model('BTES_Dcap',i))*BTES_model('K_BS_BD',i));
+
+*-----------------BAC constraints-----------------------------------------------
+eq_BAC(i)..
+         B_BAC(i) =l= sw_BAC*B_BITES(i);
+
+eq_BAC_savings(h,i)..
+         h_BAC_savings(h,i) =l= sw_BAC*B_BAC(i)*BAC_savings_factor*h_demand(h,i);
+
 *-----------------Battery constraints-------------------------------------------
 
 eq_BES1(h) $ (ord(h) eq 1)..
@@ -271,6 +282,7 @@ eq_hbalance3(h)..
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
                                      + (sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
+                                     + (sum(i,h_BAC_savings(h,i)))
                                      - h_AbsCInv(h);
 eq_hbalance4(h)..
              h_imp_nonAH(h)=g=sum(i_nonAH_h,h_demand_nonAH(h,i_nonAH_h))
