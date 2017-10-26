@@ -356,7 +356,7 @@ eq_var_cost_existing..
          var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)) + sum(m,PT_exG(m))
                                -sum(h,e_exp_AH(h)*price('exG',h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h))  + PT_DH
-                               - sum(h,h_exp_AH(h)*0.3)
+                               - sum(h,h_exp_AH(h)*DH_export_season(h)*0.3)
                                + sum(h,h_Pana1(h)*utot_cost('P1',h))
                                + sum(h,H_VKA1(h)*utot_cost('HP',h))
                                + sum(h,H_VKA4(h)*utot_cost('HP',h))

@@ -15,6 +15,7 @@ set
 Parameter
         DH_max_cap  Maximum capacity of import from the external district heating system /12000/
         exG_max_cap Maximum capacity of import from the external electricty system /10000/
+        DH_export_season(h) Season during which pricing for DH exports possible
 * Investment costs from WP4_D4.2.1 prestudy report
 * PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 600, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
 * note: check AbsCInv and HP, sources?
@@ -40,6 +41,8 @@ Parameter
 * BAC - Building Advanced Control is assumed to have same lifetime as BTES
          lifT_inv_opt(inv_opt)    Life time of investment options
                      /PV 30, BES 15, HP 25, TES 30, BTES 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25/;
+
+DH_export_season(h) = BAC_savings_period(h)
 
 *--------------Choice of investment options to consider-------------------------
 
