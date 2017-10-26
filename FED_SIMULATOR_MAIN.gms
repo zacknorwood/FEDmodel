@@ -32,6 +32,7 @@ invCost_PV      investment cost of PV
 invCost_BEV     investment cost of battery storage
 invCost_TES     investment cost of thermal energy storage
 invCost_BITES   investment cost of building inertia thermal energy storage
+invCost_BAC     investment cost of building advanced control
 invCost_HP      investment cost of heat pump
 invCost_RMMC    investment cost of connecting MC2 RM
 invCost_AbsCInv investment cost of absorption cooler
@@ -39,6 +40,7 @@ invCost_P2      investment cost of P2
 invCost_TURB    investment cost of turbine
 total_cap_PV_roof   total capacity in kW
 total_cap_PV_facade total capacity in kW
+h_demand_nonAH_sum  total demand for non AH buildings
 ;
 
 invCost_HP = sw_HP*HP_cap.l*cost_inv_opt('HP');
@@ -46,10 +48,12 @@ invCost_PV = sw_PV*sum(BID, sw_PV*PV_cap_roof.l(BID)*cost_inv_opt('PV')) + sw_PV
 invCost_BEV = sw_BES*BES_cap.l*cost_inv_opt('BES');
 invCost_TES = sw_TES*(TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
 invCost_BITES = sw_BTES*cost_inv_opt('BTES')*sum(i,B_BITES.l(i));
+invCost_BAC = sw_BAC*cost_inv_opt('BAC')*sum(i,B_BAC.l(i));
 invCost_RMMC = sw_RMMC*cost_inv_opt('RMMC')*RMMC_inv.l;
 invCost_P2 = sw_P2 * B_P2.l * cost_inv_opt('P2');
 invCost_TURB = sw_TURB * B_TURB.l * cost_inv_opt('TURB');
 invCost_AbsCInv = sw_AbsCInv * (AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
+h_demand_nonAH_sum(h) = sum(i_nonAH_h, h_demand_nonAH(h,i_nonAH_h));
 *total_cap_PV_roof=sum(BID, PV_cap_roof.l(BID));
 *total_cap_PV_facade=sum(BID, PV_cap_facade.l(BID));
 
@@ -79,7 +83,8 @@ execute_unload 'GtoM' el_demand, h_demand, c_demand, c_demand_AH, el_price, h_pr
                       h_HP, e_HP, c_HP, HP_cap, invCost_HP,
                       TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES, TES_dis_eff, TES_chr_eff,
                       BTES_Sch, BTES_Sdis, BTES_Sen, BTES_Den, BTES_Sloss, BTES_Dloss, link_BS_BD,  BTES_dis_eff, BTES_chr_eff, B_BITES, invCost_BITES, BTES_model,
-                      e0_PV, e_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
+                      h_BAC_savings, B_BAC, invCost_BAC, BAC_savings_period,
+                      e_existPV, e_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
                       BES_en, BES_ch, BES_dis, BES_cap, invCost_BEV, BES_dis_eff, BES_ch_eff,
                       FED_PE,
                       FED_CO2,
@@ -88,7 +93,10 @@ execute_unload 'GtoM' el_demand, h_demand, c_demand, c_demand_AH, el_price, h_pr
                       PT_exG, PT_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       model_status
-                      fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new;
+                      fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new
+                      h_demand_nonAH, h_demand, h_demand_nonAH_sum
+                      min_totCost, min_totPE, min_totCO2, min_peakCO2
+                      exist_PV_cap_roof, exist_PV_cap_facade;
 
 execute_unload 'h' h;
 execute_unload 'BID' BID;

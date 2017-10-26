@@ -7,8 +7,8 @@ $Include FED_GET_GDX_FILE
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
-         sup_unit   supply units /PV, HP, BES, TES, BTES, RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP/
-         inv_opt    investment options /PV, HP, BES, TES, BTES, RMMC, P2, TURB, AbsCInv/
+         sup_unit   supply units /PV, HP, BES, TES, BTES,BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP/
+         inv_opt    investment options /PV, HP, BES, TES, BTES,BAC, RMMC, P2, TURB, AbsCInv/
 ;
 
 * the technical limit of import/export on heat and electricty is based on feedback from AH
@@ -30,13 +30,16 @@ Parameter
 * Exchange rate 2015: Eur to SEK = 9.36;
 * HP 700 * 9.36 = 6552 , AbsC 600 * 9.36 * 1.7/0.75= 5616
 * Absorption chiller source: Undersökning av olika kyllösningar - inventering och jämförelse av utlokaliserade kullösnmignar för umeå energi - nils persson 2012
+* BAC costs from AH/CFAB estimates, calculated as average per building cost subtracted with the cost of BTES capability
+*    makes sense because BAC is a more advanced version of the BTES system.
 
          cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC P2 and Turbine
-                     /PV 14196, BES 6000, HP 6552, BTES 35000, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 3430/
+                     /PV 14196, BES 6000, HP 6552, BTES 35000, BAC 315333, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 3430/
 
 * Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
+* BAC - Building Advanced Control is assumed to have same lifetime as BTES
          lifT_inv_opt(inv_opt)    Life time of investment options
-                     /PV 30, BES 15, HP 25, TES 30, BTES 15, RMMC 25, P2 30, TURB 30, AbsCInv 25/;
+                     /PV 30, BES 15, HP 25, TES 30, BTES 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25/;
 
 *--------------Choice of investment options to consider-------------------------
 
@@ -44,6 +47,7 @@ PARAMETERS
          sw_HP        switch to decide whether to operate HP or not
          sw_TES       switch to decide whether whether to operate TES or not
          sw_BTES      switch to decide whether to include building storage or not
+         sw_BAC       switch to decide whether to include Building Advanced Control or not
          sw_BES       switch to decide whether to include Battery storage or not
          sw_PV        switch to decide whether to include solar PV or not
          sw_RMMC      switch to decide whether investment in connecting refrigeration machines at MC2 to KB0
@@ -55,7 +59,8 @@ PARAMETERS
 * 1=in operation, 0=out of operation
 sw_HP = 0;
 sw_TES = 0;
-sw_BTES = 0;
+sw_BTES = 1;
+sw_BAC = 1;
 sw_BES = 0;
 sw_PV = 0;
 sw_RMMC = 0;
@@ -66,11 +71,14 @@ sw_AbsCInv = 0;
 *--------------Existing Solar PV  constants and parameters (existing unit)---------
 
 parameter
-         nPV_ird(h)  Normalized PV irradiance
-         e0_PV(h)    Existing PV power
+         exist_PV_cap_roof(BID)   existing roof PV capacity
+         exist_PV_cap_facade(BID) existing facade PV capacity
 ;
-nPV_ird(h)=nPV_el(h);
-e0_PV(h)=cap_sup_unit('PV')*nPV_ird(h);
+exist_PV_cap_roof(BID) = 0;
+exist_PV_cap_facade(BID) = 0;
+* Source Beskrivning av de tekniska grundforutsattningarna for FED
+exist_PV_cap_roof('28') = 60;
+
 *--------------Existing Thermal boiler constants and parameters (P1)------------
 *This data is imported from MATLAB and stored in MtoG
 
@@ -259,6 +267,12 @@ BTES_Sdis_max(h,i)=1000*Min(BTES_model('BTES_Sdis_hc',i), BTES_model('BTES_Esig'
 *here, it is assumed that BTES_kSloss is the same and the value for the day is used, which means that the loss is over estimated
 BTES_kSloss(i)= BTES_model('kloss_Sday',i);
 BTES_kDloss(i)= BTES_model('kloss_D',i);
+
+*--------------BAC parameters---------------------------------------------------
+scalar
+         BAC_savings_factor      Savings from BAC /0.2/
+;
+
 *--------------Battery storage characteristics----------------------------------
 
 scalar
