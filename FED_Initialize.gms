@@ -62,8 +62,8 @@ PARAMETERS
 * 1=in operation, 0=out of operation
 sw_HP = 0;
 sw_TES = 0;
-sw_BTES = 1;
-sw_BAC = 1;
+sw_BTES = 0;
+sw_BAC = 0;
 sw_BES = 0;
 sw_PV = 0;
 sw_RMMC = 0;

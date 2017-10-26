@@ -78,7 +78,7 @@ set i_AH_el(i) buildings considered in the FED system connected the AH el netwro
                                          /
 ;
 *********************SET THE SIMULATION TIME HERE*******************************
-set h(h0) SIMULATION TIME /1*8760/;
+set h(h0) SIMULATION TIME /1442*10202/;
 
 PARAMETERS  HoD(h,d)       Hour of the day
             HoM(h,m)       Hour of the month

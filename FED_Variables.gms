@@ -10,7 +10,7 @@ positive variable
          C_VKA1(h)         cooling power available from VKA1
          el_VKA1(h)        electricity needed by VKA1
 ;
-*el_VKA1.fx(h) $ (min_totCost0 eq 1)  = e0_VKA1(h);
+el_VKA1.fx(h) $ (min_totCost0 eq 1)  = e0_VKA1(h);
 *------------------VKA4 Heatpump related----------------------------------------
 
 positive variable
@@ -18,7 +18,7 @@ positive variable
          C_VKA4(h)         cooling power available from VKA4
          el_VKA4(h)        electricity needed by VKA4
 ;
-*el_VKA4.fx(h) $ (min_totCost0 eq 1)  = e0_VKA4(h);
+el_VKA4.fx(h) $ (min_totCost0 eq 1)  = e0_VKA4(h);
 *------------------Panna1 (if re-dispach is allowed)----------------------------
 
 positive variable
@@ -26,7 +26,7 @@ positive variable
          Panna1_cap           capacity of Panna1
 ;
 Panna1_cap.fx=cap_sup_unit('P1');
-*h_Pana1.fx(h) $ (p1_dispach eq 1)  = h_P1(h);
+h_Pana1.fx(h) $ (p1_dispach eq 0)  = h_P1(h);
 *------------------AbsC(Absorbtion Chiller) related-----------------------------
 
 positive variable
@@ -45,7 +45,7 @@ positive variable
 ;
 *this is the aggregated capacity of five exisiting RM Units
 
-*e_RM.fx(h) $ (min_totCost0 eq 1)  = 0;
+e_RM.fx(h) $ (min_totCost0 eq 1)  = 0;
 RM_cap.fx =cap_sup_unit('RM');
 *------------------MC2 Refrigerator Machine related-----------------------------
 
@@ -63,9 +63,8 @@ positive variable
          c_AAC(h)           cooling power available from the refrigerator
          AAC_cap            capacity of refrigerator
 ;
-*e_AAC.fx(h) $ (min_totCost0 eq 1)  = e0_AAC(h);
+e_AAC.fx(h) $ (min_totCost0 eq 1)  = e0_AAC(h);
 AAC_cap.fx = cap_sup_unit('AAC');
-
 *----------------existing PV----------------------------------------------------
 positive variable
          e_existPV(h)    electricity output of existing PV
@@ -183,7 +182,7 @@ positive variable
          h_imp_nonAH(h)     Imported heat to the AH system
 ;
 * Set maximum import and export to the grid.
-h_imp_AH.up(h)=DH_max_cap;
+h_imp_AH.up(h) $ (min_totCost0 eq 0)=  DH_max_cap;
 
 h_exp_AH.up(h)=DH_max_cap
 *h_DH.lo(h)=-DH_max_cap;
@@ -193,7 +192,7 @@ h_exp_AH.up(h)=DH_max_cap
 variable
          C_DC(h)             cooling from district cooling system
 ;
-C_DC.fx(h)=0;
+*C_DC.fx(h)=0;
 *-------------------------PE and CO2 related -----------------------------------
 
 variable

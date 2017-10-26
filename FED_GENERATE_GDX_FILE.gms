@@ -1,11 +1,11 @@
 ******************************************************************************
-*-----------------------GENERATE GDX FILES------------------------------------
-*-----------------------------------------------------------------------------
+*-----------------------GENERATE GDX FILES--------------------------------------
+*-------------------------------------------------------------------------------
 
 *THIS ROUTINE IS USED TO GENERATE INPUT DATA USED IN THE MAIN MODEL IN GDX FORMAT
 
-*----------------PREPARE THE FULL INPUT DATA-------------------------------
-SET h0 length of the input data in hours /1*17544/
+*----------------PREPARE THE FULL INPUT DATA------------------------------------
+SET h0 length of the input data in hours  /1*17520/
     i buildings considered in the FED system
                                           /Kemi, Vassa1, Vassa2-3, Vassa4-15, Phus,
                                            Bibliotek, SSPA, NyaMatte, Studentbostader, Kraftcentral,
@@ -16,8 +16,8 @@ SET h0 length of the input data in hours /1*17544/
                                            VOV1, Arkitektur, VOV2, Karhus_studenter, Chabo
                                           /
 *h0                                   /1*8760/
-    m   Number of month                  /1*12/
-    d   Number of days                   /1*365/
+    m   Number of month                   /1*12/
+    d   Number of days                    /1*365/
     BID Building IDs used for PV calculations /1*70, 75, 76/
 ;
 
@@ -32,7 +32,7 @@ $LOAD HoM
 $GDXIN
 *----------------Load FED electricty demand-------------------------------------
 
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\FED_el_demand_new.xlsx par=el_demand rng=2016_2017_el_gams!A1:AJ8761
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\FED_el_demand_new.xlsx par=el_demand rng=2016_2017_el_gams!A1:AJ17520
 PARAMETERS  el_demand(h0,i)      ELECTRICITY DEMAND IN THE FED BUILDINGS
 ;
 $GDXIN FED_el_demand_new.gdx
@@ -40,7 +40,7 @@ $LOAD el_demand
 $GDXIN
 *----------------Load FED heat demand-------------------------------------------
 
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\FED_heat_demand_new.xlsx par=h_demand rng=2016_2017_h_gams!A1:AJ8761
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\FED_heat_demand_new.xlsx par=h_demand rng=2016_2017_h_gams!A1:AJ17520
 PARAMETERS  h_demand(h0,i)      Heating DEMAND IN THE FED BUILDINGS
 ;
 $GDXIN FED_heat_demand_new.gdx
@@ -48,7 +48,7 @@ $LOAD h_demand
 $GDXIN
 *----------------Load FED cooling demand----------------------------------------
 
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\FED_cooling_demand_new.xlsx par=c_demand rng=2016_2017_c_gams!A1:AJ8761
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\FED_cooling_demand_new.xlsx par=c_demand rng=2016_2017_c_gams!A1:AJ17520
 PARAMETERS  c_demand(h0,i)      Cooling DEMAND IN THE FED BUILDINGS
 ;
 $GDXIN FED_cooling_demand_new.gdx
@@ -56,13 +56,13 @@ $LOAD c_demand
 $GDXIN
 *----------------HEAT GENERATION FROM THERMAL BOILER (TB) AND FUEL GAS CONDENCER (FGC)
 
-$call =xls2gms "I=Input_data_FED_SIMULATOR\Panna1 2016-2017.xls" R=2016_2017_qB!A4:B8764 "O=qB1.gdx"
+$call =xls2gms "I=Input_data_FED_SIMULATOR\Panna1 2016-2017.xls" R=2016_2017_qB!A4:B17523 "O=qB1.gdx"
 Parameter qB1(h0) PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
 /
 $include qB1.gdx
 /;
 qB1(h0)=1000*qB1(h0);
-$call =xls2gms "I=Input_data_FED_SIMULATOR\Panna1 2016-2017.xls" R=2016_2017_qF!A4:B8764 "O=qF1.gdx"
+$call =xls2gms "I=Input_data_FED_SIMULATOR\Panna1 2016-2017.xls" R=2016_2017_qF!A4:B17523 "O=qF1.gdx"
 Parameter qF1(h0) PRIMARY HEAT PRODUCED FROM THE FUEL GAS CONDENCER
 /
 $include qF1.gdx
@@ -73,7 +73,7 @@ Parameter h_P1(h0) Total HEAT PRODUCED FROM Panna1
 h_P1(h0)=qB1(h0) + qF1(h0);
 *----------------ELECTRICITY PRICE----------------------------------------------
 
-$call =xls2gms "I=Input_data_FED_SIMULATOR\el_price_2016-2017.xlsx" R=el_price_gams!A2:B8761 "O=el_price.gdx"
+$call =xls2gms "I=Input_data_FED_SIMULATOR\el_price_2016-2017.xlsx" R=el_price_gams!A2:B17521 "O=el_price.gdx"
 Parameter el_price(h0) ELECTRICTY PRICE IN THE SYSTEM
 /
 $include el_price.gdx
@@ -96,7 +96,7 @@ h_price(h0)           heat price by Goteborg Energi in 2016 (NB: 2017 is a copy 
 ;
 *----------------outdoor temprature---------------------------------------------
 
-$call =xls2gms "I=Input_data_FED_SIMULATOR\tout_2016-2017_new.xlsx" R=tout_2016-2017_gams!A2:E8761 "O=tout.gdx"
+$call =xls2gms "I=Input_data_FED_SIMULATOR\tout_2016-2017_new.xlsx" R=tout_2016-2017_gams!A2:B17521 "O=tout.gdx"
 Parameter tout(h0) outdoor temperature as obtained from metry
 /
 $include tout.gdx
@@ -104,7 +104,7 @@ $include tout.gdx
 *----------------PV data--------------------------------------------------------
 
 *Load facade solar irradiance
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceFacades.xlsx Squeeze=N par=G_facade rng='TotalFlux(kWhperm2)'!A1:BU8785 trace=3
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceFacades.xlsx Squeeze=N par=G_facade rng='TotalFlux(kWhperm2)'!A1:BU17520 trace=3
 PARAMETERS  G_facade(h0,BID) irradiance on building facades;
 $GDXIN irradianceFacades.gdx
 $LOAD G_facade
@@ -118,7 +118,7 @@ $LOAD area_facade_max
 $GDXIN
 
 *Load roof solar irradiance
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceRoofs.xlsx Squeeze=N par=G_roof rng='TotalFlux(kWhperm2)'!A1:BU8785 trace=3
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\irradianceRoofs.xlsx Squeeze=N par=G_roof rng='TotalFlux(kWhperm2)'!A1:BU17520 trace=3
 PARAMETERS  G_roof(h0,BID) irradiance on building roofs;
 $GDXIN irradianceRoofs.gdx
 $LOAD G_roof
@@ -149,29 +149,25 @@ parameter BTES_model(BTES_properties,i);
 $GDXIN UFO_TES_new.gdx
 $LOAD BTES_model
 $GDXIN
-
 *----------------Building Advanced Control parameters---------------------------
-$call =xls2gms "I=Input_data_FED_SIMULATOR\BAC_parameters.xlsx" R=BAC_gams!B2:C8761 "O=BAC_savings_period.gdx"
+$call =xls2gms "I=Input_data_FED_SIMULATOR\BAC_parameters.xlsx" R=BAC_gams!B2:C17520 "O=BAC_savings_period.gdx"
 Parameter BAC_savings_period(h0) ELECTRICTY PRICE IN THE SYSTEM
 /
 $include BAC_savings_period.gdx
 /;
 
-
-*$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\BAC_parameters.xlsx o=BAC_savings_period.gdx par=BAC_savings_period cdim=1 rng=='BAC_gams'!C2:C8784 trace=3
+*$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\BAC_parameters.xlsx o=BAC_savings_period.gdx par=BAC_savings_period cdim=1 rng=='BAC_gams'!C2:C17521 trace=3
 *PARAMETERS  BAC_savings_period(h0) Period indicating when savings from BAC are possible;
 *$GDXIN BAC_savings_period.gdx
 *$LOAD BAC_savings_period
 *$GDXIN
 
-
-*$CALL =xls2gms "I=Input_data_FED_SIMULATOR\BAC_parameters.xlsx" R=BAC_gams!B2:C8760 "O=BAC_savings_period.gdx"
+*$CALL =xls2gms "I=Input_data_FED_SIMULATOR\BAC_parameters.xlsx" R=BAC_gams!B2:C17521 "O=BAC_savings_period.gdx"
 *parameter
 *         BAC_savings_period(h0) Period indicating when savings from BAC are possible
 */
 *$include BAC_savings_period.gdx
 */;
-
 **********************xxxxxxxxxxxxxxxxxxxxxxxxxxxx******************************
 
 *-----------Store input data as GDX to be used in the rest of the routines------

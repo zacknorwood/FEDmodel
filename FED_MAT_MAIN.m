@@ -105,13 +105,13 @@ e_VKA40 = struct('name','e0_VKA4','type','parameter','form','full','val',e0_VKA4
 e_VKA40.uels=H.uels;
 %% GAMS Model input
 
-%optimization option
-option0=0; %Base case, Pannn1, q_AbsC, e_AAC, e_VKA1, e_VKA4 fixed to the measured value
-option1=1; %minimize total cost, PE and CO2 cap
-option2=0; %minimize tottal PE use, investment cost cap
-option3=0; %minimize total CO2 emission, investment cost cap
-option4=0; %minimize total CO2 and PE (compromise), investement cost cap
-option5=0; %minimize CO2 peak, with investement cost cap
+% optimization option
+option0=1;    %Base case, Pannn1, q_AbsC, e_AAC, e_VKA1, e_VKA4 fixed to the measured value
+option1=1;    %minimize total cost, PE and CO2 cap
+option2=0;    %minimize tottal PE use, investment cost cap
+option3=0;    %minimize total CO2 emission, investment cost cap
+option4=0;    %minimize total CO2 and PE (compromise), investement cost cap
+option5=0;    %minimize CO2 peak, with investement cost cap
 p1_dispach=0; %option to dispach pann1 or not
 
 temp_optn0 = struct('name','min_totCost0','type','parameter','form','full','val',option0);

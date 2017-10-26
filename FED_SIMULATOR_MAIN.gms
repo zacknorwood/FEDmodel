@@ -90,6 +90,7 @@ execute_unload 'GtoM' el_demand, h_demand, c_demand, c_demand_AH, el_price, h_pr
                       FED_CO2,
                       e_imp_AH, e_exp_AH, e_imp_nonAH,
                       h_imp_AH, h_exp_AH, h_imp_nonAH,
+                      C_DC,
                       PT_exG, PT_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       model_status
