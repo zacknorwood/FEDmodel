@@ -61,16 +61,16 @@ Parameter qB1(h0) PRIMARY HEAT PRODUCED FROM THE THERMAL BOILER
 /
 $include qB1.gdx
 /;
-
+qB1(h0)=1000*qB1(h0);
 $call =xls2gms "I=Input_data_FED_SIMULATOR\Panna1 2016-2017.xls" R=2016_2017_qF!A4:B8764 "O=qF1.gdx"
 Parameter qF1(h0) PRIMARY HEAT PRODUCED FROM THE FUEL GAS CONDENCER
 /
 $include qF1.gdx
 /;
-
+qF1(h0)=1000*qF1(h0);
 Parameter h_P1(h0) Total HEAT PRODUCED FROM Panna1
 ;
-h_P1(h0)=1000*(qB1(h0) + qF1(h0));
+h_P1(h0)=qB1(h0) + qF1(h0);
 *----------------ELECTRICITY PRICE----------------------------------------------
 
 $call =xls2gms "I=Input_data_FED_SIMULATOR\el_price_2016-2017.xlsx" R=el_price_gams!A2:B8761 "O=el_price.gdx"
@@ -156,7 +156,7 @@ execute_unload 'Input_data_FED_SIMULATOR\FED_INPUT_DATA'
                             i, BID, h0, m, d, BTES_properties,
                             HoD, HoM,
                             el_demand, h_demand, c_demand,
-*                            qB1, qF1, h_P1,
+                            qB1, qF1, h_P1,
                             el_price, h_price, tout,
                             nPV_el,
                             G_facade, area_facade_max, G_roof, area_roof_max,

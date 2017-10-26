@@ -35,7 +35,7 @@ positive variable
          AbsC_cap            capacity of AbsC
 ;
 AbsC_cap.fx = cap_sup_unit('AbsC');
-h_AbsC.fx(h) $ (min_totCost0 eq 1) = q0_AbsC(h);
+h_AbsC.fx(h) $ (min_totCost0 eq 1) = h0_AbsC(h);
 *------------------Refrigerator Machine related---------------------------------
 
 positive variable

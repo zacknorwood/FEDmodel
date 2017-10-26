@@ -55,18 +55,21 @@ invCost_AbsCInv = sw_AbsCInv * (AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
 
 ********************Output data from GAMS to MATLAB*********************
 *execute_unload %matout%;
-parameter FED_PE_ft(h)  Primary energy as a function of time
+parameter
+*FED_PE_ft(h)  Primary energy as a function of time
           model_status  Model status
+          fuel_P1(h)  Fuel input to P1
 ;
-FED_PE_ft(h)=(e_imp_AH.l(h)-e_exp_AH.l(h) + e_imp_nonAH.l(h))*PEF_exG(h)
-             + e0_PV(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
-             + (h_imp_AH.l(h)-h_exp_AH.l(h) + h_imp_nonAH.l(h))*PEF_DH(h) + fuel_P1(h)*PEF_P1 + fuel_P2.l(h)*PEF_P1;
-
+*FED_PE_ft(h)=(e_imp_AH.l(h)-e_exp_AH.l(h) + e_imp_nonAH.l(h))*PEF_exG(h)
+*             + e0_PV(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
+*             + (h_imp_AH.l(h)-h_exp_AH.l(h) + h_imp_nonAH.l(h))*PEF_DH(h) + fuel_P1(h)*PEF_P1 + fuel_P2.l(h)*PEF_P1;
+*
+fuel_P1(h)=h_Pana1.l(h)/P1_eff;
 model_status=total.modelstat;
 
 execute_unload 'GtoM' el_demand, h_demand, c_demand, c_demand_AH, el_price, h_price, tout, area_facade_max, area_roof_max, nPV_el, BTES_model,
-                      FED_PE0, FED_CO20, CO2F_PV, PEF_PV, CO2F_P1, PEF_P1, CO2F_P2, PEF_P2, CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,
-                      h_Pana1, q_p1_TB, q_p1_FGC, fuel_P1, P1_eff,
+                      CO2F_PV, PEF_PV, CO2F_P1, PEF_P1, CO2F_P2, PEF_P2, CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,
+                      h_Pana1, qB1, qF1, fuel_P1, P1_eff,
                       H_VKA1, C_VKA1, el_VKA1,
                       H_VKA4, C_VKA4, el_VKA4,
                       B_P2, invCost_P2, fuel_P2, h_P2, H_P2T, B_TURB, invCost_TURB, e_TURB, h_TURB, P2_eff, TURB_eff,
