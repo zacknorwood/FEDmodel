@@ -241,7 +241,7 @@ eq_BAC(i)..
          B_BAC(i) =l= sw_BAC*B_BITES(i);
 
 eq_BAC_savings(h,i)..
-         h_BAC_savings(h,i) =l= sw_BAC*B_BAC(i)*BAC_savings_factor*h_demand(h,i);
+         h_BAC_savings(h,i) =l= sw_BAC*BAC_savings_period(h)*B_BAC(i)*BAC_savings_factor*h_demand(h,i);
 
 *-----------------Battery constraints-------------------------------------------
 
@@ -278,12 +278,6 @@ eq_PV_cap_facade(BID)..
              PV_cap_facade(BID) =l= area_facade_max(BID)*PV_cap_density;
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
-*eq_hbalance(h)..
-*             h_imp_AH(h) =g= (sum(i,h_demand(h,i)) + h_AbsC(h) + TES_ch(h)/TES_chr_eff + sum(i,BTES_Sch(h,i))/BTES_chr_eff + h_AbsCInv(h))
-*                             - (h_Pana1(h) + H_VKA1(h) + H_VKA4(h) + TES_dis_eff*TES_dis(h) + sum(i,BTES_Sdis(h,i))*BTES_dis_eff);
-*eq_hbalance2(h)..
-*             h_exp_AH(h) =g= -(sum(i,h_demand(h,i)) + h_AbsC(h) + TES_ch(h)/TES_chr_eff + sum(i,BTES_Sch(h,i))/BTES_chr_eff + h_AbsCInv(h))
-*                             + (h_Pana1(h) + H_VKA1(h) + H_VKA4(h) + TES_dis_eff*TES_dis(h) + sum(i,BTES_Sdis(h,i))*BTES_dis_eff);
 eq_hbalance3(h)..
              sum(i,h_demand(h,i)) =l=h_imp_AH(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + H_VKA1(h)
                                      + H_VKA4(h) - h_AbsC(h) + H_P2T(h)

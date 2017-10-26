@@ -94,6 +94,7 @@ PARAMETERS  HoD(h,d)       Hour of the day
             area_roof_max(BID)    irradiance on building facades
             nPV_el(h)             ELECTRICTY OUTPUT FROM A UNIT PV PANAEL
             BTES_model(BTES_properties,i) BUILDING INERTIA TES PROPERTIES
+            BAC_savings_period(h)         Period in which BAC-energy savings are active
 ;
 $GDXIN Input_data_FED_SIMULATOR\FED_INPUT_DATA.gdx
 $LOAD HoD
@@ -110,6 +111,7 @@ $LOAD G_roof
 $LOAD area_roof_max
 $LOAD nPV_el
 $LOAD BTES_model
+$LOAD BAC_savings_period
 $GDXIN
 
 parameters  FED_PE0            Primary energy use in the FED system in the base case
@@ -159,11 +161,13 @@ $LOAD q_p1_TB
 $LOAD q_p1_FGC
 $LOAD fuel_P1
 $LOAD P1_eff
-$LOAD q0_AbsC
-$LOAD e0_AAC
-$LOAD e0_VKA1
-$LOAD e0_VKA4
-$LOAD min_totCost0
+*$LOAD q0_AbsC
+*$LOAD e0_AAC
+*$LOAD e0_VKA1
+*$LOAD e0_VKA4
+*$LOAD min_totCost0
+min_totCost0 = 0;
+
 
 $LOAD min_totCost
 $LOAD min_totPE
