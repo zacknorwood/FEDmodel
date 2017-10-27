@@ -1,8 +1,6 @@
 *******************************************************************************
 *---------------------------Initialize input parameters------------------------
 *******************************************************************************
-
-
 *--------------IMPORT IMPUT DATA TO THE MODEL-----------------------------------
 
 $Include FED_GET_GDX_FILE
@@ -83,16 +81,15 @@ exist_PV_cap_roof(BID) = 0;
 exist_PV_cap_facade(BID) = 0;
 * Source Beskrivning av de tekniska grundforutsattningarna for FED
 exist_PV_cap_roof('28') = 60;
-
 *--------------Existing Thermal boiler constants and parameters (P1)------------
 *This data is imported from MATLAB and stored in MtoG
 
 Parameter
           h_P1(h)     Total heat output from P1
+          P1_eff      Effeciency of P1
 ;
-*P1_eff=0.9;
-h_P1(h)= q_P1_TB(h) + q_P1_FGC(h);
-
+P1_eff=0.9;
+h_P1(h)= qB1(h) + qF1(h);
 *--------------VKA4 constants and parameters------------------------------------
 * Maximum electricty input and the coefficients for VKA1 and VKA4 corresponds to the 800 kW heating capacity for each machine
 *Calculated from historical data
@@ -384,9 +381,9 @@ scalar
          CO2_lim    Desired or limiting value of CO2
 ;
 
-PE_lim=(1-0.3)*sum(h,FED_PE0(h));
-dCO2=smax(h,FED_CO20(h))-CO2_ref;
-CO2_lim=CO2_ref+0.2*dCO2;
+PE_lim=(1-0.3)*PE_tot_ref;
+dCO2=CO2_max-CO2_peak_ref;
+CO2_lim=CO2_peak_ref+0.2*dCO2;
 *--------------Limit on investment----------------------------------------------
 $Ontext
 

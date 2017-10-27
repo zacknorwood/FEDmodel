@@ -1,6 +1,6 @@
-******************************************************************************
-*----------------------------Define equations--------------------------------
-******************************************************************************
+********************************************************************************
+*----------------------------Define equations-----------------------------------
+********************************************************************************
 equation
 
            eq_VKA11     heating generation of VKA4
@@ -47,7 +47,6 @@ equation
            eq_TESdis    discharging rate of the TES
            eq_TESch     charging rate of the TES
            eq_TESinv    investment decision for TES
-*eq_TESmininv minimum possible investment in TES
 
            eq_BTES_Sch   charging rate of shallow part the building
            eq_BTES_Sdis  discharging rate of shallow part the building
@@ -70,14 +69,10 @@ equation
            eq_PV_cap_roof capacity of installed PV on roofs
            eq_PV_cap_facade capacity of installed PV on facades
 
-*           eq_hbalance   equation for imported heat to AH
-*           eq_hbalance2  equation for exported heat from AH
            eq_hbalance3  heating supply-demand balance excluding AH buildings
            eq_hbalance4  heating supply-demand balance excluding nonAH buildings
            eq_cbalance  Balance equation cooling
 
-*           eq_ebalance   electrical import equation to AH
-*           eq_ebalance2  electrical export equation from AH
            eq_ebalance3  supply demand balance equation from AH
            eq_ebalance4  electrical import equation to nonAH
 
@@ -135,7 +130,7 @@ eq_AbsC1(h)..
              c_AbsC(h) =e= AbsC_COP*h_AbsC(h);
 *AbsC_eff;
 eq_AbsC2(h)..
-             h_AbsC(h) =l= AbsC_cap;
+             c_AbsC(h) =l= AbsC_cap;
 *----------Refrigerator Machine equations (electricity => cooling)--------------
 
 eq_RM1(h)..
@@ -150,20 +145,19 @@ eq_RMMC1(h)..
 eq_RMMC2(h)..
          c_RMMC(h) =l= RMMC_inv * RMMC_cap;
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
+
 eq_ACC1(h)..
              c_AAC(h) =e= AAC_COP*e_AAC(h);
 eq_ACC2(h)..
              c_AAC(h) =l= AAC_cap;
 
-eq_ACC3(h)$(tout(h)>AAC_TempLim)..
-             c_AAC(h) =l= 0;
-
+eq_ACC3(h)$(tout(h)>AAC_TempLim and min_totCost0 eq 0)..
+             c_AAC(h)=l= 0;
 *----------------Equations for existing PV--------------------------------------
+
 eq_existPV(h)..
              e_existPV(h) =e= eta_Inverter * (sum(BID, exist_PV_cap_roof(BID) * PV_power_roof(h,BID))
                                               + sum(BID, exist_PV_cap_facade(BID) * PV_power_facade(h,BID)));
-
-
 *****************For new investment optons-------------------------------------
 *----------------Absorption Chiller Investment----------------------------------
 
