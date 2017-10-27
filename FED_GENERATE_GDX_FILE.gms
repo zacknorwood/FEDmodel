@@ -150,11 +150,25 @@ $LOAD BTES_model
 $GDXIN
 *----------------Building Advanced Control parameters---------------------------
 $call =xls2gms "I=Input_data_FED_SIMULATOR\BAC_parameters.xlsx" R=BAC_gams!B2:C17520 "O=BAC_savings_period.gdx"
-Parameter BAC_savings_period(h0) ELECTRICTY PRICE IN THE SYSTEM
+Parameter BAC_savings_period(h0) BAC savings period
 /
 $include BAC_savings_period.gdx
 /;
 
+*----------------DH Export period-----------------------------------------------
+$call =xls2gms "I=Input_data_FED_SIMULATOR\DH_export_season.xlsx" R=DH_export_season!B2:C17520 "O=DH_export_season.gdx"
+Parameter DH_export_season(h0) DH Export season indicating when exports are payed
+/
+$include DH_export_season.gdx
+/;
+
+
+*----------------P1 and P2 dispatchable-----------------------------------------
+$call =xls2gms "I=Input_data_FED_SIMULATOR\P1P2_dispatchable.xlsx" R=P1P2_dispatchable!B2:C17520 "O=P1P2_dispatchable.gdx"
+Parameter P1P2_dispatchable(h0) Time series dictating when P1 and P2 are dispatchable
+/
+$include P1P2_dispatchable.gdx
+/;
 *$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\BAC_parameters.xlsx o=BAC_savings_period.gdx par=BAC_savings_period cdim=1 rng=='BAC_gams'!C2:C17521 trace=3
 *PARAMETERS  BAC_savings_period(h0) Period indicating when savings from BAC are possible;
 *$GDXIN BAC_savings_period.gdx
@@ -178,7 +192,7 @@ execute_unload 'Input_data_FED_SIMULATOR\FED_INPUT_DATA'
                             el_price, h_price, tout,
                             nPV_el,
                             G_facade, area_facade_max, G_roof, area_roof_max,
-                            BTES_model, BAC_savings_period;
+                            BTES_model, BAC_savings_period, DH_export_season, P1P2_dispatchable;
 $Ontext
 
 $Offtext

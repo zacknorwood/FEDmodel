@@ -15,7 +15,6 @@ set
 Parameter
         DH_max_cap  Maximum capacity of import from the external district heating system /12000/
         exG_max_cap Maximum capacity of import from the external electricty system /10000/
-        DH_export_season(h) Season during which pricing for DH exports possible
 * Investment costs from WP4_D4.2.1 prestudy report
 * PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 600, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
 * note: check AbsCInv and HP, sources?
@@ -42,8 +41,6 @@ Parameter
          lifT_inv_opt(inv_opt)    Life time of investment options
                      /PV 30, BES 15, HP 25, TES 30, BTES 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25/;
 
-DH_export_season(h) = BAC_savings_period(h)
-
 *--------------Choice of investment options to consider-------------------------
 
 PARAMETERS
@@ -67,7 +64,7 @@ sw_BAC = 0;
 sw_BES = 0;
 sw_PV = 0;
 sw_RMMC = 0;
-sw_P2 = 0;
+sw_P2 = 1;
 sw_TURB = 0;
 sw_AbsCInv = 0;
 ***************Existing units***************************************************
@@ -146,8 +143,9 @@ scalar
 *----------------Panna 2  ------------------------------------------------------
 
 scalar
-      P2_eff   Efficiency of P2 /0.9/
-      h_P2_cap Capacity of P2 /6000/
+      P2_eff                 Efficiency of P2 /0.9/
+      h_P2_cap               Capacity of P2 /6000/
+      P2_reseach_prod        Heat output during research /1500/
 ;
 *----------------Refurbished turbine for Panna 2  ------------------------------
 

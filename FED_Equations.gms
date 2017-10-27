@@ -10,7 +10,8 @@ equation
            eq_VKA42     cooling generation of VKA4
            eq_VKA43     maximum electricity usage by VKA4
 
-           eq_h_Pana1   Eqauation related to Panna1 heat production
+           eq_h_Pana1            Eqauation related to Panna1 heat production
+           eq_h_Panna1_dispatch  Equation determining when Panna1 is dispatchable
 
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
@@ -30,8 +31,9 @@ equation
            eq1_AbsCInv  Production equation
            eq2_AbsCInv  Investment capacity
 
-           eq1_P2       production equation for P2
-           eq2_P2       investment equation for P2
+           eq1_P2                production equation for P2
+           eq2_P2                investment equation for P2
+           eq_h_Panna2_research  P2 production constraint during research
 
            eq1_TURB     production equation for turbine-gen
            eq2_TURB     energy consumption equation for turbine-gen
@@ -124,6 +126,9 @@ eq_VKA43(h)..
 
 eq_h_Pana1(h)..
         h_Pana1(h)=l=Panna1_cap;
+
+eq_h_Panna1_dispatch(h)$(P1P2_dispatchable(h)=0)..
+         h_Pana1(h) =e= h_P1(h);
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 
 eq_AbsC1(h)..
@@ -172,6 +177,9 @@ eq1_P2(h)..
          h_P2(h) =e= sw_P2 * fuel_P2(h) * P2_eff;
 eq2_P2(h)..
          h_P2(h) =l= B_P2 * h_P2_cap;
+
+eq_h_Panna2_research(h)$(P1P2_dispatchable(h)=0)..
+         h_P2(h) =e= B_P2 * sw_P2 * P2_reseach_prod;
 *----------------Refurb turbine equations --------------------------------------
 
 eq1_TURB(h)..
