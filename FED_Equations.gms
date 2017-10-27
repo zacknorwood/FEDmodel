@@ -47,7 +47,6 @@ equation
            eq_TESdis    discharging rate of the TES
            eq_TESch     charging rate of the TES
            eq_TESinv    investment decision for TES
-*eq_TESmininv minimum possible investment in TES
 
            eq_BTES_Sch   charging rate of shallow part the building
            eq_BTES_Sdis  discharging rate of shallow part the building
@@ -155,11 +154,10 @@ eq_ACC2(h)..
 eq_ACC3(h)$(tout(h)>AAC_TempLim and min_totCost0 eq 0)..
              c_AAC(h)=l= 0;
 *----------------Equations for existing PV--------------------------------------
+
 eq_existPV(h)..
              e_existPV(h) =e= eta_Inverter * (sum(BID, exist_PV_cap_roof(BID) * PV_power_roof(h,BID))
                                               + sum(BID, exist_PV_cap_facade(BID) * PV_power_facade(h,BID)));
-
-
 *****************For new investment optons-------------------------------------
 *----------------Absorption Chiller Investment----------------------------------
 

@@ -15,9 +15,8 @@ SET h0 length of the input data in hours  /1*17520/
                                            Fysik_Soliden, Idelara, CTP, Karhuset, JSP,
                                            VOV1, Arkitektur, VOV2, Karhus_studenter, Chabo
                                           /
-*h0                                   /1*8760/
-    m   Number of month                   /1*12/
-    d   Number of days                    /1*365/
+    m   Number of month                   /1*24/
+    d   Number of days                    /1*730/
     BID Building IDs used for PV calculations /1*70, 75, 76/
 ;
 

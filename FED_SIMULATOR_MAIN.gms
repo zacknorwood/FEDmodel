@@ -71,8 +71,15 @@ parameter
 fuel_P1(h)=h_Pana1.l(h)/P1_eff;
 model_status=total.modelstat;
 
-execute_unload 'GtoM' el_demand, h_demand, c_demand, c_demand_AH, el_price, h_price, tout, area_facade_max, area_roof_max, nPV_el, BTES_model,
-                      CO2F_PV, PEF_PV, CO2F_P1, PEF_P1, CO2F_P2, PEF_P2, CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,
+execute_unload 'GtoM' min_totCost0, min_totCost, min_totPE, min_totCO2, min_peakCO2,
+                      el_demand, h_demand, c_demand, c_demand_AH,
+                      e_imp_AH, e_exp_AH, e_imp_nonAH,
+                      h_imp_AH, h_exp_AH, h_imp_nonAH,
+                      C_DC,
+                      h_demand_nonAH, h_demand, h_demand_nonAH_sum
+                      el_price, h_price, tout,
+                       BTES_model,
+                      FED_PE, FED_CO2, CO2F_PV, PEF_PV, CO2F_P1, PEF_P1, CO2F_P2, PEF_P2, CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,
                       h_Pana1, qB1, qF1, fuel_P1, P1_eff,
                       H_VKA1, C_VKA1, el_VKA1,
                       H_VKA4, C_VKA4, el_VKA4,
@@ -84,20 +91,12 @@ execute_unload 'GtoM' el_demand, h_demand, c_demand, c_demand_AH, el_price, h_pr
                       TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES, TES_dis_eff, TES_chr_eff,
                       BTES_Sch, BTES_Sdis, BTES_Sen, BTES_Den, BTES_Sloss, BTES_Dloss, link_BS_BD,  BTES_dis_eff, BTES_chr_eff, B_BITES, invCost_BITES, BTES_model,
                       h_BAC_savings, B_BAC, invCost_BAC, BAC_savings_period,
-                      e_existPV, e_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
+                      area_facade_max, area_roof_max, exist_PV_cap_roof, exist_PV_cap_facade, e_existPV, e_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
                       BES_en, BES_ch, BES_dis, BES_cap, invCost_BEV, BES_dis_eff, BES_ch_eff,
-                      FED_PE,
-                      FED_CO2,
-                      e_imp_AH, e_exp_AH, e_imp_nonAH,
-                      h_imp_AH, h_exp_AH, h_imp_nonAH,
-                      C_DC,
                       PT_exG, PT_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
-                      model_status
-                      fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new
-                      h_demand_nonAH, h_demand, h_demand_nonAH_sum
-                      min_totCost, min_totPE, min_totCO2, min_peakCO2
-                      exist_PV_cap_roof, exist_PV_cap_facade;
+                      fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
+                      model_status;
 
 execute_unload 'h' h;
 execute_unload 'BID' BID;

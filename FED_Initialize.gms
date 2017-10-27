@@ -81,7 +81,6 @@ exist_PV_cap_roof(BID) = 0;
 exist_PV_cap_facade(BID) = 0;
 * Source Beskrivning av de tekniska grundforutsattningarna for FED
 exist_PV_cap_roof('28') = 60;
-
 *--------------Existing Thermal boiler constants and parameters (P1)------------
 *This data is imported from MATLAB and stored in MtoG
 

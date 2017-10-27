@@ -192,7 +192,7 @@ h_exp_AH.up(h)=DH_max_cap
 variable
          C_DC(h)             cooling from district cooling system
 ;
-*C_DC.fx(h)=0;
+C_DC.fx(h) $ (min_totCost0 eq 0)=0;
 *-------------------------PE and CO2 related -----------------------------------
 
 variable
