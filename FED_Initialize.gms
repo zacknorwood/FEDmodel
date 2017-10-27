@@ -311,16 +311,23 @@ parameter
          co2_cost(sup_unit,h)    CO2 cost
          utot_cost(sup_unit,h)   unit total cost of every production unit
          PT_cost(sup_unit)       Power tariff SEK per kW per month
-
+         el_sell_price(h) Sell price for electricty
+         el_buy_price(h)  Buy price for electricty
+         net_tariff              Network tariff   /0.0031/
+         unit_avrg_prof          Average profit pr kWh  /0.011/
+         ursprungsgaranti       /0.01/
+         e_tax                   Energy tax    /0.325/
 *         USD_to_SEK_2015 Exchange rate USD to SED 2015 /8.43/
          EUR_to_SEK_2015 Exchange rate EUR to SEK in 2015 /9.36/
          kilo Factor of 1000 conversion to kW from MW for example /1000/
 
 ;
-* 0.0031 is grid tariff per kWh from Göteborg Energi home page
-price('exG',h)=0.0031 + el_price(h);
+* 0.0031 is grid tariff per kWh from Göteborg Energi home page; 0.011sek/kWh average profit for GE for large customers
+
+price('exG',h)=net_tariff + unit_avrg_prof + el_price(h);
 price('DH',h)=h_price(h);
 
+el_sell_price(h) =el_price(h) - unit_avrg_prof - net_tariff  +  el_cirtificate(h) + ursprungsgaranti;
 *the data is obtained from Energimyndigheten 2015 wood chips for District Heating Uses
 fuel_cost('CHP',h)=0.186;
 * Divided by efficiency to get actual fuel use when multiplying with heat output
@@ -363,7 +370,7 @@ fix_cost('BES')= 51000 / kilo * EUR_to_SEK_2015;
 
 *From Göteborg Energi homepage, tax on a kWh electricity purchased in SEK
 en_tax(sup_unit,h)=0;
-en_tax('exG',h)=0.295;
+en_tax('exG',h)=e_tax;
 
 co2_cost(sup_unit,h)=0;
 *Power tariffs from Göteborg Energi
