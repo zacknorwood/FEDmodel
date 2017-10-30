@@ -10,7 +10,10 @@ equation
            eq_VKA42     cooling generation of VKA4
            eq_VKA43     maximum electricity usage by VKA4
 
-           eq_h_Pana1   Eqauation related to Panna1 heat production
+
+           eq_h_Pana1            Eqauation related to Panna1 heat production
+           eq_h_Panna1_dispatch  Equation determining when Panna1 is dispatchable
+
 
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
@@ -30,8 +33,9 @@ equation
            eq1_AbsCInv  Production equation
            eq2_AbsCInv  Investment capacity
 
-           eq1_P2       production equation for P2
-           eq2_P2       investment equation for P2
+           eq1_P2                production equation for P2
+           eq2_P2                investment equation for P2
+           eq_h_Panna2_research  P2 production constraint during research
 
            eq1_TURB     production equation for turbine-gen
            eq2_TURB     energy consumption equation for turbine-gen
@@ -124,6 +128,10 @@ eq_VKA43(h)..
 
 eq_h_Pana1(h)..
         h_Pana1(h)=l=Panna1_cap;
+
+eq_h_Panna1_dispatch(h)$(P1P2_dispatchable(h)=0)..
+         h_Pana1(h) =e= h_P1(h);
+
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 
 eq_AbsC1(h)..
@@ -172,6 +180,10 @@ eq1_P2(h)..
          h_P2(h) =e= sw_P2 * fuel_P2(h) * P2_eff;
 eq2_P2(h)..
          h_P2(h) =l= B_P2 * h_P2_cap;
+
+eq_h_Panna2_research(h)$(P1P2_dispatchable(h)=0)..
+         h_P2(h) =e= B_P2 * sw_P2 * P2_reseach_prod;
+
 *----------------Refurb turbine equations --------------------------------------
 
 eq1_TURB(h)..
@@ -229,13 +241,14 @@ eq_BTES_Den2(h,i) $ (ord(h) gt 1)..
 eq_BS_BD(h,i) $ (BTES_model('BTES_Scap',i) ne 0)..
          link_BS_BD(h,i) =e= sw_BTES*((BTES_Sen(h,i)/BTES_model('BTES_Scap',i)
                               - BTES_Den(h,i)/BTES_model('BTES_Dcap',i))*BTES_model('K_BS_BD',i));
-*-----------------BAC constraints-----------------------------------------------
 
+*-----------------BAC constraints-----------------------------------------------
 eq_BAC(i)..
          B_BAC(i) =l= sw_BAC*B_BITES(i);
 
 eq_BAC_savings(h,i)..
          h_BAC_savings(h,i) =l= sw_BAC*BAC_savings_period(h)*B_BAC(i)*BAC_savings_factor*h_demand(h,i);
+
 *-----------------Battery constraints-------------------------------------------
 
 eq_BES1(h) $ (ord(h) eq 1)..
@@ -367,6 +380,7 @@ eq_var_cost_new..
                            + sum(h,h_P2(h)*utot_cost('P2',h))
                            + sum(h,e_TURB(h)*utot_cost('TURB',h))
                            + sum(h,c_AbsCInv(h)*utot_cost('AbsCInv',h));
+
 eq_Ainv_cost..
           Ainv_cost =e=
                 + HP_cap*cost_inv_opt('HP')/lifT_inv_opt('HP')

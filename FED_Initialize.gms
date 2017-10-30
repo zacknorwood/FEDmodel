@@ -42,7 +42,6 @@ Parameter
          lifT_inv_opt(inv_opt)    Life time of investment options
                      /PV 30, BES 15, HP 25, TES 30, BTES 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25/;
 
-DH_export_season(h) = BAC_savings_period(h)
 
 *--------------Choice of investment options to consider-------------------------
 
@@ -146,8 +145,9 @@ scalar
 *----------------Panna 2  ------------------------------------------------------
 
 scalar
-      P2_eff   Efficiency of P2 /0.9/
-      h_P2_cap Capacity of P2 /6000/
+      P2_eff                 Efficiency of P2 /0.9/
+      h_P2_cap               Capacity of P2 /6000/
+      P2_reseach_prod        Heat output during research /1500/
 ;
 *----------------Refurbished turbine for Panna 2  ------------------------------
 
@@ -322,6 +322,7 @@ parameter
          kilo Factor of 1000 conversion to kW from MW for example /1000/
 
 ;
+
 * 0.0031 is grid tariff per kWh from Göteborg Energi home page; 0.011sek/kWh average profit for GE for large customers
 
 price('exG',h)=net_tariff + unit_avrg_prof + el_price(h);
