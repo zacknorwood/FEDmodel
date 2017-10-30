@@ -39,8 +39,8 @@ while NEW_data==1
     save('e0_VKA1','e0_VKA1');
     save('e0_VKA4','e0_VKA4');
     
-    load FED_PE0;
-    load FED_CO20;
+%    load FED_PE0;
+%    load FED_CO20;
     break;
 end
 
@@ -66,7 +66,7 @@ tlen=24*365*2;                %length the time series data
 H.name='H0';
 H.uels=num2cell(1:tlen);
 %H.uels=(str);
-
+return
 %Data to be exported to GAMS
 %FED_PE_0 = struct('name','FED_PE0','type','parameter','form','full','val',FED_PE0);
 %FED_PE_0.uels=H.uels;
