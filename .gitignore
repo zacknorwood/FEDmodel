@@ -55,3 +55,7 @@ FED_PROJECT.gpr
 *.pdf
 *.emf
 *.db
+*.py
+*.py
+*.py
+*.gpr

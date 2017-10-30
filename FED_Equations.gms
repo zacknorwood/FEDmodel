@@ -10,8 +10,10 @@ equation
            eq_VKA42     cooling generation of VKA4
            eq_VKA43     maximum electricity usage by VKA4
 
+
            eq_h_Pana1            Eqauation related to Panna1 heat production
            eq_h_Panna1_dispatch  Equation determining when Panna1 is dispatchable
+
 
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
@@ -129,6 +131,7 @@ eq_h_Pana1(h)..
 
 eq_h_Panna1_dispatch(h)$(P1P2_dispatchable(h)=0)..
          h_Pana1(h) =e= h_P1(h);
+
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 
 eq_AbsC1(h)..
@@ -180,6 +183,7 @@ eq2_P2(h)..
 
 eq_h_Panna2_research(h)$(P1P2_dispatchable(h)=0)..
          h_P2(h) =e= B_P2 * sw_P2 * P2_reseach_prod;
+
 *----------------Refurb turbine equations --------------------------------------
 
 eq1_TURB(h)..
@@ -260,7 +264,6 @@ eq_BES_ch(h) ..
 eq_BES_dis(h)..
 *Assuming 1C discharging
              BES_dis(h)=l=sw_BES*BES_en(h);
-
 *-----------------Solar PV equations--------------------------------------------
 ** Original Matlab Code (P is per WattPeak of Solar PV)
 *P(index)=
@@ -357,7 +360,7 @@ eq_fix_cost_new..
                            + fix_cost('AbsCInv');
 eq_var_cost_existing..
          var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)) + sum(m,PT_exG(m))
-                               -sum(h,e_exp_AH(h)*price('exG',h))
+                               -sum(h,e_exp_AH(h)*el_sell_price(h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h))  + PT_DH
                                - sum(h,h_exp_AH(h)*DH_export_season(h)*0.3)
                                + sum(h,h_Pana1(h)*utot_cost('P1',h))
@@ -390,7 +393,6 @@ eq_Ainv_cost..
                 + B_P2 * cost_inv_opt('P2')/lifT_inv_opt('P2')
                 + B_TURB * cost_inv_opt('TURB')/lifT_inv_opt('TURB')
                 + AbsCInv_cap * cost_inv_opt('AbsCInv')/lifT_inv_opt('AbsCInv');
-
 eq_totCost..
          totCost =e= fix_cost_existing + var_cost_existing
                      + fix_cost_new + var_cost_new + Ainv_cost;

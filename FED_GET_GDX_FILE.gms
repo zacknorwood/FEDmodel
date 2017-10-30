@@ -84,12 +84,14 @@ PARAMETERS  HoD(h,d)       Hour of the day
             HoM(h,m)       Hour of the month
             qB1(h)         Heat out from boiler 1 (Panna1)
             qF1(h)         Heat out from FGC (Panna1)
-            h_P1(h)         Total heat from Panna1
-            el_demand(h,i) ELECTRICITY DEMAND IN THE FED BUILDINGS
-            h_demand(h,i)  Heating DEMAND IN THE FED BUILDINGS
-            c_demand(h,i)  Cooling DEMAND IN THE FED BUILDINGS
-            el_price(h)    ELECTRICTY PRICE IN THE EXTERNAL GRID
-            h_price(h)     Heat PRICE IN THE IN THE EXTERNAL DH SYSTEM
+            h_P1(h)           Total heat from Panna1
+            el_demand(h,i)    ELECTRICITY DEMAND IN THE FED BUILDINGS
+            h_demand(h,i)     Heating DEMAND IN THE FED BUILDINGS
+            c_demand(h,i)     Cooling DEMAND IN THE FED BUILDINGS
+            el_price(h)       ELECTRICTY PRICE IN THE EXTERNAL GRID
+            el_cirtificate(h) Electricity cirtificate for selling renewable energy sek per kwh
+            h_price(h)        Heat PRICE IN THE IN THE EXTERNAL DH SYSTEM
+
             tout(h)               OUT DOOR TEMPRATTURE
             G_facade(h,BID)       irradiance on building facades
             area_facade_max(BID)  irradiance on building facades
@@ -100,6 +102,7 @@ PARAMETERS  HoD(h,d)       Hour of the day
             BAC_savings_period(h)         Period in which BAC-energy savings are active
             DH_export_season(h)           Period in which DH exports are payed for
             P1P2_dispatchable(h)          Period during which P1 and P2 are dispatchable
+
 ;
 $GDXIN Input_data_FED_SIMULATOR\FED_INPUT_DATA.gdx
 $LOAD HoD
@@ -111,6 +114,7 @@ $LOAD el_demand
 $LOAD h_demand
 $LOAD c_demand
 $LOAD el_price
+$LOAD el_cirtificate
 $LOAD h_price
 $LOAD tout
 $LOAD G_facade
@@ -177,6 +181,7 @@ $LOAD min_peakCO2
 $LOAD inv_lim
 $LOAD p1_dispach
 $GDXIN
+
 
 
 $Ontext

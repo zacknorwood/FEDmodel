@@ -15,6 +15,7 @@ set
 Parameter
         DH_max_cap  Maximum capacity of import from the external district heating system /12000/
         exG_max_cap Maximum capacity of import from the external electricty system /10000/
+        DH_export_season(h) Season during which pricing for DH exports possible
 * Investment costs from WP4_D4.2.1 prestudy report
 * PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 600, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
 * note: check AbsCInv and HP, sources?
@@ -41,6 +42,7 @@ Parameter
          lifT_inv_opt(inv_opt)    Life time of investment options
                      /PV 30, BES 15, HP 25, TES 30, BTES 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25/;
 
+
 *--------------Choice of investment options to consider-------------------------
 
 PARAMETERS
@@ -64,7 +66,7 @@ sw_BAC = 0;
 sw_BES = 0;
 sw_PV = 0;
 sw_RMMC = 0;
-sw_P2 = 1;
+sw_P2 = 0;
 sw_TURB = 0;
 sw_AbsCInv = 0;
 ***************Existing units***************************************************
@@ -309,16 +311,24 @@ parameter
          co2_cost(sup_unit,h)    CO2 cost
          utot_cost(sup_unit,h)   unit total cost of every production unit
          PT_cost(sup_unit)       Power tariff SEK per kW per month
-
+         el_sell_price(h) Sell price for electricty
+         el_buy_price(h)  Buy price for electricty
+         net_tariff              Network tariff   /0.0031/
+         unit_avrg_prof          Average profit pr kWh  /0.011/
+         ursprungsgaranti       /0.01/
+         e_tax                   Energy tax    /0.325/
 *         USD_to_SEK_2015 Exchange rate USD to SED 2015 /8.43/
          EUR_to_SEK_2015 Exchange rate EUR to SEK in 2015 /9.36/
          kilo Factor of 1000 conversion to kW from MW for example /1000/
 
 ;
-* 0.0031 is grid tariff per kWh from Göteborg Energi home page
-price('exG',h)=0.0031 + el_price(h);
+
+* 0.0031 is grid tariff per kWh from Göteborg Energi home page; 0.011sek/kWh average profit for GE for large customers
+
+price('exG',h)=net_tariff + unit_avrg_prof + el_price(h);
 price('DH',h)=h_price(h);
 
+el_sell_price(h) =el_price(h) - unit_avrg_prof - net_tariff  +  el_cirtificate(h) + ursprungsgaranti;
 *the data is obtained from Energimyndigheten 2015 wood chips for District Heating Uses
 fuel_cost('CHP',h)=0.186;
 * Divided by efficiency to get actual fuel use when multiplying with heat output
@@ -361,7 +371,7 @@ fix_cost('BES')= 51000 / kilo * EUR_to_SEK_2015;
 
 *From Göteborg Energi homepage, tax on a kWh electricity purchased in SEK
 en_tax(sup_unit,h)=0;
-en_tax('exG',h)=0.295;
+en_tax('exG',h)=e_tax;
 
 co2_cost(sup_unit,h)=0;
 *Power tariffs from Göteborg Energi
