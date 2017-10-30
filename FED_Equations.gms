@@ -1,6 +1,6 @@
-******************************************************************************
-*----------------------------Define equations--------------------------------
-******************************************************************************
+********************************************************************************
+*----------------------------Define equations-----------------------------------
+********************************************************************************
 equation
 
            eq_VKA11     heating generation of VKA4
@@ -10,7 +10,8 @@ equation
            eq_VKA42     cooling generation of VKA4
            eq_VKA43     maximum electricity usage by VKA4
 
-           eq_q_Pana1   Eqauation related to Panna1 heat production
+           eq_h_Pana1            Eqauation related to Panna1 heat production
+           eq_h_Panna1_dispatch  Equation determining when Panna1 is dispatchable
 
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
@@ -25,11 +26,14 @@ equation
            eq_ACC2      Refrigerator equation
            eq_ACC3      Temperature limit of Ambient Air Cooler
 
+           eq_existPV   Production from existing PV install
+
            eq1_AbsCInv  Production equation
            eq2_AbsCInv  Investment capacity
 
-           eq1_P2       production equation for P2
-           eq2_P2       investment equation for P2
+           eq1_P2                production equation for P2
+           eq2_P2                investment equation for P2
+           eq_h_Panna2_research  P2 production constraint during research
 
            eq1_TURB     production equation for turbine-gen
            eq2_TURB     energy consumption equation for turbine-gen
@@ -45,7 +49,6 @@ equation
            eq_TESdis    discharging rate of the TES
            eq_TESch     charging rate of the TES
            eq_TESinv    investment decision for TES
-*eq_TESmininv minimum possible investment in TES
 
            eq_BTES_Sch   charging rate of shallow part the building
            eq_BTES_Sdis  discharging rate of shallow part the building
@@ -54,6 +57,9 @@ equation
            eq_BTES_Den1  initial energy content of deep part of the building
            eq_BTES_Den2  energy content of deep part of the building at hour h
            eq_BS_BD      energy flow between the shallow and deep part of the building
+
+           eq_BAC         investment decision equation for Building Advanced Control
+           eq_BAC_savings hourly heat saved by BAC investment for each building
 
            eq_BES1       intial energy in the Battery
            eq_BES2       energy in the Battery at hour h
@@ -65,20 +71,22 @@ equation
            eq_PV_cap_roof capacity of installed PV on roofs
            eq_PV_cap_facade capacity of installed PV on facades
 
-           eq_hbalance   heating supply-demand balance
-           eq_hbalance2  heating supply-demand balance excluding nonAH buildings
-           eq_kbalance   Balance equation cooling
-           eq_ebalance   electrical supply-demand balance
+           eq_hbalance3  heating supply-demand balance excluding AH buildings
+           eq_hbalance4  heating supply-demand balance excluding nonAH buildings
+           eq_cbalance  Balance equation cooling
+
+           eq_ebalance3  supply demand balance equation from AH
+           eq_ebalance4  electrical import equation to nonAH
 
            eq_PE         Hourly PE use in the FED system
            eq_totPE      Total PE use in the FED system
            eq_CO2        FED CO2 emission
 
-           eq_max_exG(h,m) maximum monthly peak demand
-           eq_PTexG(m)   monthly power tariff
+           eq_max_exG maximum monthly peak demand
+           eq_PTexG   monthly power tariff
 
-           eq_mean_DH(d) daily mean power DH
-           eq_PT_DH(d)      power tariff DH
+           eq_mean_DH daily mean power DH
+           eq_PT_DH      power tariff DH
 
            eq_fix_cost_existing total fixed cost for existing units
            eq_fix_cost_new      total fixed cost for new units
@@ -116,69 +124,80 @@ eq_VKA43(h)..
         el_VKA4(h) =l= VKA4_el_cap;
 *------------------Panna1 equation(when dispachable)----------------------------
 
-eq_q_Pana1(h)..
-        q_Pana1(h)=l=Panna1_cap;
+eq_h_Pana1(h)..
+        h_Pana1(h)=l=Panna1_cap;
+
+eq_h_Panna1_dispatch(h)$(P1P2_dispatchable(h)=0)..
+         h_Pana1(h) =e= h_P1(h);
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 
 eq_AbsC1(h)..
-             k_AbsC(h) =e= AbsC_COP*q_AbsC(h);
+             c_AbsC(h) =e= AbsC_COP*h_AbsC(h);
 *AbsC_eff;
 eq_AbsC2(h)..
-             k_AbsC(h) =l= AbsC_cap;
+             c_AbsC(h) =l= AbsC_cap;
 *----------Refrigerator Machine equations (electricity => cooling)--------------
 
 eq_RM1(h)..
-             k_RM(h) =e= RM_COP*e_RM(h);
+             c_RM(h) =e= RM_COP*e_RM(h);
 eq_RM2(h)..
-             k_RM(h) =l= RM_cap;
+             c_RM(h) =l= RM_cap;
 *----------MC2 Refrigerator Machine equations (electricity => cooling)----------
 
 eq_RMMC1(h)..
-         k_RMMC(h) =e= sw_RMMC * RMCC_COP * e_RMMC(h);
+         c_RMMC(h) =e= sw_RMMC * RMCC_COP * e_RMMC(h);
 
 eq_RMMC2(h)..
-         k_RMMC(h) =l= RMMC_inv * RMMC_cap;
+         c_RMMC(h) =l= RMMC_inv * RMMC_cap;
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
+
 eq_ACC1(h)..
-             k_AAC(h) =e= AAC_COP*e_AAC(h);
+             c_AAC(h) =e= AAC_COP*e_AAC(h);
 eq_ACC2(h)..
-             k_AAC(h) =l= AAC_cap;
+             c_AAC(h) =l= AAC_cap;
 
-eq_ACC3(h)$(tout0(h)>AAC_TempLim)..
-             k_AAC(h) =l= 0;
+eq_ACC3(h)$(tout(h)>AAC_TempLim and min_totCost0 eq 0)..
+             c_AAC(h)=l= 0;
+*----------------Equations for existing PV--------------------------------------
 
+eq_existPV(h)..
+             e_existPV(h) =e= eta_Inverter * (sum(BID, exist_PV_cap_roof(BID) * PV_power_roof(h,BID))
+                                              + sum(BID, exist_PV_cap_facade(BID) * PV_power_facade(h,BID)));
 *****************For new investment optons-------------------------------------
 *----------------Absorption Chiller Investment----------------------------------
 
 eq1_AbsCInv(h)..
-             k_AbsCInv(h) =e= sw_AbsCInv*AbsCInv_COP*q_AbsCInv(h);
+             c_AbsCInv(h) =e= sw_AbsCInv*AbsCInv_COP*h_AbsCInv(h);
 *AbsC_eff;
 eq2_AbsCInv(h)..
-             k_AbsCInv(h) =l= sw_AbsCInv*AbsCInv_cap;
+             c_AbsCInv(h) =l= sw_AbsCInv*AbsCInv_cap;
 *----------------Panna 2 equations ---------------------------------------------
 
 eq1_P2(h)..
-         q_P2(h) =e= sw_P2 * fuel_P2(h) * P2_eff;
+         h_P2(h) =e= sw_P2 * fuel_P2(h) * P2_eff;
 eq2_P2(h)..
-         q_P2(h) =l= B_P2 * q_P2_cap;
+         h_P2(h) =l= B_P2 * h_P2_cap;
+
+eq_h_Panna2_research(h)$(P1P2_dispatchable(h)=0)..
+         h_P2(h) =e= B_P2 * sw_P2 * P2_reseach_prod;
 *----------------Refurb turbine equations --------------------------------------
 
 eq1_TURB(h)..
-         e_TURB(h) =e= sw_TURB * TURB_eff * q_TURB(h);
+         e_TURB(h) =e= sw_TURB * TURB_eff * h_TURB(h);
 
 eq2_TURB(h)..
-         H_P2T(h) =l= q_P2(h) - q_TURB(h);
+         H_P2T(h) =l= h_P2(h) - h_TURB(h);
 
 eq3_TURB(h)..
          e_TURB(h) =l= B_TURB * TURB_cap;
 *----------------HP equations --------------------------------------------------
 
 eq_HP1(h)..
-             q_HP(h) =e= sw_HP*HP_H_COP*e_HP(h);
+             h_HP(h) =e= sw_HP*HP_H_COP*e_HP(h);
 eq_HP2(h)..
              c_HP(h) =l= sw_HP*HP_C_COP*e_HP(h);
 eq_HP3(h)..
-             q_HP(h) =l= sw_HP*HP_cap;
+             h_HP(h) =l= sw_HP*HP_cap;
 *------------------TES equations------------------------------------------------
 
 eq_TESen1(h,i)$(ord(h) eq 1)..
@@ -218,6 +237,14 @@ eq_BTES_Den2(h,i) $ (ord(h) gt 1)..
 eq_BS_BD(h,i) $ (BTES_model('BTES_Scap',i) ne 0)..
          link_BS_BD(h,i) =e= sw_BTES*((BTES_Sen(h,i)/BTES_model('BTES_Scap',i)
                               - BTES_Den(h,i)/BTES_model('BTES_Dcap',i))*BTES_model('K_BS_BD',i));
+
+*-----------------BAC constraints-----------------------------------------------
+eq_BAC(i)..
+         B_BAC(i) =l= sw_BAC*B_BITES(i);
+
+eq_BAC_savings(h,i)..
+         h_BAC_savings(h,i) =l= sw_BAC*BAC_savings_period(h)*B_BAC(i)*BAC_savings_factor*h_demand(h,i);
+
 *-----------------Battery constraints-------------------------------------------
 
 eq_BES1(h) $ (ord(h) eq 1)..
@@ -246,7 +273,6 @@ eq_BES_dis(h)..
 eq_PV(h)..
              e_PV(h) =e= sw_PV*eta_Inverter * (sum(BID, PV_cap_roof(BID) * PV_power_roof(h,BID))
                                               + sum(BID, PV_cap_facade(BID) * PV_power_facade(h,BID)));
-
 eq_PV_cap_roof(BID)..
              PV_cap_roof(BID) =l= area_roof_max(BID)*PV_cap_density;
 
@@ -254,37 +280,38 @@ eq_PV_cap_facade(BID)..
              PV_cap_facade(BID) =l= area_facade_max(BID)*PV_cap_density;
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
-
-eq_hbalance(h)..
-             sum(i,q_demand(h,i)) =l=q_DH(h) + q_Pana1(h) + H_VKA1(h)
-                                     + H_VKA4(h) - q_AbsC(h) + H_P2T(h)
-                                     + q_HP(h)
+eq_hbalance3(h)..
+             sum(i,h_demand(h,i)) =l=h_imp_AH(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + H_VKA1(h)
+                                     + H_VKA4(h) - h_AbsC(h) + H_P2T(h)
+                                     + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
                                      + (sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
-                                     - q_AbsCInv(h);
-eq_hbalance2(h)..
-             q_DH(h)=g=sum(i_nonAH,q_demand_nonAH(h,i_nonAH))
-                       - (sum(i_nonAH,BTES_Sdis(h,i_nonAH))*BTES_dis_eff
-                                   - sum(i_nonAH,BTES_Sch(h,i_nonAH))/BTES_chr_eff);
+                                     + (sum(i,h_BAC_savings(h,i)))
+                                     - h_AbsCInv(h);
+eq_hbalance4(h)..
+             h_imp_nonAH(h)=e=sum(i_nonAH_h,h_demand_nonAH(h,i_nonAH_h))
+                       - (sum(i_nonAH_h,BTES_Sdis(h,i_nonAH_h))*BTES_dis_eff-sum(i_nonAH_h,BTES_Sch(h,i_nonAH_h))/BTES_chr_eff);
 *-------------- Demand supply balance for cooling ------------------------------
 
-eq_kbalance(h)..
-         sum(i_AH,k_demand_AH(h,i_AH))=l=P_DC(h) + C_VKA1(h) + C_VKA4(h) +  k_AbsC(h)
-                                + k_RM(h) + k_RMMC(h) + k_AAC(h) + c_HP(h)
-                                + k_AbsCInv(h);
+eq_cbalance(h)..
+         sum(i_AH_c,c_demand_AH(h,i_AH_c))=l=C_DC(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
+                                + c_RM(h) + c_RMMC(h) + c_AAC(h) + c_HP(h)
+                                + c_AbsCInv(h);
 *--------------Demand supply balance for electricity ---------------------------
 
-eq_ebalance(h)..
-        sum(i,e_demand(h,i)) =l= e_exG(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
-                                 + e0_PV(h) + e_PV(h) - e_HP(h)
+eq_ebalance3(h)..
+        sum(i_AH_el,el_demand(h,i_AH_el)) =l= e_imp_AH(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
+                                 + e_existPV(h) + e_PV(h) - e_HP(h)
                                  + (BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff)
                                  + e_TURB(h);
+eq_ebalance4(h)..
+        sum(i_nonAH_el,el_demand(h,i_nonAH_el)) =l= e_imp_nonAH(h);
 *--------------FED Primary energy use-------------------------------------------
 
 eq_PE(h)..
-        FED_PE(h)=e= e_exG(h)*PEF_exG(h)
-                     + e0_PV(h)*PEF_PV + e_PV(h)*PEF_PV
-                     + q_DH(h)*PEF_DH(h) + (q_Pana1(h)/P1_eff)*PEF_P1
+        FED_PE(h)=e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*PEF_exG(h)
+                     + e_existPV(h)*PEF_PV + e_PV(h)*PEF_PV
+                     + (h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*PEF_DH(h) + (h_Pana1(h)/P1_eff)*PEF_P1
                      + fuel_P2(h)*PEF_P2;
 **********************Total PE use in the FED system****************************
 
@@ -293,9 +320,9 @@ eq_totPE..
 *---------------FED CO2 emission------------------------------------------------
 
 eq_CO2(h)..
-       FED_CO2(h) =e= e_exG(h)*CO2F_exG(h)
-                      + e0_PV(h)*CO2F_PV + e_PV(h)*CO2F_PV
-                      + q_DH(h)*CO2F_DH(h) + (q_Pana1(h)/P1_eff)*CO2F_P1
+       FED_CO2(h) =e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*CO2F_exG(h)
+                      + e_existPV(h)*CO2F_PV + e_PV(h)*CO2F_PV
+                      + (h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*CO2F_DH(h) + (h_Pana1(h)/P1_eff)*CO2F_P1
                       + fuel_P2(h) * CO2F_P2;
 ****************Total CO2 emission in the FED system****************************
 
@@ -304,12 +331,12 @@ eq_CO2_TOT..
 **************** Power tariffs *******************
 
 eq_max_exG(h,m)..
-               max_exG(m) =g=   e_exG(h)*HoM(h,m);
+               max_exG(m) =g= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*HoM(h,m);
 eq_PTexG(m)..
                PT_exG(m) =e= max_exG(m)*PT_cost('exG');
 
 eq_mean_DH(d)..
-              mean_DH(d) =g=   sum(h,q_DH(h)*HoD(h,d))/24;
+              mean_DH(d) =g=   sum(h,(h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d))/24;
 
 eq_PT_DH(d)..
               PT_DH      =g=   mean_DH(d)*PT_cost('DH');
@@ -329,25 +356,27 @@ eq_fix_cost_new..
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
 eq_var_cost_existing..
-         var_cost_existing =e= sum(h,e_exG(h)*utot_cost('exG',h)) + sum(m,PT_exG(m))
-                               + sum(h,q_DH(h)*utot_cost('DH',h))  + PT_DH
-                               + sum(h,q_Pana1(h)*utot_cost('P1',h))
+         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)) + sum(m,PT_exG(m))
+                               -sum(h,e_exp_AH(h)*price('exG',h))
+                               + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h))  + PT_DH
+                               - sum(h,h_exp_AH(h)*DH_export_season(h)*0.3)
+                               + sum(h,h_Pana1(h)*utot_cost('P1',h))
                                + sum(h,H_VKA1(h)*utot_cost('HP',h))
                                + sum(h,H_VKA4(h)*utot_cost('HP',h))
-                               + sum(h,k_AbsC(h)*utot_cost('AbsC',h))
-                               + sum(h,k_RM(h)*utot_cost('RM',h))
-                               + sum(h,k_RMMC(h)*utot_cost('RM',h))
-                               + sum(h,k_AAC(h)*utot_cost('AAC',h))
-                               + sum(h,e0_PV(h)*utot_cost('PV',h));
+                               + sum(h,c_AbsC(h)*utot_cost('AbsC',h))
+                               + sum(h,c_RM(h)*utot_cost('RM',h))
+                               + sum(h,c_RMMC(h)*utot_cost('RM',h))
+                               + sum(h,c_AAC(h)*utot_cost('AAC',h))
+                               + sum(h,e_existPV(h)*utot_cost('PV',h));
 eq_var_cost_new..
          var_cost_new =e=  sum(h,e_PV(h)*utot_cost('PV',h))
-                           + sum(h,q_HP(h)*utot_cost('HP',h))
+                           + sum(h,h_HP(h)*utot_cost('HP',h))
                            + sum(h,BES_dis(h)*utot_cost('BES',h))
                            + sum(h,TES_dis(h)*utot_cost('TES',h))
                            + sum((h,i),BTES_Sch(h,i)*utot_cost('BTES',h))
-                           + sum(h,q_P2(h)*utot_cost('P2',h))
+                           + sum(h,h_P2(h)*utot_cost('P2',h))
                            + sum(h,e_TURB(h)*utot_cost('TURB',h))
-                           + sum(h,k_AbsCInv(h)*utot_cost('AbsCInv',h));
+                           + sum(h,c_AbsCInv(h)*utot_cost('AbsCInv',h));
 
 eq_Ainv_cost..
           Ainv_cost =e=
@@ -356,6 +385,7 @@ eq_Ainv_cost..
                 + BES_cap*cost_inv_opt('BES')/lifT_inv_opt('BES')
                 + (TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/lifT_inv_opt('TES')
                 + cost_inv_opt('BTES')*sum(i,B_BITES(i))/lifT_inv_opt('BTES')
+                + cost_inv_opt('BAC')*sum(i,B_BAC(i))/lifT_inv_opt('BAC')
                 + RMMC_inv*cost_inv_opt('RMMC')/lifT_inv_opt('RMMC')
                 + B_P2 * cost_inv_opt('P2')/lifT_inv_opt('P2')
                 + B_TURB * cost_inv_opt('TURB')/lifT_inv_opt('TURB')
@@ -372,6 +402,7 @@ eq_invCost..
                      + BES_cap*cost_inv_opt('BES')
                      + ((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
                      + cost_inv_opt('BTES')*sum(i,B_BITES(i))
+                     + cost_inv_opt('BAC')*sum(i,B_BAC(i))
                      + RMMC_inv*cost_inv_opt('RMMC')
                      + B_P2 * cost_inv_opt('P2')
                      + B_TURB * cost_inv_opt('TURB')
@@ -384,6 +415,6 @@ eq_obj..
          obj =e= min_totCost*totCost
                 + min_totPE*tot_PE
                 + min_totCO2*FED_CO2_tot
-                + min_peakCO2*peak_CO2
-                + min_totPECO2*((tot_PE/sum(h,FED_PE0(h))) + (FED_CO2_tot/sum(h,FED_CO20(h))));
+                + min_peakCO2*peak_CO2;
+*                + min_totPECO2*((tot_PE/sum(h,FED_PE0(h))) + (FED_CO2_tot/sum(h,FED_CO20(h))));
 ********************************************************************************
