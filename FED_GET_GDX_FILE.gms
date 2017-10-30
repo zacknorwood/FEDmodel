@@ -91,13 +91,11 @@ PARAMETERS  HoD(h,d)       Hour of the day
             el_price(h)       ELECTRICTY PRICE IN THE EXTERNAL GRID
             el_cirtificate(h) Electricity cirtificate for selling renewable energy sek per kwh
             h_price(h)        Heat PRICE IN THE IN THE EXTERNAL DH SYSTEM
-
             tout(h)               OUT DOOR TEMPRATTURE
             G_facade(h,BID)       irradiance on building facades
             area_facade_max(BID)  irradiance on building facades
             G_roof(h,BID)         irradiance on building facades
             area_roof_max(BID)    irradiance on building facades
-            nPV_el(h)             ELECTRICTY OUTPUT FROM A UNIT PV PANAEL
             BTES_model(BTES_properties,i) BUILDING INERTIA TES PROPERTIES
             BAC_savings_period(h)         Period in which BAC-energy savings are active
             DH_export_season(h)           Period in which DH exports are payed for
@@ -121,7 +119,6 @@ $LOAD G_facade
 $LOAD area_facade_max
 $LOAD G_roof
 $LOAD area_roof_max
-$LOAD nPV_el
 $LOAD BTES_model
 $LOAD BAC_savings_period
 $LOAD DH_export_season
