@@ -13,9 +13,9 @@ while PROCESS_RESULTS==1
     %% Set results in a gdx file for a given scenario/option    
     tic
     %set desired option
-    option='With all investment optn\mintotCO2\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
-    path=strcat('Sim_Results\',option);
-    file_name='GtoM_mintotCO2';
+    option='Sim_Results_base\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    path=strcat('Sim_Results_new\',option);
+    file_name='GtoM_mintotCost';
     gdxData=strcat(path,file_name);       
     %% Get parameters and variables from a GDX file 
     
@@ -24,19 +24,19 @@ while PROCESS_RESULTS==1
     %% Assign uels
     
     % uels for hourlly time series
-    h=get_uels('Sim_Results\uels\h','h');    
+    h=get_uels('Sim_Results_new\uels\h','h');    
     % uels for all building names as presented by utilifeed
-    i=get_uels('Sim_Results\uels\i','i');    
+    i=get_uels('Sim_Results_new\uels\i','i');    
     % uels for all building names as presented by utilifeed
-    i_AH=get_uels('Sim_Results\uels\i_AH','i_AH');
+    i_AH=get_uels('Sim_Results_new\uels\i_AH','i_AH');
     % uels for building for PV application
-    BID=get_uels('Sim_Results\uels\BID','BID');
+    BID=get_uels('Sim_Results_new\uels\BID','BID');
     % uels for BITES properties
-    BTES_properties=get_uels('Sim_Results\uels\BTES_properties','BTES_properties');
+    BTES_properties=get_uels('Sim_Results_new\uels\BTES_properties','BTES_properties');
     % uels for supply units properties
-    sup_unit=get_uels('Sim_Results\uels\sup_unit','sup_unit');
+    sup_unit=get_uels('Sim_Results_new\uels\sup_unit','sup_unit');
     % uels for investment options
-    inv_opt=get_uels('Sim_Results\uels\inv_opt','inv_opt'); 
+    inv_opt=get_uels('Sim_Results_new\uels\inv_opt','inv_opt'); 
     %% Set the path for the extracted data to be saved in 
     
     path_Data=strcat(path,'Data\');    
@@ -68,15 +68,10 @@ while PROCESS_RESULTS==1
     save(strcat(path_Data,'area_roof_max'),'area_roof_max');
     save(strcat(path_Data,'nPV_el0'),'nPV_el0');
     %% FED PE use and CO2 emission base and simulated case
-
     
-    FED_PE0=gdx2mat(gdxData,'FED_PE0',h);
     FED_PE=gdx2mat(gdxData,'FED_PE',h);
-    FED_CO20=gdx2mat(gdxData,'FED_CO20',h);
     FED_CO2=gdx2mat(gdxData,'FED_CO2',h);
-    save(strcat(path_Data,'FED_PE0'),'FED_PE0');
     save(strcat(path_Data,'FED_PE'),'FED_PE');
-    save(strcat(path_Data,'FED_CO20'),'FED_CO20');
     save(strcat(path_Data,'FED_CO2'),'FED_CO2');
     %% PEF use and CO2F of the external grids (electricity and DH)
     

@@ -39,15 +39,15 @@ while NEW_data==1
     save('e0_VKA1','e0_VKA1');
     save('e0_VKA4','e0_VKA4');
     
-%    load FED_PE0;
-%    load FED_CO20;
+    load FED_PE;
+    load FED_CO2;
     break;
 end
 
 %load saved values
 while NEW_data==0
-    load FED_PE0;
-    load FED_CO20;
+    load FED_PE;
+    load FED_CO2;
     load el_exGCO2F;
     load el_exGPEF;
     load DH_CO2F;
@@ -66,7 +66,7 @@ tlen=24*365*2;                %length the time series data
 H.name='H0';
 H.uels=num2cell(1:tlen);
 %H.uels=(str);
-return
+
 %Data to be exported to GAMS
 %FED_PE_0 = struct('name','FED_PE0','type','parameter','form','full','val',FED_PE0);
 %FED_PE_0.uels=H.uels;
@@ -80,9 +80,9 @@ temp_CO2F_P2 = struct('name','CO2F_P2','type','parameter','val',CO2F_P2);
 temp_PEF_P2 = struct('name','PEF_P2','type','parameter','val',PEF_P2);
 
 pCO2ref=0.95;  %Choose the percentage the reference CO2 [this value can be varied for sensetivity analysis]
-FED_CO2_max = struct('name','CO2_max','type','parameter','val',max(FED_CO20));
-FED_CO2_peakref = struct('name','CO2_peak_ref','type','parameter','val',pCO2ref*max(FED_CO20));
-FED_PE_totref = struct('name','PE_tot_ref','type','parameter','val',sum(FED_PE0));
+FED_CO2_max = struct('name','CO2_max','type','parameter','val',max(FED_CO2));
+FED_CO2_peakref = struct('name','CO2_peak_ref','type','parameter','val',pCO2ref*max(FED_CO2));
+FED_PE_totref = struct('name','PE_tot_ref','type','parameter','val',sum(FED_PE));
 FED_inv=76761000;  %this is projected FED investment cost in SEK
 fInv_lim=1;        %multiplication factor [can be varied for sensetivity analysis]
 FED_Inv_lim = struct('name','inv_lim','type','parameter','val',fInv_lim*FED_inv);
@@ -128,7 +128,7 @@ wgdx('MtoG.gdx', FED_PE_totref, FED_CO2_max, FED_CO2_peakref,CO2F_exG, PEF_exG, 
      temp_optn0,temp_optn1, temp_optn2, temp_optn3, temp_optn4, temp_optn5, FED_Inv_lim,p1_disp);
 %% RUN GAMS model
 return
- RUN_GAMS_MODEL = 0;
+ RUN_GAMS_MODEL = 1;
  while RUN_GAMS_MODEL==1
      system 'gams FED_SIMULATOR_MAIN lo=3';
      break;
