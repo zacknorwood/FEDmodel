@@ -88,7 +88,7 @@ positive variable
 binary variable
          B_P2              Decision variable for P2 investment
 ;
-*B_P2.fx=1;
+B_P2.fx=1;
 *----------------Refurbished turbine for Panna 2  ------------------------------
 
 positive variable
@@ -99,7 +99,7 @@ positive variable
 binary variable
          B_TURB            Decision variable for turbine investment
 ;
-*B_TURB.fx=1;
+B_TURB.fx=1;
 *------------------HP related---------------------------------------------------
 
 positive variable
@@ -227,4 +227,4 @@ variable
          peak_CO2           CO2 peak
          obj                objective function
 ;
-*invCost.up $ (min_totCost eq 0) = inv_lim;
+invCost.up $ (min_totCost eq 0) = inv_lim;
