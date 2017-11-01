@@ -3,6 +3,20 @@
 %% Calculate CO2 emission factor and PE use factor of the external grids 
 
 get_CO2PE_exGrids;
+%% Imported el to the AH system
+
+sheet=1;
+xlRange = 'C1443:C10203';
+el_Import_AH=xlsread('Input_data_FED_SIMULATOR\AH_el_import.xlsx',sheet,xlRange);  %electricity imported to the FED system 2016 kWh
+%% AH heat import and export
+
+sheet=2;
+xlRange = 'C1447:C10207';
+h_Import_AH=1000*xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',sheet,xlRange);  
+
+sheet=2;
+xlRange = 'D1447:D10207';
+h_Exmport_AH=1000*xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',sheet,xlRange); 
 %% FED Electricty demand
 
 sheet=2;
@@ -28,12 +42,6 @@ xlRange = 'B2:AJ17521';
 cooling_demand_2016_2017=xlsread('Input_data_FED_SIMULATOR\FED_cooling_Demand_new.xlsx',sheet,xlRange);  %electricity demand in the FED system, 2016 kWh
 cooling_demand_2016_2017(isnan(cooling_demand_2016_2017))=0;
 cooling_demand_tot=sum(cooling_demand_2016_2017,2);
-%% FED Base: electricity import
-
-%sheet=2;
-%xlRange = 'C2:C8761';
-%el_Import_2016_AH=xlsread('Input_data_FED_SIMULATOR\FED_Base_El.xlsx',sheet,xlRange);  %electricity imported to the FED system 2016 kWh
-%el_Import_2016=el_Import_2016_AH + sum(nonAH_el_demand,2);                             %(assumed) electricty import to the FED system including non-AH buiödings
 %% FED Local el generation
 
 %Solar PV
@@ -65,16 +73,6 @@ h0_AbsC=c0_AbsC/COP_AbsC;
 %% Total electricty supply
 
 %el_tot_2016=el_Import_2016 + el_pv + 0*el_chp_2016;
-%% FED  Base: heat import and export
-
-%sheet=2;
-%xlRange = 'C5:C8764';
-%heat_Import_2016_AH=1000*xlsread('Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx',sheet,xlRange);  %heat imported to the FED system 2016 kWh
-%heat_Import_2016=heat_Import_2016_AH+sum(nonAH_heat_demand,2);                                  %(assumed) heat import including non-AH heat demands
-
-%sheet=2;
-%xlRange = 'D5:D8764';
-%heat_Exmport_2016=1000*xlsread('Input_data_FED_SIMULATOR\FED_Base_Heat.xlsx',sheet,xlRange); %Heat exported to the Göteborg DH system 2016 kWh
 %% FED Local heat generation
 
 %sheet=4;

@@ -63,6 +63,10 @@ parameter
 *FED_PE_ft(h)  Primary energy as a function of time
           model_status  Model status
           fuel_P1(h)  Fuel input to P1
+          AH_el_imp_tot
+          AH_el_exp_tot
+          AH_h_imp_tot
+          AH_h_exp_tot
 ;
 *FED_PE_ft(h)=(e_imp_AH.l(h)-e_exp_AH.l(h) + e_imp_nonAH.l(h))*PEF_exG(h)
 *             + e0_PV(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
@@ -70,15 +74,19 @@ parameter
 *
 fuel_P1(h)=h_Pana1.l(h)/P1_eff;
 model_status=total.modelstat;
+AH_el_imp_tot=sum(h,e_imp_AH.l(h));
+AH_el_exp_tot=sum(h,e_exp_AH.l(h));
+AH_h_imp_tot=sum(h,h_imp_AH.l(h));
+AH_h_exp_tot=sum(h,h_exp_AH.l(h));
 
 execute_unload 'GtoM' min_totCost0, min_totCost, min_totPE, min_totCO2, min_peakCO2,
                       el_demand, h_demand, c_demand, c_demand_AH,
-                      e_imp_AH, e_exp_AH, e_imp_nonAH,
-                      h_imp_AH, h_exp_AH, h_imp_nonAH,
+                      e_imp_AH, e_exp_AH, e_imp_nonAH,AH_el_imp_tot, AH_el_exp_tot,
+                      h_imp_AH, h_exp_AH, h_imp_nonAH, AH_h_imp_tot, AH_h_exp_tot,
                       C_DC,
                       h_demand_nonAH, h_demand, h_demand_nonAH_sum
-                      el_price, h_price, tout,
-                       BTES_model,
+                      el_sell_price, el_price, h_price, tout,
+                      BTES_model,
                       FED_PE, FED_CO2, CO2F_PV, PEF_PV, CO2F_P1, PEF_P1, CO2F_P2, PEF_P2, CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,
                       h_Pana1, qB1, qF1, fuel_P1, P1_eff,
                       H_VKA1, C_VKA1, el_VKA1,
