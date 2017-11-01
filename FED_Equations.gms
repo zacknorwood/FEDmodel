@@ -131,7 +131,6 @@ eq_h_Pana1(h)..
 
 eq_h_Panna1_dispatch(h)$(P1P2_dispatchable(h)=0)..
          h_Pana1(h) =e= h_P1(h);
-
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 
 eq_AbsC1(h)..
