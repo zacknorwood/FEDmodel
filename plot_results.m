@@ -13,9 +13,9 @@ while PROCESS_RESULTS==1
     %% Set results in a gdx file for a given scenario/option    
     tic
     %set desired option
-    option='Sim_Results_base\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    option='mintotPE\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results_new\',option);
-    file_name='GtoM_mintotCost';
+    file_name='GtoM_mintotPE';
     gdxData=strcat(path,file_name);       
     %% Get parameters and variables from a GDX file 
     
@@ -39,34 +39,35 @@ while PROCESS_RESULTS==1
     inv_opt=get_uels('Sim_Results_new\uels\inv_opt','inv_opt'); 
     %% Set the path for the extracted data to be saved in 
     
-    path_Data=strcat(path,'Data\');    
+    path_Data=strcat(path,'Data\'); 
+    path_Data_base='Sim_Results_new\Sim_Results_base\Data\';
     %% Electricty, heating and cooling demand data used as inputs in the simulation     
     
     %electricity demand in the FED system    
-    el_demand0=gdx2mat(gdxData,'el_demand0',{h,i});
-    q_demand0=gdx2mat(gdxData,'q_demand0',{h,i});
-    k_demand0=gdx2mat(gdxData,'k_demand0',{h,i});
-    k_demand_AH=gdx2mat(gdxData,'k_demand_AH',{h,i_AH});
-    save(strcat(path_Data,'el_demand0'),'el_demand0'); 
-    save(strcat(path_Data,'q_demand0'),'q_demand0');
-    save(strcat(path_Data,'k_demand0'),'k_demand0');
-    save(strcat(path_Data,'k_demand_AH'),'k_demand_AH');    
+    el_demand=gdx2mat(gdxData,'el_demand',{h,i});
+    h_demand=gdx2mat(gdxData,'h_demand',{h,i});
+    c_demand=gdx2mat(gdxData,'c_demand',{h,i});
+    c_demand_AH=gdx2mat(gdxData,'c_demand_AH',{h,i_AH});
+    save(strcat(path_Data,'el_demand'),'el_demand'); 
+    save(strcat(path_Data,'h_demand'),'h_demand');
+    save(strcat(path_Data,'c_demand'),'c_demand');
+    save(strcat(path_Data,'c_demand_AH'),'c_demand_AH');    
     %% Electricity and heat price and out door temprature
     
-    el_price0=gdx2mat(gdxData,'el_price0',h);
-    q_price0=gdx2mat(gdxData,'q_price0',h);
-    tout0=gdx2mat(gdxData,'tout0',h);
-    save(strcat(path_Data,'el_price0'),'el_price0');
-    save(strcat(path_Data,'q_price0'),'q_price0');
-    save(strcat(path_Data,'tout0'),'tout0');
+    el_price=gdx2mat(gdxData,'el_price',h);
+    h_price=gdx2mat(gdxData,'h_price',h);
+    tout=gdx2mat(gdxData,'tout',h);
+    save(strcat(path_Data,'el_price'),'el_price');
+    save(strcat(path_Data,'h_price'),'h_price');
+    save(strcat(path_Data,'tout'),'tout');
     %% Area of roofs and walls of buildings in the FED system 
     
     area_facade_max=gdx2mat(gdxData,'area_facade_max',BID);
     area_roof_max=gdx2mat(gdxData,'area_roof_max',BID);
-    nPV_el0=gdx2mat(gdxData,'nPV_el0',h);    %electricity from a kW of a PV
+    e_existPV=gdx2mat(gdxData,'e_existPV',h);    %electricity from a kW of a PV
     save(strcat(path_Data,'area_facade_max'),'area_facade_max');
     save(strcat(path_Data,'area_roof_max'),'area_roof_max');
-    save(strcat(path_Data,'nPV_el0'),'nPV_el0');
+    save(strcat(path_Data,'e_existPV'),'e_existPV');
     %% FED PE use and CO2 emission base and simulated case
     
     FED_PE=gdx2mat(gdxData,'FED_PE',h);
@@ -85,14 +86,14 @@ while PROCESS_RESULTS==1
     save(strcat(path_Data,'CO2F_DH'),'CO2F_DH');
     %% Output from panna 1
     
-    q_p1_TB=gdx2mat(gdxData,'q_p1_TB',h);
-    q_p1_FGC=gdx2mat(gdxData,'q_p1_FGC',h);
+    h_B1=gdx2mat(gdxData,'qB1',h);
+    h_F1=gdx2mat(gdxData,'qF1',h);
     fuel_P1=gdx2mat(gdxData,'fuel_P1',h);
-    q_Pana1=gdx2mat(gdxData,'q_Pana1',h);
-    save(strcat(path_Data,'q_p1_TB'),'q_p1_TB');
-    save(strcat(path_Data,'q_p1_FGC'),'q_p1_FGC');
+    h_Pana1=gdx2mat(gdxData,'h_Pana1',h);
+    save(strcat(path_Data,'h_B1'),'h_B1');
+    save(strcat(path_Data,'h_F1'),'h_F1');
     save(strcat(path_Data,'fuel_P1'),'fuel_P1');
-    save(strcat(path_Data,'q_Pana1'),'q_Pana1');
+    save(strcat(path_Data,'h_Pana1'),'h_Pana1');
     %% Get results from VKA1
     
     %heating output from VKA1
@@ -127,8 +128,8 @@ while PROCESS_RESULTS==1
     invCost_P2=invCost_P2.val;
     save(strcat(path_Data,'invCost_P2'),'invCost_P2');
     %Fuel input to P2
-    q_P2=gdx2mat(gdxData,'q_P2',h);
-    save(strcat(path_Data,'q_P2'),'q_P2');
+    h_P2=gdx2mat(gdxData,'h_P2',h);
+    save(strcat(path_Data,'h_P2'),'h_P2');
     %heating output from P2 to DH
     H_P2T=gdx2mat(gdxData,'H_P2T',h);
     save(strcat(path_Data,'H_P2T'),'H_P2T');
@@ -146,16 +147,16 @@ while PROCESS_RESULTS==1
     e_TURB=gdx2mat(gdxData,'e_TURB',h);
     save(strcat(path_Data,'e_TURB'),'e_TURB');
     %heating input to the turbine
-    q_TURB=gdx2mat(gdxData,'q_TURB',h);
-    save(strcat(path_Data,'q_TURB'),'q_TURB');
+    h_TURB=gdx2mat(gdxData,'h_TURB',h);
+    save(strcat(path_Data,'h_TURB'),'h_TURB');
     %% Get results from Absorbtion Chiller
     
     %heating input to the existing Absorbtion chiller
-    q_AbsC=gdx2mat(gdxData,'q_AbsC',h);
-    save(strcat(path_Data,'q_AbsC'),'q_AbsC');
+    h_AbsC=gdx2mat(gdxData,'h_AbsC',h);
+    save(strcat(path_Data,'h_AbsC'),'h_AbsC');
     %cooling output from the existing Absorbtion chiller
-    k_AbsC=gdx2mat(gdxData,'k_AbsC',h);
-    save(strcat(path_Data,'k_AbsC'),'k_AbsC');
+    c_AbsC=gdx2mat(gdxData,'c_AbsC',h);
+    save(strcat(path_Data,'c_AbsC'),'c_AbsC');
     %Capacity of a nwe Absorbtion chiller
     AbsCInv_cap=struct('name','AbsCInv_cap');    
     AbsCInv_cap=rgdx(gdxData,AbsCInv_cap);
@@ -167,19 +168,19 @@ while PROCESS_RESULTS==1
     invCost_AbsCInv=invCost_AbsCInv.val;
     save(strcat(path_Data,'invCost_AbsCInv'),'invCost_AbsCInv');
     %heating input to the new Absorbtion chiller
-    q_AbsCInv=gdx2mat(gdxData,'q_AbsCInv',h);
-    save(strcat(path_Data,'q_AbsCInv'),'q_AbsCInv');
+    h_AbsCInv=gdx2mat(gdxData,'h_AbsCInv',h);
+    save(strcat(path_Data,'h_AbsCInv'),'h_AbsCInv');
     %cooling output from the new Absorbtion chiller
-    k_AbsCInv=gdx2mat(gdxData,'k_AbsCInv',h);
-    save(strcat(path_Data,'k_AbsCInv'),'k_AbsCInv');
+    c_AbsCInv=gdx2mat(gdxData,'c_AbsCInv',h);
+    save(strcat(path_Data,'c_AbsCInv'),'c_AbsCInv');
     %% Get results from refrigerating machines
     
     %Elecricity demand by the refrigerator system in AH building
     e_RM=gdx2mat(gdxData,'e_RM',h);
     save(strcat(path_Data,'e_RM'),'e_RM');
     %Cooling generated by the refrigerator system in AH building
-    k_RM=gdx2mat(gdxData,'k_RM',h);
-    save(strcat(path_Data,'k_RM'),'k_RM');
+    c_RM=gdx2mat(gdxData,'c_RM',h);
+    save(strcat(path_Data,'c_RM'),'c_RM');
     %Binary decission variable to invest in the MMC connection (is 1 if invested, 0 otherwise)
     RMMC_inv=struct('name','RMMC_inv');    
     RMMC_inv=rgdx(gdxData,RMMC_inv);
@@ -193,16 +194,16 @@ while PROCESS_RESULTS==1
     e_RMMC=gdx2mat(gdxData,'e_RMMC',h);
     save(strcat(path_Data,'e_RMMC'),'e_RMMC');
     %Cooling generated by the refrigerator system in nonAH building
-    k_RMMC=gdx2mat(gdxData,'k_RMMC',h); 
-    save(strcat(path_Data,'k_RMMC'),'k_RMMC');
+    c_RMMC=gdx2mat(gdxData,'c_RMMC',h); 
+    save(strcat(path_Data,'c_RMMC'),'c_RMMC');
     %% Get results from Ambient Air Cooler (AAC)
     
     %Elecricity demand by the AAC
     e_AAC=gdx2mat(gdxData,'e_AAC',h);
     save(strcat(path_Data,'e_AAC'),'e_AAC');
     %Cooling generated by the AAC
-    k_AAC=gdx2mat(gdxData,'k_AAC',h);
-    save(strcat(path_Data,'k_AAC'),'k_AAC');
+    c_AAC=gdx2mat(gdxData,'c_AAC',h);
+    save(strcat(path_Data,'c_AAC'),'c_AAC');
     %% Get results from the new reversible heat pump
     
     %Capacity of a nwe HP
@@ -216,8 +217,8 @@ while PROCESS_RESULTS==1
     invCost_HP=invCost_HP.val;
     save(strcat(path_Data,'invCost_HP'),'invCost_HP');
     %heating output from the new HP
-    q_HP=gdx2mat(gdxData,'q_HP',h);
-    save(strcat(path_Data,'q_HP'),'q_HP');
+    h_HP=gdx2mat(gdxData,'h_HP',h);
+    save(strcat(path_Data,'h_HP'),'h_HP');
     %cooling output from the new HP
     c_HP=gdx2mat(gdxData,'c_HP',h);
     save(strcat(path_Data,'c_HP'),'c_HP');
@@ -286,6 +287,15 @@ while PROCESS_RESULTS==1
     %BITES energy flow between Deep ad shallow
     link_BS_BD=gdx2mat(gdxData,'link_BS_BD',{h,i});
     save(strcat(path_Data,'link_BS_BD'),'link_BS_BD');
+    %% Building Advanced Control (BAC)
+    
+    %BAC energy saving
+    h_BAC_savings=gdx2mat(gdxData,'h_BAC_savings',{h,i});
+    save(strcat(path_Data,'h_BAC_savings'),'h_BAC_savings');
+    
+    %Binary decission variable to invest in BAC
+    B_BAC=gdx2mat(gdxData,'B_BAC',i);
+    save(strcat(path_Data,'B_BAC'),'B_BAC');
     %% Get results from PV
     
     %PV capacity-roof
@@ -299,7 +309,10 @@ while PROCESS_RESULTS==1
     invCost_PV=rgdx(gdxData,invCost_PV);
     invCost_PV=invCost_PV.val;
     save(strcat(path_Data,'invCost_PV'),'invCost_PV');
-    %Electricty from PV
+    %Electricty from PV (existing)
+    e_existPV=gdx2mat(gdxData,'e_existPV',h);
+    save(strcat(path_Data,'e_existPV'),'e_existPV');
+    %Electricty from PV (new)
     e_PV=gdx2mat(gdxData,'e_PV',h);
     save(strcat(path_Data,'e_PV'),'e_PV');
     %% Get results from battery energy storage
@@ -325,12 +338,27 @@ while PROCESS_RESULTS==1
     save(strcat(path_Data,'BES_en'),'BES_en');    
     %% Get electricty and heat import
     
-    %Electricty import to the new FED system
-    e_exG=gdx2mat(gdxData,'e_exG',h);
-    save(strcat(path_Data,'e_exG'),'e_exG');
-    %Heat import to the new FED system
-    q_DH=gdx2mat(gdxData,'q_DH',h);
-    save(strcat(path_Data,'q_DH'),'q_DH');
+    %Electricty import to AH system
+    e_imp_AH=gdx2mat(gdxData,'e_imp_AH',h);
+    save(strcat(path_Data,'e_imp_AH'),'e_imp_AH');
+    %Electricty export from AH system
+    e_exp_AH=gdx2mat(gdxData,'e_exp_AH',h);
+    save(strcat(path_Data,'e_exp_AH'),'e_exp_AH');
+    %Electricty export to non-AH system
+    e_imp_nonAH=gdx2mat(gdxData,'e_imp_nonAH',h);
+    save(strcat(path_Data,'e_imp_nonAH'),'e_imp_nonAH');
+    %Heat import to AH system
+    h_imp_AH=gdx2mat(gdxData,'h_imp_AH',h);
+    save(strcat(path_Data,'h_imp_AH'),'h_imp_AH');
+    %Heat export from AH system
+    h_exp_AH=gdx2mat(gdxData,'h_exp_AH',h);
+    save(strcat(path_Data,'h_exp_AH'),'h_exp_AH');
+    %Heat import to nonAH system
+    h_imp_nonAH=gdx2mat(gdxData,'h_imp_nonAH',h);
+    save(strcat(path_Data,'h_imp_nonAH'),'h_imp_nonAH');
+    %Cooling import to the new FED system
+    c_DC=gdx2mat(gdxData,'C_DC',h);
+    save(strcat(path_Data,'c_DC'),'c_DC');
     %% Total investment cost
     
     invCost=struct('name','invCost');    
@@ -452,59 +480,178 @@ while PROCESS_RESULTS==1
         %save result 
         plot_fname=['CO2_DH'];
         fsave_figure(path_Figures,plot_fname);
-        %% Plot local production and import 
+        %% Plot import  and export
         
-        %Electricity
+        e_imp_AH0=load('Sim_Results_new\Sim_Results_base\Data\e_imp_AH');
+        e_imp_AH0=e_imp_AH0.e_imp_AH;
+        e_imp_nonAH0=load('Sim_Results_new\Sim_Results_base\Data\e_imp_nonAH');                
+      
+        %Electricity import nonAH, simulated
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        load el_Import_2016;
-        load(strcat(path_Data,'e_exG'));
-        load(strcat(path_Data,'e_PV'));
-        load(strcat(path_Data,'e_TURB'));
-        
-        ydata=e_exG;
-        ydata2=e_PV+e_TURB;        
-        xdata=(1:length(ydata))/(24*30);                
-        plot(xdata,ydata,':',xdata,ydata2,'-.','LineWidth',LineThickness);       
+        load(strcat(path_Data,'e_imp_nonAH'));
+        ydata=e_imp_nonAH;
+        xdata=(1:length(ydata))/(24*30);
+        plot(xdata,ydata,'LineWidth',LineThickness);        
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
         box off
         xlim([0 12])
-        legend('Import','Local production')
+        legend('AH el import - Simulated')
         grid
         %save result 
-        plot_fname=['el_import_locProduction'];
+        plot_fname=['ah_el_import_sim'];
         fsave_figure(path_Figures,plot_fname);
         
+        
+        %Electricity export AH, simulated
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)
+        load(strcat(path_Data,'e_exp_AH'));
+        ydata=e_exp_AH;
+        xdata=(1:length(ydata))/(24*30);
+        plot(xdata,ydata,'LineWidth',LineThickness);        
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        box off
+        xlim([0 12])
+        legend('AH el export - Simulated')
+        grid
+        %save result 
+        plot_fname=['ah_el_export_sim'];
+        fsave_figure(path_Figures,plot_fname);
+        
+        %Electricity import nonAH, simulated
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)
+        load(strcat(path_Data,'e_imp_nonAH'));
+        ydata=e_imp_nonAH;
+        xdata=(1:length(ydata))/(24*30);
+        plot(xdata,ydata,'LineWidth',LineThickness);        
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        box off
+        xlim([0 12])
+        legend('Non-AH el import - Simulated')
+        grid
+        %save result 
+        plot_fname=['nonah_el_import_sim'];
+        fsave_figure(path_Figures,plot_fname);   
+        
+     
+        %Heat import AH, simulated
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)
+        load(strcat(path_Data,'h_imp_AH'));
+        ydata=h_imp_AH;
+        xdata=(1:length(ydata))/(24*30);
+        plot(xdata,ydata,'LineWidth',LineThickness);        
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        box off
+        xlim([0 12])
+        legend('AH heat import - Simulated')
+        grid
+        %save result 
+        plot_fname=['ah_h_import_sim'];
+        fsave_figure(path_Figures,plot_fname);
+        
+        
+        %Heat export AH, simulated
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)
+        load(strcat(path_Data,'h_exp_AH'));
+        ydata=h_exp_AH;
+        xdata=(1:length(ydata))/(24*30);
+        plot(xdata,ydata,'LineWidth',LineThickness);        
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        box off
+        xlim([0 12])
+        legend('AH heat export - Simulated')
+        grid
+        %save result 
+        plot_fname=['ah_h_export_sim'];
+        fsave_figure(path_Figures,plot_fname);
+        
+        %Heat import nonAH, simulated
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)
+        load(strcat(path_Data,'h_imp_nonAH'));
+        ydata=h_imp_nonAH;
+        xdata=(1:length(ydata))/(24*30);
+        plot(xdata,ydata,'LineWidth',LineThickness);        
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        box off
+        xlim([0 12])
+        legend('Non-AH heat import - Simulated')
+        grid
+        %save result 
+        plot_fname=['nonah_h_import_sim'];
+        fsave_figure(path_Figures,plot_fname);
+        %% Local generation
+        
+        load(strcat(path_Data,'e_PV'));
+        load(strcat(path_Data,'e_TURB'));        
+        ydata=e_PV+e_TURB;        
+        xdata=(1:length(ydata))/(24*30);                
+        plot(xdata,ydata,'LineWidth',LineThickness);       
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        box off
+        xlim([0 12])
+        legend('Local el production')
+        grid
+        %save result 
+        plot_fname=['el_tot_locProduction'];
+        fsave_figure(path_Figures,plot_fname);
+                
         %Heat
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        load heat_Import_2016;
-        load(strcat(path_Data,'q_DH'));
+        %h_imp_AH0=load('Sim_Results_new\Sim_Results_base\Data\e_imp_AH');
+        %h_imp_AH0=h_imp_AH0.h_imp_AH;
         load(strcat(path_Data,'H_VKA1'));
         load(strcat(path_Data,'H_VKA4'));
-        load(strcat(path_Data,'q_Pana1'));        
+        load(strcat(path_Data,'h_Pana1'));        
         load(strcat(path_Data,'H_P2T'));
-        load(strcat(path_Data,'q_HP'));
+        load(strcat(path_Data,'h_HP'));
         
-        ydata=q_DH;
-        ydata2=q_Pana1 + H_VKA1 + H_VKA4 + H_P2T + q_HP;        
+        ydata=h_Pana1 + H_VKA1 + H_VKA4 + H_P2T + h_HP;        
         xdata=(1:length(ydata))/(24*30);                
-        plot(xdata,ydata,':',xdata,ydata2,'-.','LineWidth',LineThickness);       
+        plot(xdata,ydata,'LineWidth',LineThickness);       
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Heat [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
         box off
         xlim([0 12])
-        legend('Import','Local production')
+        legend('Local production')
         grid
         %save result 
-        plot_fname=['heat_import_locProduction'];
+        plot_fname=['heat_locProduction'];
         fsave_figure(path_Figures,plot_fname);
         
         %Cooling
@@ -515,29 +662,29 @@ while PROCESS_RESULTS==1
         %load(strcat(path_Data,'k_DH'));
         load(strcat(path_Data,'C_VKA1'));
         load(strcat(path_Data,'C_VKA4'));
-        load(strcat(path_Data,'k_AbsC'));
-        load(strcat(path_Data,'k_AbsCInv'));
-        load(strcat(path_Data,'k_RM'));
-        load(strcat(path_Data,'k_RMMC'));
-        load(strcat(path_Data,'k_AAC'));
+        load(strcat(path_Data,'c_AbsC'));
+        load(strcat(path_Data,'c_AbsCInv'));
+        load(strcat(path_Data,'c_RM'));
+        load(strcat(path_Data,'c_RMMC'));
+        load(strcat(path_Data,'c_AAC'));
         load(strcat(path_Data,'c_HP'));
         
-        ydata=zeros(length(C_VKA1),1);
-        ydata2=C_VKA1 + C_VKA4 + k_AbsC + k_AbsCInv + k_RM + k_RMMC + k_AAC + c_HP;        
+        %ydata=zeros(length(C_VKA1),1);
+        ydata=C_VKA1 + C_VKA4 + c_AbsC + c_AbsCInv + c_RM + c_RMMC + c_AAC + c_HP;        
         xdata=(1:length(ydata))/(24*30);                
-        plot(xdata,ydata,':',xdata,ydata2,'-.','LineWidth',LineThickness);       
+        plot(xdata,ydata,'LineWidth',LineThickness);       
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Cooling [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
         box off
         xlim([0 12])
-        legend('Import','Local production')
+        legend('Local production')
         grid
         %save result 
         plot_fname=['cooling_import_locProduction'];
         fsave_figure(path_Figures,plot_fname);
-        %% Stacked plots of local production 
+        % Stacked plots of local production 
                 
         %Electricity
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -567,11 +714,11 @@ while PROCESS_RESULTS==1
             'PaperSize',properties.PaperSize)        
         load(strcat(path_Data,'H_VKA1'));
         load(strcat(path_Data,'H_VKA4'));
-        load(strcat(path_Data,'q_Pana1'));
+        load(strcat(path_Data,'h_Pana1'));
         load(strcat(path_Data,'H_P2T'));
-        load(strcat(path_Data,'q_HP'));
+        load(strcat(path_Data,'h_HP'));
         
-        ydata=[q_Pana1 H_VKA1 H_VKA4 H_P2T q_HP];       
+        ydata=[h_Pana1 H_VKA1 H_VKA4 H_P2T h_HP];       
         xdata=(1:length(ydata))/(24*30);
         area(xdata,ydata,'EdgeColor','none')
         xlabel('Time [Days]','FontSize',Font_Size,'FontName','Times New Roman')
@@ -586,12 +733,12 @@ while PROCESS_RESULTS==1
         plot_fname=['heat_locProduction'];
         fsave_figure(path_Figures,plot_fname);
         
-        %% Cooling
+        % Cooling
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)       
                
-        ydata=[C_VKA1 C_VKA4 k_AbsC k_AbsCInv k_RM k_RMMC k_AAC c_HP];        
+        ydata=[C_VKA1 C_VKA4 c_AbsC c_AbsCInv c_RM c_RMMC c_AAC c_HP];        
         xdata=(1:length(ydata))/(24*30);
         bar(xdata,ydata,'stacked')
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
@@ -610,12 +757,11 @@ while PROCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        load q_P1;
         ydata=H_VKA1;
         ydata2=H_VKA4;
-        ydata3=q_Pana1;
+        ydata3=h_Pana1;
         ydata4=H_P2T;
-        ydata5=q_HP;
+        ydata5=h_HP;
         duration= 0 : 100/(length(ydata)-1) : 100;
         plot(duration,sort(ydata,'descend'),'--',duration,sort(ydata2,'descend'),':',...
              duration,sort(ydata3,'descend'),'-.',duration,sort(ydata4,'descend'),...
@@ -638,11 +784,11 @@ while PROCESS_RESULTS==1
         
         ydata=C_VKA1;
         ydata2=C_VKA4;
-        ydata3=k_AbsC;
-        ydata4=k_AbsCInv;
-        ydata5=k_RM;
-        ydata6=k_RMMC;
-        ydata7=k_AAC;
+        ydata3=c_AbsC;
+        ydata4=c_AbsCInv;
+        ydata5=c_RM;
+        ydata6=c_RMMC;
+        ydata7=c_AAC;
         ydata8=c_HP;
         duration= 0 : 100/(length(ydata)-1) : 100;
         plot(duration,sort(ydata,'descend'),'--',duration,sort(ydata2,'descend'),':',...
@@ -685,8 +831,8 @@ while PROCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        load(strcat(path_Data,'FED_PE0'));
-        load FED_PE0;
+        FED_PE0=load('Sim_Results_new\Sim_Results_base\Data\FED_PE');
+        FED_PE0=FED_PE0.FED_PE;
         load(strcat(path_Data,'FED_PE'));
         ydata=FED_PE0(1:8760)/1000;
         ydata2=FED_PE(1:8760)/1000;
@@ -703,13 +849,13 @@ while PROCESS_RESULTS==1
         %save result 
         plot_fname=['FED_PE_PE0_duration'];
         fsave_figure(path_Figures,plot_fname);
-        
+        %%
         %time series plot, base case
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)         
-        load(strcat(path_Data,'FED_PE0'));
-        load FED_PE0;
+        FED_PE0=load('Sim_Results_new\Sim_Results_base\Data\FED_PE');
+        FED_PE0=FED_PE0.FED_PE;        
         ydata=FED_PE0(1:8760)/1000;
         xdata= (1:length(ydata))/(24*30);
         plot(xdata,ydata,'LineWidth',LineThickness);
@@ -725,13 +871,12 @@ while PROCESS_RESULTS==1
         %save result 
         plot_fname=['FED_PE0'];
         fsave_figure(path_Figures,plot_fname);
-        
+        %%
         %time series curve
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)        
         load(strcat(path_Data,'FED_PE'));
-        load FED_PE0;
         ydata=FED_PE(1:8760)/1000;
         xdata= (1:length(ydata))/(24*30);
         plot(xdata,ydata,'LineWidth',LineThickness);
@@ -747,7 +892,7 @@ while PROCESS_RESULTS==1
         %save result 
         plot_fname=['FED_PE'];
         fsave_figure(path_Figures,plot_fname);
-        
+        %%
         %percentage change in PE use in the FED system
         fprintf('*********REDUCTION IN THE FED PRIMARY ENERGY USE********** \n')
         FED_pPE=(1-sum(FED_PE)/sum(FED_PE0));
@@ -758,8 +903,8 @@ while PROCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        load(strcat(path_Data,'FED_CO20'));
-        load FED_CO20;
+        FED_CO20=load('Sim_Results_new\Sim_Results_base\Data\FED_CO2');
+        FED_CO20=FED_CO20.FED_CO2;
         load(strcat(path_Data,'FED_CO2'));
         ydata=FED_CO20(1:8760)/1000;
         ydata2=FED_CO2(1:8760)/1000;
@@ -909,7 +1054,7 @@ while PROCESS_RESULTS==1
         load(strcat(path_Data,'B_BITES'));
         load(strcat(path_Data,'BTES_Scap'));
         ydata=BTES_Scap.*B_BITES';
-        xdata=1:30;
+        xdata=1:35;
         bar(xdata,ydata)        
         xlabel('Buildings []','FontSize',Font_Size,'FontName','Times New Roman')        
         ylabel('BTES_{cap} Shallow [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
@@ -928,7 +1073,7 @@ while PROCESS_RESULTS==1
             'PaperSize',properties.PaperSize)
         load(strcat(path_Data,'BTES_Dcap'));
         ydata=BTES_Dcap.*B_BITES';
-        xdata=1:30;
+        xdata=1:35;
         bar(xdata,ydata)        
         xlabel('Buildings []','FontSize',Font_Size,'FontName','Times New Roman')        
         ylabel('BTES_{cap} Deep [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
@@ -939,6 +1084,28 @@ while PROCESS_RESULTS==1
         grid
         %save result 
         plot_fname=['BITES_Dcap'];
+        fsave_figure(path_Figures,plot_fname);
+        %% Energy saving from BAC
+        
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)
+        load(strcat(path_Data,'h_BAC_savings'));
+        ydata=BTES_Den/1000;
+        time=(1:length(ydata))/(24*30);
+        xdata=time;
+        
+        area(xdata,ydata,'EdgeColor','none')
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('BAC saving [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        box off
+        xlim([0 12])
+        ylim([0 inf])
+        grid
+        %save result 
+        plot_fname=['BAC_saving'];
         fsave_figure(path_Figures,plot_fname);
         %% Feasible PV capacities 
          
@@ -1004,12 +1171,12 @@ while PROCESS_RESULTS==1
                 
         %Fuel cost
         load(strcat(path_Data,'fuel_cost'));
-        load(strcat(path_Data,'q_Pana1'));
-        load(strcat(path_Data,'q_P2'));
-        temp_fCost=zeros(8760,2);
-        uf_cost=fuel_cost';
-        temp_fCost(:,1)=q_Pana1*uf_cost(1,7);
-        temp_fCost(:,2)=q_P2*uf_cost(1,8);
+        load(strcat(path_Data,'h_Pana1'));
+        load(strcat(path_Data,'h_P2'));        
+        temp_fCost=zeros(8761,2);
+        uf_cost=fuel_cost';        
+        temp_fCost(:,1)=h_Pana1*uf_cost(1,7);
+        temp_fCost(:,2)=h_P2*uf_cost(1,8);
         %fCost0=sum(q_P1*uf_cost(1,7))/1000; % fixed in the base case need
         %to be calculated to make the comparision
         
@@ -1037,48 +1204,66 @@ while PROCESS_RESULTS==1
         load(strcat(path_Data,'var_cost')); 
         load(strcat(path_Data,'price'))
         load(strcat(path_Data,'BES_dis'));
-        load(strcat(path_Data,'q_P2'));
-        load(strcat(path_Data,'k_AAC'));
+        load(strcat(path_Data,'h_P2'));
+        load(strcat(path_Data,'c_AAC'));
         load(strcat(path_Data,'H_VKA1'));
         load(strcat(path_Data,'H_VKA4'));
-        load(strcat(path_Data,'e_exG'));
-        load(strcat(path_Data,'q_DH'));
+        load(strcat(path_Data,'e_imp_AH'));
+        load(strcat(path_Data,'e_imp_nonAH'));
+        load(strcat(path_Data,'e_exp_AH'));
+        load(strcat(path_Data,'h_imp_AH'));
+        load(strcat(path_Data,'h_imp_nonAH'));
+        load(strcat(path_Data,'h_exp_AH'));
         
         uv_Cost=var_cost';
-        temp_varCost=zeros(8760,8);
-        temp_varCost(:,1)=q_HP*uv_Cost(1,2)+H_VKA1*uv_Cost(1,2)+H_VKA4*uv_Cost(1,2);
+        temp_varCost=zeros(8761,8);
+        temp_varCost(:,1)=h_HP*uv_Cost(1,2)+H_VKA1*uv_Cost(1,2)+H_VKA4*uv_Cost(1,2);
         temp_varCost(:,2)=BES_dis*uv_Cost(1,3);
-        temp_varCost(:,3)=q_Pana1*uv_Cost(1,7);
+        temp_varCost(:,3)=h_Pana1*uv_Cost(1,7);
         %varCost0=sum(q_P1*uv_Cost(1,7));  % variable in the base case need
         %to be calculated to make the comparision 
-        temp_varCost(:,4)=q_P2*uv_Cost(1,8);
+        temp_varCost(:,4)=h_P2*uv_Cost(1,8);
         temp_varCost(:,5)=e_TURB*uv_Cost(1,9);
-        temp_varCost(:,6)=k_AbsC*uv_Cost(1,10) + k_AbsCInv*uv_Cost(1,11);
-        temp_varCost(:,7)=k_AAC*uv_Cost(1,12);
-        temp_varCost(:,8)=k_RM*uv_Cost(1,13);
+        temp_varCost(:,6)=c_AbsC*uv_Cost(1,10) + c_AbsCInv*uv_Cost(1,11);
+        temp_varCost(:,7)=c_AAC*uv_Cost(1,12);
+        temp_varCost(:,8)=c_RM*uv_Cost(1,13);
         price=price';
-        temp_varCost(:,9)=e_exG(:).*price(:,14);
-        temp_varCost(:,10)=q_DH(:).*price(:,15);
+        temp_varCost(:,9)=(e_imp_AH(:) + e_imp_nonAH(:)).*price(:,14);
+        temp_varCost(:,10)=(h_imp_AH(:) + h_imp_nonAH(:)).*price(:,15);
         ydata=sum(temp_varCost,1)/1000;
         % Variable cost, Base case optn cost
-        load q_P1;
-        load el_import;
-        load q_import;
-        load c0_AbsC;
-        load c0_AAC;
-        load q0_VKA1;
-        load q0_VKA4;
-        temp_varCost0=zeros(8760,7);
-        temp_fCost0=q_P1*uf_cost(1,7);
+        h_Pana10=load('Sim_Results_new\Sim_Results_base\Data\h_Pana1');
+        h_Pana10=h_Pana10.h_Pana1;
+        e_imp_AH0=load('Sim_Results_new\Sim_Results_base\Data\e_imp_AH');
+        e_imp_AH0=e_imp_AH0.e_imp_AH;
+        e_imp_nonAH0=load('Sim_Results_new\Sim_Results_base\Data\e_imp_nonAH');
+        e_imp_nonAH0=e_imp_nonAH0.e_imp_nonAH;
+        h_imp_AH0=load('Sim_Results_new\Sim_Results_base\Data\h_imp_AH');
+        h_imp_AH0=h_imp_AH0.h_imp_AH;
+        h_imp_nonAH0=load('Sim_Results_new\Sim_Results_base\Data\h_imp_nonAH');
+        h_imp_nonAH0=h_imp_nonAH0.h_imp_nonAH;
+        h_exp_AH0=load('Sim_Results_new\Sim_Results_base\Data\h_exp_AH');
+        h_exp_AH0=h_exp_AH0.h_exp_AH;
+
+        c0_AbsC=load('Sim_Results_new\Sim_Results_base\Data\c_AbsC');
+        c0_AbsC=c0_AbsC.c_AbsC;
+        c0_AAC=load('Sim_Results_new\Sim_Results_base\Data\c_AAC');
+        c0_AAC=c0_AAC.c_AAC;
+        h0_VKA1=load('Sim_Results_new\Sim_Results_base\Data\H_VKA1');
+        h0_VKA1=h0_VKA1.H_VKA1;
+        h0_VKA4=load('Sim_Results_new\Sim_Results_base\Data\H_VKA4');
+        h0_VKA4=h0_VKA4.H_VKA4;        
+        temp_varCost0=zeros(8761,7);
+        temp_fCost0=h_Pana10*uf_cost(1,7);
         fprintf('                    Total fuel cost (Base case) = %d kSEK \n', sum(temp_fCost0)/1000)
         fprintf('                    ===========================                     \n\n')
-        temp_varCost0(:,1)=q0_VKA1*uv_Cost(1,2)+q0_VKA4*uv_Cost(1,2);
-        temp_varCost0(:,2)=q_P1*uv_Cost(1,3);
+        temp_varCost0(:,1)=h0_VKA1*uv_Cost(1,2)+h0_VKA4*uv_Cost(1,2);
+        temp_varCost0(:,2)=h_Pana10*uv_Cost(1,3);
         temp_varCost0(:,3)=c0_AbsC*uv_Cost(1,10);
         temp_varCost0(:,4)=c0_AAC*uv_Cost(1,12);
         temp_varCost0(:,5)=0*uv_Cost(1,13);
-        temp_varCost0(:,6)=el_import(:).*price(:,14);
-        temp_varCost0(:,7)=q_import(:).*price(:,15);        
+        temp_varCost0(:,6)=(e_imp_AH0(:)+e_imp_nonAH0(:)).*price(:,14);
+        temp_varCost0(:,7)=(h_imp_AH0(:)+h_imp_nonAH0(:)).*price(:,15);        
         ydata0=sum(temp_varCost0,1)/1000;
     
         figure('Units','centimeters','PaperUnits','centimeters',...
@@ -1106,7 +1291,8 @@ while PROCESS_RESULTS==1
         box off
         %xlim([0 12])
         set(gca,'XTickLabel',{'HP','P1','AbsC','AAC','RM','exG','DH'},'FontName','Times New Roman','FontSize',11)
-        grid
+        grid;        
+        
         
         fprintf('                    Total variable cost = %d kSEK \n', sum(ydata))
         fprintf('                    ===========================                     \n\n')
@@ -1177,8 +1363,8 @@ while PROCESS_RESULTS==1
         fprintf('                    ===========================                     \n')
         fprintf('************************************************************** \n')
         fprintf('************************************************************** \n')
-        break;
-        %% 
+        
+        break;         
     end    
     break;
 end
