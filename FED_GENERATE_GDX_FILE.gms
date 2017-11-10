@@ -171,7 +171,7 @@ $GDXIN
 
 *----------------Building INERTIA storage parameters(=BS_cap, BD_cap, BS_ch_max, BS_dis_max,)
 
-$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\UFO_TES_new.xlsx par=BTES_model rng=BITES_gams!A1:AE10
+$CALL GDXXRW.EXE Input_data_FED_SIMULATOR\UFO_TES_new.xlsx par=BTES_model rng=BITES_gams!A1:AJ10
 set
     BTES_properties  Building Inertia TES properties
                          /BTES_Scap, BTES_Dcap, BTES_Esig, BTES_Sch_hc, BTES_Sdis_hc,

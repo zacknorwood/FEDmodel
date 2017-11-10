@@ -13,9 +13,9 @@ while PROCESS_RESULTS==1
     %% Set results in a gdx file for a given scenario/option    
     tic
     %set desired option
-    option='mintotPE\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    option='Sensitivity\mintotCO2_AH_inv\without_TES\p1_dispatch\with_100_PECO2F\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results_new\',option);
-    file_name='GtoM_mintotPE';
+    file_name='GtoM_mintotCost_no_CO2PE_Limits';
     gdxData=strcat(path,file_name);       
     %% Get parameters and variables from a GDX file 
     
@@ -41,6 +41,37 @@ while PROCESS_RESULTS==1
     
     path_Data=strcat(path,'Data\'); 
     path_Data_base='Sim_Results_new\Sim_Results_base\Data\';
+    %% System total cost and annualized investment cost
+    
+    %Fixed cost for exisiting units 
+    fix_cost_existing=struct('name','fix_cost_existing');
+    fix_cost_existing=rgdx(gdxData,fix_cost_existing);
+    fix_cost_existing=fix_cost_existing.val;
+    save(strcat(path_Data,'fix_cost_existing'),'fix_cost_existing'); 
+    
+    %variable cost for existing units 
+    var_cost_existing=struct('name','var_cost_existing');
+    var_cost_existing=rgdx(gdxData,var_cost_existing);
+    var_cost_existing=var_cost_existing.val;
+    save(strcat(path_Data,'var_cost_existing'),'var_cost_existing');
+    
+    %Fixed cost for new units 
+    fix_cost_new=struct('name','fix_cost_new');
+    fix_cost_new=rgdx(gdxData,fix_cost_new);
+    fix_cost_new=fix_cost_new.val;
+    save(strcat(path_Data,'fix_cost_new'),'fix_cost_new'); 
+    
+    %variable cost for existing units 
+    var_cost_new=struct('name','var_cost_new');
+    var_cost_new=rgdx(gdxData,var_cost_new);
+    var_cost_new=var_cost_new.val;
+    if isempty(var_cost_new)
+       var_cost_new=0; 
+    end
+    save(strcat(path_Data,'var_cost_new'),'var_cost_new');
+    
+    tot_opn_cost=fix_cost_existing + var_cost_existing + fix_cost_new + var_cost_new;
+    save(strcat(path_Data,'tot_opn_cost'),'tot_opn_cost');
     %% Electricty, heating and cooling demand data used as inputs in the simulation     
     
     %electricity demand in the FED system    
@@ -55,9 +86,11 @@ while PROCESS_RESULTS==1
     %% Electricity and heat price and out door temprature
     
     el_price=gdx2mat(gdxData,'el_price',h);
+    el_sell_price=gdx2mat(gdxData,'el_sell_price',h);
     h_price=gdx2mat(gdxData,'h_price',h);
     tout=gdx2mat(gdxData,'tout',h);
     save(strcat(path_Data,'el_price'),'el_price');
+    save(strcat(path_Data,'el_sell_price'),'el_sell_price');
     save(strcat(path_Data,'h_price'),'h_price');
     save(strcat(path_Data,'tout'),'tout');
     %% Area of roofs and walls of buildings in the FED system 
@@ -258,14 +291,22 @@ while PROCESS_RESULTS==1
     BTES_Dcap=BTES_model(2,:);
     save(strcat(path_Data,'BTES_Scap'),'BTES_Scap');
     save(strcat(path_Data,'BTES_Dcap'),'BTES_Dcap');    
-    %Binary decission variable to invest in the TES (is 1 if invested, 0 otherwise)
+    %Binary decission variable to invest in the BITES (is 1 if invested, 0 otherwise)
     B_BITES=gdx2mat(gdxData,'B_BITES',i);
     save(strcat(path_Data,'B_BITES'),'B_BITES');
-    %investment cost in the TES
+    %investment cost in the BITES
     invCost_BITES=struct('name','invCost_BITES');    
     invCost_BITES=rgdx(gdxData,invCost_BITES);
     invCost_BITES=invCost_BITES.val;
     save(strcat(path_Data,'invCost_BITES'),'invCost_BITES');
+    %investment cost in the BAC
+    invCost_BAC=struct('name','invCost_BAC');    
+    invCost_BAC=rgdx(gdxData,invCost_BAC);
+    invCost_BAC=invCost_BAC.val;
+    save(strcat(path_Data,'invCost_BAC'),'invCost_BAC');
+    %Binary decission variable to invest in the BAC (is 1 if invested, 0 otherwise)
+    B_BAC=gdx2mat(gdxData,'B_BAC',i);
+    save(strcat(path_Data,'B_BAC'),'B_BAC');    
     %BITES charging (Shallow)
     BTES_Sch=gdx2mat(gdxData,'BTES_Sch',{h,i});
     save(strcat(path_Data,'BTES_Sch'),'BTES_Sch');
@@ -373,7 +414,7 @@ while PROCESS_RESULTS==1
     var_cost=gdx2mat(gdxData,'var_cost',{sup_unit,h});
     save(strcat(path_Data,'price'),'price');
     save(strcat(path_Data,'fuel_cost'),'fuel_cost'); 
-    save(strcat(path_Data,'var_cost'),'var_cost'); 
+    save(strcat(path_Data,'var_cost'),'var_cost');    
     %%
     break;
     end
@@ -392,7 +433,7 @@ while PROCESS_RESULTS==1
         Font_Size=properties.axelFontsize;
         lgnd_size=1;
         LineWidth=1;
-        LineThickness=1.5; 
+        LineThickness=1.2; 
         path_Data=strcat(path,'Data\');
         path_Figures=strcat(path,'Figures\');
         %% PEF and CO2F of the DH and electrity grid        
@@ -408,7 +449,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('PE [kWh_{PE}/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         ylim([0 inf])
@@ -429,7 +470,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('CO_2eq [g/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         ylim([0 inf])
@@ -450,7 +491,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('PE [kWh_{PE}/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         ylim([0 inf])
@@ -471,7 +512,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('CO_2eq [g/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         ylim([0 inf])
@@ -482,22 +523,18 @@ while PROCESS_RESULTS==1
         fsave_figure(path_Figures,plot_fname);
         %% Plot import  and export
         
-        e_imp_AH0=load('Sim_Results_new\Sim_Results_base\Data\e_imp_AH');
-        e_imp_AH0=e_imp_AH0.e_imp_AH;
-        e_imp_nonAH0=load('Sim_Results_new\Sim_Results_base\Data\e_imp_nonAH');                
-      
-        %Electricity import nonAH, simulated
+        %Electricity import AH, simulated
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        load(strcat(path_Data,'e_imp_nonAH'));
-        ydata=e_imp_nonAH;
+        load(strcat(path_Data,'e_imp_AH'));
+        ydata=e_imp_AH;
         xdata=(1:length(ydata))/(24*30);
         plot(xdata,ydata,'LineWidth',LineThickness);        
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         legend('AH el import - Simulated')
@@ -505,8 +542,7 @@ while PROCESS_RESULTS==1
         %save result 
         plot_fname=['ah_el_import_sim'];
         fsave_figure(path_Figures,plot_fname);
-        
-        
+        %%       
         %Electricity export AH, simulated
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -518,7 +554,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         legend('AH el export - Simulated')
@@ -526,7 +562,7 @@ while PROCESS_RESULTS==1
         %save result 
         plot_fname=['ah_el_export_sim'];
         fsave_figure(path_Figures,plot_fname);
-        
+        %%
         %Electricity import nonAH, simulated
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -538,16 +574,15 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         legend('Non-AH el import - Simulated')
         grid
         %save result 
         plot_fname=['nonah_el_import_sim'];
-        fsave_figure(path_Figures,plot_fname);   
-        
-     
+        fsave_figure(path_Figures,plot_fname);         
+        %%
         %Heat import AH, simulated
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -557,18 +592,17 @@ while PROCESS_RESULTS==1
         xdata=(1:length(ydata))/(24*30);
         plot(xdata,ydata,'LineWidth',LineThickness);        
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Heating [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         legend('AH heat import - Simulated')
         grid
         %save result 
         plot_fname=['ah_h_import_sim'];
-        fsave_figure(path_Figures,plot_fname);
-        
-        
+        fsave_figure(path_Figures,plot_fname);        
+        %%
         %Heat export AH, simulated
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -578,9 +612,9 @@ while PROCESS_RESULTS==1
         xdata=(1:length(ydata))/(24*30);
         plot(xdata,ydata,'LineWidth',LineThickness);        
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Heating [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         legend('AH heat export - Simulated')
@@ -588,7 +622,7 @@ while PROCESS_RESULTS==1
         %save result 
         plot_fname=['ah_h_export_sim'];
         fsave_figure(path_Figures,plot_fname);
-        
+        %%
         %Heat import nonAH, simulated
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -598,9 +632,9 @@ while PROCESS_RESULTS==1
         xdata=(1:length(ydata))/(24*30);
         plot(xdata,ydata,'LineWidth',LineThickness);        
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Heating [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         legend('Non-AH heat import - Simulated')
@@ -608,17 +642,18 @@ while PROCESS_RESULTS==1
         %save result 
         plot_fname=['nonah_h_import_sim'];
         fsave_figure(path_Figures,plot_fname);
-        %% Local generation
+        %% Local generation 
         
+        load(strcat(path_Data,'e_existPV'));
         load(strcat(path_Data,'e_PV'));
         load(strcat(path_Data,'e_TURB'));        
-        ydata=e_PV+e_TURB;        
+        ydata=e_existPV + e_PV + e_TURB;        
         xdata=(1:length(ydata))/(24*30);                
         plot(xdata,ydata,'LineWidth',LineThickness);       
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         legend('Local el production')
@@ -626,7 +661,7 @@ while PROCESS_RESULTS==1
         %save result 
         plot_fname=['el_tot_locProduction'];
         fsave_figure(path_Figures,plot_fname);
-                
+        %%        
         %Heat
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -643,9 +678,9 @@ while PROCESS_RESULTS==1
         xdata=(1:length(ydata))/(24*30);                
         plot(xdata,ydata,'LineWidth',LineThickness);       
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('Heat [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Heating [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         legend('Local production')
@@ -653,7 +688,7 @@ while PROCESS_RESULTS==1
         %save result 
         plot_fname=['heat_locProduction'];
         fsave_figure(path_Figures,plot_fname);
-        
+        %%
         %Cooling
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -676,7 +711,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Cooling [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         legend('Local production')
@@ -685,7 +720,7 @@ while PROCESS_RESULTS==1
         plot_fname=['cooling_import_locProduction'];
         fsave_figure(path_Figures,plot_fname);
         % Stacked plots of local production 
-                
+        %%        
         %Electricity
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -693,21 +728,21 @@ while PROCESS_RESULTS==1
         load(strcat(path_Data,'e_PV'));
         load(strcat(path_Data,'e_TURB'));
         
-        ydata=[e_PV  e_TURB];
+        ydata=[e_existPV e_PV  e_TURB];
         xdata=(1:length(ydata))/(24*30);
         area(xdata,ydata,'EdgeColor','none')       
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
-        legend('PV','TURB')
+        legend('Existing PV','New PV','TURB')
         grid
         %save result 
         plot_fname=['el_locProduction'];
         fsave_figure(path_Figures,plot_fname);
-        
+        %%
         %Heat
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -721,18 +756,18 @@ while PROCESS_RESULTS==1
         ydata=[h_Pana1 H_VKA1 H_VKA4 H_P2T h_HP];       
         xdata=(1:length(ydata))/(24*30);
         area(xdata,ydata,'EdgeColor','none')
-        xlabel('Time [Days]','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('Heat [kW]','FontSize',Font_Size,'FontName','Times New Roman')
+        xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Heating [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
-        legend('Panna1','VKA1', 'VKA4' ,'Panna2', 'HP')
+        legend('Boiler1','VKA1', 'VKA4' ,'Boiler2', 'HP')
         grid
         %save result 
         plot_fname=['heat_locProduction'];
         fsave_figure(path_Figures,plot_fname);
-        
+        %%
         % Cooling
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -744,10 +779,10 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Cooling [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        %set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
-        %legend('VKA1','VKA4', 'AbsC', 'AbsInv', 'RM','RMMC','AAC','HP')
+        legend('VKA1','VKA4', 'AbsC', 'AbsInv', 'RM','RMMC','AAC','HP')
         grid
         %save result 
         plot_fname=['cooling_locProduction'];
@@ -771,7 +806,7 @@ while PROCESS_RESULTS==1
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 100])
-        legend('VKA1','VKA4','P1','P2','HP')
+        legend('VKA1','VKA4','Boiler1','Boiler2','HP')
         grid
         %save result 
         plot_fname=['heating_locProduction_duration'];
@@ -810,17 +845,18 @@ while PROCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)        
-        ydata=e_TURB;
-        ydata2=e_PV;        
-        duration= 0 : 100/(length(ydata)-1) : 100;
-        plot(duration,sort(ydata,'descend'),'--',duration,sort(ydata2,'descend'),':',...
+        ydata1=e_existPV;
+        ydata2=e_PV;
+        ydata3=e_TURB;
+        duration= 0 : 100/(length(ydata1)-1) : 100;
+        plot(duration,sort(ydata1,'descend'),'-.',duration,sort(ydata2,'descend'),'--',duration,sort(ydata3,'descend'),':',...
              'LineWidth',LineThickness);
         xlabel('Duration [%]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Local electricty source [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 100])
-        legend('TURB','Solar PV')
+        legend('Existing PV','New PV','TURBINE')
         grid
         %save result 
         plot_fname=['el_locProduction_duration'];
@@ -862,7 +898,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('PE use [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         %ylim([0 30])
@@ -883,7 +919,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('PE use [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         %ylim([0 30])
@@ -917,13 +953,13 @@ while PROCESS_RESULTS==1
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         xlim([0 100])
-        %ylim([0 2500])
+        ylim([-1000 2000])
         legend('Base case',txt)
         grid
         %save result 
         plot_fname=['FED_CO2_CO20_duration'];
         fsave_figure(path_Figures,plot_fname);
-        
+        %%
         %time series curve, base case
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -936,16 +972,16 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('CO_2eq [kg]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
-        %ylim([0 2500])
+        ylim([-1000 2000])
         legend('FED CO2 emission - base case')
         grid
         %save result 
         plot_fname=['FED_CO20'];
         fsave_figure(path_Figures,plot_fname);
-        
+        %%
         %time series curve
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -958,10 +994,10 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('CO_2eq [kg]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
-        %ylim([0 2500])
+        ylim([-1000 2000])
         legend(strcat('FED CO2 emission - ',txt))
         grid
         %save result 
@@ -994,7 +1030,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('TES [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         grid
@@ -1013,7 +1049,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('BITES_{en} - Shallow [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         ylim([0 inf])
@@ -1037,7 +1073,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('BITES_{en} - Deep [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         ylim([0 inf])
@@ -1052,6 +1088,7 @@ while PROCESS_RESULTS==1
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
         load(strcat(path_Data,'B_BITES'));
+        load(strcat(path_Data,'B_BAC'));
         load(strcat(path_Data,'BTES_Scap'));
         ydata=BTES_Scap.*B_BITES';
         xdata=1:35;
@@ -1060,7 +1097,7 @@ while PROCESS_RESULTS==1
         ylabel('BTES_{cap} Shallow [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
-        xlim([1 30])
+        xlim([1 35])
         %ylim([0 2])
         grid
         %save result 
@@ -1079,7 +1116,7 @@ while PROCESS_RESULTS==1
         ylabel('BTES_{cap} Deep [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
-        xlim([1 30])
+        xlim([1 35])
         %ylim([0 2])
         grid
         %save result 
@@ -1091,7 +1128,7 @@ while PROCESS_RESULTS==1
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
         load(strcat(path_Data,'h_BAC_savings'));
-        ydata=BTES_Den/1000;
+        ydata=h_BAC_savings/1000;
         time=(1:length(ydata))/(24*30);
         xdata=time;
         
@@ -1099,7 +1136,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('BAC saving [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         ylim([0 inf])
@@ -1160,7 +1197,7 @@ while PROCESS_RESULTS==1
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('BES [MWh]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        set(gca,'XTickLabel',{'','2','4','6','8','10','12'})
+        set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
         grid
@@ -1169,14 +1206,49 @@ while PROCESS_RESULTS==1
         fsave_figure(path_Figures,plot_fname);
         %% PLot Variable cost and fuel cost of local production units
                 
-        %Fuel cost
+        %Fuel cost, base case
+        h_Pana10=load('Sim_Results_new\Sim_Results_base\Data\h_Pana1');
+        h_Pana10=h_Pana10.h_Pana1;
+        h_Pana20=load('Sim_Results_new\Sim_Results_base\Data\h_P2');
+        h_Pana20=h_Pana20.h_P2;
+        load(strcat(path_Data,'fuel_cost'));   
+        temp_fCost0=zeros(8761,2);
+        uf_cost=fuel_cost';        
+        temp_fCost0(:,1)=h_Pana10*uf_cost(1,8);
+        temp_fCost0(:,2)=h_Pana20*uf_cost(1,9);
+        
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)
+        
+        ydata=sum(temp_fCost0,1)/1000;             
+        bar(ydata);
+        xlabel('Local generating units []','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Fuel cost [kSEK]','FontSize',Font_Size,'FontName','Times New Roman')
+        legend('Fuel cost - Base case');
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        box off
+        %xlim([0 12])
+        set(gca,'XTickLabel',{'Boiler1','Boiler2'},'FontName','Times New Roman','FontSize',11)
+        grid
+        %save result 
+        plot_fname=['fuel_cost'];
+        fsave_figure(path_Figures,plot_fname);
+        
+        fprintf('                    Total fuel cost, Base case = %d kSEK \n', sum(ydata))
+        fprintf('                    ===========================                     \n\n')
+        %save result 
+        plot_fname=['fuel_cost_base'];
+        fsave_figure(path_Figures,plot_fname);
+        %%        
+        %Fuel cost, simulated
         load(strcat(path_Data,'fuel_cost'));
         load(strcat(path_Data,'h_Pana1'));
         load(strcat(path_Data,'h_P2'));        
         temp_fCost=zeros(8761,2);
         uf_cost=fuel_cost';        
-        temp_fCost(:,1)=h_Pana1*uf_cost(1,7);
-        temp_fCost(:,2)=h_P2*uf_cost(1,8);
+        temp_fCost(:,1)=h_Pana1*uf_cost(1,8);
+        temp_fCost(:,2)=h_P2*uf_cost(1,9);
         %fCost0=sum(q_P1*uf_cost(1,7))/1000; % fixed in the base case need
         %to be calculated to make the comparision
         
@@ -1188,52 +1260,23 @@ while PROCESS_RESULTS==1
         bar(ydata);
         xlabel('Local generating units []','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Fuel cost [kSEK]','FontSize',Font_Size,'FontName','Times New Roman')
+        legend('Fuel cost - Simulated');
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         %xlim([0 12])
-        set(gca,'XTickLabel',{'Panna1','Panna2'},'FontName','Times New Roman','FontSize',11)
+        set(gca,'XTickLabel',{'Boiler1','Boiler2'},'FontName','Times New Roman','FontSize',11)
         grid
-        %save result 
-        plot_fname=['fuel_cost'];
-        fsave_figure(path_Figures,plot_fname);
-        
-        fprintf('                    Total fuel cost = %d kSEK \n', sum(ydata))
+                
+        fprintf('                    Total fuel cost, Simulated = %d kSEK \n', sum(ydata))
         fprintf('                    ===========================                     \n\n')
         
-        %Variable cost
-        load(strcat(path_Data,'var_cost')); 
+        %save result 
+        plot_fname=['fuel_cost_sim'];
+        fsave_figure(path_Figures,plot_fname);
+        %% 
+        %Variable cost, Base case                  
         load(strcat(path_Data,'price'))
-        load(strcat(path_Data,'BES_dis'));
-        load(strcat(path_Data,'h_P2'));
-        load(strcat(path_Data,'c_AAC'));
-        load(strcat(path_Data,'H_VKA1'));
-        load(strcat(path_Data,'H_VKA4'));
-        load(strcat(path_Data,'e_imp_AH'));
-        load(strcat(path_Data,'e_imp_nonAH'));
-        load(strcat(path_Data,'e_exp_AH'));
-        load(strcat(path_Data,'h_imp_AH'));
-        load(strcat(path_Data,'h_imp_nonAH'));
-        load(strcat(path_Data,'h_exp_AH'));
-        
-        uv_Cost=var_cost';
-        temp_varCost=zeros(8761,8);
-        temp_varCost(:,1)=h_HP*uv_Cost(1,2)+H_VKA1*uv_Cost(1,2)+H_VKA4*uv_Cost(1,2);
-        temp_varCost(:,2)=BES_dis*uv_Cost(1,3);
-        temp_varCost(:,3)=h_Pana1*uv_Cost(1,7);
-        %varCost0=sum(q_P1*uv_Cost(1,7));  % variable in the base case need
-        %to be calculated to make the comparision 
-        temp_varCost(:,4)=h_P2*uv_Cost(1,8);
-        temp_varCost(:,5)=e_TURB*uv_Cost(1,9);
-        temp_varCost(:,6)=c_AbsC*uv_Cost(1,10) + c_AbsCInv*uv_Cost(1,11);
-        temp_varCost(:,7)=c_AAC*uv_Cost(1,12);
-        temp_varCost(:,8)=c_RM*uv_Cost(1,13);
-        price=price';
-        temp_varCost(:,9)=(e_imp_AH(:) + e_imp_nonAH(:)).*price(:,14);
-        temp_varCost(:,10)=(h_imp_AH(:) + h_imp_nonAH(:)).*price(:,15);
-        ydata=sum(temp_varCost,1)/1000;
-        % Variable cost, Base case optn cost
-        h_Pana10=load('Sim_Results_new\Sim_Results_base\Data\h_Pana1');
-        h_Pana10=h_Pana10.h_Pana1;
+        load(strcat(path_Data,'var_cost'));
         e_imp_AH0=load('Sim_Results_new\Sim_Results_base\Data\e_imp_AH');
         e_imp_AH0=e_imp_AH0.e_imp_AH;
         e_imp_nonAH0=load('Sim_Results_new\Sim_Results_base\Data\e_imp_nonAH');
@@ -1252,34 +1295,18 @@ while PROCESS_RESULTS==1
         h0_VKA1=load('Sim_Results_new\Sim_Results_base\Data\H_VKA1');
         h0_VKA1=h0_VKA1.H_VKA1;
         h0_VKA4=load('Sim_Results_new\Sim_Results_base\Data\H_VKA4');
-        h0_VKA4=h0_VKA4.H_VKA4;        
-        temp_varCost0=zeros(8761,7);
-        temp_fCost0=h_Pana10*uf_cost(1,7);
-        fprintf('                    Total fuel cost (Base case) = %d kSEK \n', sum(temp_fCost0)/1000)
-        fprintf('                    ===========================                     \n\n')
+        h0_VKA4=h0_VKA4.H_VKA4;
+        
+        uv_Cost=var_cost';
+        temp_varCost0=zeros(8761,10);        
         temp_varCost0(:,1)=h0_VKA1*uv_Cost(1,2)+h0_VKA4*uv_Cost(1,2);
-        temp_varCost0(:,2)=h_Pana10*uv_Cost(1,3);
-        temp_varCost0(:,3)=c0_AbsC*uv_Cost(1,10);
-        temp_varCost0(:,4)=c0_AAC*uv_Cost(1,12);
-        temp_varCost0(:,5)=0*uv_Cost(1,13);
-        temp_varCost0(:,6)=(e_imp_AH0(:)+e_imp_nonAH0(:)).*price(:,14);
-        temp_varCost0(:,7)=(h_imp_AH0(:)+h_imp_nonAH0(:)).*price(:,15);        
+        temp_varCost0(:,3)=h_Pana10*uv_Cost(1,8);
+        temp_varCost0(:,6)=c0_AbsC*uv_Cost(1,11);
+        temp_varCost0(:,7)=c0_AAC*uv_Cost(1,13);
+        price=price';
+        temp_varCost0(:,9)=(e_imp_AH0(:)+e_imp_nonAH0(:)).*price(:,15);
+        temp_varCost0(:,10)=(h_imp_AH0(:)+h_imp_nonAH0(:)).*price(:,16)-(h_exp_AH0(:)).*0.3;
         ydata0=sum(temp_varCost0,1)/1000;
-    
-        figure('Units','centimeters','PaperUnits','centimeters',...
-            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
-            'PaperSize',properties.PaperSize)
-        bar(ydata');
-        xlabel('Local Generating units []','FontSize',Font_Size,'FontName','Times New Roman')
-        ylabel('Variable cost [kSEK]','FontSize',Font_Size,'FontName','Times New Roman')
-        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
-        box off
-        %xlim([0 12])
-        set(gca,'XTickLabel',{'HP','BES','P1','P2','TURB','AbsC','AAC','RM','exG','DH'},'FontName','Times New Roman','FontSize',11)
-        grid
-        %save result 
-        plot_fname=['var_cost'];
-        fsave_figure(path_Figures,plot_fname);
         
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
@@ -1287,24 +1314,101 @@ while PROCESS_RESULTS==1
         bar(ydata0');
         xlabel('Local Generating units []','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Variable cost [kSEK]','FontSize',Font_Size,'FontName','Times New Roman')
+        legend('Variable cost - Base case');
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         box off
         %xlim([0 12])
-        set(gca,'XTickLabel',{'HP','P1','AbsC','AAC','RM','exG','DH'},'FontName','Times New Roman','FontSize',11)
+        set(gca,'XTickLabel',{'HP','BES','B1','B2','TURB','AbsC','AAC','RM','extG','DH'},'FontName','Times New Roman','FontSize',11)
         grid;        
         
+        %load fixed costs in the base case
+        load('Sim_Results_new\Sim_Results_base\Data\fix_cost_existing');
+        load('Sim_Results_new\Sim_Results_base\Data\fix_cost_new');
+        tot_fix_cost0=fix_cost_existing + fix_cost_new;
+        fprintf('                    Total fixed cost (Base case)= %d kSEK \n', sum(tot_fix_cost0)/1000)
+        fprintf('                    ===========================                     \n\n')        
         
-        fprintf('                    Total variable cost = %d kSEK \n', sum(ydata))
+        %load variable costs in the base case
+        load('Sim_Results_new\Sim_Results_base\Data\var_cost_existing');
+        load('Sim_Results_new\Sim_Results_base\Data\var_cost_new');
+        tot_var_cost0=var_cost_existing + var_cost_new;
+        fprintf('                    Total variable cost (Base case)= %d kSEK \n', sum(tot_var_cost0)/1000)
         fprintf('                    ===========================                     \n\n')
-        fprintf('                    Total variable cost (Base case)= %d kSEK \n', sum(ydata0))
+        
+        %save result 
+        plot_fname=['var_cost_base'];
+        fsave_figure(path_Figures,plot_fname);
+        %%
+        %Variable cost, Simulated
+        load(strcat(path_Data,'el_sell_price'))
+        load(strcat(path_Data,'BES_dis'));
+        load(strcat(path_Data,'h_P2'));
+        load(strcat(path_Data,'c_AAC'));
+        load(strcat(path_Data,'H_VKA1'));
+        load(strcat(path_Data,'H_VKA4'));
+        load(strcat(path_Data,'e_imp_AH'));
+        load(strcat(path_Data,'e_imp_nonAH'));
+        load(strcat(path_Data,'e_exp_AH'));
+        load(strcat(path_Data,'h_imp_AH'));
+        load(strcat(path_Data,'h_imp_nonAH'));
+        load(strcat(path_Data,'h_exp_AH'));
+        
+        uv_Cost=var_cost';
+        temp_varCost=zeros(8761,10);
+        temp_varCost(:,1)=h_HP*uv_Cost(1,2)+H_VKA1*uv_Cost(1,2)+H_VKA4*uv_Cost(1,2);
+        temp_varCost(:,2)=BES_dis*uv_Cost(1,3);
+        temp_varCost(:,3)=h_Pana1*uv_Cost(1,8);
+        temp_varCost(:,4)=h_P2*uv_Cost(1,9);
+        temp_varCost(:,5)=e_TURB*uv_Cost(1,10);
+        temp_varCost(:,6)=c_AbsC*uv_Cost(1,11) + c_AbsCInv*uv_Cost(1,12);
+        temp_varCost(:,7)=c_AAC*uv_Cost(1,13);
+        temp_varCost(:,8)=c_RM*uv_Cost(1,14);        
+        temp_varCost(:,9)=(e_imp_AH(:) + e_imp_nonAH(:)).*price(:,15)-(e_exp_AH(:)).*el_sell_price(:);
+        temp_varCost(:,10)=(h_imp_AH(:) + h_imp_nonAH(:)).*price(:,16)-(h_exp_AH(:)).*0.3;
+        ydata=sum(temp_varCost,1)/1000;
+        
+        figure('Units','centimeters','PaperUnits','centimeters',...
+            'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
+            'PaperSize',properties.PaperSize)
+        bar(ydata');
+        xlabel('Local Generating units []','FontSize',Font_Size,'FontName','Times New Roman')
+        ylabel('Variable cost [kSEK]','FontSize',Font_Size,'FontName','Times New Roman')
+        legend('Variable cost - Simulated');
+        set(gca,'FontName','Times New Roman','FontSize',Font_Size)
+        box off
+        %xlim([0 12])
+        set(gca,'XTickLabel',{'HP','BES','B1','B2','TURB','AbsC','AAC','RM','extG','DH'},'FontName','Times New Roman','FontSize',11)
+        grid
+        
+        %load variable costs, simulated
+        load(strcat(path_Data,'fix_cost_existing'));
+        load(strcat(path_Data,'fix_cost_new'));
+        tot_fix_cost=fix_cost_existing + fix_cost_new;
+        fprintf('                    Total fixed cost, Simulated = %d kSEK \n', sum(tot_fix_cost)/1000)
         fprintf('                    ===========================                     \n\n')
-
-        optCost=sum(sum(temp_varCost))/1000 + sum(sum(temp_fCost))/1000;
-        optCost0=sum(sum(temp_varCost0))/1000 + sum(sum(temp_fCost0))/1000;
+        
+        %load fixed costs, simulated
+        load(strcat(path_Data,'var_cost_existing'));
+        load(strcat(path_Data,'var_cost_new'));
+        tot_var_cost=var_cost_existing + var_cost_new;
+        fprintf('                    Total variable cost, Simulated = %d kSEK \n', sum(tot_var_cost))
+        fprintf('                    ===========================                     \n\n')   
+       
+        %save result 
+        plot_fname=['var_cost_sim'];
+        fsave_figure(path_Figures,plot_fname);
+        %% Annual total operation cost
+        
+        tot_opn_cost0=load('Sim_Results_new\Sim_Results_base\Data\tot_opn_cost');
+        tot_opn_cost0=tot_opn_cost0.tot_opn_cost;        
+        load(strcat(path_Data,'tot_opn_cost'));        
+        
         %optCost0=fCost0+varCost0;
-        fprintf('                    Total operation cost = %d kSEK\n', optCost)
+        fprintf('                    Total operation cost = %d kSEK\n', tot_opn_cost/1000)
         fprintf('                    ===========================                     \n\n')
-        fprintf('                    Total operation cost (Base case) = %d kSEK\n', optCost0)
+        fprintf('                    Total operation cost (Base case) = %d kSEK\n', tot_opn_cost0/1000)
+        fprintf('                    ===========================                     \n\n')
+        fprintf('                    Percentage reduction in operation cost = %d kSEK\n', (1-(tot_opn_cost/tot_opn_cost0)))
         fprintf('                    ===========================                     \n\n')
         %legend('HP','BES','Panna1','Panna2','TURB','AbsC','AbsCInv','AAC','RM')
         %% Investment options
@@ -1333,8 +1437,10 @@ while PROCESS_RESULTS==1
         load(strcat(path_Data,'BTES_Scap'));
         load(strcat(path_Data,'BTES_Dcap'));
         load(strcat(path_Data,'invCost_BITES'));
+        load(strcat(path_Data,'invCost_BAC'));
         tot_BITES_cap=sum(BTES_Scap.*B_BITES' + BTES_Dcap.*B_BITES');        
-        fprintf('Total Building inertia thermal capacity [MW]= %d, BITES Investment cost = %d MSEK \n',tot_BITES_cap, invCost_BITES/10^6)
+        fprintf('Building inertia thermal, Number of Buildings= %d, Capacity [MW]= %d, BITES Investment cost = %d MSEK \n',sum(B_BITES), tot_BITES_cap, invCost_BITES/10^6)
+        fprintf('Building Advanced Control, Number of Buildings= %d, BAC Investment cost = %d MSEK \n', sum(B_BAC), invCost_BAC/10^6)
         fprintf('                    ===========================                     \n\n')
         %Roof Capacity = %d kW, Facade Capacity = %d kW, Investment cost = %d MSEK \n',PV_cap_roof,PV_cap_facade, invCost_PV/10^6
         %%
@@ -1362,8 +1468,7 @@ while PROCESS_RESULTS==1
         fprintf('    Total investment cost in the FED system = %d MSEK \n',invCost/10^6)
         fprintf('                    ===========================                     \n')
         fprintf('************************************************************** \n')
-        fprintf('************************************************************** \n')
-        
+        fprintf('************************************************************** \n')        
         break;         
     end    
     break;
@@ -1419,19 +1524,25 @@ figure('Units','centimeters','PaperUnits','centimeters',...
        'PaperSize',properties.PaperSize)
 
 %[e0_VKA1 e0_VKA4 e0_AAC el_pv] [q0_AbsC q0_VKA1 q0_VKA4 q_P1]
-ydata=FED_CO20/1000;
+%load('Sim_Results_new\Sim_Results_base\Data\h_exp_AH');
+
+ydata=el_sell_price-el_price+0.0031+0.019-0.01;
 duration= 0 : 100/(length(ydata)-1) : 100;
 xdata=(1:length(ydata))/(24*30);
 %plot(duration,sort(ydata,'descend'),'LineWidth',LineThickness);
 %plot(duration(1:8760),sort(ydata(1:8760),'descend'),'-.r',...
 %     duration(1:8760),sort(ydata2(1:8760),'descend'),'g','LineWidth',LineThickness);
-plot(xdata,ydata,'LineWidth',LineThickness);
+plot(xdata,sum(ydata,2),'LineWidth',LineThickness);
 %bar(xdata,ydata,'stacked');
 xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
-ylabel('FED CO_2 eq[kg]','FontSize',Font_Size,'FontName','Times New Roman')
+ylabel('El cirtificate [SEK/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
 %ylabel('PE [kWh_{PE}/kWh]','FontSize',Font_Size,'FontName','Times New Roman')
 %legend('VKA1 el demand','VKA4 el demand','AAC el demand','PV el generation')
+%legend('Boiler1 heat gen','VKA1 heat gen','VKA4 heat gen','AbsC heat gen')
+legend('Heat price in the GEs DH')
 %set(gca,'XTickLabel',{'2','4', '6','8','10','12'},'FontName','Times New Roman','FontSize',Font_Size)
+
+set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
 %legend('xL=100km','xL=200km','xL=300km','xL=400km','xL=500km');
 %h=legend('$$\overline{D}$$=3250MW','$$\overline{D}$$=6500MW','$$\overline{D}$$=9750MW','$$\overline{D}$$=13000MW','$$\overline{D}$$=16250MW','$$\overline{D}$$=19500MW');
 %set(h,'Interpreter','latex')
@@ -1444,8 +1555,9 @@ ylabel('FED CO_2 eq[kg]','FontSize',Font_Size,'FontName','Times New Roman')
 set(gca,'FontName','Times New Roman','FontSize',Font_Size)
 box off
 grid
-xlim([xdata(1) 12])
-%ylim([0 inf])
+xlim([0 12])
+%xlim([xdata(1) 30])
+ylim([0 inf])
 
 %legend('Biomass','Coal', 'Gas','Hydro', 'Nuclear', 'Oil', 'Solar', 'Wind', 'Geothermal', 'Unknown')
 % legend('ANG HP1 ','ANG HP2','ANG HP3','SÄV HP1 + RK1','SÄV HP2',...
