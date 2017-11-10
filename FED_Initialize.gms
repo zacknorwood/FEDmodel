@@ -7,7 +7,7 @@ $Include FED_GET_GDX_FILE
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
-         sup_unit   supply units /PV, HP, BES, TES, BTES,BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP/
+         sup_unit   supply units /PV, HP, BES, TES, BTES, BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP/
          inv_opt    investment options /PV, HP, BES, TES, BTES,BAC, RMMC, P2, TURB, AbsCInv/
 ;
 
@@ -225,7 +225,7 @@ parameter
 *[COP and eff values need to be checked]
 scalar
 * Heat pump efficiencies from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
-         HP_H_COP       Coefficent of performance for heat of the Heat Pump (HP)/4/
+         HP_H_COP       Coefficent of performance for heat of the Heat Pump (HP)/3.15/
          HP_C_COP       Coefficent of performance for cooling of the Heat Pump (HP)/3/
 ;
 *--------------TES constants and parameters-------------------------------------

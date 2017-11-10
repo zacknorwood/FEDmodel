@@ -23,9 +23,6 @@ ALL
 /;
 
 SOLVE total using MIP minimizing obj;
-*
-*read model.sav
-*conflict
 
 parameter
 invCost_PV      investment cost of PV
@@ -35,9 +32,9 @@ invCost_BITES   investment cost of building inertia thermal energy storage
 invCost_BAC     investment cost of building advanced control
 invCost_HP      investment cost of heat pump
 invCost_RMMC    investment cost of connecting MC2 RM
-invCost_AbsCInv investment cost of absorption cooler
-invCost_P2      investment cost of P2
-invCost_TURB    investment cost of turbine
+invCost_AbsCInv     investment cost of absorption cooler
+invCost_P2          investment cost of P2
+invCost_TURB        investment cost of turbine
 total_cap_PV_roof   total capacity in kW
 total_cap_PV_facade total capacity in kW
 h_demand_nonAH_sum  total demand for non AH buildings
@@ -103,8 +100,8 @@ execute_unload 'GtoM' min_totCost0, min_totCost, min_totPE, min_totCO2, min_peak
                       BES_en, BES_ch, BES_dis, BES_cap, invCost_BEV, BES_dis_eff, BES_ch_eff,
                       PT_exG, PT_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
-                      fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
-                      DH_export_season, P1P2_dispatchable, p1_dispach, h_P1, inv_lim
+                      totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
+                      DH_export_season, P1P2_dispatchable, h_P1, inv_lim
                       model_status;
 
 execute_unload 'h' h;

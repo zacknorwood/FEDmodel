@@ -26,7 +26,6 @@ positive variable
          Panna1_cap           capacity of Panna1
 ;
 Panna1_cap.fx=cap_sup_unit('P1');
-h_Pana1.fx(h) $ (p1_dispach eq 0)  = h_P1(h);
 *------------------AbsC(Absorbtion Chiller) related-----------------------------
 
 positive variable
@@ -164,11 +163,11 @@ positive variables
          BES_en(h)       Energy stored in the battry at time t and building i
          BES_ch(h)       Battery charing at time t and building i
          BES_dis(h)      Battery discharging at time t and building i
-         BES_cap        Capacity of the battery at building i
+         BES_cap         Capacity of the battery at building i
 ;
 *------------------Grid El related----------------------------------------------
 positive variable
-         e_exp_AH(h)        Imported electricty to the AH system
+         e_exp_AH(h)        Exported electricty from the AH system
          e_imp_AH(h)        Imported electricty to the AH system
          e_imp_nonAH(h)     Imported electricty to the AH system
 ;
@@ -177,14 +176,14 @@ e_exp_AH.up(h)=exG_max_cap;
 *------------------Grid DH related----------------------------------------------
 
 positive variable
-         h_exp_AH(h)        Imported heat to the AH system
+         h_exp_AH(h)        Exported heat from the AH system
          h_imp_AH(h)        Imported heat to the AH system
          h_imp_nonAH(h)     Imported heat to the AH system
 ;
 * Set maximum import and export to the grid.
 h_imp_AH.up(h) $ (min_totCost0 eq 0)=  DH_max_cap;
 
-h_exp_AH.up(h)=DH_max_cap
+h_exp_AH.up(h)=DH_max_cap;
 *h_DH.lo(h)=-DH_max_cap;
 *h_DH.up(h)=DH_max_cap;
 *------------------Grid DC related---------------------------------------------
@@ -203,8 +202,8 @@ variable
 
 ;
 
-*tot_PE.up $ (min_totCost eq 1)  = PE_lim;
-*FED_CO2.up(h) $ (min_totCost eq 1)  = CO2_lim;
+tot_PE.up $ (min_totCost eq 1)  = PE_lim;
+FED_CO2.up(h) $ (min_totCost eq 1)  = CO2_lim;
 *-------------------- Power tariffs -------------------------------------------
 
 positive variables

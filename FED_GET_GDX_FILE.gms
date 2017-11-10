@@ -149,7 +149,6 @@ parameters  CO2_peak_ref       reference peak CO2 emission
             min_totPECO2       OPtion to minimize both total PE use and CO2 emission
             min_peakCO2        OPtion to minimize peak CO2 emission
             inv_lim            Maximum value of the investment in SEK
-            p1_dispach         Option to dispatch Panna1 or not
 ;
 $GDXIN MtoG.gdx
 $LOAD CO2_max
@@ -176,9 +175,7 @@ $LOAD min_totCO2
 $LOAD min_totPECO2
 $LOAD min_peakCO2
 $LOAD inv_lim
-$LOAD p1_dispach
 $GDXIN
-
 
 $Ontext
 
