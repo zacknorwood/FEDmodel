@@ -13,9 +13,9 @@ while PROCESS_RESULTS==1
     %% Set results in a gdx file for a given scenario/option    
     tic
     %set desired option
-    option='Sensitivity\mintotCO2_AH_inv\without_TES\p1_dispatch\with_100_PECO2F\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    option='mintotPE\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results_new\',option);
-    file_name='GtoM_mintotCost_no_CO2PE_Limits';
+    file_name='GtoM_mintotCost';
     gdxData=strcat(path,file_name);       
     %% Get parameters and variables from a GDX file 
     
@@ -930,8 +930,8 @@ while PROCESS_RESULTS==1
         fsave_figure(path_Figures,plot_fname);
         %%
         %percentage change in PE use in the FED system
-        fprintf('*********REDUCTION IN THE FED PRIMARY ENERGY USE********** \n')
-        FED_pPE=(1-sum(FED_PE)/sum(FED_PE0));
+        fprintf('*********CHANGE IN THE FED PRIMARY ENERGY USE********** \n')
+        FED_pPE=(sum(FED_PE)/sum(FED_PE0)-1);
         fprintf('Change in total FED PE use (New/Base) = %d \n\n', FED_pPE);
         %% PLot FED CO2 emission with and without investment
         
@@ -1005,15 +1005,15 @@ while PROCESS_RESULTS==1
         fsave_figure(path_Figures,plot_fname);
         
         %percentage change in peak CO2 emission in the FED system
-        fprintf('*********REDUCTION IN THE FED TOTAL CO2 EMISSION********** \n')
-        FED_pCO2_tot=1-sum(FED_CO2)/sum(FED_CO20);
+        fprintf('*********CHANGE IN THE FED TOTAL CO2 EMISSION********** \n')
+        FED_pCO2_tot=sum(FED_CO2)/sum(FED_CO20)-1;
         fprintf('Change in THE FED total co2 emission (New/Base) = %d \n\n', FED_pCO2_tot);
         fprintf('*********REDUCTION IN THE FED PEAK CO2 EMISSION********** \n')
-        FED_pCO2_peak=(1-max(FED_CO2)/max(FED_CO20));
+        FED_pCO2_peak=(max(FED_CO2)/max(FED_CO20)-1);
         fprintf('Change in THE FED peak co2 emission (New/Base) = %d \n\n', FED_pCO2_peak);
         %percentage change in CO2 peak hours in the FED system (this figure make sence if FED_pCO2_peak is posetive)
-        fprintf('*********REDUCTION IN THE FED PEAK HOUR CO2 EMISSION********** \n')
-        FED_pCO2_peakh=(1-(max(FED_CO2)/max(FED_CO20)))/0.05;
+        fprintf('*********CHANGE IN THE FED PEAK HOUR CO2 EMISSION********** \n')
+        FED_pCO2_peakh=((max(FED_CO2)/max(FED_CO20))-1)/0.05;
         fprintf('Change in THE FED peak co2 emission (New/Base) = %d \n\n', FED_pCO2_peakh);
         %percentage change in total CO2 emission in the FED system        
         %% PLot variation of energy stored in TES
@@ -1408,7 +1408,7 @@ while PROCESS_RESULTS==1
         fprintf('                    ===========================                     \n\n')
         fprintf('                    Total operation cost (Base case) = %d kSEK\n', tot_opn_cost0/1000)
         fprintf('                    ===========================                     \n\n')
-        fprintf('                    Percentage reduction in operation cost = %d kSEK\n', (1-(tot_opn_cost/tot_opn_cost0)))
+        fprintf('                    Percentage change in operation cost = %d []\n', ((tot_opn_cost/tot_opn_cost0))-1)
         fprintf('                    ===========================                     \n\n')
         %legend('HP','BES','Panna1','Panna2','TURB','AbsC','AbsCInv','AAC','RM')
         %% Investment options
