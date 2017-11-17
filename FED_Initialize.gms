@@ -138,7 +138,6 @@ scalar
 * source Undersökning av olika kyllösningar - inventering och jämförelse av utlokaliserade kyllösningar för Umeå Energi - Nils Persson 2012
 scalar
          AbsCInv_COP    Coefficient of performance for absorption cooling investment /0.75/
-         AbsH_COP       Coeffiicent of performance for absorption heating investment /1.7/
 
 *        AbsCInv_fx     Fixed cost for investment in Abs chiller /64400/
 *         AbsCInv_MaxCap Maximum possible investment in kW cooling /100000/
@@ -303,8 +302,9 @@ h_demand_nonAH(h,i_nonAH_h)=h_demand(h,i_nonAH_h);
 c_demand_AH(h,i_AH_c)=c_demand(h,i_AH_c);
 c_demand_nonAH(h,i_nonAH_c)=c_demand(h,i_nonAH_c);
 *--------------Refrigeration machine investment---------------------------------
+* Source https://ec.europa.eu/energy/sites/ener/files/documents/Report%20WP2.pdf
 Parameter
-         RMInv_COP COP of refrigeration machine /6/
+         RMInv_COP COP of refrigeration machine /4/
 ;
 
 *--------------unit total cost for all the generating units---------------------
