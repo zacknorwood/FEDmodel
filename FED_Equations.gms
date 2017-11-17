@@ -286,9 +286,9 @@ eq_PV_cap_facade(BID)..
              PV_cap_facade(BID) =l= area_facade_max(BID)*PV_cap_density;
 *-----------------Refrigeration machine investment equations--------------------
 eq_RMInv1(h)..
-             c_RMInv(h) =e= sw_HP*RMInv_COP*e_RMInv(h);
+             c_RMInv(h) =e= sw_RMInv*RMInv_COP*e_RMInv(h);
 eq_RMInv2(h)..
-             c_RMInv(h) =l= sw_HP*RMInv_cap;
+             c_RMInv(h) =l= sw_RMInv*RMInv_cap;
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
 
