@@ -73,6 +73,9 @@ equation
            eq_PV_cap_roof capacity of installed PV on roofs
            eq_PV_cap_facade capacity of installed PV on facades
 
+           eq_RMInv1     cooling production from RMInv
+           eq_RMInv2     capacity determination of RMInv
+
            eq_hbalance2  maximum heating export from AH system
            eq_hbalance3  heating supply-demand balance excluding AH buildings
            eq_hbalance4  heating supply-demand balance excluding nonAH buildings
@@ -281,6 +284,11 @@ eq_PV_cap_roof(BID)..
 
 eq_PV_cap_facade(BID)..
              PV_cap_facade(BID) =l= area_facade_max(BID)*PV_cap_density;
+*-----------------Refrigeration machine investment equations--------------------
+eq_RMInv1(h)..
+             c_RMInv(h) =e= sw_HP*RMInv_COP*e_RMInv(h);
+eq_RMInv2(h)..
+             c_RMInv(h) =l= sw_HP*RMInv_cap;
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
 
@@ -301,13 +309,13 @@ eq_hbalance4(h)..
 
 eq_cbalance(h)..
          sum(i_AH_c,c_demand_AH(h,i_AH_c))=l=C_DC(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
-                                + c_RM(h) + c_RMMC(h) + c_AAC(h) + c_HP(h)
+                                + c_RM(h) + c_RMMC(h) + c_AAC(h) + c_HP(h) + c_RMInv(h)
                                 + c_AbsCInv(h);
 *--------------Demand supply balance for electricity ---------------------------
 
 eq_ebalance3(h)..
         sum(i_AH_el,el_demand(h,i_AH_el)) =l= e_imp_AH(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - e_RM(h) - e_RMMC(h) - e_AAC(h)
-                                 + e_existPV(h) + e_PV(h) - e_HP(h)
+                                 + e_existPV(h) + e_PV(h) - e_HP(h) - e_RMInv(h)
                                  + (BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff)
                                  + e_TURB(h);
 eq_ebalance4(h)..
@@ -357,6 +365,7 @@ eq_fix_cost_new..
                            + HP_cap*fix_cost('HP')
                            + BES_cap*fix_cost('BES')
                            + TES_cap*fix_cost('TES')
+                           + RMInv_cap*fix_cost('RMInv')
                            + fix_cost('BTES')*sum(i,B_BITES(i))
                            + B_P2 * fix_cost('P2')
                            + B_TURB * fix_cost('TURB')
@@ -377,6 +386,7 @@ eq_var_cost_existing..
 eq_var_cost_new..
          var_cost_new =e=  sum(h,e_PV(h)*utot_cost('PV',h))
                            + sum(h,h_HP(h)*utot_cost('HP',h))
+                           + sum(h,c_RMInv(h)*utot_cost('RMInv',h))
                            + sum(h,BES_dis(h)*utot_cost('BES',h))
                            + sum(h,TES_dis(h)*utot_cost('TES',h))
                            + sum((h,i),BTES_Sch(h,i)*utot_cost('BTES',h))
@@ -386,6 +396,7 @@ eq_var_cost_new..
 eq_Ainv_cost..
           Ainv_cost =e=
                 + HP_cap*cost_inv_opt('HP')/lifT_inv_opt('HP')
+                + RMInv_cap*cost_inv_opt('RMInv')/lifT_inv_opt('RMInv')
                 + (sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*cost_inv_opt('PV')
                 + BES_cap*cost_inv_opt('BES')/lifT_inv_opt('BES')
                 + (TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/lifT_inv_opt('TES')
@@ -402,6 +413,7 @@ eq_totCost..
 
 eq_invCost..
          invCost =e= HP_cap*cost_inv_opt('HP')
+                     + RMInv_cap*cost_inv_opt('RMInv')
                      + (sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*cost_inv_opt('PV')
                      + BES_cap*cost_inv_opt('BES')
                      + ((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
