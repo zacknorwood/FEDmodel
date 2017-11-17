@@ -104,7 +104,7 @@ execute_unload 'GtoM' min_totCost0, min_totCost, min_totPE, min_totCO2, min_peak
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
                       DH_export_season, P1P2_dispatchable, h_P1, inv_lim
-                      c_RMInv, e_RMInv, RMInv_cap,, invCost_RMInv
+                      c_RMInv, e_RMInv, RMInv_cap, invCost_RMInv,
                       model_status;
 
 execute_unload 'h' h;
