@@ -7,7 +7,7 @@ tic
 
 %CO2 and PE facrors of local generation unists
 CO2F_PV=45; %45
-PEF_PV=1.25;
+PEF_PV=0.25;
 
 CO2F_P1=12;
 PEF_P1=1.33;
