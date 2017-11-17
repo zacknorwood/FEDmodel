@@ -6,14 +6,14 @@ close all;
 tic
 
 %CO2 and PE facrors of local generation unists
-CO2F_PV=45;
+CO2F_PV=45; %45
 PEF_PV=1.25;
 
 CO2F_P1=12;
 PEF_P1=1.33;
 
-% CO2F_P1=0;
-% PEF_P1=0;
+CO2F_spillvarme=98; %98
+PEF_spillvarme=0.03;  %0.03
 
 COP_AbsC=0.5;
 COP_AAC=10;
@@ -38,16 +38,21 @@ while NEW_data==1
     save('e0_AAC','e0_AAC');
     save('e0_VKA1','e0_VKA1');
     save('e0_VKA4','e0_VKA4');
-    
-    load FED_PE;
-    load FED_CO2;
+        
+    FED_CO20=load('Sim_Results_new\Sim_Results_base\Data\FED_CO2');
+    FED_CO20=FED_CO20.FED_CO2;
+    FED_PE0=load('Sim_Results_new\Sim_Results_base\Data\FED_PE');
+    FED_PE0=FED_PE0.FED_PE;
     break;
 end
 
 %load saved values
 while NEW_data==0
-    load FED_PE;
-    load FED_CO2;
+    FED_CO20=load('Sim_Results_new\Sim_Results_base\Data\FED_CO2');
+    FED_CO20=FED_CO20.FED_CO2;
+    FED_PE0=load('Sim_Results_new\Sim_Results_base\Data\FED_PE');
+    FED_PE0=FED_PE0.FED_PE;
+
     load el_exGCO2F;
     load el_exGPEF;
     load DH_CO2F;
@@ -80,9 +85,9 @@ temp_CO2F_P2 = struct('name','CO2F_P2','type','parameter','val',CO2F_P2);
 temp_PEF_P2 = struct('name','PEF_P2','type','parameter','val',PEF_P2);
 
 pCO2ref=0.95;  %Choose the percentage the reference CO2 [this value can be varied for sensetivity analysis]
-FED_CO2_max = struct('name','CO2_max','type','parameter','val',max(FED_CO2));
-FED_CO2_peakref = struct('name','CO2_peak_ref','type','parameter','val',pCO2ref*max(FED_CO2));
-FED_PE_totref = struct('name','PE_tot_ref','type','parameter','val',sum(FED_PE));
+FED_CO2_max = struct('name','CO2_max','type','parameter','val',max(FED_CO20));
+FED_CO2_peakref = struct('name','CO2_peak_ref','type','parameter','val',pCO2ref*max(FED_CO20));
+FED_PE_totref = struct('name','PE_tot_ref','type','parameter','val',sum(FED_PE0));
 FED_inv=76761000;  %this is projected FED investment cost in SEK
 fInv_lim=1;        %multiplication factor [can be varied for sensetivity analysis]
 FED_Inv_lim = struct('name','inv_lim','type','parameter','val',fInv_lim*FED_inv);
@@ -106,13 +111,12 @@ e_VKA40.uels=H.uels;
 %% GAMS Model input
 
 % optimization option
-option0=1;    %Base case, Pannn1, q_AbsC, e_AAC, e_VKA1, e_VKA4 fixed to the measured value
+option0=0;    %Base case, Pannn1, q_AbsC, e_AAC, e_VKA1, e_VKA4 fixed to the measured value
 option1=1;    %minimize total cost, PE and CO2 cap
 option2=0;    %minimize tottal PE use, investment cost cap
 option3=0;    %minimize total CO2 emission, investment cost cap
 option4=0;    %minimize total CO2 and PE (compromise), investement cost cap
 option5=0;    %minimize CO2 peak, with investement cost cap
-p1_dispach=0; %option to dispach pann1 or not
 
 temp_optn0 = struct('name','min_totCost0','type','parameter','form','full','val',option0);
 temp_optn1 = struct('name','min_totCost','type','parameter','form','full','val',option1);
@@ -120,12 +124,11 @@ temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',op
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 temp_optn4 = struct('name','min_totPECO2','type','parameter','form','full','val',option4);
 temp_optn5 = struct('name','min_peakCO2','type','parameter','form','full','val',option5);
-p1_disp = struct('name','p1_dispach','type','parameter','form','full','val',p1_dispach);
 
 wgdx('MtoG.gdx', FED_PE_totref, FED_CO2_max, FED_CO2_peakref,CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,...
      h_AbsC0,e_AAC0,e_VKA10,e_VKA40,...
      temp_CO2F_PV, temp_PEF_PV, temp_CO2F_P1, temp_PEF_P1, temp_CO2F_P2, temp_PEF_P2,...
-     temp_optn0,temp_optn1, temp_optn2, temp_optn3, temp_optn4, temp_optn5, FED_Inv_lim,p1_disp);
+     temp_optn0,temp_optn1, temp_optn2, temp_optn3, temp_optn4, temp_optn5, FED_Inv_lim);
 %% RUN GAMS model
 return
  RUN_GAMS_MODEL = 1;

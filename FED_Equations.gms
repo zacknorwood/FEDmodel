@@ -73,9 +73,10 @@ equation
            eq_PV_cap_roof capacity of installed PV on roofs
            eq_PV_cap_facade capacity of installed PV on facades
 
+           eq_hbalance2  maximum heating export from AH system
            eq_hbalance3  heating supply-demand balance excluding AH buildings
            eq_hbalance4  heating supply-demand balance excluding nonAH buildings
-           eq_cbalance  Balance equation cooling
+           eq_cbalance   Balance equation cooling
 
            eq_ebalance3  supply demand balance equation from AH
            eq_ebalance4  electrical import equation to nonAH
@@ -282,6 +283,9 @@ eq_PV_cap_facade(BID)..
              PV_cap_facade(BID) =l= area_facade_max(BID)*PV_cap_density;
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
+
+eq_hbalance2(h)..
+             h_exp_AH(h)=l= h_Pana1(h) + H_P2T(h) + h_HP(h);
 eq_hbalance3(h)..
              sum(i,h_demand(h,i)) =l=h_imp_AH(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + H_VKA1(h)
                                      + H_VKA4(h) - h_AbsC(h) + H_P2T(h)
@@ -379,7 +383,6 @@ eq_var_cost_new..
                            + sum(h,h_P2(h)*utot_cost('P2',h))
                            + sum(h,e_TURB(h)*utot_cost('TURB',h))
                            + sum(h,c_AbsCInv(h)*utot_cost('AbsCInv',h));
-
 eq_Ainv_cost..
           Ainv_cost =e=
                 + HP_cap*cost_inv_opt('HP')/lifT_inv_opt('HP')
