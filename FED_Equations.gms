@@ -317,7 +317,7 @@ eq_ebalance4(h)..
 eq_PE(h)..
         FED_PE(h)=e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*PEF_exG(h)
                      + e_existPV(h)*PEF_PV + e_PV(h)*PEF_PV
-                     + (h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*PEF_DH(h) + (h_Pana1(h)/P1_eff)*PEF_P1
+                     + (h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*PEF_DH(h) + (h_Pana1(h)/P1_eff)*PEF_P1
                      + fuel_P2(h)*PEF_P2;
 **********************Total PE use in the FED system****************************
 
@@ -328,7 +328,7 @@ eq_totPE..
 eq_CO2(h)..
        FED_CO2(h) =e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*CO2F_exG(h)
                       + e_existPV(h)*CO2F_PV + e_PV(h)*CO2F_PV
-                      + (h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*CO2F_DH(h) + (h_Pana1(h)/P1_eff)*CO2F_P1
+                      + (h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*CO2F_DH(h) + (h_Pana1(h)/P1_eff)*CO2F_P1
                       + fuel_P2(h) * CO2F_P2;
 ****************Total CO2 emission in the FED system****************************
 
