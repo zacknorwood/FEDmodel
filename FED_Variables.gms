@@ -165,6 +165,12 @@ positive variables
          BES_dis(h)      Battery discharging at time t and building i
          BES_cap         Capacity of the battery at building i
 ;
+*------------------Refrigeration machine investment related---------------------
+positive variable
+         c_RMInv(h)           cooling power available from RMInv
+         e_RMInv(h)           electricity needed by the RMInv
+         RMInv_cap            capacity of RMInv
+
 *------------------Grid El related----------------------------------------------
 positive variable
          e_exp_AH(h)        Exported electricty from the AH system

@@ -7,8 +7,8 @@ $Include FED_GET_GDX_FILE
 *--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
 set
-         sup_unit   supply units /PV, HP, BES, TES, BTES, BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP/
-         inv_opt    investment options /PV, HP, BES, TES, BTES,BAC, RMMC, P2, TURB, AbsCInv/
+         sup_unit   supply units /PV, HP, BES, TES, BTES, BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP, RMInv/
+         inv_opt    investment options /PV, HP, BES, TES, BTES,BAC, RMMC, P2, TURB, AbsCInv, RMInv/
 ;
 
 * the technical limit of import/export on heat and electricty is based on feedback from AH
@@ -35,12 +35,12 @@ Parameter
 *    makes sense because BAC is a more advanced version of the BTES system.
 
          cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC P2 and Turbine
-                     /PV 14196, BES 6000, HP 6552, BTES 35000, BAC 315333, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 3430/
+                     /PV 14196, BES 6000, HP 6552, BTES 35000, BAC 315333, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 3430, RMInv 6552/
 
 * Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
 * BAC - Building Advanced Control is assumed to have same lifetime as BTES
          lifT_inv_opt(inv_opt)    Life time of investment options
-                     /PV 30, BES 15, HP 25, TES 30, BTES 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25/;
+                     /PV 30, BES 15, HP 25, TES 30, BTES 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25, RMInv 25/;
 
 
 *--------------Choice of investment options to consider-------------------------
@@ -56,6 +56,7 @@ PARAMETERS
          sw_P2        switch to decide whether to include P2 or not
          sw_TURB      switch to decide whether to include turbine or not
          sw_AbsCInv   switch to decide whether to include absorption chiller investments
+         sw_RMInv     switch to decide whether to include refrigeration machine investments
 ;
 *use of switch to determine whether HP, CHP, TES should operate or not
 * 1=in operation, 0=out of operation
@@ -69,6 +70,7 @@ sw_RMMC = 1;
 sw_P2 = 1;
 sw_TURB = 1;
 sw_AbsCInv = 1;
+sw_RMInv = 1;
 ***************Existing units***************************************************
 *--------------Existing Solar PV  constants and parameters (existing unit)---------
 
@@ -226,7 +228,7 @@ parameter
 scalar
 * Heat pump efficiencies from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
          HP_H_COP       Coefficent of performance for heat of the Heat Pump (HP)/3.15/
-         HP_C_COP       Coefficent of performance for cooling of the Heat Pump (HP)/3/
+         HP_C_COP       Coefficent of performance for cooling of the Heat Pump (HP)/2.5/
 ;
 *--------------TES constants and parameters-------------------------------------
 * Add source for these numbers
@@ -300,6 +302,11 @@ h_demand_nonAH(h,i_nonAH_h)=h_demand(h,i_nonAH_h);
 
 c_demand_AH(h,i_AH_c)=c_demand(h,i_AH_c);
 c_demand_nonAH(h,i_nonAH_c)=c_demand(h,i_nonAH_c);
+*--------------Refrigeration machine investment---------------------------------
+Parameter
+         RMInv_COP COP of refrigeration machine /6/
+;
+
 *--------------unit total cost for all the generating units---------------------
 
 parameter
@@ -369,6 +376,9 @@ fix_cost('AAC')= 3000 / kilo * EUR_to_SEK_2015;
 * No data in Danish Energy Agency report for lithium ion, assume costs same as for NaS
 var_cost('BES',h)= 5.3 / kilo * EUR_to_SEK_2015;
 fix_cost('BES')= 51000 / kilo * EUR_to_SEK_2015;
+* Data for RMInv same as for HP
+var_cost('RMInv',h)= var_cost('HP',h);
+fix_cost('RMInv')= fix_cost('HP');
 
 *From Göteborg Energi homepage, tax on a kWh electricity purchased in SEK
 en_tax(sup_unit,h)=0;

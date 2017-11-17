@@ -35,6 +35,7 @@ invCost_RMMC    investment cost of connecting MC2 RM
 invCost_AbsCInv     investment cost of absorption cooler
 invCost_P2          investment cost of P2
 invCost_TURB        investment cost of turbine
+invCost_RMInv       investment cost of RMInv
 total_cap_PV_roof   total capacity in kW
 total_cap_PV_facade total capacity in kW
 h_demand_nonAH_sum  total demand for non AH buildings
@@ -50,6 +51,7 @@ invCost_RMMC = sw_RMMC*cost_inv_opt('RMMC')*RMMC_inv.l;
 invCost_P2 = sw_P2 * B_P2.l * cost_inv_opt('P2');
 invCost_TURB = sw_TURB * B_TURB.l * cost_inv_opt('TURB');
 invCost_AbsCInv = sw_AbsCInv * (AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
+invCost_RMInv = sw_RMInv*RMInv_cap.l*cost_inv_opt('RMInv');
 h_demand_nonAH_sum(h) = sum(i_nonAH_h, h_demand_nonAH(h,i_nonAH_h));
 *total_cap_PV_roof=sum(BID, PV_cap_roof.l(BID));
 *total_cap_PV_facade=sum(BID, PV_cap_facade.l(BID));
@@ -102,6 +104,7 @@ execute_unload 'GtoM' min_totCost0, min_totCost, min_totPE, min_totCO2, min_peak
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
                       DH_export_season, P1P2_dispatchable, h_P1, inv_lim
+                      c_RMInv, e_RMInv, RMInv_cap, invCost_RMInv,
                       model_status;
 
 execute_unload 'h' h;
