@@ -226,7 +226,7 @@ parameter
 scalar
 * Heat pump efficiencies from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
          HP_H_COP       Coefficent of performance for heat of the Heat Pump (HP)/3.15/
-         HP_C_COP       Coefficent of performance for cooling of the Heat Pump (HP)/3/
+         HP_C_COP       Coefficent of performance for cooling of the Heat Pump (HP)/2.5/
 ;
 *--------------TES constants and parameters-------------------------------------
 * Add source for these numbers
