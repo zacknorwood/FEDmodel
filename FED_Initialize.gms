@@ -30,12 +30,14 @@ Parameter
 * PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 6000, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
 * Exchange rate 2015: Eur to SEK = 9.36;
 * HP 700 * 9.36 = 6552 , AbsC 600 * 9.36 * 1.7/0.75= 5616
-* Absorption chiller source: Undersökning av olika kyllösningar - inventering och jämförelse av utlokaliserade kullösnmignar för umeå energi - nils persson 2012
+* RMInv 100 �/kW *9.36 = 936 - https://ec.europa.eu/energy/sites/ener/files/documents/Report%20WP2.pdf
+* Absorption chiller source: https://ec.europa.eu/energy/sites/ener/files/documents/Report%20WP2.pdf
+* Abs cost: 300 �/kW * 9.36 = 2808
 * BAC costs from AH/CFAB estimates, calculated as average per building cost subtracted with the cost of BTES capability
 *    makes sense because BAC is a more advanced version of the BTES system.
 
          cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC P2 and Turbine
-                     /PV 14196, BES 6000, HP 6552, BTES 35000, BAC 315333, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 3430, RMInv 6552/
+                     /PV 14196, BES 6000, HP 6552, BTES 35000, BAC 315333, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 2808, RMInv 936/
 
 * Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
 * BAC - Building Advanced Control is assumed to have same lifetime as BTES
@@ -135,9 +137,9 @@ scalar
 **************Investment options************************************************
 
 *----------------Absorption Chiller Investment----------------------------------
-* source Undersökning av olika kyllösningar - inventering och jämförelse av utlokaliserade kyllösningar för Umeå Energi - Nils Persson 2012
+* source Uhttps://ec.europa.eu/energy/sites/ener/files/documents/Report%20WP2.pdf
 scalar
-         AbsCInv_COP    Coefficient of performance for absorption cooling investment /0.75/
+         AbsCInv_COP    Coefficient of performance for absorption cooling investment /0.5/
 
 *        AbsCInv_fx     Fixed cost for investment in Abs chiller /64400/
 *         AbsCInv_MaxCap Maximum possible investment in kW cooling /100000/
