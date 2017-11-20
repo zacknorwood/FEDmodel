@@ -12,8 +12,8 @@ PEF_PV=0.25;
 CO2F_P1=12;
 PEF_P1=1.33;
 
-CO2F_spillvarme=98; %98
-PEF_spillvarme=0.03;  %0.03
+CO2F_spillvarme=98;   %98
+PEF_spillvarme=0.03;    %0.03
 
 COP_AbsC=0.5;
 COP_AAC=10;
