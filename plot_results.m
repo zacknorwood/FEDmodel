@@ -15,7 +15,7 @@ while PROCESS_RESULTS==1
     %set desired option
     option='mintotPE\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results_new\',option);
-    file_name='GtoM_mintotCost';
+    file_name='GtoM_mintotPE';
     gdxData=strcat(path,file_name);       
     %% Get parameters and variables from a GDX file 
     
@@ -24,23 +24,23 @@ while PROCESS_RESULTS==1
     %% Assign uels
     
     % uels for hourlly time series
-    h=get_uels('Sim_Results_new\uels\h','h');    
+    h=get_uels('Sim_Results\uels\h','h');    
     % uels for all building names as presented by utilifeed
-    i=get_uels('Sim_Results_new\uels\i','i');    
+    i=get_uels('Sim_Results\uels\i','i');    
     % uels for all building names as presented by utilifeed
-    i_AH=get_uels('Sim_Results_new\uels\i_AH','i_AH');
+    i_AH=get_uels('Sim_Results\uels\i_AH','i_AH');
     % uels for building for PV application
-    BID=get_uels('Sim_Results_new\uels\BID','BID');
+    BID=get_uels('Sim_Results\uels\BID','BID');
     % uels for BITES properties
-    BTES_properties=get_uels('Sim_Results_new\uels\BTES_properties','BTES_properties');
+    BTES_properties=get_uels('Sim_Results\uels\BTES_properties','BTES_properties');
     % uels for supply units properties
-    sup_unit=get_uels('Sim_Results_new\uels\sup_unit','sup_unit');
+    sup_unit=get_uels('Sim_Results\uels\sup_unit','sup_unit');
     % uels for investment options
-    inv_opt=get_uels('Sim_Results_new\uels\inv_opt','inv_opt'); 
+    inv_opt=get_uels('Sim_Results\uels\inv_opt','inv_opt'); 
     %% Set the path for the extracted data to be saved in 
     
     path_Data=strcat(path,'Data\'); 
-    path_Data_base='Sim_Results_new\Sim_Results_base\Data\';
+    path_Data_base='Sim_Results\Sim_Results_base\Data\';
     %% System total cost and annualized investment cost
     
     %Fixed cost for exisiting units 
@@ -436,6 +436,11 @@ while PROCESS_RESULTS==1
         LineThickness=1.2; 
         path_Data=strcat(path,'Data\');
         path_Figures=strcat(path,'Figures\');
+        colour_map = [0,0,1
+               0,1,0
+               1,0,0
+               0,1,1
+               1,0,1];
         %% PEF and CO2F of the DH and electrity grid        
         
         %PEF of the electricty grid
@@ -453,7 +458,7 @@ while PROCESS_RESULTS==1
         box off
         xlim([0 12])
         ylim([0 inf])
-        legend('PE factor of external electricity grid')
+        legend('PE factor of external electricity grid','Location','southwest')
         grid
         %save result 
         plot_fname=['PEF_exG'];
@@ -474,7 +479,7 @@ while PROCESS_RESULTS==1
         box off
         xlim([0 12])
         ylim([0 inf])
-        legend('CO_2 factor of external electricity grid')
+        legend('CO_2 factor of external electricity grid','Location','southwest')
         grid
         %save result 
         plot_fname=['CO2F_exG'];
@@ -495,7 +500,7 @@ while PROCESS_RESULTS==1
         box off
         xlim([0 12])
         ylim([0 inf])
-        legend('PE factor of external DH')
+        legend('PE factor of external DH','Location','northwest')
         grid
         %save result 
         plot_fname=['PEF_DH'];
@@ -516,7 +521,7 @@ while PROCESS_RESULTS==1
         box off
         xlim([0 12])
         ylim([0 inf])
-        legend('CO_2 factor of external DH')
+        legend('CO_2 factor of external DH','Location','northwest')
         grid
         %save result 
         plot_fname=['CO2_DH'];
@@ -597,7 +602,7 @@ while PROCESS_RESULTS==1
         set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
-        legend('AH heat import - Simulated')
+        legend('AH heat import - Simulated','Location','northwest')
         grid
         %save result 
         plot_fname=['ah_h_import_sim'];
@@ -656,7 +661,7 @@ while PROCESS_RESULTS==1
         set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
-        legend('Local el production')
+        legend('Local el production','Location','northwest')
         grid
         %save result 
         plot_fname=['el_tot_locProduction'];
@@ -666,7 +671,7 @@ while PROCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        %h_imp_AH0=load('Sim_Results_new\Sim_Results_base\Data\e_imp_AH');
+        %h_imp_AH0=load('Sim_Results\Sim_Results_base\Data\e_imp_AH');
         %h_imp_AH0=h_imp_AH0.h_imp_AH;
         load(strcat(path_Data,'H_VKA1'));
         load(strcat(path_Data,'H_VKA4'));
@@ -728,16 +733,18 @@ while PROCESS_RESULTS==1
         load(strcat(path_Data,'e_PV'));
         load(strcat(path_Data,'e_TURB'));
         
-        ydata=[e_existPV e_PV  e_TURB];
-        xdata=(1:length(ydata))/(24*30);
-        area(xdata,ydata,'EdgeColor','none')       
+        ydata=[e_existPV e_PV e_TURB];
+        xdata=(1:length(ydata))/(24*30);        
+        bar(xdata,ydata,'stacked');        
+        %b(1).Parent.Parent.Colormap = colour_map;
+        %area(xdata,ydata,'EdgeColor','none')       
         xlabel('Time [Months]','FontSize',Font_Size,'FontName','Times New Roman')
         ylabel('Electricity [kW]','FontSize',Font_Size,'FontName','Times New Roman')
         set(gca,'FontName','Times New Roman','FontSize',Font_Size)
         set(gca,'XTickLabel',{'Mar','May','Jul','Sep','Nov','Jan',''})
         box off
         xlim([0 12])
-        legend('Existing PV','New PV','TURB')
+        legend('TURB','New PV','Existing PV')
         grid
         %save result 
         plot_fname=['el_locProduction'];
@@ -867,7 +874,7 @@ while PROCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        FED_PE0=load('Sim_Results_new\Sim_Results_base\Data\FED_PE');
+        FED_PE0=load('Sim_Results\Sim_Results_base\Data\FED_PE');
         FED_PE0=FED_PE0.FED_PE;
         load(strcat(path_Data,'FED_PE'));
         ydata=FED_PE0(1:8760)/1000;
@@ -890,7 +897,7 @@ while PROCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)         
-        FED_PE0=load('Sim_Results_new\Sim_Results_base\Data\FED_PE');
+        FED_PE0=load('Sim_Results\Sim_Results_base\Data\FED_PE');
         FED_PE0=FED_PE0.FED_PE;        
         ydata=FED_PE0(1:8760)/1000;
         xdata= (1:length(ydata))/(24*30);
@@ -939,7 +946,7 @@ while PROCESS_RESULTS==1
         figure('Units','centimeters','PaperUnits','centimeters',...
             'PaperPosition',properties.PaperPosition,'Position',properties.Position,...
             'PaperSize',properties.PaperSize)
-        FED_CO20=load('Sim_Results_new\Sim_Results_base\Data\FED_CO2');
+        FED_CO20=load('Sim_Results\Sim_Results_base\Data\FED_CO2');
         FED_CO20=FED_CO20.FED_CO2;
         load(strcat(path_Data,'FED_CO2'));
         ydata=FED_CO20(1:8760)/1000;
@@ -1207,9 +1214,9 @@ while PROCESS_RESULTS==1
         %% PLot Variable cost and fuel cost of local production units
                 
         %Fuel cost, base case
-        h_Pana10=load('Sim_Results_new\Sim_Results_base\Data\h_Pana1');
+        h_Pana10=load('Sim_Results\Sim_Results_base\Data\h_Pana1');
         h_Pana10=h_Pana10.h_Pana1;
-        h_Pana20=load('Sim_Results_new\Sim_Results_base\Data\h_P2');
+        h_Pana20=load('Sim_Results\Sim_Results_base\Data\h_P2');
         h_Pana20=h_Pana20.h_P2;
         load(strcat(path_Data,'fuel_cost'));   
         temp_fCost0=zeros(8761,2);
@@ -1277,24 +1284,24 @@ while PROCESS_RESULTS==1
         %Variable cost, Base case                  
         load(strcat(path_Data,'price'))
         load(strcat(path_Data,'var_cost'));
-        e_imp_AH0=load('Sim_Results_new\Sim_Results_base\Data\e_imp_AH');
+        e_imp_AH0=load('Sim_Results\Sim_Results_base\Data\e_imp_AH');
         e_imp_AH0=e_imp_AH0.e_imp_AH;
-        e_imp_nonAH0=load('Sim_Results_new\Sim_Results_base\Data\e_imp_nonAH');
+        e_imp_nonAH0=load('Sim_Results\Sim_Results_base\Data\e_imp_nonAH');
         e_imp_nonAH0=e_imp_nonAH0.e_imp_nonAH;
-        h_imp_AH0=load('Sim_Results_new\Sim_Results_base\Data\h_imp_AH');
+        h_imp_AH0=load('Sim_Results\Sim_Results_base\Data\h_imp_AH');
         h_imp_AH0=h_imp_AH0.h_imp_AH;
-        h_imp_nonAH0=load('Sim_Results_new\Sim_Results_base\Data\h_imp_nonAH');
+        h_imp_nonAH0=load('Sim_Results\Sim_Results_base\Data\h_imp_nonAH');
         h_imp_nonAH0=h_imp_nonAH0.h_imp_nonAH;
-        h_exp_AH0=load('Sim_Results_new\Sim_Results_base\Data\h_exp_AH');
+        h_exp_AH0=load('Sim_Results\Sim_Results_base\Data\h_exp_AH');
         h_exp_AH0=h_exp_AH0.h_exp_AH;
 
-        c0_AbsC=load('Sim_Results_new\Sim_Results_base\Data\c_AbsC');
+        c0_AbsC=load('Sim_Results\Sim_Results_base\Data\c_AbsC');
         c0_AbsC=c0_AbsC.c_AbsC;
-        c0_AAC=load('Sim_Results_new\Sim_Results_base\Data\c_AAC');
+        c0_AAC=load('Sim_Results\Sim_Results_base\Data\c_AAC');
         c0_AAC=c0_AAC.c_AAC;
-        h0_VKA1=load('Sim_Results_new\Sim_Results_base\Data\H_VKA1');
+        h0_VKA1=load('Sim_Results\Sim_Results_base\Data\H_VKA1');
         h0_VKA1=h0_VKA1.H_VKA1;
-        h0_VKA4=load('Sim_Results_new\Sim_Results_base\Data\H_VKA4');
+        h0_VKA4=load('Sim_Results\Sim_Results_base\Data\H_VKA4');
         h0_VKA4=h0_VKA4.H_VKA4;
         
         uv_Cost=var_cost';
@@ -1322,15 +1329,15 @@ while PROCESS_RESULTS==1
         grid;        
         
         %load fixed costs in the base case
-        load('Sim_Results_new\Sim_Results_base\Data\fix_cost_existing');
-        load('Sim_Results_new\Sim_Results_base\Data\fix_cost_new');
+        load('Sim_Results\Sim_Results_base\Data\fix_cost_existing');
+        load('Sim_Results\Sim_Results_base\Data\fix_cost_new');
         tot_fix_cost0=fix_cost_existing + fix_cost_new;
         fprintf('                    Total fixed cost (Base case)= %d kSEK \n', sum(tot_fix_cost0)/1000)
         fprintf('                    ===========================                     \n\n')        
         
         %load variable costs in the base case
-        load('Sim_Results_new\Sim_Results_base\Data\var_cost_existing');
-        load('Sim_Results_new\Sim_Results_base\Data\var_cost_new');
+        load('Sim_Results\Sim_Results_base\Data\var_cost_existing');
+        load('Sim_Results\Sim_Results_base\Data\var_cost_new');
         tot_var_cost0=var_cost_existing + var_cost_new;
         fprintf('                    Total variable cost (Base case)= %d kSEK \n', sum(tot_var_cost0)/1000)
         fprintf('                    ===========================                     \n\n')
@@ -1399,7 +1406,7 @@ while PROCESS_RESULTS==1
         fsave_figure(path_Figures,plot_fname);
         %% Annual total operation cost
         
-        tot_opn_cost0=load('Sim_Results_new\Sim_Results_base\Data\tot_opn_cost');
+        tot_opn_cost0=load('Sim_Results\Sim_Results_base\Data\tot_opn_cost');
         tot_opn_cost0=tot_opn_cost0.tot_opn_cost;        
         load(strcat(path_Data,'tot_opn_cost'));        
         
@@ -1524,7 +1531,7 @@ figure('Units','centimeters','PaperUnits','centimeters',...
        'PaperSize',properties.PaperSize)
 
 %[e0_VKA1 e0_VKA4 e0_AAC el_pv] [q0_AbsC q0_VKA1 q0_VKA4 q_P1]
-%load('Sim_Results_new\Sim_Results_base\Data\h_exp_AH');
+%load('Sim_Results\Sim_Results_base\Data\h_exp_AH');
 
 ydata=el_sell_price-el_price+0.0031+0.019-0.01;
 duration= 0 : 100/(length(ydata)-1) : 100;
