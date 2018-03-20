@@ -24,7 +24,7 @@ $LOAD BID
 $LOAD BTES_properties
 $GDXIN
 
-set i_AH_el(i) buildings considered in the FED system connected the AH el netwrok
+set i_AH_el(i) buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok
                                           /Kemi, Phus,
                                            Bibliotek, NyaMatte, Studentbostader, Kraftcentral,
                                            Lokalkontor, Karhus_CFAB, CAdministration, GamlaMatte, Gibraltar_herrgard,
@@ -33,13 +33,13 @@ set i_AH_el(i) buildings considered in the FED system connected the AH el netwro
                                            Fysik_Soliden, Idelara,
                                            VOV1, Arkitektur, VOV2, Karhus_studenter
                                           /
-    i_nonAH_el(i) buildings considered in the FED system not connected the AH el netwrok
+    i_nonAH_el(i) buildings considered in the FED system not connected to the AH(Akadamiskahus) el netwrok
                                           /Vassa1, Vassa2-3, Vassa4-15,
                                            SSPA,
                                            CTP, Karhuset, JSP,
                                            Chabo
                                           /
-    i_AH_h(i) buildings considered in the FED system connected the AH heat netwrok
+    i_AH_h(i) buildings considered in the FED system connected to the AH(Akadamiskahus) heat netwrok
                                           /Kemi, Phus,
                                            Bibliotek, SSPA, NyaMatte, Studentbostader, Kraftcentral,
                                            Lokalkontor, Karhus_CFAB, CAdministration, GamlaMatte,
@@ -48,13 +48,13 @@ set i_AH_el(i) buildings considered in the FED system connected the AH el netwro
                                            Fysik_Soliden, Idelara,
                                            VOV1, Arkitektur, VOV2, Karhus_studenter
                                           /
-    i_nonAH_h(i) buildings considered in the FED system not connected the AH heat netwrok
+    i_nonAH_h(i) buildings considered in the FED system not connected to the AH(Akadamiskahus) heat netwrok
                                           /Vassa1, Vassa2-3, Vassa4-15,
                                            Gibraltar_herrgard,
                                            CTP, Karhuset, JSP,
                                            Chabo
                                           /
-    i_AH_c(i) buildings considered in the FED system connected the AH cooling netwrok
+    i_AH_c(i) buildings considered in the FED system connected to the AH(Akadamiskahus) cooling netwrok
                                           /Kemi, Phus,
                                            Bibliotek, NyaMatte, Kraftcentral,
                                            Lokalkontor, Karhus_CFAB, CAdministration,
@@ -63,7 +63,7 @@ set i_AH_el(i) buildings considered in the FED system connected the AH el netwro
                                            Fysik_Soliden, Idelara,
                                            VOV1, Arkitektur, VOV2, Karhus_studenter
                                           /
-    i_nonAH_c(i) buildings considered in the FED system not connected the AH cooling netwrok
+    i_nonAH_c(i) buildings considered in the FED system not connected to the AH(Akadamiskahus) cooling netwrok
                                           /Vassa1, Vassa2-3, Vassa4-15,
                                            Studentbostader, SSPA,
                                            Polymerteknologi,
@@ -78,7 +78,11 @@ set i_AH_el(i) buildings considered in the FED system connected the AH el netwro
                                          /
 ;
 *********************SET THE SIMULATION TIME HERE*******************************
-set h(h0) SIMULATION TIME /1442*10202/;
+set h(h0) SIMULATION TIME;
+* /1442*10202/;
+$GDXIN MtoG.gdx
+$LOAD h
+$GDXIN
 
 PARAMETERS  HoD(h,d)       Hour of the day
             HoM(h,m)       Hour of the month
@@ -100,7 +104,6 @@ PARAMETERS  HoD(h,d)       Hour of the day
             BAC_savings_period(h)         Period in which BAC-energy savings are active
             DH_export_season(h)           Period in which DH exports are payed for
             P1P2_dispatchable(h)          Period during which P1 and P2 are dispatchable
-
 ;
 $GDXIN Input_data_FED_SIMULATOR\FED_INPUT_DATA.gdx
 $LOAD HoD
@@ -150,6 +153,30 @@ parameters  CO2_peak_ref       reference peak CO2 emission
             min_peakCO2        OPtion to minimize peak CO2 emission
             inv_lim            Maximum value of the investment in SEK
 ;
+*--------------Choice of investment options to consider-------------------------
+PARAMETERS
+         sw_HP        switch to decide whether to operate HP or not
+         sw_TES       switch to decide whether whether to operate TES or not
+         sw_BTES      switch to decide whether to include building storage or not
+         sw_BAC       switch to decide whether to include Building Advanced Control or not
+         sw_BES       switch to decide whether to include Battery storage or not
+         sw_PV        switch to decide whether to include solar PV or not
+         sw_RMMC      switch to decide whether investment in connecting refrigeration machines at MC2 to KB0
+         sw_P2        switch to decide whether to include P2 or not
+         sw_TURB      switch to decide whether to include turbine or not
+         sw_AbsCInv   switch to decide whether to include absorption chiller investments
+         sw_RMInv     switch to decide whether to include refrigeration machine investments
+         opt_fx_inv   option to fix investments
+         opt_fx_inv_RMMC      options to fix the RMMC investment
+         opt_fx_inv_AbsCInv   options to fix investment in new AbsChiller
+         opt_fx_inv_AbsCInv_cap capacity of the new AbsChiller
+         opt_fx_inv_P2        options to fix the P2 investment
+         opt_fx_inv_TURB      options to fix the TURB investment
+         opt_fx_inv_HP        options to fix investment in new HP
+         opt_fx_inv_HP_cap    Capacity of the fixed new HP
+         opt_fx_inv_TES       options to fix investment in new TES
+         opt_fx_inv_TES_cap   capacity of the new TES
+;
 $GDXIN MtoG.gdx
 $LOAD CO2_max
 $LOAD CO2_peak_ref
@@ -175,8 +202,28 @@ $LOAD min_totCO2
 $LOAD min_totPECO2
 $LOAD min_peakCO2
 $LOAD inv_lim
+$LOAD sw_HP
+$LOAD sw_TES
+$LOAD sw_BTES
+$LOAD sw_BAC
+$LOAD sw_BES
+$LOAD sw_PV
+$LOAD sw_RMMC
+$LOAD sw_P2
+$LOAD sw_TURB
+$LOAD sw_AbsCInv
+$LOAD sw_RMInv
+$LOAD opt_fx_inv
+$LOAD opt_fx_inv_RMMC
+$LOAD opt_fx_inv_AbsCInv
+$LOAD opt_fx_inv_AbsCInv_cap
+$LOAD opt_fx_inv_P2
+$LOAD opt_fx_inv_TURB
+$LOAD opt_fx_inv_HP
+$LOAD opt_fx_inv_HP_cap
+$LOAD opt_fx_inv_TES
+$LOAD opt_fx_inv_TES_cap
 $GDXIN
-
 $Ontext
 
 $Offtext

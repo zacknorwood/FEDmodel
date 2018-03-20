@@ -2,30 +2,31 @@
 *---------------------------Initialize input parameters------------------------
 *******************************************************************************
 *--------------IMPORT IMPUT DATA TO THE MODEL-----------------------------------
-
 $Include FED_GET_GDX_FILE
-*--------------SET PARAMETRS OF PRODUCTION UNITS---------------------------------
 
+*--------------SET PARAMETRS OF PRODUCTION UNITS--------------------------------
 set
-         sup_unit   supply units /PV, HP, BES, TES, BTES, BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP, RMInv/
+         sup_unit   supply units /PV, HP, BES, TES, BTES, BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP, RMInv, RGK1/
          inv_opt    investment options /PV, HP, BES, TES, BTES,BAC, RMMC, P2, TURB, AbsCInv, RMInv/
 ;
 
-* the technical limit of import/export on heat and electricty is based on feedback from AH
+************ the technical limit of import/export on heat and electricty is based on feedback from AH
 Parameter
         DH_max_cap  Maximum capacity of import from the external district heating system /12000/
         exG_max_cap Maximum capacity of import from the external electricty system /10000/
-        DH_export_season(h) Season during which pricing for DH exports possible
-* Investment costs from WP4_D4.2.1 prestudy report
-* PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 600, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
-* note: check AbsCInv and HP, sources?
-* cost_sup_unit(inv_opt) cost of the investment options in SEK per kW or kWh for battery or SEK per building in the case of BTES and RMMC
-*         /PV 14196, BES 6000, HP 10000, BTES 35000, RMMC 500000, P2 7666, Turb 2250/
-*         Acost_sup_unit(inv_opt) Annualized cost of the technologies in SEK per kW except RMMC which is a fixed cost
-*                                 /PV 410, BES 400, HP 667, BTES 1166, RMMC 25000, P2 1533333, TURB 66666, AbsCInv 72.4/
+*DH_export_season(h) Season during which pricing for DH exports possible
+;
+
+************ Capacities of the units in the FED system
+Parameter
 *RM capacity at AH is set to 900kW which the capacity of RM at Kemi (2*450 kW)
          cap_sup_unit(sup_unit)   operational capacity of the existing units
-                     /PV 65, P1 9000, AbsC 2300, AAC 1000, RM 900, RMMC 4200/
+                     /PV 65, P1 8000, AbsC 2300, AAC 1000, RM 900, RMMC 4200, RGK1 1000/
+;
+
+*************** different costs of the investment options
+* Investment costs from WP4_D4.2.1 prestudy report
+* PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 600, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
 * Investment costs source WP4_D4.2.1 prestudy report, except absorption chiller and HP from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
 * PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 6000, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
 * Exchange rate 2015: Eur to SEK = 9.36;
@@ -35,47 +36,19 @@ Parameter
 * Abs cost: 300 �/kW * 9.36 = 2808
 * BAC costs from AH/CFAB estimates, calculated as average per building cost subtracted with the cost of BTES capability
 *    makes sense because BAC is a more advanced version of the BTES system.
-
+Parameter
          cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC P2 and Turbine
                      /PV 14196, BES 6000, HP 6552, BTES 35000, BAC 315333, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 2808, RMInv 936/
+;
 
-* Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
+*******Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
 * BAC - Building Advanced Control is assumed to have same lifetime as BTES
+Parameter
          lifT_inv_opt(inv_opt)    Life time of investment options
                      /PV 30, BES 15, HP 25, TES 30, BTES 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25, RMInv 25/;
 
-
-*--------------Choice of investment options to consider-------------------------
-
-PARAMETERS
-         sw_HP        switch to decide whether to operate HP or not
-         sw_TES       switch to decide whether whether to operate TES or not
-         sw_BTES      switch to decide whether to include building storage or not
-         sw_BAC       switch to decide whether to include Building Advanced Control or not
-         sw_BES       switch to decide whether to include Battery storage or not
-         sw_PV        switch to decide whether to include solar PV or not
-         sw_RMMC      switch to decide whether investment in connecting refrigeration machines at MC2 to KB0
-         sw_P2        switch to decide whether to include P2 or not
-         sw_TURB      switch to decide whether to include turbine or not
-         sw_AbsCInv   switch to decide whether to include absorption chiller investments
-         sw_RMInv     switch to decide whether to include refrigeration machine investments
-;
-*use of switch to determine whether HP, CHP, TES should operate or not
-* 1=in operation, 0=out of operation
-sw_HP = 1;
-sw_TES = 1;
-sw_BTES = 1;
-sw_BAC = 1;
-sw_BES = 1;
-sw_PV = 1;
-sw_RMMC = 1;
-sw_P2 = 1;
-sw_TURB = 1;
-sw_AbsCInv = 1;
-sw_RMInv = 1;
 ***************Existing units***************************************************
 *--------------Existing Solar PV  constants and parameters (existing unit)---------
-
 parameter
          exist_PV_cap_roof(BID)   existing roof PV capacity
          exist_PV_cap_facade(BID) existing facade PV capacity
@@ -84,15 +57,26 @@ exist_PV_cap_roof(BID) = 0;
 exist_PV_cap_facade(BID) = 0;
 * Source Beskrivning av de tekniska grundforutsattningarna for FED
 exist_PV_cap_roof('28') = 60;
+
 *--------------Existing Thermal boiler constants and parameters (P1)------------
 *This data is imported from MATLAB and stored in MtoG
-
 Parameter
-          h_P1(h)     Total heat output from P1
+*          h_P1(h)     Total heat output from P1
           P1_eff      Effeciency of P1
+          P1_cap      Capacity of Boiler 1 in kW excluding flue gas condecer /8000/
+          P1_max      Maximum output from P1 /6000/
+          P1_min      Minimum output from P1 /3000/
 ;
 P1_eff=0.9;
-h_P1(h)= qB1(h) + qF1(h);
+
+*---------------Flue gas condencer------------------------
+Parameters
+          RGK1_eff   Effeciency of flue gas condencer /0.4/
+          RGK1_cap   Capacity of flue gas condenceer /1000/
+          RGK1_max   Maximum output from the flue gas condencer /1000/
+          RGK1_min   Minimum output from the flue gas condencer /500/
+;
+
 *--------------VKA4 constants and parameters------------------------------------
 * Maximum electricty input and the coefficients for VKA1 and VKA4 corresponds to the 800 kW heating capacity for each machine
 *Calculated from historical data
@@ -105,6 +89,7 @@ scalar
          VKA1_C_COP            Cooling coefficient of performance for VKA1/1.8/
          VKA1_el_cap           Maximum electricity usage by VKA1/266/
 ;
+
 *--------------VKA4 constants and parameters------------------------------------
 *COP calculated from historical data (on dropbox) max heating capacity
 *(800kW) from BDAB "Utredning ackumulatortank KC 4.0", in model max heat generation is 780kW
@@ -115,12 +100,15 @@ scalar
          VKA4_C_COP            Cooling coefficient of performance for VKA4/1.8/
          VKA4_el_cap           Maximum electricity usage by VKA4/266/
 ;
+
 *--------------AbsC(Absorbition Refrigerator), cooling source-------------------
 * Source for these numbers?
 scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
+         AbsH_COP       Coeffiicent of performance for absorption heating investment /1.7/
 *AbsC_eff Efficiency of AbsC /0.95/
 ;
+
 *--------------AAC(Ambient Air Cooler), cooling source--------------------------
 * Source Per
 scalar
@@ -128,14 +116,14 @@ scalar
          AAC_eff Efficiency of AAC /0.95/
          AAC_TempLim Temperature limit of AAC/12/
 ;
+
 *--------------Refrigerator Machines, cooling source----------------------------
-* Source for these numbers?
 scalar
       RM_COP Coefficent of performance of AC /2/
       RM_eff Coefficent of performance of AC /0.95/
 ;
-**************Investment options************************************************
 
+**************Investment options************************************************
 *----------------Absorption Chiller Investment----------------------------------
 * source Uhttps://ec.europa.eu/energy/sites/ener/files/documents/Report%20WP2.pdf
 scalar
@@ -145,33 +133,36 @@ scalar
 *         AbsCInv_MaxCap Maximum possible investment in kW cooling /100000/
 *         AbsCInv_fx     Fixed cost for investment in Abs chiller /1610000/
 ;
-*----------------Panna 2  ------------------------------------------------------
 
+*----------------Panna 2  ------------------------------------------------------
 scalar
       P2_eff                 Efficiency of P2 /0.9/
-      h_P2_cap               Capacity of P2 /6000/
+      P2_cap                 Capacity of P2 /6000/
+      P2_max                 Maximum output from P2 /6000/
+      P2_min                 Minimum output from P2 /1000/
       P2_reseach_prod        Heat output during research /1500/
 ;
-*----------------Refurbished turbine for Panna 2  ------------------------------
 
+*----------------Refurbished turbine for Panna 2  ------------------------------
 scalar
 * turbine efficiency from Danish energy agency reports
       TURB_eff Efficiency of turbine /0.25/
 * Max turbine output from AH WP4.2 report
       TURB_cap Maximum power output of turbine /800/
 ;
+
 *--------------MC2 Refrigerator Machines, cooling source------------------------
 * Real capacity of RMMC is 4200 but since MC2 internal cooling demand isn't
 * accounted for RMMC capacity is here decreased by 600 kW
-
 scalar
 * Source, historical data, from Chalmersfastigheter energiförsörjning campus johanneberg (BDAB)
 * RMMC_cap value is a technical capacity limit of the connetion, according to AH
-      RMCC_COP Coefficient of performance for RM /1.94/
-      RMMC_cap Maximum cooling capacity for RM in kW/900/
+      RMCC_H_COP Coefficient of performance for RM /3/
+      RMCC_C_COP Coefficient of performance for RM /1.94/
+      RMMC_cap Maximum cooling capacity for RM in kW/500/
 ;
-*--------------PV data----------------------------------------------------------
 
+*--------------PV data----------------------------------------------------------
 scalar
       Tstc Temperature at standard temperature and conditions in degree Celsius /25/
       Gstc Irradiance at standard temperature and conditions in kW per m^2 /1/
@@ -223,29 +214,29 @@ parameter
                                                           + coef_Si('4')*Tekv_facade(h,BID)*log10(Gekv_facade(h,BID))
                                                           + coef_Si('5')*Tekv_facade(h,BID)*sqr(log10(Gekv_facade(h,BID)))
                                                           + coef_Si('6')*sqr(Tekv_facade(h,BID)));
-*--------------HP constants and parameters (an investment options)-------------
 
+*--------------HP constants and parameters (an investment options)-------------
 *[COP and eff values need to be checked]
 scalar
 * Heat pump efficiencies from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
          HP_H_COP       Coefficent of performance for heat of the Heat Pump (HP)/3.15/
          HP_C_COP       Coefficent of performance for cooling of the Heat Pump (HP)/2.5/
 ;
+
 *--------------TES constants and parameters-------------------------------------
-* Add source for these numbers
 scalar
          TES_chr_eff           TES charging efficiency /0.95/
          TES_dis_eff           TES discharging efficiency/0.95/
-         TES_max_cap           Maximum capacity available in m3/100000/
+         TES_max_cap           Maximum capacity available in m3/1000/
          TES_density           Energy density at 35C temp diff according to BDAB/39/
-         TES_fx_cost           Fixed cost attributable to TES investment/5732000/
+         TES_fx_cost           Fixed cost attributable to TES investment/4404119/
          TES_vr_cost           Variable cost attributable to TES investment/1887/
          TES_dis_max           Maximum discharge rate in kWh per h/23000/
          TES_ch_max            Maximum charge rate in kWh per h/11000/
          TES_hourly_loss_fac   Hourly loss factor/0.999208093/
 ;
-*--------------Building storage characteristics---------------------------------
 
+*--------------Building storage characteristics---------------------------------
 scalar
          BTES_chr_eff           BTES charging efficiency /0.95/
          BTES_dis_eff           BTES discharging efficiency/0.95/
@@ -279,13 +270,12 @@ scalar
 ;
 
 *--------------Battery storage characteristics----------------------------------
-
 scalar
          BES_ch_eff    Charging efficiency /0.95/
          BES_dis_eff   Discharding efficiency /0.95/
 ;
-*--------------set building energy demands--------------------------------------
 
+*--------------set building energy demands--------------------------------------
 Parameter
          el_demand_AH(h,i_AH_el)       el demand in AH buildings as obtained from metry
          el_demand_nonAH(h,i_nonAH_el) el demand in non-AH buildings as obtained from metry
@@ -310,7 +300,6 @@ Parameter
 ;
 
 *--------------unit total cost for all the generating units---------------------
-
 parameter
          price(sup_unit,h)       unit market price of energy
          fuel_cost(sup_unit,h)   fuel cost per kWh production
@@ -320,9 +309,9 @@ parameter
          co2_cost(sup_unit,h)    CO2 cost
          utot_cost(sup_unit,h)   unit total cost of every production unit
          PT_cost(sup_unit)       Power tariff SEK per kW per month
-         el_sell_price(h) Sell price for electricty
-         el_buy_price(h)  Buy price for electricty
-         net_tariff              Network tariff   /0.0031/
+         el_sell_price(h)        Sell price for electricty
+         el_buy_price(h)         Buy price for electricty
+         net_tariff              Network tariff   /0.031/
          unit_avrg_prof_buy      Average buy profit pr kWh  /0.011/
          unit_prof_sell          Sell profit pr kWh  /0.019/
          ursprungsgaranti       /0.01/
@@ -334,7 +323,6 @@ parameter
 ;
 
 * 0.0031 is grid tariff per kWh from Göteborg Energi home page; 0.011sek/kWh average profit for GE for large customers
-
 price('exG',h)=net_tariff + unit_avrg_prof_buy + el_price(h);
 price('DH',h)=h_price(h);
 
@@ -343,6 +331,7 @@ el_sell_price(h) =el_price(h) - unit_prof_sell - net_tariff  +  el_cirtificate(h
 fuel_cost('CHP',h)=0.186;
 * Divided by efficiency to get actual fuel use when multiplying with heat output
 fuel_cost('P1',h)=0.186/P1_eff;
+fuel_cost('RGK1',h)=0.186/RGK1_eff;
 *fuel_cost('P1',h)=0.186*fuel_P1(h)/q_P1(h);
 * Divided by efficiency to get actual fuel use when multiplying with heat output
 fuel_cost('P2',h)=0.186/P2_eff;
@@ -365,6 +354,7 @@ var_cost('TURB',h)= 3.9 / kilo * EUR_to_SEK_2015;
 fix_cost('PV')= 12540 / kilo * EUR_to_SEK_2015;
 * No data on fixed costs for wood chip boilers, included in variable O&M costs.
 var_cost('P1',h)= 5.4 / kilo * EUR_to_SEK_2015;
+*var_cost('RGK1',h)= 5.4 / kilo * EUR_to_SEK_2015; ???
 var_cost('P2',h)= 5.4 / kilo * EUR_to_SEK_2015;
 * AbsC variable O&M inclusive electricity, adjusted by COP for absorption heating compared to cooling factors
 var_cost('AbsC',h)= 0.9 / kilo * AbsH_COP/AbsC_COP * EUR_to_SEK_2015;
