@@ -8,8 +8,7 @@ for l=1:1:6
         if x(l,m)> 0
             for h=1:1:24
            HoD(i,1)=i;
-           HoD(i,2)=d;
-           
+           HoD(i,2)=d;           
            i=i+1;
             end
            d=d+1;
@@ -27,7 +26,6 @@ HoD(:,3)=1;
     HoD_struct.type = 'parameter';
     HoD_struct.val = HoD;
     HoD_struct.ts = 'Hour of day';
-
 %%
 i=1;
 d=1;
@@ -59,4 +57,4 @@ HoM(:,3)=1;
     HoM_struct.ts = 'Hour of month';
 
 wgdx('date_vector.gdx', HoM_struct, HoD_struct)
-
+%%
