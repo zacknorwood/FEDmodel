@@ -15,23 +15,409 @@
 [RP:FED_GENERAGE_GDX_FILE]
 1=
 
-
 [RP:UNTITLED_1]
 1=
 
+[GDXDISP: AbsCInv_cap Var 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: AH_el_exp_tot Par 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: AH_el_imp_tot Par 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: AH_h_exp_tot Par 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: e_exp_AH Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: h_demand Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: h_exp_AH Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: fuel_P1 Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: fuel_P2 Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: fuel_cost Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: fix_cost_new Var 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: fix_cost_existing Var 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: fix_cost Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: FED_PE Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: FED_CO2 Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: exist_PV_cap_roof Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: exist_PV_cap_facade Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: en_tax Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: el_VKA4 Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: el_VKA1 Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: el_sell_price Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: el_price Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: el_demand Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: e_TURB Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: e_RMMC Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: e_RM Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: e_PV Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: e_imp_nonAH Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: e_imp_AH Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: e_HP Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: e_existPV Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: e_AAC Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: DH_export_season Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: cost_inv_opt Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: CO2F_PV Par 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: CO2F_P2 Par 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: CO2F_P1 Par 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: CO2F_exG Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: CO2F_DH Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: C_VKA4 Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: C_VKA1 Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: c_RMMC Var 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[RP:OPF]
+1=
+
+[RP:PROJECT-PART2-1]
+1=
+
+[RP:NORDIC_MARKET_FULL_CODE]
+1=
+
+[RP:MICROGRID_MODEL]
+1=
+
+[RP:POWER_COST]
+1=
+
+[RP:FED_GENERATE_GDX_FILE]
+1=
+
 [RP:FED_GET_GDX_FILE]
-
 1=
 
-[RP:FED_SIMULATOR_MAIN]
-1=
-
-[RP:FED_INITIALIZE]
-1=
-
-
-[RP:FED_VARIABLES]
-
+[RP:TRANSPORTATION]
 1=
 
 [RP:FED_EQUATIONS]
@@ -39,30 +425,37 @@
 2=GDXVIEWER.EXE
 3= C:\> gams trnsport.gms GDX=trnsport.gdx
 
+[RP:FED_VARIABLES]
+1=
+
+[RP:FED_INITIALIZE]
+1=
 
 [RP:FED_SIMULATOR_MAIN]
 1=
 
 [MRUFILES]
-1=D:\FED_SIMULATOR\FEDmodel\FED_GENERATE_GDX_FILE.lst
-2=D:\FED_SIMULATOR\FEDmodel\FED_Initialize.lst
-3=D:\FED_SIMULATOR\FEDmodel\FED_GET_GDX_FILE.lst
-4=D:\FED_SIMULATOR\FEDmodel\FED_Equations.lst
-5=D:\FED_SIMULATOR\FEDmodel\FED_Variables.lst
-6=D:\FED_SIMULATOR\FEDmodel\Untitled_1.gms
+1=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_SIMULATOR_MAIN.lst
+2=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_Initialize.lst
+3=C:\Users\jemal\Dropbox\EEK201-2017\GAMS project materials\Gams tutorial\transportation.gms
+4=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_GET_GDX_FILE.lst
+5=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_GENERATE_GDX_FILE.lst
+6=C:\Users\jemal\AppData\Local\Microsoft\Windows\Temporary Internet Files\Content.Outlook\HBD2ZSDR\Power_cost.gms
+7=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_GENERATE_GDX_FILE.log
+8=D:\FED Project\Data from Christos\Microgrid_model.gms
+9=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_Initialize.~gm
 
 [OPENWINDOW_1]
-FILE0=D:\FED_SIMULATOR\FEDmodel\FED_Equations.gms
-FILE1=D:\FED_SIMULATOR\FEDmodel\FED_GENERATE_GDX_FILE.gms
-FILE2=D:\FED_SIMULATOR\FEDmodel\FED_GET_GDX_FILE.gms
-FILE3=D:\FED_SIMULATOR\FEDmodel\FED_Initialize.gms
-FILE4=D:\FED_SIMULATOR\FEDmodel\FED_SIMULATOR_MAIN.gms
-FILE5=D:\FED_SIMULATOR\FEDmodel\FED_SIMULATOR_MAIN.lst
-FILE6=D:\FED_SIMULATOR\FEDmodel\FED_Variables.gms
-FILE7=D:\FED_SIMULATOR\FEDmodel\FED_GENERATE_GDX_FILE.gms
+FILE0=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_Equations.gms
+FILE1=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_Equations.lst
+FILE2=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_GENERATE_GDX_FILE.gms
+FILE3=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_GET_GDX_FILE.gms
+FILE4=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_Initialize.gms
+FILE5=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_SIMULATOR_MAIN.gms
+FILE6=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_Variables.gms
+FILE7=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_Variables.gms
 MAXIM=0
 TOP=0
 LEFT=0
-HEIGHT=1033
-WIDTH=1194
-
+HEIGHT=1057
+WIDTH=1051

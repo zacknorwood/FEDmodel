@@ -1,6 +1,6 @@
-*------------------------------------------------------------------------------
-*---------------------FED MAIN SIMULATOR--------------------------------------
-*------------------------------------------------------------------------------
+*-------------------------------------------------------------------------------
+*---------------------FED MAIN SIMULATOR----------------------------------------
+*-------------------------------------------------------------------------------
 
 $Include FED_Initialize
 $Include FED_Variables
@@ -87,12 +87,12 @@ execute_unload 'GtoM' min_totCost0, min_totCost, min_totPE, min_totCO2, min_peak
                       el_sell_price, el_price, h_price, tout,
                       BTES_model,
                       FED_PE, FED_CO2, CO2F_PV, PEF_PV, CO2F_P1, PEF_P1, CO2F_P2, PEF_P2, CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,
-                      h_Pana1, qB1, qF1, fuel_P1, P1_eff,
+                      h_Pana1, h_RGK1, qB1, qF1, fuel_P1, P1_eff,
                       H_VKA1, C_VKA1, el_VKA1,
                       H_VKA4, C_VKA4, el_VKA4,
                       B_P2, invCost_P2, fuel_P2, h_P2, H_P2T, B_TURB, invCost_TURB, e_TURB, h_TURB, P2_eff, TURB_eff,
                       h_AbsC, c_AbsC, h_AbsCInv, c_AbsCInv, AbsCInv_cap, invCost_AbsCInv,
-                      e_RM, c_RM, e_RMMC, c_RMMC, RMMC_inv, invCost_RMMC,
+                      el_RM, c_RM, e_RMMC, h_RMMC, c_RMMC, RMMC_inv, invCost_RMMC,
                       e_AAC, c_AAC,
                       h_HP, e_HP, c_HP, HP_cap, invCost_HP,
                       TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES, TES_dis_eff, TES_chr_eff,
