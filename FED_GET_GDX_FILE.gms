@@ -7,23 +7,29 @@
 *-If there is change in any of the input data (see the parameter list below), run 'FED_GENERATE_GDX_FILE' to update 'FED_INPUT_DATA'
 *----------------Load input parameters of the model-----------------------------
 
-SET h0         length of the input data in hours
-    i          buildings considered in the FED system
-    m          Number of month
-    d          Number of days
-    BID        Building IDs used for PV calculations
-    BTES_properties  Building Inertia TES properties
+*----------Building IDs---------------------------------------------------------
+set B_ID           Building ID
 ;
 
-$GDXIN Input_data_FED_SIMULATOR\FED_INPUT_DATA.gdx
-$LOAD h0
-$LOAD i
-$LOAD m
-$LOAD d
-$LOAD BID
+$GDXIN MtoG.gdx
+$LOAD B_ID
+$GDXIN
+Alias (B_ID, i) ;
+
+*-----------Simulation time, Bites and BAC investments--------------------------
+set h              SIMULATION TIME
+    BITES_Inv(i)   used for fixed BITES inv option
+    BAC_Inv(i)     used for fixed BAC inv option
+    BTES_properties  Building Inertia TES properties
+;
+$GDXIN MtoG.gdx
+$LOAD h
+$LOAD BITES_Inv
+$LOAD BAC_Inv
 $LOAD BTES_properties
 $GDXIN
 
+*--------------Building catagories based on how energy is supplied--------------
 set i_AH_el(i) buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok
                                           /Kemi, Phus,
                                            Bibliotek, NyaMatte, Studentbostader, Kraftcentral,
@@ -77,58 +83,127 @@ set i_AH_el(i) buildings considered in the FED system connected the AH(Akadamisk
                                            CTP, Karhuset, JSP, Karhus_studenter
                                          /
 ;
-*********************SET THE SIMULATION TIME HERE*******************************
-set h(h0) SIMULATION TIME;
-* /1442*10202/;
-$GDXIN MtoG.gdx
-$LOAD h
+*********************This part need be updated**********************************
+SET
+    m          Number of month
+    d          Number of days
+    BID        Building IDs used for PV calculations
+;
+
+$GDXIN Input_data_FED_SIMULATOR\FED_INPUT_DATA.gdx
+$LOAD m
+$LOAD d
+$LOAD BID
 $GDXIN
 
 PARAMETERS  HoD(h,d)       Hour of the day
             HoM(h,m)       Hour of the month
-            qB1(h)         Heat out from boiler 1 (Panna1)
-            qF1(h)         Heat out from FGC (Panna1)
-            h_P1(h)           Total heat from Panna1
-            el_demand(h,i)    ELECTRICITY DEMAND IN THE FED BUILDINGS
-            h_demand(h,i)     Heating DEMAND IN THE FED BUILDINGS
-            c_demand(h,i)     Cooling DEMAND IN THE FED BUILDINGS
-            el_price(h)       ELECTRICTY PRICE IN THE EXTERNAL GRID
-            el_cirtificate(h) Electricity cirtificate for selling renewable energy sek per kwh
-            h_price(h)        Heat PRICE IN THE IN THE EXTERNAL DH SYSTEM
-            tout(h)               OUT DOOR TEMPRATTURE
             G_facade(h,BID)       irradiance on building facades
             area_facade_max(BID)  irradiance on building facades
             G_roof(h,BID)         irradiance on building facades
             area_roof_max(BID)    irradiance on building facades
-            BTES_model(BTES_properties,i) BUILDING INERTIA TES PROPERTIES
-            BAC_savings_period(h)         Period in which BAC-energy savings are active
-            DH_export_season(h)           Period in which DH exports are payed for
-            P1P2_dispatchable(h)          Period during which P1 and P2 are dispatchable
+
 ;
 $GDXIN Input_data_FED_SIMULATOR\FED_INPUT_DATA.gdx
 $LOAD HoD
 $LOAD HoM
-$LOAD qB1
-$LOAD qF1
-$LOAD h_P1
-$LOAD el_demand
-$LOAD h_demand
-$LOAD c_demand
-$LOAD el_price
-$LOAD el_cirtificate
-$LOAD h_price
-$LOAD tout
 $LOAD G_facade
 $LOAD area_facade_max
 $LOAD G_roof
 $LOAD area_roof_max
+$GDXIN
+********************************************************************************
+
+*---Heat generated from Boiler 1 and the flue gas condencer in the base case----
+PARAMETERS
+            qB1(h)         Heat out from boiler 1 (Panna1)
+            qF1(h)         Heat out from FGC (Panna1)
+*            h_P1(h)           Total heat from Panna1
+;
+$GDXIN MtoG.gdx
+$LOAD qB1
+$LOAD qF1
+*$LOAD h_P1
+$GDXIN
+*-----------Forcasted Demand data from MATLAB-----------------------------------
+PARAMETERS
+           el_demand(h,B_ID)    ELECTRICITY DEMAND IN THE FED BUILDINGS
+           h_demand(h,B_ID)     Heating DEMAND IN THE FED BUILDINGS
+           c_demand(h,B_ID)     Cooling DEMAND IN THE FED BUILDINGS
+;
+$GDXIN MtoG.gdx
+$LOAD el_demand
+$LOAD h_demand
+$LOAD c_demand
+$GDXIN
+
+*-----------Forcasted energy prices from MATLAB---------------------------------
+PARAMETERS
+           el_price(h)       ELECTRICTY PRICE IN THE EXTERNAL GRID
+           el_cirtificate(h) Electricity cirtificate for selling renewable energy sek per kwh
+           h_price(h)        Heat PRICE IN THE IN THE EXTERNAL DH SYSTEM
+;
+$GDXIN MtoG.gdx
+$LOAD el_price
+$LOAD el_cirtificate
+$LOAD h_price
+$GDXIN
+
+*-----------Forcasted outdoor temprature from MATLAB----------------------------
+PARAMETERS
+            tout(h)               OUT DOOR TEMPRATTURE
+;
+$GDXIN MtoG.gdx
+$LOAD tout
+$GDXIN
+
+*-----------BITES model from MATLAB---------------------------------------------
+PARAMETERS
+            BTES_model(BTES_properties,i) BUILDING INERTIA TES PROPERTIES
+;
+$GDXIN MtoG.gdx
 $LOAD BTES_model
-$LOAD BAC_savings_period
-$LOAD DH_export_season
+$GDXIN
+
+*-----------P1P2 dispatchability from MATLAB------------------------------------
+PARAMETERS
+            P1P2_dispatchable(h)          Period during which P1 and P2 are dispatchable
+;
+$GDXIN MtoG.gdx
 $LOAD P1P2_dispatchable
 $GDXIN
 
-parameters  CO2_peak_ref       reference peak CO2 emission
+*-----------BAC saving period from MATLAB---------------------------------------
+PARAMETERS
+            BAC_savings_period(h)         Period in which BAC-energy savings are active
+;
+$GDXIN MtoG.gdx
+$LOAD BAC_savings_period
+$GDXIN
+
+*-----------DH export season from MATLAB----------------------------------------
+PARAMETERS
+            DH_export_season(h)           Period in which DH exports are payed for
+;
+$GDXIN MtoG.gdx
+$LOAD DH_export_season
+$GDXIN
+
+*---------Simulation option settings--------------------------------------------
+PARAMETERS
+            min_totCost        Option to minimize total cost
+            min_totPE          OPtion to minimize tottal PE use
+            min_totCO2         OPtion to minimize total CO2 emission
+;
+$GDXIN MtoG.gdx
+$LOAD min_totCost
+$LOAD min_totPE
+$LOAD min_totCO2
+$GDXIN
+
+*---------CO2 and PE factors----------------------------------------------------
+PARAMETERS
+            CO2_peak_ref       reference peak CO2 emission
             CO2_max            Maximum CO2 emission in the base case
             PE_tot_ref         reference total PE use
             CO2F_PV            CO2 factor of solar PV
@@ -141,41 +216,6 @@ parameters  CO2_peak_ref       reference peak CO2 emission
             PEF_exG(h)         PE factor of the electricity grid
             CO2F_DH(h)         CO2 factor of the district heating grid
             PEF_DH(h)          PE factor of the district heating grid
-            h0_AbsC(h)         Input heat to the existing AbsC
-            e0_AAC(h)          Input electricty to the existing Ambient Air Cooler
-            e0_VKA1(h)         Input electricty to the existing heat pump (VKA1)
-            e0_VKA4(h)         Input electricty to the existing heat pump (VKA4)
-            min_totCost0       Option for base case calculation
-            min_totCost        Option to minimize total cost
-            min_totPE          OPtion to minimize tottal PE use
-            min_totCO2         OPtion to minimize total CO2 emission
-            min_totPECO2       OPtion to minimize both total PE use and CO2 emission
-            min_peakCO2        OPtion to minimize peak CO2 emission
-            inv_lim            Maximum value of the investment in SEK
-;
-*--------------Choice of investment options to consider-------------------------
-PARAMETERS
-         sw_HP        switch to decide whether to operate HP or not
-         sw_TES       switch to decide whether whether to operate TES or not
-         sw_BTES      switch to decide whether to include building storage or not
-         sw_BAC       switch to decide whether to include Building Advanced Control or not
-         sw_BES       switch to decide whether to include Battery storage or not
-         sw_PV        switch to decide whether to include solar PV or not
-         sw_RMMC      switch to decide whether investment in connecting refrigeration machines at MC2 to KB0
-         sw_P2        switch to decide whether to include P2 or not
-         sw_TURB      switch to decide whether to include turbine or not
-         sw_AbsCInv   switch to decide whether to include absorption chiller investments
-         sw_RMInv     switch to decide whether to include refrigeration machine investments
-         opt_fx_inv   option to fix investments
-         opt_fx_inv_RMMC      options to fix the RMMC investment
-         opt_fx_inv_AbsCInv   options to fix investment in new AbsChiller
-         opt_fx_inv_AbsCInv_cap capacity of the new AbsChiller
-         opt_fx_inv_P2        options to fix the P2 investment
-         opt_fx_inv_TURB      options to fix the TURB investment
-         opt_fx_inv_HP        options to fix investment in new HP
-         opt_fx_inv_HP_cap    Capacity of the fixed new HP
-         opt_fx_inv_TES       options to fix investment in new TES
-         opt_fx_inv_TES_cap   capacity of the new TES
 ;
 $GDXIN MtoG.gdx
 $LOAD CO2_max
@@ -191,28 +231,34 @@ $LOAD CO2F_exG
 $LOAD PEF_exG
 $LOAD CO2F_DH
 $LOAD PEF_DH
-$LOAD h0_AbsC
-$LOAD e0_AAC
-$LOAD e0_VKA1
-$LOAD e0_VKA4
-$LOAD min_totCost0
-$LOAD min_totCost
-$LOAD min_totPE
-$LOAD min_totCO2
-$LOAD min_totPECO2
-$LOAD min_peakCO2
+$GDXIN
+
+*-----------Investmet limit----------------------------------------------------
+parameters
+            inv_lim            Maximum value of the investment in SEK
+;
+$GDXIN MtoG.gdx
 $LOAD inv_lim
-$LOAD sw_HP
-$LOAD sw_TES
-$LOAD sw_BTES
-$LOAD sw_BAC
-$LOAD sw_BES
-$LOAD sw_PV
-$LOAD sw_RMMC
-$LOAD sw_P2
-$LOAD sw_TURB
-$LOAD sw_AbsCInv
-$LOAD sw_RMInv
+$GDXIN
+
+*--------------Choice of investment options to consider-------------------------
+PARAMETERS
+         opt_fx_inv   option to fix investments
+         opt_fx_inv_RMMC      options to fix the RMMC investment
+         opt_fx_inv_AbsCInv   options to fix investment in new AbsChiller
+         opt_fx_inv_AbsCInv_cap capacity of the new AbsChiller
+         opt_fx_inv_P2        options to fix the P2 investment
+         opt_fx_inv_TURB      options to fix the TURB investment
+         opt_fx_inv_HP        options to fix investment in new HP
+         opt_fx_inv_HP_cap    Capacity of the fixed new HP
+         opt_fx_inv_RMInv     options to fix investment in new RM
+         opt_fx_inv_RMInv_cap Capacity of the fixed new RM
+         opt_fx_inv_TES       options to fix investment in new TES
+         opt_fx_inv_TES_cap   capacity of the new TES
+         opt_fx_inv_BES       options to fix investment in new TES
+         opt_fx_inv_BES_cap   capacity of the new TES
+;
+$GDXIN MtoG.gdx
 $LOAD opt_fx_inv
 $LOAD opt_fx_inv_RMMC
 $LOAD opt_fx_inv_AbsCInv
@@ -221,9 +267,15 @@ $LOAD opt_fx_inv_P2
 $LOAD opt_fx_inv_TURB
 $LOAD opt_fx_inv_HP
 $LOAD opt_fx_inv_HP_cap
+$LOAD opt_fx_inv_RMInv
+$LOAD opt_fx_inv_RMInv_cap
 $LOAD opt_fx_inv_TES
 $LOAD opt_fx_inv_TES_cap
+$LOAD opt_fx_inv_BES
+$LOAD opt_fx_inv_BES_cap
 $GDXIN
+
+*the combination is used to comment out sections codes inside
 $Ontext
 
 $Offtext

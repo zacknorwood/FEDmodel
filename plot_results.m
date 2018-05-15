@@ -4,7 +4,6 @@ close all;
 clear all;
 %% Here, results are processed and ploted, displayed and saved when needed
 
-
 %% Get output results
 
 tic
@@ -14,9 +13,9 @@ while PROCESS_RESULTS==1
     %% Set results in a gdx file for a given scenario/option    
     tic
     %set desired option
-    option='mintotCost\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    option='reDispatch\mintotCO2_45_98\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results\',option);
-    file_name='GtoM_mintotPE_AHinv_HP';
+    file_name='GtoM_baseCase';
     gdxData=strcat(path,file_name);       
     %% Get parameters and variables from a GDX file 
         
@@ -1774,4 +1773,3 @@ return
 folder_name='D:\PhD project\PhD\Report\Thesis\figures\phd_ch05\';
 plot_fname=['ME_C2_gen_cor1_D1eqD2'];
 fsave_figure(folder_name,plot_fname);
-

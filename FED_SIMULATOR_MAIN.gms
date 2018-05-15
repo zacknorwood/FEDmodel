@@ -41,17 +41,17 @@ total_cap_PV_facade total capacity in kW
 h_demand_nonAH_sum  total demand for non AH buildings
 ;
 
-invCost_HP = sw_HP*HP_cap.l*cost_inv_opt('HP');
-invCost_PV = sw_PV*sum(BID, sw_PV*PV_cap_roof.l(BID)*cost_inv_opt('PV')) + sw_PV*sum(BID, sw_PV*PV_cap_facade.l(BID)*cost_inv_opt('PV')) ;
-invCost_BEV = sw_BES*BES_cap.l*cost_inv_opt('BES');
-invCost_TES = sw_TES*(TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
-invCost_BITES = sw_BTES*cost_inv_opt('BTES')*sum(i,B_BITES.l(i));
-invCost_BAC = sw_BAC*cost_inv_opt('BAC')*sum(i,B_BAC.l(i));
-invCost_RMMC = sw_RMMC*cost_inv_opt('RMMC')*RMMC_inv.l;
-invCost_P2 = sw_P2 * B_P2.l * cost_inv_opt('P2');
-invCost_TURB = sw_TURB * B_TURB.l * cost_inv_opt('TURB');
-invCost_AbsCInv = sw_AbsCInv * (AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
-invCost_RMInv = sw_RMInv*RMInv_cap.l*cost_inv_opt('RMInv');
+invCost_HP = HP_cap.l*cost_inv_opt('HP');
+invCost_PV = sum(BID, PV_cap_roof.l(BID)*cost_inv_opt('PV')) + sum(BID, PV_cap_facade.l(BID)*cost_inv_opt('PV')) ;
+invCost_BEV = BES_cap.l*cost_inv_opt('BES');
+invCost_TES = (TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
+invCost_BITES = cost_inv_opt('BTES')*sum(i,B_BITES.l(i));
+invCost_BAC = cost_inv_opt('BAC')*sum(i,B_BAC.l(i));
+invCost_RMMC = cost_inv_opt('RMMC')*RMMC_inv.l;
+invCost_P2 = B_P2.l * cost_inv_opt('P2');
+invCost_TURB = B_TURB.l * cost_inv_opt('TURB');
+invCost_AbsCInv = (AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
+invCost_RMInv = RMInv_cap.l*cost_inv_opt('RMInv');
 h_demand_nonAH_sum(h) = sum(i_nonAH_h, h_demand_nonAH(h,i_nonAH_h));
 *total_cap_PV_roof=sum(BID, PV_cap_roof.l(BID));
 *total_cap_PV_facade=sum(BID, PV_cap_facade.l(BID));
@@ -78,7 +78,7 @@ AH_el_exp_tot=sum(h,e_exp_AH.l(h));
 AH_h_imp_tot=sum(h,h_imp_AH.l(h));
 AH_h_exp_tot=sum(h,h_exp_AH.l(h));
 
-execute_unload 'GtoM' min_totCost0, min_totCost, min_totPE, min_totCO2, min_peakCO2,
+execute_unload 'GtoM' min_totCost, min_totPE, min_totCO2,
                       el_demand, h_demand, c_demand, c_demand_AH,
                       e_imp_AH, e_exp_AH, e_imp_nonAH,AH_el_imp_tot, AH_el_exp_tot,
                       h_imp_AH, h_exp_AH, h_imp_nonAH, AH_h_imp_tot, AH_h_exp_tot,
@@ -103,7 +103,7 @@ execute_unload 'GtoM' min_totCost0, min_totCost, min_totPE, min_totCO2, min_peak
                       PT_exG, PT_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
-                      DH_export_season, P1P2_dispatchable, h_P1, inv_lim
+                      DH_export_season, P1P2_dispatchable, inv_lim
                       c_RMInv, e_RMInv, RMInv_cap, invCost_RMInv,
                       model_status;
 

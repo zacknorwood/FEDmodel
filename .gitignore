@@ -60,3 +60,7 @@ FED_PROJECT.gpr
 *.py
 *.gpr
 *.db
+FED_Equations.~~g
+FED_GET_GDX_FILE.~~g
+FED_SIMULATOR_GUI.m
+FED_SIMULATOR_MAIN.~~g
