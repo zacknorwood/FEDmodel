@@ -31,58 +31,22 @@ $GDXIN
 
 *--------------Building catagories based on how energy is supplied--------------
 set i_AH_el(i) buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok
-                                          /Kemi, Phus,
-                                           Bibliotek, NyaMatte, Studentbostader, Kraftcentral,
-                                           Lokalkontor, Karhus_CFAB, CAdministration, GamlaMatte, Gibraltar_herrgard,
-                                           HA, HB, Elkraftteknik, HC, Maskinteknik,
-                                           Fysik_Origo, MC2, Edit, Polymerteknologi, Keramforskning,
-                                           Fysik_Soliden, Idelara,
-                                           VOV1, Arkitektur, VOV2, Karhus_studenter
-                                          /
     i_nonAH_el(i) buildings considered in the FED system not connected to the AH(Akadamiskahus) el netwrok
-                                          /Vassa1, Vassa2-3, Vassa4-15,
-                                           SSPA,
-                                           CTP, Karhuset, JSP,
-                                           Chabo
-                                          /
     i_AH_h(i) buildings considered in the FED system connected to the AH(Akadamiskahus) heat netwrok
-                                          /Kemi, Phus,
-                                           Bibliotek, SSPA, NyaMatte, Studentbostader, Kraftcentral,
-                                           Lokalkontor, Karhus_CFAB, CAdministration, GamlaMatte,
-                                           HA, HB, Elkraftteknik, HC, Maskinteknik,
-                                           Fysik_Origo, MC2, Edit, Polymerteknologi, Keramforskning,
-                                           Fysik_Soliden, Idelara,
-                                           VOV1, Arkitektur, VOV2, Karhus_studenter
-                                          /
     i_nonAH_h(i) buildings considered in the FED system not connected to the AH(Akadamiskahus) heat netwrok
-                                          /Vassa1, Vassa2-3, Vassa4-15,
-                                           Gibraltar_herrgard,
-                                           CTP, Karhuset, JSP,
-                                           Chabo
-                                          /
     i_AH_c(i) buildings considered in the FED system connected to the AH(Akadamiskahus) cooling netwrok
-                                          /Kemi, Phus,
-                                           Bibliotek, NyaMatte, Kraftcentral,
-                                           Lokalkontor, Karhus_CFAB, CAdministration,
-                                           HA, HB, Elkraftteknik, HC, Maskinteknik,
-                                           Fysik_Origo, MC2, Edit, Keramforskning,
-                                           Fysik_Soliden, Idelara,
-                                           VOV1, Arkitektur, VOV2, Karhus_studenter
-                                          /
     i_nonAH_c(i) buildings considered in the FED system not connected to the AH(Akadamiskahus) cooling netwrok
-                                          /Vassa1, Vassa2-3, Vassa4-15,
-                                           Studentbostader, SSPA,
-                                           Polymerteknologi,
-                                           GamlaMatte, Gibraltar_herrgard,
-                                           CTP, Karhuset, JSP,
-                                           Chabo
-                                          /
     i_nonBITES(i)         Buildings not applicable for BITES
-                                         / Phus, SSPA, Studentbostader, Karhus_CFAB,
-                                           Gibraltar_herrgard, Polymerteknologi,Idelara,
-                                           CTP, Karhuset, JSP, Karhus_studenter
-                                         /
 ;
+$GDXIN MtoG.gdx
+$LOAD i_AH_el
+$LOAD i_nonAH_el
+$LOAD i_AH_h
+$LOAD i_nonAH_h
+$LOAD i_AH_c
+$LOAD i_nonAH_c
+$LOAD i_nonBITES
+$GDXIN
 *********************This part need be updated**********************************
 SET
     m          Number of month
