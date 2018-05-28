@@ -9,7 +9,6 @@ positive variable
          C_VKA1(h)         cooling power available from VKA1
          el_VKA1(h)        electricity needed by VKA1
 ;
-el_VKA1.fx(h) $ (min_totCost0 eq 1)  = e0_VKA1(h);
 
 *------------------VKA4 Heatpump related----------------------------------------
 positive variable
@@ -17,7 +16,6 @@ positive variable
          C_VKA4(h)         cooling power available from VKA4
          el_VKA4(h)        electricity needed by VKA4
 ;
-el_VKA4.fx(h) $ (min_totCost0 eq 1) = e0_VKA4(h);
 
 *------------------Panna1 (if re-dispach is allowed)----------------------------
 positive variable
@@ -42,7 +40,6 @@ positive variable
          AbsC_cap            capacity of AbsC
 ;
 AbsC_cap.fx = cap_sup_unit('AbsC');
-h_AbsC.fx(h) $ (min_totCost0 eq 1) = h0_AbsC(h);
 
 *------------------Refrigerator Machine related---------------------------------
 positive variable
@@ -51,16 +48,14 @@ positive variable
          RM_cap            capacity of refrigerator
 ;
 *this is the aggregated capacity of five exisiting RM Units
-el_RM.fx(h) $ (min_totCost0 eq 1)  = 0;
 RM_cap.fx =cap_sup_unit('RM');
 
-*------------------Ambient Air Cooling Machine related---------------------------
+*------------------Ambient Air Cooling Machine related--------------------------
 positive variable
          e_AAC(h)           electricity demand for refrigerator
          c_AAC(h)           cooling power available from the refrigerator
          AAC_cap            capacity of refrigerator
 ;
-e_AAC.fx(h) $ (min_totCost0 eq 1)  = e0_AAC(h);
 AAC_cap.fx = cap_sup_unit('AAC');
 
 *----------------existing PV----------------------------------------------------
@@ -130,8 +125,8 @@ positive variable
 binary variable
          TES_inv          Decision variable for Accumulator investment
 ;
-HP_cap.fx $ (opt_fx_inv eq 1 and opt_fx_inv_TES eq 1) = opt_fx_inv_TES_cap;
 TES_inv.fx $ (opt_fx_inv eq 1 and opt_fx_inv_TES eq 1) = 1;
+TES_cap.fx $ (opt_fx_inv eq 1 and opt_fx_inv_TES eq 1) = opt_fx_inv_TES_cap;
 *------------------BITES (Building energy storage) related----------------------
 positive variable
          BTES_Sch(h,i)    charing rate of shallow section of the building
@@ -150,7 +145,8 @@ binary variable
          B_BITES(i)       Decision variable weither to invest BITES control sys-
 ;
 *Buildings with no BITES capability
-B_BITES.fx(i_nonBITES)=0;
+B_BITES.fx(i)=0;
+B_BITES.fx(BITES_Inv)=1;
 
 *----------------Building Advanced Control (BAC) related------------------------
 positive variable
@@ -160,7 +156,8 @@ positive variable
 binary variable
          B_BAC(i)   Binary investment decision variable
 ;
-B_BAC.fx(i_nonBITES)=0;
+B_BAC.fx(i)=0;
+B_BAC.fx(BAC_Inv)=1;
 
 *----------------Solar PV PV relate variables-----------------------------------
 positive variable
@@ -176,13 +173,15 @@ positive variables
          BES_dis(h)      Battery discharging at time t and building i
          BES_cap         Capacity of the battery at building i
 ;
+BES_cap.fx $ (opt_fx_inv eq 1 and opt_fx_inv_BES eq 1) = 0 * opt_fx_inv_BES_cap;
 
 *------------------Refrigeration machine investment related---------------------
 positive variable
          c_RMInv(h)           cooling power available from RMInv
          e_RMInv(h)           electricity needed by the RMInv
          RMInv_cap            capacity of RMInv
-
+;
+RMInv_cap.fx $ (opt_fx_inv eq 1 and opt_fx_inv_RMInv eq 1) = opt_fx_inv_RMInv_cap;
 *------------------Grid El related----------------------------------------------
 positive variable
          e_exp_AH(h)        Exported electricty from the AH system
@@ -199,7 +198,7 @@ positive variable
          h_imp_nonAH(h)     Imported heat to the AH system
 ;
 * Set maximum import and export to the grid.
-h_imp_AH.up(h) $ (min_totCost0 eq 0)=  DH_max_cap;
+h_imp_AH.up(h)=  DH_max_cap;
 
 h_exp_AH.up(h)=DH_max_cap;
 *h_DH.lo(h)=-DH_max_cap;
@@ -209,7 +208,7 @@ h_exp_AH.up(h)=DH_max_cap;
 variable
          C_DC(h)             cooling from district cooling system
 ;
-C_DC.fx(h) $ (min_totCost0 eq 0)=0;
+C_DC.fx(h) = 0;
 
 *-------------------------PE and CO2 related -----------------------------------
 variable
@@ -220,10 +219,7 @@ variable
 
 ;
 
-*tot_PE.up $ (min_totCost eq 1)  = PE_lim;
-*FED_CO2.up(h) $ (min_totCost eq 1)  = CO2_lim;
-
-*-------------------- Power tariffs -------------------------------------------
+*-------------------- Power tariffs --------------------------------------------
 positive variables
          max_exG(m)         hourly peak demand per month
          PT_exG(m)          Monthly peak demand charge
@@ -244,4 +240,4 @@ variable
          peak_CO2           CO2 peak
          obj                objective function
 ;
-invCost.up $ (min_totCost eq 0) = inv_lim;
+*invCost.up $ (min_totCost eq 0) = inv_lim;

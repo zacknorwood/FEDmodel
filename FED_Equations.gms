@@ -162,7 +162,7 @@ eq_ACC1(h)..
 eq_ACC2(h)..
              c_AAC(h) =l= AAC_cap;
 
-eq_ACC3(h)$(tout(h)>AAC_TempLim and min_totCost0 eq 0)..
+eq_ACC3(h)$(tout(h)>AAC_TempLim)..
              c_AAC(h)=l= 0;
 
 *----------------Equations for existing PV--------------------------------------
@@ -173,31 +173,31 @@ eq_existPV(h)..
 *****************For new investment optons--------------------------------------
 *----------MC2 Heat pump equations (electricity => heating + cooling)-----------
 eq_RMMC1(h)..
-         h_RMMC(h) =e= sw_RMMC * RMCC_H_COP * e_RMMC(h);
+         h_RMMC(h) =e= RMCC_H_COP * e_RMMC(h);
 eq_RMMC2(h)..
-         c_RMMC(h) =e= sw_RMMC * RMCC_C_COP * e_RMMC(h);
+         c_RMMC(h) =e= RMCC_C_COP * e_RMMC(h);
 eq_RMMC3(h)..
          c_RMMC(h) =l= RMMC_inv * RMMC_cap;
 
 *----------------Absorption Chiller Investment----------------------------------
 eq1_AbsCInv(h)..
-             c_AbsCInv(h) =e= sw_AbsCInv*AbsCInv_COP*h_AbsCInv(h);
+             c_AbsCInv(h) =e= AbsCInv_COP*h_AbsCInv(h);
 *AbsC_eff;
 eq2_AbsCInv(h)..
-             c_AbsCInv(h) =l= sw_AbsCInv*AbsCInv_cap;
+             c_AbsCInv(h) =l= AbsCInv_cap;
 
 *----------------Panna 2 equations ---------------------------------------------
 eq1_P2(h)..
-         h_P2(h) =e= sw_P2 * fuel_P2(h) * P2_eff;
+         h_P2(h) =e= fuel_P2(h) * P2_eff;
 eq2_P2(h)..
          h_P2(h) =l= B_P2 * P2_cap;
 
 eq_h_Panna2_research(h)$(P1P2_dispatchable(h)=0)..
-         h_P2(h) =e= B_P2 * sw_P2 * P2_reseach_prod;
+         h_P2(h) =e= B_P2 * P2_reseach_prod;
 
 *----------------Refurb turbine equations --------------------------------------
 eq1_TURB(h)..
-         e_TURB(h) =e= sw_TURB * TURB_eff * h_TURB(h);
+         e_TURB(h) =e= TURB_eff * h_TURB(h);
 
 eq2_TURB(h)..
          H_P2T(h) =l= h_P2(h) - h_TURB(h);
@@ -207,11 +207,11 @@ eq3_TURB(h)..
 
 *----------------HP equations --------------------------------------------------
 eq_HP1(h)..
-             h_HP(h) =e= sw_HP*HP_H_COP*e_HP(h);
+             h_HP(h) =e= HP_H_COP*e_HP(h);
 eq_HP2(h)..
-             c_HP(h) =l= sw_HP*HP_C_COP*e_HP(h);
+             c_HP(h) =l= HP_C_COP*e_HP(h);
 eq_HP3(h)..
-             h_HP(h) =l= sw_HP*HP_cap;
+             h_HP(h) =l= HP_cap;
 
 *------------------TES equations------------------------------------------------
 eq_TESen1(h,i)$(ord(h) eq 1)..
@@ -219,15 +219,15 @@ eq_TESen1(h,i)$(ord(h) eq 1)..
 *sw_TES*TES_cap*TES_density;
 
 eq_TESen2(h)$(ord(h) gt 1)..
-             TES_en(h) =e= sw_TES* TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
+             TES_en(h) =e= TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
 eq_TESen3(h)..
-             TES_en(h) =l= sw_TES* TES_cap * TES_density;
+             TES_en(h) =l= TES_cap * TES_density;
 eq_TESch(h)..
-             TES_ch(h) =l= sw_TES*TES_inv * TES_ch_max;
+             TES_ch(h) =l= TES_inv * TES_ch_max;
 eq_TESdis(h)..
-             TES_dis(h) =l= sw_TES*TES_inv * TES_dis_max;
+             TES_dis(h) =l= TES_inv * TES_dis_max;
 eq_TESinv(h)..
-             TES_cap =l= sw_TES*TES_inv * TES_max_cap;
+             TES_cap =l= TES_inv * TES_max_cap;
 *eq_TESmininv $(sw_TES eq 1)..
 *             TES_cap =G= sw_TES*TES_inv * 100;
 
@@ -236,42 +236,42 @@ eq_BTES_Sen1(h,i) $ (ord(h) eq 1)..
          BTES_Sen(h,i) =e= 0;
 * sw_BTES*BTES_Sen_int(i);
 eq_BTES_Sch(h,i) ..
-         BTES_Sch(h,i) =l= sw_BTES*B_BITES(i)*BTES_Sch_max(h,i);
+         BTES_Sch(h,i) =l= B_BITES(i)*BTES_Sch_max(h,i);
 eq_BTES_Sdis(h,i)..
-         BTES_Sdis(h,i) =l= sw_BTES*B_BITES(i)*BTES_Sdis_max(h,i);
+         BTES_Sdis(h,i) =l= B_BITES(i)*BTES_Sdis_max(h,i);
 eq_BTES_Sen2(h,i) $ (ord(h) gt 1)..
-         BTES_Sen(h,i) =e= sw_BTES*(BTES_kSloss(i)*BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
+         BTES_Sen(h,i) =e= (BTES_kSloss(i)*BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
                            + BTES_Sch(h,i)*BTES_Sch_eff - link_BS_BD(h,i));
 eq_BTES_Den1(h,i) $ (ord(h) eq 1)..
          BTES_Den(h,i) =e= 0;
 * sw_BTES*BTES_Den_int(i);
 eq_BTES_Den2(h,i) $ (ord(h) gt 1)..
-         BTES_Den(h,i) =e= sw_BTES*(BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));
+         BTES_Den(h,i) =e= (BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));
 eq_BS_BD(h,i) $ (BTES_model('BTES_Scap',i) ne 0)..
-         link_BS_BD(h,i) =e= sw_BTES*((BTES_Sen(h,i)/BTES_model('BTES_Scap',i)
+         link_BS_BD(h,i) =e= ((BTES_Sen(h,i)/BTES_model('BTES_Scap',i)
                               - BTES_Den(h,i)/BTES_model('BTES_Dcap',i))*BTES_model('K_BS_BD',i));
 
 *-----------------BAC constraints-----------------------------------------------
 eq_BAC(i)..
-         B_BAC(i) =l= sw_BAC*B_BITES(i);
+         B_BAC(i) =l= B_BITES(i);
 
 eq_BAC_savings(h,i)..
-         h_BAC_savings(h,i) =l= sw_BAC*BAC_savings_period(h)*B_BAC(i)*BAC_savings_factor*h_demand(h,i);
+         h_BAC_savings(h,i) =l= BAC_savings_period(h)*B_BAC(i)*BAC_savings_factor*h_demand(h,i);
 
 *-----------------Battery constraints-------------------------------------------
 eq_BES1(h) $ (ord(h) eq 1)..
              BES_en(h)=e= 0;
 *sw_BES*BES_cap;
 eq_BES2(h)$(ord(h) gt 1)..
-             BES_en(h)=e=sw_BES*(BES_en(h-1)+BES_ch(h)-BES_dis(h));
+             BES_en(h)=e=(BES_en(h-1)+BES_ch(h)-BES_dis(h));
 eq_BES3(h) ..
-             BES_en(h)=l=sw_BES*BES_cap;
+             BES_en(h)=l=BES_cap;
 eq_BES_ch(h) ..
 *Assuming 1C charging
-             BES_ch(h)=l=sw_BES*(BES_cap-BES_en(h));
+             BES_ch(h)=l=(BES_cap-BES_en(h));
 eq_BES_dis(h)..
 *Assuming 1C discharging
-             BES_dis(h)=l=sw_BES*BES_en(h);
+             BES_dis(h)=l=BES_en(h);
 
 *-----------------Solar PV equations--------------------------------------------
 ** Original Matlab Code (P is per WattPeak of Solar PV)
@@ -283,7 +283,7 @@ eq_BES_dis(h)..
 *+ coef(5).*Tekv(index).*log(Gekv(index)).^2
 *+ coef(6).*Tekv(index).^2);
 eq_PV(h)..
-             e_PV(h) =e= sw_PV*eta_Inverter * (sum(BID, PV_cap_roof(BID) * PV_power_roof(h,BID))
+             e_PV(h) =e= eta_Inverter * (sum(BID, PV_cap_roof(BID) * PV_power_roof(h,BID))
                                               + sum(BID, PV_cap_facade(BID) * PV_power_facade(h,BID)));
 eq_PV_cap_roof(BID)..
              PV_cap_roof(BID) =l= area_roof_max(BID)*PV_cap_density;
@@ -293,9 +293,9 @@ eq_PV_cap_facade(BID)..
 
 *-----------------Refrigeration machine investment equations--------------------
 eq_RMInv1(h)..
-             c_RMInv(h) =e= sw_RMInv*RMInv_COP*e_RMInv(h);
+             c_RMInv(h) =e= RMInv_COP*e_RMInv(h);
 eq_RMInv2(h)..
-             c_RMInv(h) =l= sw_RMInv*RMInv_cap;
+             c_RMInv(h) =l= RMInv_cap;
 
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
@@ -438,8 +438,5 @@ eq_peak_CO2(h)..
 eq_obj..
          obj =e= min_totCost*totCost
                 + min_totPE*tot_PE
-                + min_totCO2*FED_CO2_tot
-                + min_peakCO2*peak_CO2;
-*                + min_totPECO2*((tot_PE/sum(h,FED_PE0(h))) + (FED_CO2_tot/sum(h,FED_CO20(h))));
-
+                + min_totCO2*FED_CO2_tot;
 ********************************************************************************
