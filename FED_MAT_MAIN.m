@@ -403,6 +403,39 @@ BAC_sav_period_temp=BAC_sav_period(forcast_start:forcast_end,:);
 BAC_savings_period = struct('name','BAC_savings_period','type','parameter','form','full','val',BAC_sav_period_temp);
 BAC_savings_period.uels=h_sim.uels;
 
+%% District heating network transfer limits - calculation
+DH_Nodes_Names = {'Fysik', 'Bibliotek', 'Maskin', 'EDIT', 'VoV', 'Eklanda'}
+DH_Nodes_Constituents  = {...
+                    {'Fysik_Origo', 'Kemi', 'ITGYMNASIET', 'NyaMatte', 'MC2', 'Fysik_Soliden', 'Polymerteknologi', 'Keramforskning'};...
+                    {'Bibliotek'};...
+                    {'Maskinteknik', 'Lokalkontor'};...
+                    {'Elkraftteknik', 'Edit', 'Idelara', 'HA', 'HB', 'HC', 'SSPA', 'Studentbostader'};...
+                    {'Karhus_CFAB','Karhus_studenter', 'CAdministration', 'VOV1', 'Arkitektur', 'VOV2',};...
+                    {'GamlaMatte'};...
+}
+DH_Nodes.uels = {DH_Nodes_Names, DH_Nodes_Constituents}
+
+DH_Nodes_Maximum_Flow = [31, 2, NaN, 13, 55, NaN]; % Fysik, Bibliotek, Maskin, EDIT, VoV, Eklanda. In [l/s], src: D4.1.3
+DH_Case = 1
+DH_transfer_limits_MW = zeros(length(h_sim.uels), 6);
+if DH_Case == 1;
+    delta_T_DH = [20 , 20, 20, 20, 25]' % delta T for DH water during h_sim hours
+    CP_Water = 4.187; % kJ/kgK
+    Rho_Water = 997;
+    MW_per_kW = 1/1000;
+    DH_transfer_limits_MW = DH_Nodes_Maximum_Flow .* delta_T_DH .* CP_Water .* Rho_Water .* MW_per_kW
+end
+DH_transfer_limits_MWh  = 0;
+DH_transfer_limits = struct('name','c_demand','type','parameter','form','full','val',DH_transfer_limits_MWh);
+DH_transfer_limits.uels = {h_sim.uels, DH_Node.uels};
+%t_out_design = -10: -5: 0: 5: 15: 20
+%t_supply_design = 82: 75: 72: 70: 68: 68 %If summer mode, different value will be used
+%t_return_design = 51: 50: 49: 49: 51: 51 %If summer mode, different value will be used
+%DH_delta_t =  
+%DH_transfer_limits = zeros(h_sim.uels, 6)
+%DH_transfer_limits 
+%DH_nodes = struct('name','nodes', 'type', 'parameter', 'form', 'full', 'val', )
+%%
 FED_CO20=FED_CO20(forcast_start:forcast_end);
 FED_PE0=FED_PE0(forcast_start:forcast_end);
 el_exGCO2F=el_exGCO2F(forcast_start:forcast_end);
