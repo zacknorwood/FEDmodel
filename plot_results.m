@@ -13,13 +13,13 @@ while PROCESS_RESULTS==1
     %% Set results in a gdx file for a given scenario/option    
     tic
     %set desired option
-    option='reDispatch\mintotCO2_45_98\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    option='mintotCO2\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results\',option);
-    file_name='GtoM_baseCase';
+    file_name='GtoM_mintotCO2';
     gdxData=strcat(path,file_name);       
     %% Get parameters and variables from a GDX file 
         
-    PROCESS_DATA = 0;
+    PROCESS_DATA = 1;
     while PROCESS_DATA==1
     %% Assign uels
     
@@ -91,7 +91,7 @@ while PROCESS_RESULTS==1
     %% Electricty, heating and cooling demand data used as inputs in the simulation     
     
     %electricity demand in the FED system    
-    el_demand=gdx2mat(gdxData,'el_demand',{h,i});
+    el_demand=gdx2mat(gdxData,'el_demand',{h,i});    
     h_demand=gdx2mat(gdxData,'h_demand',{h,i});
     c_demand=gdx2mat(gdxData,'c_demand',{h,i});
     c_demand_AH=gdx2mat(gdxData,'c_demand_AH',{h,i_AH});
