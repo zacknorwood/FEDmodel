@@ -47,30 +47,54 @@ $LOAD i_AH_c
 $LOAD i_nonAH_c
 $LOAD i_nonBITES
 $GDXIN
+
 *********************This part need be updated**********************************
+*----------------Solar PV data--------------------------------------------------
 SET
-    m          Number of month
-    d          Number of days
     BID        Building IDs used for PV calculations
 ;
-
-$GDXIN Input_data_FED_SIMULATOR\FED_INPUT_DATA.gdx
-$LOAD m
-$LOAD d
+$GDXIN MtoG.gdx
 $LOAD BID
 $GDXIN
 
-PARAMETERS  HoD(h,d)       Hour of the day
-            HoM(h,m)       Hour of the month
+SET
+    PV_BID_roof_Inv(BID)   Buildings where solar PV invetment is made - roof
+    PV_BID_facade_Inv(BID) Buildings where solar PV invetment is made - facade
+;
+$GDXIN MtoG.gdx
+$LOAD PV_BID_roof_Inv
+$LOAD PV_BID_facade_Inv
+$GDXIN
+
+Parameter PV_roof_cap_Inv(PV_BID_roof_Inv) Invested PV capacity-roof
+          PV_facade_cap_Inv(PV_BID_facade_Inv) Invested PV capacity-roof;
+$GDXIN MtoG.gdx
+$LOAD PV_roof_cap_Inv
+$LOAD PV_facade_cap_Inv
+$GDXIN
+*-----------------------------------------
+*----------------PREPARE THE FULL INPUT DATA------------------------------------
+SET
+    m   Number of month                   /1*24/
+    d   Number of days                    /1*730/
+;
+
+*----------------load date vectors for power tariffs----------------------------
+PARAMETERS  HoD(h,d)      Hour of the day
+PARAMETERS  HoM(h,m)      Hour of the month
+;
+$GDXIN Input_dispatch_model\FED_date_vector.gdx
+$LOAD HoD
+$LOAD HoM
+$GDXIN
+
+PARAMETERS
             G_facade(h,BID)       irradiance on building facades
             area_facade_max(BID)  irradiance on building facades
             G_roof(h,BID)         irradiance on building facades
             area_roof_max(BID)    irradiance on building facades
-
 ;
-$GDXIN Input_data_FED_SIMULATOR\FED_INPUT_DATA.gdx
-$LOAD HoD
-$LOAD HoM
+$GDXIN Input_dispatch_model\IRRADIANCE_DATA.gdx
 $LOAD G_facade
 $LOAD area_facade_max
 $LOAD G_roof
