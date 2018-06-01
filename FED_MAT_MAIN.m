@@ -320,39 +320,34 @@ PEF_exG = struct('name','PEF_exG','type','parameter','form','full');
 CO2F_DH = struct('name','CO2F_DH','type','parameter','form','full');
 PEF_DH = struct('name','PEF_DH','type','parameter','form','full');
 
-%% District heating network transfer limits - calculation
-DH_Nodes_Names = {'Fysik', 'Bibliotek', 'Maskin', 'EDIT', 'VoV', 'Eklanda'}
+%% District heating network transfer limits - initialize nodes and flow limits
+DH_Nodes_Names = {'Fysik', 'Bibliotek', 'Maskin', 'EDIT', 'VoV', 'Eklanda'};
 DH_Nodes_Constituents  = {...
-                    {'Fysik_Origo', 'Kemi', 'ITGYMNASIET', 'NyaMatte', 'MC2', 'Fysik_Soliden', 'Polymerteknologi', 'Keramforskning'};...
-                    {'Bibliotek'};...
-                    {'Maskinteknik', 'Lokalkontor'};...
-                    {'Elkraftteknik', 'Edit', 'Idelara', 'HA', 'HB', 'HC', 'SSPA', 'Studentbostader'};...
-                    {'Karhus_CFAB','Karhus_studenter', 'CAdministration', 'VOV1', 'Arkitektur', 'VOV2',};...
-                    {'GamlaMatte'};...
-}
-DH_Nodes.uels = {DH_Nodes_Names, DH_Nodes_Constituents}
+    {'Fysik_Origo', 'Kemi', 'ITGYMNASIET', 'NyaMatte', 'MC2', 'Fysik_Soliden', 'Polymerteknologi', 'Keramforskning'};...
+    {'Bibliotek'};...
+    {'Maskinteknik', 'Lokalkontor'};...
+    {'Elkraftteknik', 'Edit', 'Idelara', 'HA', 'HB', 'HC', 'SSPA', 'Studentbostader'};...
+    {'Karhus_CFAB','Karhus_studenter', 'CAdministration', 'VOV1', 'Arkitektur', 'VOV2',};...
+    {'GamlaMatte'};...
+};
+DH_Nodes.names = DH_Nodes_Names;
+DH_Nodes.constituents = DH_Nodes_Constituents;
+DH_Nodes.maximum_flow = [31, 2, NaN, 13, 55, NaN] .* 1/1000 ; % l/s * m3/l = m3/s which is assumed input by fget_dh_transfer_limits below
+clear DH_Nodes_Names DH_Nodes_Constituents;
 
-DH_Nodes_Maximum_Flow = [31, 2, NaN, 13, 55, NaN]; % Fysik, Bibliotek, Maskin, EDIT, VoV, Eklanda. In [l/s], src: D4.1.3
-DH_Case = 1
-DH_transfer_limits_MW = zeros(length(h_sim.uels), 6);
-if DH_Case == 1;
-    delta_T_DH = [20 , 20, 20, 20, 25]' % delta T for DH water during h_sim hours
-    CP_Water = 4.187; % kJ/kgK
-    Rho_Water = 997;
-    MW_per_kW = 1/1000;
-    DH_transfer_limits_MW = DH_Nodes_Maximum_Flow .* delta_T_DH .* CP_Water .* Rho_Water .* MW_per_kW
-end
-DH_transfer_limits_MWh  = 0;
-DH_transfer_limits = struct('name','c_demand','type','parameter','form','full','val',DH_transfer_limits_MWh);
-DH_transfer_limits.uels = {h_sim.uels, DH_Node.uels};
-%t_out_design = -10: -5: 0: 5: 15: 20
-%t_supply_design = 82: 75: 72: 70: 68: 68 %If summer mode, different value will be used
-%t_return_design = 51: 50: 49: 49: 51: 51 %If summer mode, different value will be used
-%DH_delta_t =  
-%DH_transfer_limits = zeros(h_sim.uels, 6)
-%DH_transfer_limits 
-%DH_nodes = struct('name','nodes', 'type', 'parameter', 'form', 'full', 'val', )
-%%
+%% District cooling network transfer limits - initialize nodes and flow limits
+DC_Nodes_Names = {'Empty', 'List', 'Of', 'Nodes'};
+DC_Nodes_Constituents = {...
+    {'Empty House 1', 'Empty House 2'};...
+    {'List House'};...
+    {'Of House'};...
+    {'Nodes House'};...
+};
+DC_Nodes.names = DC_Nodes_Names;
+DC_Nodes.constituents = DC_Nodes_Constituents;
+DC_Nodes.maximum_flow = [7777, 7777, 7777, 7777, 7777, 7777];
+clear DC_Nodes_Names DC_Nodes_Constituents
+
 %Forcasted solar PV irradiance -roof
 G_roof = struct('name','G_roof','type','parameter');
 
@@ -462,6 +457,11 @@ for t=sim_start:sim_stop
     BAC_savings_period.val = BAC_sav_period_temp;
     BAC_savings_period.uels=h_sim.uels;
     
+    %District heating network node transfer limits
+    DH_nodes_transfer_limits=fget_dh_transfer_limits(DH_Nodes, h_sim, tout);
+    
+    %District cooling network node transfer limits
+    
     %Maximum CO2 emission in the base case
     FED_CO20=FED_CO20(1:forcast_horizon);
     FED_CO2_max.val = max(FED_CO20);
@@ -515,7 +515,7 @@ wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
  
 %wgdx('MtoG_pv.gdx',G_facade,area_roof_max,area_facade_max);
 
- RUN_GAMS_MODEL = 1;
+ RUN_GAMS_MODEL = 0;
  while RUN_GAMS_MODEL==1
      system 'gams FED_SIMULATOR_MAIN lo=3';
      break;
