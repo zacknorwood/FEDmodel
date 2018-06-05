@@ -79,7 +79,7 @@ AH_h_imp_tot=sum(h,h_imp_AH.l(h));
 AH_h_exp_tot=sum(h,h_exp_AH.l(h));
 
 execute_unload 'GtoM' min_totCost, min_totPE, min_totCO2,
-                      el_demand, h_demand, c_demand, c_demand_AH,
+                      el_demand, el_demand_nonAH, h_demand, c_demand, c_demand_AH,
                       e_imp_AH, e_exp_AH, e_imp_nonAH,AH_el_imp_tot, AH_el_exp_tot,
                       h_imp_AH, h_exp_AH, h_imp_nonAH, AH_h_imp_tot, AH_h_exp_tot,
                       C_DC,

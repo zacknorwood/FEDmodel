@@ -144,9 +144,6 @@ variable
 binary variable
          B_BITES(i)       Decision variable weither to invest BITES control sys-
 ;
-*Buildings with no BITES capability
-B_BITES.fx(i)=0;
-B_BITES.fx(BITES_Inv)=1;
 
 *----------------Building Advanced Control (BAC) related------------------------
 positive variable
@@ -165,7 +162,10 @@ positive variable
          PV_cap_roof(BID)   capacity of solar modules on roof
          PV_cap_facade(BID) capacity of solar modules on facade
 ;
-
+PV_cap_roof.fx(BID)=0;
+PV_cap_facade.fx(BID)=0;
+PV_cap_roof.fx(PV_BID_roof_Inv) $ (opt_fx_inv eq 1) = PV_roof_cap_Inv(PV_BID_roof_Inv);
+PV_cap_facade.fx(PV_BID_facade_Inv) $ (opt_fx_inv eq 1) = PV_facade_cap_Inv(PV_BID_facade_Inv);
 *------------------Battery related----------------------------------------------
 positive variables
          BES_en(h)       Energy stored in the battry at time t and building i
@@ -173,7 +173,7 @@ positive variables
          BES_dis(h)      Battery discharging at time t and building i
          BES_cap         Capacity of the battery at building i
 ;
-BES_cap.fx $ (opt_fx_inv eq 1 and opt_fx_inv_BES eq 1) = 0 * opt_fx_inv_BES_cap;
+BES_cap.fx $ (opt_fx_inv eq 1 and opt_fx_inv_BES eq 1) = opt_fx_inv_BES_cap;
 
 *------------------Refrigeration machine investment related---------------------
 positive variable

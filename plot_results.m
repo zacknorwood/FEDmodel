@@ -13,13 +13,13 @@ while PROCESS_RESULTS==1
     %% Set results in a gdx file for a given scenario/option    
     tic
     %set desired option
-    option='reDispatch\mintotCO2_45_98\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
+    option='mintotCO2\'; %option can be 'mintotCOst', 'mintotPE', 'mintotCCO2' or 'mintotPECO2'
     path=strcat('Sim_Results\',option);
-    file_name='GtoM_baseCase';
+    file_name='GtoM_mintotCO2';
     gdxData=strcat(path,file_name);       
     %% Get parameters and variables from a GDX file 
         
-    PROCESS_DATA = 0;
+    PROCESS_DATA = 1;
     while PROCESS_DATA==1
     %% Assign uels
     
@@ -91,7 +91,7 @@ while PROCESS_RESULTS==1
     %% Electricty, heating and cooling demand data used as inputs in the simulation     
     
     %electricity demand in the FED system    
-    el_demand=gdx2mat(gdxData,'el_demand',{h,i});
+    el_demand=gdx2mat(gdxData,'el_demand',{h,i});    
     h_demand=gdx2mat(gdxData,'h_demand',{h,i});
     c_demand=gdx2mat(gdxData,'c_demand',{h,i});
     c_demand_AH=gdx2mat(gdxData,'c_demand_AH',{h,i_AH});
@@ -1228,36 +1228,36 @@ while PROCESS_RESULTS==1
         fsave_figure(path_Figures,plot_fname);
         %% Edited PV 
         %WALL
-        PV_cap_roof_edit=zeros(33,1);
-        PV_cap_roof_edit(1)=PV_cap_roof(53)+PV_cap_roof(54)+PV_cap_roof(55);
-        PV_cap_roof_edit(2)=PV_cap_roof(41);
-        PV_cap_roof_edit(3)=PV_cap_roof(58)+PV_cap_roof(59); %VASSA2-4
-        PV_cap_roof_edit(4)=PV_cap_roof(13)+PV_cap_roof(14)+PV_cap_roof(3)+PV_cap_roof(2)+PV_cap_roof(7)+PV_cap_roof(42)+PV_cap_roof(16)+PV_cap_roof(15)+PV_cap_roof(17);
-        PV_cap_roof_edit(5)=PV_cap_roof(71);
-        PV_cap_roof_edit(6)=PV_cap_roof(45);
-        PV_cap_roof_edit(7)=PV_cap_roof(30)+PV_cap_roof(31)+PV_cap_roof(34);
-        PV_cap_roof_edit(8)=PV_cap_roof(12)+PV_cap_roof(46);
+        PV_cap_roof_edit=zeros(33,1); 
+        PV_cap_roof_edit(1)=PV_cap_roof(53)+PV_cap_roof(54)+PV_cap_roof(55); %Kemi
+        PV_cap_roof_edit(2)=PV_cap_roof(41); %Vassa1
+        PV_cap_roof_edit(3)=PV_cap_roof(58)+PV_cap_roof(59); %Vassa2-3
+        PV_cap_roof_edit(4)=PV_cap_roof(13)+PV_cap_roof(14)+PV_cap_roof(3)+PV_cap_roof(2)+PV_cap_roof(7)+PV_cap_roof(42)+PV_cap_roof(16)+PV_cap_roof(15)+PV_cap_roof(17); %Vassa4-15
+        PV_cap_roof_edit(5)=PV_cap_roof(71); %Phus
+        PV_cap_roof_edit(6)=PV_cap_roof(45); %Bibliotek
+        PV_cap_roof_edit(7)=PV_cap_roof(30)+PV_cap_roof(31)+PV_cap_roof(34); %SSPA
+        PV_cap_roof_edit(8)=PV_cap_roof(12)+PV_cap_roof(46); %NyaMatte
         PV_cap_roof_edit(9)=PV_cap_roof(8)+PV_cap_roof(20)+PV_cap_roof(22)+PV_cap_roof(38)+PV_cap_roof(39); %Studentbostader
-        PV_cap_roof_edit(10)=PV_cap_roof(28);
-        PV_cap_roof_edit(12)=PV_cap_roof(11)+PV_cap_roof(24);
-        PV_cap_roof_edit(13)=PV_cap_roof(25)+PV_cap_roof(57);
-        PV_cap_roof_edit(14)=PV_cap_roof(62)+PV_cap_roof(63)+PV_cap_roof(64)+PV_cap_roof(65)+PV_cap_roof(68);
-        PV_cap_roof_edit(15)=PV_cap_roof(1);
-        PV_cap_roof_edit(16)=PV_cap_roof(35);
-        PV_cap_roof_edit(17)=PV_cap_roof(33);
-        PV_cap_roof_edit(18)=PV_cap_roof(36);
-        PV_cap_roof_edit(19)=PV_cap_roof(9)+PV_cap_roof(18)+PV_cap_roof(60);
-        PV_cap_roof_edit(20)=PV_cap_roof(56);
-        PV_cap_roof_edit(21)=PV_cap_roof(43)+PV_cap_roof(47)+PV_cap_roof(52);
-        PV_cap_roof_edit(22)=PV_cap_roof(6)+PV_cap_roof(44);
-        PV_cap_roof_edit(23)=PV_cap_roof(29);
-        PV_cap_roof_edit(24)=PV_cap_roof(40);
-        PV_cap_roof_edit(25)=PV_cap_roof(50);
-        PV_cap_roof_edit(26)=PV_cap_roof(51);
-        PV_cap_roof_edit(27)=PV_cap_roof(72);
-        PV_cap_roof_edit(28)=PV_cap_roof(66)+PV_cap_roof(67);
-        PV_cap_roof_edit(29)=PV_cap_roof(61);
-        PV_cap_roof_edit(30)=PV_cap_roof(10)+PV_cap_roof(23)+PV_cap_roof(49);
+        PV_cap_roof_edit(10)=PV_cap_roof(28); %Kraftcentral
+        PV_cap_roof_edit(12)=PV_cap_roof(11)+PV_cap_roof(24); %Karhus_CFAB 
+        PV_cap_roof_edit(13)=PV_cap_roof(25)+PV_cap_roof(57); %Cadministration 
+        PV_cap_roof_edit(14)=PV_cap_roof(62)+PV_cap_roof(63)+PV_cap_roof(64)+PV_cap_roof(65)+PV_cap_roof(68);%GamlaMatte 
+        PV_cap_roof_edit(15)=PV_cap_roof(1);%Gibraltar_herrgard 
+        PV_cap_roof_edit(16)=PV_cap_roof(35);%HA 
+        PV_cap_roof_edit(17)=PV_cap_roof(33); %HB 
+        PV_cap_roof_edit(18)=PV_cap_roof(36); %Elkraftteknik 
+        PV_cap_roof_edit(19)=PV_cap_roof(9)+PV_cap_roof(18)+PV_cap_roof(60); %HC 
+        PV_cap_roof_edit(20)=PV_cap_roof(56); %Maskinteknik
+        PV_cap_roof_edit(21)=PV_cap_roof(43)+PV_cap_roof(47)+PV_cap_roof(52); %Fysik_Origo
+        PV_cap_roof_edit(22)=PV_cap_roof(6)+PV_cap_roof(44); %MC2 
+        PV_cap_roof_edit(23)=PV_cap_roof(29); %Edit
+        PV_cap_roof_edit(24)=PV_cap_roof(40); %Polymerteknologi
+        PV_cap_roof_edit(25)=PV_cap_roof(50); %Keramforskning
+        PV_cap_roof_edit(26)=PV_cap_roof(51); %Fysik_Soliden
+        PV_cap_roof_edit(27)=PV_cap_roof(72); %Idelara
+        PV_cap_roof_edit(28)=PV_cap_roof(66)+PV_cap_roof(67);%CTP ?????
+        PV_cap_roof_edit(29)=PV_cap_roof(61); %Karhuset
+        PV_cap_roof_edit(30)=PV_cap_roof(10)+PV_cap_roof(23)+PV_cap_roof(49); 
         PV_cap_roof_edit(31)=PV_cap_roof(48);
         PV_cap_roof_edit(32)=PV_cap_roof(27);
         figure('Units','centimeters','PaperUnits','centimeters',...
