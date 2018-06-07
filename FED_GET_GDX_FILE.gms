@@ -37,18 +37,19 @@ $LOAD DH_Node_ID
 $GDXIN
 
 PARAMETERS
-           DH_Nodes_Transfer_Limits(h,DH_Node_ID) Transfer limits MWh per h for DH nodes
+           DH_node_transfer_limits(h,DH_Node_ID) Transfer limits MWh per h for DH nodes
 ;
 $GDXIN MtoG.gdx
-$LOAD DH_Nodes_Transfer_Limits
+$LOAD DH_node_transfer_limits
 $GDXIN
 
-set DHNodeToB_ID(DH_Node_ID, B_ID)  Mapping between district heating nodes and buildings /Fysik.(Fysik_Origo, Kemi, ITGYMNASIET, NyaMatte, MC2, Fysik_Soliden, Polymerteknologi, Keramforskning),
+set DHNodeToB_ID(DH_Node_ID, B_ID)  Mapping between district heating nodes and buildings /Fysik.(Fysik_Origo, Kemi, NyaMatte, MC2, Fysik_Soliden, Polymerteknologi, Keramforskning),
                                                                                           Bibliotek.Bibliotek,
                                                                                           Maskin.(Maskinteknik,Lokalkontor),
                                                                                           EDIT.(Elkraftteknik,Edit,Idelara,HA,HB,HC,SSPA,Studentbostader),
                                                                                           VoV.(Karhus_CFAB,Karhus_studenter,CAdministration,VOV1,Arkitektur,VOV2),
                                                                                           Eklanda.GamlaMatte/
+*ITGYMNASIET belongs to Fysik node
 
 *--------------Building catagories based on how energy is supplied--------------
 set i_AH_el(i) buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok

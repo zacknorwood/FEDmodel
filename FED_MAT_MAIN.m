@@ -521,7 +521,7 @@ wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
  
 %wgdx('MtoG_pv.gdx',G_facade,area_roof_max,area_facade_max);
 
- RUN_GAMS_MODEL = 0;
+ RUN_GAMS_MODEL = 1;
  while RUN_GAMS_MODEL==1
      system 'gams FED_SIMULATOR_MAIN lo=3';
      break;

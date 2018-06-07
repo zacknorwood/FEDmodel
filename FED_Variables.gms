@@ -1,6 +1,9 @@
 ********************************************************************************
 *---------------------Declare variables and equations---------------------------
 ********************************************************************************
+positive variable
+         temp_slack(h, DH_Node_ID) temporary slack variable to troubleshoot constraint
+;
 
 *******************Dispaching existing units************************************
 *------------------VKA1 Heatpump related----------------------------------------

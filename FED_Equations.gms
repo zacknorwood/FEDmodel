@@ -81,6 +81,9 @@ equation
            eq_hbalance2  maximum heating export from AH system
            eq_hbalance3  heating supply-demand balance excluding AH buildings
            eq_hbalance4  heating supply-demand balance excluding nonAH buildings
+
+           eq_dhn_constraint District heating network transfer limit
+
            eq_cbalance   Balance equation cooling
 
            eq_ebalance3  supply demand balance equation from AH
@@ -314,6 +317,16 @@ eq_hbalance3(h)..
 eq_hbalance4(h)..
              h_imp_nonAH(h)=e=sum(i_nonAH_h,h_demand_nonAH(h,i_nonAH_h))
                        - (sum(i_nonAH_h,BTES_Sdis(h,i_nonAH_h))*BTES_dis_eff-sum(i_nonAH_h,BTES_Sch(h,i_nonAH_h))/BTES_chr_eff);
+
+*---------------District heating network constraints----------------------------
+$ontext
+       Node Fysik is infeasible (reavealed from temp_slack values).
+       Should be fixed by doing: 
+       1) Need to add all production units to the equation
+       2) Need to add all charging/discharging of heat storage to equation
+$offtext
+eq_dhn_constraint(h, DH_Node_ID)$(not DH_node_transfer_limits(h, DH_Node_ID) = NA)..
+         DH_node_transfer_limits(h, DH_Node_ID)*1000+temp_slack(h, DH_Node_ID) =g= sum( i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i) ) ;
 
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
