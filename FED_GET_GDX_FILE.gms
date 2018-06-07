@@ -15,7 +15,6 @@ $GDXIN MtoG.gdx
 $LOAD B_ID
 $GDXIN
 Alias (B_ID, i) ;
-
 *-----------Simulation time, Bites and BAC investments--------------------------
 set h              SIMULATION TIME
     BITES_Inv(i)   used for fixed BITES inv option
@@ -47,7 +46,31 @@ $LOAD i_AH_c
 $LOAD i_nonAH_c
 $LOAD i_nonBITES
 $GDXIN
+*---------------Buses IDs of electrical network, Admittance matrix & current limits----------------------*
+set Bus_IDs;
 
+$GDXIN MtoG.gdx
+$LOAD Bus_IDs
+$GDXIN
+alias(Bus_IDs,j);
+set BusToB_ID(Bus_IDs,i_AH_el)  Mapping between buses and buildings /15.MC2, 5.Kemi, 21.Fysik_Origo, 11.(Fysik_Soliden,Keramforskning,Polymerteknologi),
+                                                 20.(Kraftcentral,Lokalkontor), 9.(Bibliotek,NyaMatte), 34.(HA,HB,Maskinteknik), 32.(Edit,Idelara),
+                                                 40.(Elkraftteknik,HC,Gibraltar_herrgard), 30.GamlaMatte, 24.(CAdministration,Karhus_CFAB,Karhus_studenter), 26.(VOV1,Arkitektur), 28.(VOV2,Phus)/
+;
+Parameter bij(Bus_IDs,j)
+Parameter gij(Bus_IDs,j)
+Parameter bii(Bus_IDs)
+Parameter Y(Bus_IDs,j)  elements magnitudes of admittance matrix
+Parameter Theta(Bus_IDs,j)   elements angles of admittance matrix
+Parameter currentlimits(Bus_IDs,j) current limits
+$GDXIN Input_dispatch_model\AdmittanceMatrix.gdx
+$LOAD Y
+$load gij
+$load bij
+$load bii
+$LOAD currentlimits
+$LOAD Theta
+$GDXIN
 *********************This part need be updated**********************************
 *----------------Solar PV data--------------------------------------------------
 SET
@@ -65,14 +88,20 @@ $GDXIN MtoG.gdx
 $LOAD PV_BID_roof_Inv
 $LOAD PV_BID_facade_Inv
 $GDXIN
+alias(PV_BID_roof_Inv,r);
+alias(PV_BID_facade_Inv,f);
 
 Parameter PV_roof_cap_Inv(PV_BID_roof_Inv) Invested PV capacity-roof
-          PV_facade_cap_Inv(PV_BID_facade_Inv) Invested PV capacity-roof;
+          PV_facade_cap_Inv(PV_BID_facade_Inv) Invested PV capacity-facade;
 $GDXIN MtoG.gdx
 $LOAD PV_roof_cap_Inv
 $LOAD PV_facade_cap_Inv
 $GDXIN
-*-----------------------------------------
+
+set BusToBID(Bus_IDs,BID)   Mapping between buses and BIDs
+/15.(6,44), 5.(54,55,53,4), 21.(52,43,47), 11.(40,50,51), 20.28, 9.(12,46,45), 34.(56,32,37,33,35),
+ 32.(29,9,19), 40.(18,60,1,36), 30.(68,70,69,62,65), 24.(57,25,24,11), 26.(10,48,49), 28.(23,27,75)/
+;
 *----------------PREPARE THE FULL INPUT DATA------------------------------------
 SET
     m   Number of month                   /1*24/
@@ -124,7 +153,6 @@ $LOAD el_demand
 $LOAD h_demand
 $LOAD c_demand
 $GDXIN
-
 *-----------Forcasted energy prices from MATLAB---------------------------------
 PARAMETERS
            el_price(h)       ELECTRICTY PRICE IN THE EXTERNAL GRID
@@ -243,8 +271,10 @@ PARAMETERS
          opt_fx_inv_RMInv_cap Capacity of the fixed new RM
          opt_fx_inv_TES       options to fix investment in new TES
          opt_fx_inv_TES_cap   capacity of the new TES
-         opt_fx_inv_BES       options to fix investment in new TES
-         opt_fx_inv_BES_cap   capacity of the new TES
+         opt_fx_inv_BES       options to fix investment in new BES
+         opt_fx_inv_BES_cap   capacity of the new BES
+         opt_fx_inv_BFCh       options to fix investment in new BFCh
+         opt_fx_inv_BFCh_cap   capacity of the new BFCh
 ;
 $GDXIN MtoG.gdx
 $LOAD opt_fx_inv
@@ -261,6 +291,8 @@ $LOAD opt_fx_inv_TES
 $LOAD opt_fx_inv_TES_cap
 $LOAD opt_fx_inv_BES
 $LOAD opt_fx_inv_BES_cap
+$LOAD opt_fx_inv_BFCh
+$LOAD opt_fx_inv_BFCh_cap
 $GDXIN
 
 *the combination is used to comment out sections codes inside

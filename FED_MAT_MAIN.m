@@ -25,7 +25,7 @@ B_ID.uels={'Kemi', 'Vassa1', 'Vassa2-3', 'Vassa4-15', 'Phus','Bibliotek',...
            'Karhus_studenter', 'Chabo'}; 
 
 B_ID_AH_el.name='i_AH_el';
-B_ID_AH_el.uels={'Kemi', 'Phus, Bibliotek',...
+B_ID_AH_el.uels={'Kemi', 'Phus', 'Bibliotek',...
                  'NyaMatte', 'Studentbostader', 'Kraftcentral', 'Lokalkontor',...
                  'Karhus_CFAB', 'CAdministration', 'GamlaMatte', 'Gibraltar_herrgard',...
                  'HA', 'HB', 'Elkraftteknik', 'HC', 'Maskinteknik', 'Fysik_Origo',...
@@ -78,6 +78,13 @@ B_ID_nonBITES.uels={'Phus',...
                     'Polymerteknologi',...
                     'Idelara','CTP', 'Karhuset', 'JSP',...
                     'Karhus_studenter'};
+                
+%Buses IDs for electrical network *****TO BE MOdified***** 
+Buses_IDs.name='Bus_IDs';
+Buses_IDs.uels={'1','2','3','4','5','6','7','8',...
+              '9','10','11','12','13','14',...
+              '15','16','17','18','19','20','21','22','23','24',...
+               '25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41'};
 
 %Building IDs for solar irradiance data *****TO BE MOdified*****                
 BID.name='BID';
@@ -156,6 +163,13 @@ temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','
 opt_fx_inv_BES_cap=200;
 temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',opt_fx_inv_BES_cap);
 
+%Option for BFCh investment
+opt_fx_inv_BFCh=1;
+temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
+opt_fx_inv_BFCh_cap=100;
+temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full','val',opt_fx_inv_BFCh_cap);
+
+
 %Option for BTES investment
 BITES_Inv.name='BITES_Inv';
 BITES_Inv.uels={'Bibliotek','NyaMatte','Elkraftteknik','VOV1', 'Arkitektur', 'VOV2'};
@@ -174,20 +188,20 @@ area_facade_max.uels=BID.uels;
 area_facade_max.val=pv_area_facades;
 
 
-PV_BID_roof_Inv_temp=[10   17   23   30]; %OBS: This is just a random Building ID, it need to corrected 
+PV_BID_roof_Inv_temp=[27 45 32 29 24 53]; %OBS: This is just a random Building ID, it need to corrected 
 PV_BID_roof_Inv.name='PV_BID_roof_Inv';
 PV_BID_roof_Inv.uels=num2cell(PV_BID_roof_Inv_temp);
 
-PV_roof_cap_temp=[30   25   17   45];   %OBS: This is just a random PV capacity for the given buildings, it need to corrected
+PV_roof_cap_temp=[231 32 95 82 115 248];   %OBS: This is just a random PV capacity for the given buildings, it need to corrected
 PV_roof_cap_Inv=struct('name','PV_roof_cap_Inv','type','parameter','form','full');
 PV_roof_cap_Inv.uels=PV_BID_roof_Inv.uels;
 PV_roof_cap_Inv.val=PV_roof_cap_temp';
 
-PV_BID_facade_Inv_temp=[10   17   23   30]; %OBS: This is just a random Building ID, it need to corrected 
+PV_BID_facade_Inv_temp=[10]; %OBS: This is just a random Building ID, it need to corrected 
 PV_BID_facade_Inv.name='PV_BID_facade_Inv';
 PV_BID_facade_Inv.uels=num2cell(PV_BID_facade_Inv_temp);
 
-PV_cap_facade_cap_temp=[10   10   10   10];
+PV_cap_facade_cap_temp=[0];
 PV_facade_cap_Inv=struct('name','PV_facade_cap_Inv','type','parameter','form','full');
 PV_facade_cap_Inv.uels=PV_BID_facade_Inv.uels;
 PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
@@ -195,7 +209,7 @@ PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
 %% FIXED MODEL INPUT DATA - INPUT PE and CO2 FACTORS and Dispatch of local generating units
 
 % calculate new values
-Re_calculate_CO2PEF=0;
+Re_calculate_CO2PEF=1;
 
 %CO2 and PE facrors of local generation unists
 CO2F_PV=22; %45
@@ -478,7 +492,7 @@ wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
      e_demand,h_demand,c_demand,qB1,qF1,el_price,el_cirtificate,h_price,tout,...     
      BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period,...
      PV_BID_roof_Inv,PV_roof_cap_Inv,PV_BID_facade_Inv,PV_facade_cap_Inv,...
-     temp_optn1, temp_optn2, temp_optn3, FED_Inv_lim);
+     temp_optn1, temp_optn2, temp_optn3, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap);
  
 %wgdx('MtoG_pv.gdx',G_facade,area_roof_max,area_facade_max);
 
