@@ -28,9 +28,11 @@ end
 CP_Water = 4.187; % kJ/kgK
 Rho_Water = 997; % kg/m3
 MW_per_kW = 1/1000; % MW/kW
+DH_transfer_limits = struct('name','DH_node_transfer_limits','type','parameter','form','full');
+DH_transfer_limits.val = zeros(length(times.uels), length(DH_Nodes.name)); % Each column is a nodes transfer limits
+DH_transfer_limits.uels = {times.uels, DH_Nodes.name};
 
-DH_transfer_limits = zeros(length(times.uels), length(DH_Nodes.names)); % Each column is a nodes transfer limits
-for node = 1:length(DH_Nodes.names)
+for node = 1:length(DH_Nodes.name)
     maximum_flow_rate = DH_Nodes.maximum_flow(node);
     for hour = 1:length(times.uels)
         % Get current temperature diff
@@ -38,9 +40,8 @@ for node = 1:length(DH_Nodes.names)
         delta_T_current = delta_T_DH{index_current_temp, 2};
 
         % Transfer limit [MWh/h] = m3/s * kg/m3 * kJ/kgK  * MW/kW 
-        DH_transfer_limits(hour,node) = maximum_flow_rate * Rho_Water * CP_Water * delta_T_current * MW_per_kW;
+        DH_transfer_limits.val(hour,node) = maximum_flow_rate * Rho_Water * CP_Water * delta_T_current * MW_per_kW;
     end
 end
-
 
 end

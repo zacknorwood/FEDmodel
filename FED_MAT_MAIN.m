@@ -86,20 +86,6 @@ BID_temp(71)=75;
 BID_temp(72)=76;
 BID.uels=num2cell(BID_temp);
 
-% District heating node UELS
-DH_Node_Fysik.name = 'Fysik';
-DH_Node_Fysik.uels = {'Fysik_Origo', 'Kemi', 'ITGYMNASIET', 'NyaMatte', 'MC2', 'Fysik_Soliden', 'Polymerteknologi', 'Keramforskning'};
-DH_Node_Bibliotek.name = 'Bibliotek';
-DH_Node_Bibliotek.uels = {'Bibliotek'};
-DH_Node_Maskin.name = 'Maskin';
-DH_Node_Maskin.uels = {'Maskinteknik', 'Lokalkontor'};
-DH_Node_EDIT.name = 'EDIT';
-DH_Node_EDIT.uels = {'Elkraftteknik', 'Edit', 'Idelara', 'HA', 'HB', 'HC', 'SSPA', 'Studentbostader'};
-DH_Node_VoV.name = 'VoV';
-DH_Node_VoV.uels = {'Karhus_CFAB','Karhus_studenter', 'CAdministration', 'VOV1', 'Arkitektur', 'VOV2'};
-DH_Node_Eklanda.name = 'Eklanda';
-DH_Node_Eklanda.uels = {'GamlaMatte'};
-
 %% ********FIXED MODEL INPUT DATA************
 
 %P1P2 dispatchability, DH export period and BAC saving period need to be
@@ -335,15 +321,6 @@ CO2F_DH = struct('name','CO2F_DH','type','parameter','form','full');
 PEF_DH = struct('name','PEF_DH','type','parameter','form','full');
 
 %% District heating network transfer limits - initialize nodes and flow limits
-% DH_Nodes_Names = {'Fysik', 'Bibliotek', 'Maskin', 'EDIT', 'VoV', 'Eklanda'};
-% DH_Nodes_Constituents  = {...
-%     {'Fysik_Origo', 'Kemi', 'ITGYMNASIET', 'NyaMatte', 'MC2', 'Fysik_Soliden', 'Polymerteknologi', 'Keramforskning'};...
-%     {'Bibliotek'};...
-%     {'Maskinteknik', 'Lokalkontor'};...
-%     {'Elkraftteknik', 'Edit', 'Idelara', 'HA', 'HB', 'HC', 'SSPA', 'Studentbostader'};...
-%     {'Karhus_CFAB','Karhus_studenter', 'CAdministration', 'VOV1', 'Arkitektur', 'VOV2',};...
-%     {'GamlaMatte'};...
-% };
 DH_Node_Fysik.name = 'Fysik';
 DH_Node_Fysik.uels = {'Fysik_Origo', 'Kemi', 'ITGYMNASIET', 'NyaMatte', 'MC2', 'Fysik_Soliden', 'Polymerteknologi', 'Keramforskning'};
 DH_Node_Bibliotek.name = 'Bibliotek';
@@ -357,10 +334,11 @@ DH_Node_VoV.uels = {'Karhus_CFAB','Karhus_studenter', 'CAdministration', 'VOV1',
 DH_Node_Eklanda.name = 'Eklanda';
 DH_Node_Eklanda.uels = {'GamlaMatte'};
 
-DH_Nodes.names = {DH_Node_Fysik.name, DH_Node_Bibliotek.name, DH_Node_Maskin.name, DH_Node_EDIT.name, DH_Node_VoV.name, DH_Node_Eklanda.name};
-DH_Nodes.constituents = {DH_Node_Fysik.uels, DH_Node_Bibliotek.uels, DH_Node_Maskin.uels, DH_Node_EDIT.uels, DH_Node_VoV.uels, DH_Node_Eklanda.uels};
+DH_Nodes.name = {DH_Node_Fysik.name, DH_Node_Bibliotek.name, DH_Node_Maskin.name, DH_Node_EDIT.name, DH_Node_VoV.name, DH_Node_Eklanda.name};
 DH_Nodes.maximum_flow = [31, 2, NaN, 13, 55, NaN] .* 1/1000 ; % l/s * m3/l = m3/s which is assumed input by fget_dh_transfer_limits below
 
+DH_Node_ID.name = 'DH_Node_ID';
+DH_Node_ID.uels = {DH_Node_Fysik.name, DH_Node_Bibliotek.name, DH_Node_Maskin.name, DH_Node_EDIT.name, DH_Node_VoV.name, DH_Node_Eklanda.name};
 
 %% District cooling network transfer limits - initialize nodes and flow limits
 DC_Nodes_Names = {'Empty', 'List', 'Of', 'Nodes'};
@@ -485,7 +463,7 @@ for t=sim_start:sim_stop
     BAC_savings_period.uels=h_sim.uels;
     
     %District heating network node transfer limits
-    DH_nodes_transfer_limits=fget_dh_transfer_limits(DH_Nodes, h_sim, tout);
+    DH_Nodes_Transfer_Limits=fget_dh_transfer_limits(DH_Nodes, h_sim, tout);
     
     %District cooling network node transfer limits
     
@@ -538,7 +516,8 @@ wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
      e_demand,h_demand,c_demand,qB1,qF1,el_price,el_cirtificate,h_price,tout,...     
      BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period,...
      PV_BID_roof_Inv,PV_roof_cap_Inv,PV_BID_facade_Inv,PV_facade_cap_Inv,...
-     temp_optn1, temp_optn2, temp_optn3, FED_Inv_lim);
+     temp_optn1, temp_optn2, temp_optn3, FED_Inv_lim,...
+     DH_Node_ID, DH_Nodes_Transfer_Limits);
  
 %wgdx('MtoG_pv.gdx',G_facade,area_roof_max,area_facade_max);
 
