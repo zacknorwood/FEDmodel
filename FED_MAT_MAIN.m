@@ -86,6 +86,20 @@ BID_temp(71)=75;
 BID_temp(72)=76;
 BID.uels=num2cell(BID_temp);
 
+% District heating node UELS
+DH_Node_Fysik.name = 'Fysik';
+DH_Node_Fysik.uels = {'Fysik_Origo', 'Kemi', 'ITGYMNASIET', 'NyaMatte', 'MC2', 'Fysik_Soliden', 'Polymerteknologi', 'Keramforskning'};
+DH_Node_Bibliotek.name = 'Bibliotek';
+DH_Node_Bibliotek.uels = {'Bibliotek'};
+DH_Node_Maskin.name = 'Maskin';
+DH_Node_Maskin.uels = {'Maskinteknik', 'Lokalkontor'};
+DH_Node_EDIT.name = 'EDIT';
+DH_Node_EDIT.uels = {'Elkraftteknik', 'Edit', 'Idelara', 'HA', 'HB', 'HC', 'SSPA', 'Studentbostader'};
+DH_Node_VoV.name = 'VoV';
+DH_Node_VoV.uels = {'Karhus_CFAB','Karhus_studenter', 'CAdministration', 'VOV1', 'Arkitektur', 'VOV2'};
+DH_Node_Eklanda.name = 'Eklanda';
+DH_Node_Eklanda.uels = {'GamlaMatte'};
+
 %% ********FIXED MODEL INPUT DATA************
 
 %P1P2 dispatchability, DH export period and BAC saving period need to be
@@ -321,19 +335,32 @@ CO2F_DH = struct('name','CO2F_DH','type','parameter','form','full');
 PEF_DH = struct('name','PEF_DH','type','parameter','form','full');
 
 %% District heating network transfer limits - initialize nodes and flow limits
-DH_Nodes_Names = {'Fysik', 'Bibliotek', 'Maskin', 'EDIT', 'VoV', 'Eklanda'};
-DH_Nodes_Constituents  = {...
-    {'Fysik_Origo', 'Kemi', 'ITGYMNASIET', 'NyaMatte', 'MC2', 'Fysik_Soliden', 'Polymerteknologi', 'Keramforskning'};...
-    {'Bibliotek'};...
-    {'Maskinteknik', 'Lokalkontor'};...
-    {'Elkraftteknik', 'Edit', 'Idelara', 'HA', 'HB', 'HC', 'SSPA', 'Studentbostader'};...
-    {'Karhus_CFAB','Karhus_studenter', 'CAdministration', 'VOV1', 'Arkitektur', 'VOV2',};...
-    {'GamlaMatte'};...
-};
-DH_Nodes.names = DH_Nodes_Names;
-DH_Nodes.constituents = DH_Nodes_Constituents;
+% DH_Nodes_Names = {'Fysik', 'Bibliotek', 'Maskin', 'EDIT', 'VoV', 'Eklanda'};
+% DH_Nodes_Constituents  = {...
+%     {'Fysik_Origo', 'Kemi', 'ITGYMNASIET', 'NyaMatte', 'MC2', 'Fysik_Soliden', 'Polymerteknologi', 'Keramforskning'};...
+%     {'Bibliotek'};...
+%     {'Maskinteknik', 'Lokalkontor'};...
+%     {'Elkraftteknik', 'Edit', 'Idelara', 'HA', 'HB', 'HC', 'SSPA', 'Studentbostader'};...
+%     {'Karhus_CFAB','Karhus_studenter', 'CAdministration', 'VOV1', 'Arkitektur', 'VOV2',};...
+%     {'GamlaMatte'};...
+% };
+DH_Node_Fysik.name = 'Fysik';
+DH_Node_Fysik.uels = {'Fysik_Origo', 'Kemi', 'ITGYMNASIET', 'NyaMatte', 'MC2', 'Fysik_Soliden', 'Polymerteknologi', 'Keramforskning'};
+DH_Node_Bibliotek.name = 'Bibliotek';
+DH_Node_Bibliotek.uels = {'Bibliotek'};
+DH_Node_Maskin.name = 'Maskin';
+DH_Node_Maskin.uels = {'Maskinteknik', 'Lokalkontor'};
+DH_Node_EDIT.name = 'EDIT';
+DH_Node_EDIT.uels = {'Elkraftteknik', 'Edit', 'Idelara', 'HA', 'HB', 'HC', 'SSPA', 'Studentbostader'};
+DH_Node_VoV.name = 'VoV';
+DH_Node_VoV.uels = {'Karhus_CFAB','Karhus_studenter', 'CAdministration', 'VOV1', 'Arkitektur', 'VOV2'};
+DH_Node_Eklanda.name = 'Eklanda';
+DH_Node_Eklanda.uels = {'GamlaMatte'};
+
+DH_Nodes.names = {DH_Node_Fysik.name, DH_Node_Bibliotek.name, DH_Node_Maskin.name, DH_Node_EDIT.name, DH_Node_VoV.name, DH_Node_Eklanda.name};
+DH_Nodes.constituents = {DH_Node_Fysik.uels, DH_Node_Bibliotek.uels, DH_Node_Maskin.uels, DH_Node_EDIT.uels, DH_Node_VoV.uels, DH_Node_Eklanda.uels};
 DH_Nodes.maximum_flow = [31, 2, NaN, 13, 55, NaN] .* 1/1000 ; % l/s * m3/l = m3/s which is assumed input by fget_dh_transfer_limits below
-clear DH_Nodes_Names DH_Nodes_Constituents;
+
 
 %% District cooling network transfer limits - initialize nodes and flow limits
 DC_Nodes_Names = {'Empty', 'List', 'Of', 'Nodes'};
