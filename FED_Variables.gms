@@ -168,13 +168,18 @@ PV_cap_roof.fx(PV_BID_roof_Inv) $ (opt_fx_inv eq 1) = PV_roof_cap_Inv(PV_BID_roo
 PV_cap_facade.fx(PV_BID_facade_Inv) $ (opt_fx_inv eq 1) = PV_facade_cap_Inv(PV_BID_facade_Inv);
 *------------------Battery related----------------------------------------------
 positive variables
-         BES_en(h)       Energy stored in the battry at time t and building i
+         BES_en                                                                                                                                                                                                          (h)       Energy stored in the battry at time t and building i
          BES_ch(h)       Battery charing at time t and building i
          BES_dis(h)      Battery discharging at time t and building i
          BES_cap         Capacity of the battery at building i
+
+         BFCh_en                                                                                                                                                                                                          (h)       Energy stored in the battry at time t and building i
+         BFCh_ch(h)       Battery charing at time t and building i
+         BFCh_dis(h)      Battery discharging at time t and building i
+         BFCh_cap         Capacity of the battery at building i
 ;
 BES_cap.fx $ (opt_fx_inv eq 1 and opt_fx_inv_BES eq 1) = opt_fx_inv_BES_cap;
-
+BFCh_cap.fx $ (opt_fx_inv eq 1 and opt_fx_inv_BFCh eq 1) = opt_fx_inv_BFCh_cap;
 *------------------Refrigeration machine investment related---------------------
 positive variable
          c_RMInv(h)           cooling power available from RMInv
@@ -187,9 +192,15 @@ positive variable
          e_exp_AH(h)        Exported electricty from the AH system
          e_imp_AH(h)        Imported electricty to the AH system
          e_imp_nonAH(h)     Imported electricty to the AH system
+         V(h,Bus_IDs)       Voltage magnitudes of EL Grid
 ;
 e_imp_AH.up(h)=exG_max_cap;
 e_exp_AH.up(h)=exG_max_cap;
+
+variable
+        re_imp_AH(h)        Imported reactive to the AH system
+        delta(h,Bus_IDs)    Voltage angles of EL Grid
+;
 
 *------------------Grid DH related----------------------------------------------
 positive variable

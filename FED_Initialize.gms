@@ -105,7 +105,7 @@ scalar
 * Source for these numbers?
 scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
-         AbsH_COP       Coeffiicent of performance for absorption heating investment /1.7/
+
 *AbsC_eff Efficiency of AbsC /0.95/
 ;
 
@@ -274,6 +274,8 @@ scalar
 scalar
          BES_ch_eff    Charging efficiency /0.95/
          BES_dis_eff   Discharding efficiency /0.95/
+         BFCh_ch_eff    Charging efficiency /0.95/
+         BFCh_dis_eff   Discharding efficiency /0.95/
 ;
 
 *--------------set building energy demands--------------------------------------
