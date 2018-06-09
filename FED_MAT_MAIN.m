@@ -162,13 +162,16 @@ opt_fx_inv_BES=1;
 temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',opt_fx_inv_BES);
 opt_fx_inv_BES_cap=200;
 temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',opt_fx_inv_BES_cap);
+opt_fx_inv_BES_maxP=100;
+temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full','val',opt_fx_inv_BES_maxP);
 
 %Option for BFCh investment
 opt_fx_inv_BFCh=1;
 temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
 opt_fx_inv_BFCh_cap=100;
 temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full','val',opt_fx_inv_BFCh_cap);
-
+opt_fx_inv_BFCh_maxP=50;
+temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full','val',opt_fx_inv_BFCh_maxP);
 
 %Option for BTES investment
 BITES_Inv.name='BITES_Inv';
@@ -206,6 +209,10 @@ PV_facade_cap_Inv=struct('name','PV_facade_cap_Inv','type','parameter','form','f
 PV_facade_cap_Inv.uels=PV_BID_facade_Inv.uels;
 PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
 
+PV_PF_inverter_PF_temp=[0.92 0.93 0.94 0.95 0.96];
+PV_inverter_PF_Inv=struct('name','PV_inverter_PF_Inv','type','parameter','form','full');
+PV_inverter_PF_Inv.uels=PV_BID_roof_Inv.uels;
+PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp';
 %% FIXED MODEL INPUT DATA - INPUT PE and CO2 FACTORS and Dispatch of local generating units
 
 % calculate new values
@@ -352,8 +359,8 @@ temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',op
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 
 %SIMULATION START AND STOP TIME
-sim_start=1442;
-sim_stop=1442;%10202;
+sim_start=1445;
+sim_stop=1445;%10202;
 forcast_horizon=10;
 t_len_m=10;
 
@@ -478,6 +485,25 @@ for t=sim_start:sim_stop
     PEF_DH.val = DH_PEF;
     PEF_DH.uels=h_sim.uels;
     
+    %Initial SoC of different storage systems (1=BTES_D, 2=BTES_S, 3=TES, 4=BFCh, 5=BES)
+    Initial=readGtoM(t);
+    
+    opt_fx_inv_BES_init=Initial(5);
+    temp_opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',opt_fx_inv_BES_init);
+    
+    opt_fx_inv_BFCh_init=Initial(4);
+    temp_opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',opt_fx_inv_BFCh_init);
+
+    opt_fx_inv_TES_init=Initial(3);
+    temp_opt_fx_inv_TES_init = struct('name','opt_fx_inv_TES_init','type','parameter','form','full','val',opt_fx_inv_TES_init);
+
+    opt_fx_inv_BTES_S_init=Initial(2);
+    temp_opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',opt_fx_inv_BTES_S_init);
+ 
+    opt_fx_inv_BTES_D_init=Initial(1);
+    temp_opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',opt_fx_inv_BTES_D_init);
+
+    
     %% RUN GAMS model
 
 wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
@@ -492,7 +518,9 @@ wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
      e_demand,h_demand,c_demand,qB1,qF1,el_price,el_cirtificate,h_price,tout,...     
      BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period,...
      PV_BID_roof_Inv,PV_roof_cap_Inv,PV_BID_facade_Inv,PV_facade_cap_Inv,...
-     temp_optn1, temp_optn2, temp_optn3, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap);
+     temp_optn1, temp_optn2, temp_optn3, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap,...
+     temp_opt_fx_inv_BES_maxP,temp_opt_fx_inv_BFCh_maxP,PV_inverter_PF_Inv,temp_opt_fx_inv_BTES_D_init,temp_opt_fx_inv_BTES_S_init,...
+     temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init);
  
 %wgdx('MtoG_pv.gdx',G_facade,area_roof_max,area_facade_max);
 
