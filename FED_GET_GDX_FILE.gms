@@ -54,9 +54,11 @@ $LOAD Bus_IDs
 $GDXIN
 alias(Bus_IDs,j);
 set BusToB_ID(Bus_IDs,i_AH_el)  Mapping between buses and buildings /15.MC2, 5.Kemi, 21.Fysik_Origo, 11.(Fysik_Soliden,Keramforskning,Polymerteknologi),
-                                                 20.(Kraftcentral,Lokalkontor), 9.(Bibliotek,NyaMatte), 34.(HA,HB,Maskinteknik), 32.(Edit,Idelara),
+                                                 20.(Kraftcentral,Lokalkontor), 9.(Bibliotek,NyaMatte), 34.(HA,HB,Maskinteknik), 32.(Edit,Idelara,Studentbostader),
                                                  40.(Elkraftteknik,HC,Gibraltar_herrgard), 30.GamlaMatte, 24.(CAdministration,Karhus_CFAB,Karhus_studenter), 26.(VOV1,Arkitektur), 28.(VOV2,Phus)/
 ;
+parameter Sb Base power (KW) /1000/;
+parameter Ib Base current (A) /54.98/;
 Parameter bij(Bus_IDs,j)
 Parameter gij(Bus_IDs,j)
 Parameter bii(Bus_IDs)
@@ -64,14 +66,12 @@ Parameter Y(Bus_IDs,j)  elements magnitudes of admittance matrix
 Parameter Theta(Bus_IDs,j)   elements angles of admittance matrix
 Parameter currentlimits(Bus_IDs,j) current limits
 $GDXIN Input_dispatch_model\AdmittanceMatrix.gdx
-$LOAD Y
 $load gij
 $load bij
 $load bii
 $LOAD currentlimits
-$LOAD Theta
 $GDXIN
-*********************This part need be updated**********************************
+
 *----------------Solar PV data--------------------------------------------------
 SET
     BID        Building IDs used for PV calculations
@@ -92,15 +92,18 @@ alias(PV_BID_roof_Inv,r);
 alias(PV_BID_facade_Inv,f);
 
 Parameter PV_roof_cap_Inv(PV_BID_roof_Inv) Invested PV capacity-roof
-          PV_facade_cap_Inv(PV_BID_facade_Inv) Invested PV capacity-facade;
+          PV_facade_cap_Inv(PV_BID_facade_Inv) Invested PV capacity-facade
+          PV_inverter_PF_Inv(PV_BID_roof_Inv) Invested PV roof inverters power factor
+;
 $GDXIN MtoG.gdx
 $LOAD PV_roof_cap_Inv
 $LOAD PV_facade_cap_Inv
+$load PV_inverter_PF_Inv
 $GDXIN
 
 set BusToBID(Bus_IDs,BID)   Mapping between buses and BIDs
 /15.(6,44), 5.(54,55,53,4), 21.(52,43,47), 11.(40,50,51), 20.28, 9.(12,46,45), 34.(56,32,37,33,35),
- 32.(29,9,19), 40.(18,60,1,36), 30.(68,70,69,62,65), 24.(57,25,24,11), 26.(10,48,49), 28.(23,27,75)/
+ 32.(29,9,19,20,22,8), 40.(18,60,1,36), 30.(68,70,69,62,65), 24.(57,25,24,11), 26.(10,48,49), 28.(23,27,75)/
 ;
 *----------------PREPARE THE FULL INPUT DATA------------------------------------
 SET
@@ -273,8 +276,10 @@ PARAMETERS
          opt_fx_inv_TES_cap   capacity of the new TES
          opt_fx_inv_BES       options to fix investment in new BES
          opt_fx_inv_BES_cap   capacity of the new BES
+         opt_fx_inv_BES_maxP    power factor limit of the new BES
          opt_fx_inv_BFCh       options to fix investment in new BFCh
          opt_fx_inv_BFCh_cap   capacity of the new BFCh
+         opt_fx_inv_BFCh_maxP    power factor limit of the new BFCh
 ;
 $GDXIN MtoG.gdx
 $LOAD opt_fx_inv
@@ -293,8 +298,25 @@ $LOAD opt_fx_inv_BES
 $LOAD opt_fx_inv_BES_cap
 $LOAD opt_fx_inv_BFCh
 $LOAD opt_fx_inv_BFCh_cap
+$LOAD opt_fx_inv_BES_maxP
+$load opt_fx_inv_BFCh_maxP
 $GDXIN
 
+*-------Initial SoC of Storage systems------*
+Parameters
+      opt_fx_inv_BES_init   BES Init. SoC
+      opt_fx_inv_BFCh_init  BFCh Init. SoC
+      opt_fx_inv_TES_init    TES Init. SoC
+      opt_fx_inv_BTES_S_init  BTES_S Init. SoC
+      opt_fx_inv_BTES_D_init  BTES_D Init. SoC
+;
+$GDXIN MtoG.gdx
+$lOAD opt_fx_inv_BES_init
+$lOAD opt_fx_inv_BFCh_init
+$lOAD opt_fx_inv_TES_init
+$lOAD opt_fx_inv_BTES_S_init
+$lOAD opt_fx_inv_BTES_D_init
+$GDXIN
 *the combination is used to comment out sections codes inside
 $Ontext
 
