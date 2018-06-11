@@ -52,8 +52,6 @@ equation
            eq5_TURB     active-reactive power limits of turbine
            eq6_TURB     active-reactive power limits of turbin
 
-
-
            eq_HP1       heat production from HP
            eq_HP2       cooling production from HP
            eq_HP3       for determining capacity of HP
@@ -265,11 +263,8 @@ eq3_TURB(h)..
          e_TURB(h) =l= B_TURB * TURB_cap;
 
 eq4_TURB(h)..e_TURB_reac(h)=l=0.4843*e_TURB(h);
-<<<<<<< HEAD
 eq5_TURB(h)..-0.58*e_TURB_reac(h)+e_TURB(h)=l=1.15*TURB_cap;
 eq6_TURB(h)..+0.58*e_TURB_reac(h)+e_TURB(h)=l=1.15*TURB_cap;
-=======
->>>>>>> 252dcd585ae9991222590d127ed0de1b7abcc0ed
 
 *----------------HP equations --------------------------------------------------
 eq_HP1(h)..
@@ -341,21 +336,12 @@ eq_BES_dis(h)..
 
 eq_BES_reac1(h)..BES_reac(h)=l=opt_fx_inv_BES_maxP;
 eq_BES_reac2(h)..BES_reac(h)=g=-opt_fx_inv_BES_maxP;
-<<<<<<< HEAD
 eq_BES_reac3(h)..-BES_ch(h)+BES_dis(h)=g=-opt_fx_inv_BES_maxP;
 eq_BES_reac4(h)..-BES_ch(h)+BES_dis(h)=l=opt_fx_inv_BES_maxP;
 eq_BES_reac5(h)..-0.58*BES_reac(h)-BES_ch(h)+BES_dis(h)=l=1.15*opt_fx_inv_BES_maxP;
 eq_BES_reac6(h)..-0.58*BES_reac(h)-BES_ch(h)+BES_dis(h)=g=-1.15*opt_fx_inv_BES_maxP;
 eq_BES_reac7(h)..0.58*BES_reac(h)-BES_ch(h)+BES_dis(h)=l=1.15*opt_fx_inv_BES_maxP;
 eq_BES_reac8(h)..0.58*BES_reac(h)-BES_ch(h)+BES_dis(h)=g=-1.15*opt_fx_inv_BES_maxP;
-=======
-eq_BES_reac3(h)..BES_ch(h)+BES_dis(h)=g=-opt_fx_inv_BES_maxP;
-eq_BES_reac4(h)..BES_ch(h)+BES_dis(h)=l=opt_fx_inv_BES_maxP;
-eq_BES_reac5(h)..-0.58*BES_reac(h)+BES_ch(h)+BES_dis(h)=l=1.15*opt_fx_inv_BES_maxP;
-eq_BES_reac6(h)..-0.58*BES_reac(h)+BES_ch(h)+BES_dis(h)=g=-1.15*opt_fx_inv_BES_maxP;
-eq_BES_reac7(h)..0.58*BES_reac(h)+BES_ch(h)+BES_dis(h)=l=1.15*opt_fx_inv_BES_maxP;
-eq_BES_reac8(h)..0.58*BES_reac(h)+BES_ch(h)+BES_dis(h)=g=-1.15*opt_fx_inv_BES_maxP;
->>>>>>> 252dcd585ae9991222590d127ed0de1b7abcc0ed
 *-----------------Battery Fast Charge constraints-------------------------------------------
 eq_BFCh1(h) $ (ord(h) eq 1)..
              BFCh_en(h)=e= opt_fx_inv_BFCh_init;
