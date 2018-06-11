@@ -48,13 +48,11 @@ equation
            eq1_TURB     production equation for turbine-gen
            eq2_TURB     energy consumption equation for turbine-gen
            eq3_TURB     investment equation for turbine-gen
-<<<<<<< HEAD
            eq4_TURB     active-reactive power limits of turbine
            eq5_TURB     active-reactive power limits of turbine
            eq6_TURB     active-reactive power limits of turbin
-=======
-           eq4_TURB     reactive power limits of turbine
->>>>>>> 252dcd585ae9991222590d127ed0de1b7abcc0ed
+
+
 
            eq_HP1       heat production from HP
            eq_HP2       cooling production from HP
