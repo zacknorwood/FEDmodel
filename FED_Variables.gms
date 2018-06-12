@@ -101,6 +101,8 @@ positive variable
          e_TURB(h)         electricity generated in turbine-gen
          h_TURB(h)         steam demand in turbine
          H_P2T(h)          steam generated in P2-turb combo
+;
+Variable
          e_TURB_reac(h)    Turbines reactive power
 ;
 binary variable

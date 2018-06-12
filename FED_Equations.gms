@@ -51,6 +51,7 @@ equation
            eq4_TURB     active-reactive power limits of turbine
            eq5_TURB     active-reactive power limits of turbine
            eq6_TURB     active-reactive power limits of turbin
+           eq7_TURB     active-reactive power limits of turbin
 
            eq_HP1       heat production from HP
            eq_HP2       cooling production from HP
@@ -263,8 +264,9 @@ eq3_TURB(h)..
          e_TURB(h) =l= B_TURB * TURB_cap;
 
 eq4_TURB(h)..e_TURB_reac(h)=l=0.4843*e_TURB(h);
-eq5_TURB(h)..-0.58*e_TURB_reac(h)+e_TURB(h)=l=1.15*TURB_cap;
-eq6_TURB(h)..+0.58*e_TURB_reac(h)+e_TURB(h)=l=1.15*TURB_cap;
+eq5_TURB(h)..e_TURB_reac(h)=g=-0.4843*e_TURB(h);
+eq6_TURB(h)..-0.58*e_TURB_reac(h)+e_TURB(h)=l=1.15*TURB_cap;
+eq7_TURB(h)..+0.58*e_TURB_reac(h)+e_TURB(h)=l=1.15*TURB_cap;
 
 *----------------HP equations --------------------------------------------------
 eq_HP1(h)..

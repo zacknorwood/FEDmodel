@@ -53,9 +53,9 @@ $GDXIN MtoG.gdx
 $LOAD Bus_IDs
 $GDXIN
 alias(Bus_IDs,j);
-set BusToB_ID(Bus_IDs,i_AH_el)  Mapping between buses and buildings /15.MC2, 5.Kemi, 21.Fysik_Origo, 11.(Fysik_Soliden,Keramforskning,Polymerteknologi),
-                                                 20.(Kraftcentral,Lokalkontor), 9.(Bibliotek,NyaMatte), 34.(HA,HB,Maskinteknik), 32.(Edit,Idelara,Studentbostader),
-                                                 40.(Elkraftteknik,HC,Gibraltar_herrgard), 30.GamlaMatte, 24.(CAdministration,Karhus_CFAB,Karhus_studenter), 26.(VOV1,Arkitektur), 28.(VOV2,Phus)/
+set BusToB_ID(Bus_IDs,i_AH_el)  Mapping between buses and buildings /15.O3060133, 5.O3060132, 21.O0007001, 11.(O0011001,O0013001,O0007005),
+                                                 20.(O0007008,O0007888), 9.(O0007017,O0007006), 34.(O0007022,O0007025,O0007028), 32.(O0007024,O0007018,Studentbostader),
+                                                 40.(O0007012,O0007021,O0007014), 30.O0007040, 24.(O0007019,Karhus_CFAB,Karhus_studenter), 26.(O0007023,O0007026), 28.(O0007027,O0007043)/
 ;
 parameter Sb Base power (KW) /1000/;
 parameter Ib Base current (A) /54.98/;
