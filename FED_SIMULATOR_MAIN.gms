@@ -66,6 +66,7 @@ parameter
           AH_el_exp_tot
           AH_h_imp_tot
           AH_h_exp_tot
+          sum_temp_slack(h, DH_Node_ID)
 ;
 *FED_PE_ft(h)=(e_imp_AH.l(h)-e_exp_AH.l(h) + e_imp_nonAH.l(h))*PEF_exG(h)
 *             + e0_PV(h)*PEF_PV + sw_PV*e_PV.l(h)*PEF_PV
@@ -77,6 +78,7 @@ AH_el_imp_tot=sum(h,e_imp_AH.l(h));
 AH_el_exp_tot=sum(h,e_exp_AH.l(h));
 AH_h_imp_tot=sum(h,h_imp_AH.l(h));
 AH_h_exp_tot=sum(h,h_exp_AH.l(h));
+sum_temp_slack(h, DH_Node_ID) = temp_slack.l(h, DH_Node_ID)
 
 execute_unload 'GtoM' min_totCost, min_totPE, min_totCO2,
                       el_demand, el_demand_nonAH, h_demand, c_demand, c_demand_AH,
@@ -122,5 +124,6 @@ execute_unload 'd' d;
 execute_unload 'sup_unit' sup_unit;
 execute_unload 'inv_opt' inv_opt;
 execute_unload 'coefs' coefs;
-execute_unload 'BTES_properties' BTES_properties;
+execute_unload 'BTES_properties' BTES_properties
+execute_unload 'temp_slack', sum_temp_slack;
 

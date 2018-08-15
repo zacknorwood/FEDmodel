@@ -321,12 +321,16 @@ eq_hbalance4(h)..
 *---------------District heating network constraints----------------------------
 $ontext
        Node Fysik is infeasible (reavealed from temp_slack values).
-       Should be fixed by doing: 
+       Should be fixed by doing:
        1) Need to add all production units to the equation
+         a) replace 'H_VKA4(h) with the hourly sum of all production in the Fysik node
        2) Need to add all charging/discharging of heat storage to equation
+*$(not DH_node_transfer_limits(h, DH_Node_ID) = NA)..
 $offtext
-eq_dhn_constraint(h, DH_Node_ID)$(not DH_node_transfer_limits(h, DH_Node_ID) = NA)..
-         DH_node_transfer_limits(h, DH_Node_ID)*1000+temp_slack(h, DH_Node_ID) =g= sum( i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i) ) ;
+eq_dhn_constraint(h, DH_Node_ID)..
+         DH_node_transfer_limits(h, DH_Node_ID)*1000 + temp_slack(h, DH_Node_ID)  =g= sum( i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i) )
+                 - H_VKA4(h) $(sameas(DH_Node_ID, 'Fysik'));
+
 
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
@@ -404,7 +408,8 @@ eq_var_cost_existing..
                                + sum(h,c_RM(h)*utot_cost('RM',h))
                                + sum(h,c_RMMC(h)*utot_cost('RM',h))
                                + sum(h,c_AAC(h)*utot_cost('AAC',h))
-                               + sum(h,e_existPV(h)*utot_cost('PV',h));
+                               + sum(h,e_existPV(h)*utot_cost('PV',h))
+                               + sum(DH_Node_ID, sum(h, temp_slack(h, DH_Node_ID)))*10**6;
 eq_var_cost_new..
          var_cost_new =e=  sum(h,e_PV(h)*utot_cost('PV',h))
                            + sum(h,h_HP(h)*utot_cost('HP',h))

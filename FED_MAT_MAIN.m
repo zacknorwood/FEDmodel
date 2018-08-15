@@ -335,7 +335,7 @@ DH_Node_Eklanda.name = 'Eklanda';
 DH_Node_Eklanda.uels = {'GamlaMatte'};
 
 DH_Nodes.name = {DH_Node_Fysik.name, DH_Node_Bibliotek.name, DH_Node_Maskin.name, DH_Node_EDIT.name, DH_Node_VoV.name, DH_Node_Eklanda.name};
-DH_Nodes.maximum_flow = [31, 2, NaN, 13, 55, NaN] .* 1/1000 ; % l/s * m3/l = m3/s which is assumed input by fget_dh_transfer_limits below
+DH_Nodes.maximum_flow = [31, 2, Inf, 13, 55, Inf] .* 1/1000 ; % l/s * m3/l = m3/s which is assumed input by fget_dh_transfer_limits below
 
 DH_Node_ID.name = 'DH_Node_ID';
 DH_Node_ID.uels = {DH_Node_Fysik.name, DH_Node_Bibliotek.name, DH_Node_Maskin.name, DH_Node_EDIT.name, DH_Node_VoV.name, DH_Node_Eklanda.name};
@@ -372,9 +372,9 @@ temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',o
 
 %SIMULATION START AND STOP TIME
 sim_start=1442;
-sim_stop=1442;%10202;
-forcast_horizon=10;
-t_len_m=10;
+sim_stop= 1541; %10202;
+forcast_horizon=99;
+t_len_m=99;
 
 for t=sim_start:sim_stop
     %% Variable input data to the dispatch model
