@@ -1,12 +1,12 @@
 %% Initialize the simulator
-
-tic        %simulation start time counter
 clc;       %clear texts in command window
 clear;     %clear data in workspace
 close all; %close all figures
 
 %% Building ID's
 %Building IDs
+profile on
+tic
 B_ID.name='B_ID';
 % B_ID.uels={'O3060132=Kemi', 'O3060101=Vassa1', 'O3060102_3=Vassa2-3', 'Vassa4-15=O3060104_15', 'O0007043=Phus','O0007017=Bibliotek',...
 %            'SSPA', 'O0007006=NyaMatte', 'Studentbostader', 'O0007008=Kraftcentral','O0007888=Lokalkontor',...
@@ -191,11 +191,11 @@ area_facade_max.uels=BID.uels;
 area_facade_max.val=pv_area_facades;
 
 
-PV_BID_roof_Inv_temp=[27 45 32 29 24 53]; %OBS: This is just a random Building ID, it need to corrected 
+PV_BID_roof_Inv_temp=[27]; %OBS: This is just a random Building ID, it need to corrected 
 PV_BID_roof_Inv.name='PV_BID_roof_Inv';
 PV_BID_roof_Inv.uels=num2cell(PV_BID_roof_Inv_temp);
 
-PV_roof_cap_temp=[231 32 95 82 115 248];   %OBS: This is just a random PV capacity for the given buildings, it need to corrected
+PV_roof_cap_temp=[0];   %OBS: This is just a random PV capacity for the given buildings, it need to corrected
 PV_roof_cap_Inv=struct('name','PV_roof_cap_Inv','type','parameter','form','full');
 PV_roof_cap_Inv.uels=PV_BID_roof_Inv.uels;
 PV_roof_cap_Inv.val=PV_roof_cap_temp';
@@ -209,7 +209,7 @@ PV_facade_cap_Inv=struct('name','PV_facade_cap_Inv','type','parameter','form','f
 PV_facade_cap_Inv.uels=PV_BID_facade_Inv.uels;
 PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
 
-PV_PF_inverter_PF_temp=[0.92 0.93 0.94 0.95 0.96];
+PV_PF_inverter_PF_temp=[0.92];
 PV_inverter_PF_Inv=struct('name','PV_inverter_PF_Inv','type','parameter','form','full');
 PV_inverter_PF_Inv.uels=PV_BID_roof_Inv.uels;
 PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp';
@@ -359,14 +359,16 @@ temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',op
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 
 %SIMULATION START AND STOP TIME
-sim_start=1445;
-sim_stop=1445;%10202;
+sim_start=2000;
+sim_stop=2167;
 forcast_horizon=10;
 t_len_m=10;
-
+Time(1).point='fixed inputs';
+Time(1).value=toc;
 for t=sim_start:sim_stop
     %% Variable input data to the dispatch model
     %Read measured data
+    tic
     t_init_m=t;  %OBS: t_init_m  should be greater than t_len_m  
     [e_demand_measured, h_demand_measured,c_demand_measured,...
           h_B1_measured,h_F1_measured,e_price_measured,...
@@ -486,7 +488,11 @@ for t=sim_start:sim_stop
     PEF_DH.uels=h_sim.uels;
     
     %Initial SoC of different storage systems (1=BTES_D, 2=BTES_S, 3=TES, 4=BFCh, 5=BES)
+    if t==1445 
+        Initial(1:5)=0;
+    else
     Initial=readGtoM(t);
+    end
     
     opt_fx_inv_BES_init=Initial(5);
     temp_opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',opt_fx_inv_BES_init);
@@ -503,7 +509,7 @@ for t=sim_start:sim_stop
     opt_fx_inv_BTES_D_init=Initial(1);
     temp_opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',opt_fx_inv_BTES_D_init);
 
-    
+
     %% RUN GAMS model
 
 wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
@@ -523,22 +529,28 @@ wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
      temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init);
  
 %wgdx('MtoG_pv.gdx',G_facade,area_roof_max,area_facade_max);
-
+Time(2).point='Wgdx and Inputs';
+Time(2).value=toc;
+tic
  RUN_GAMS_MODEL = 1;
  while RUN_GAMS_MODEL==1
-     system 'gams FED_SIMULATOR_MAIN lo=3';
+     system 'C:\GAMS\win64\24.9\gams FED_SIMULATOR_MAIN lo=3';
      break;
  end
  
  %% Store the results from each iteration
  
  Results(t).dispatch = fstore_results(h_sim,B_ID,BTES_properties);
-end
+ gams_runtime_storing=toc;
 
+end
 
  %% Post processing results 
  
  %use the 'plot_results.m' script to plot desired results
 %%
-
-toc
+Time(3).point='Total';
+total=profile('info');
+total=total.FunctionTable.TotalTime;
+Time(3).value=total(1);
+excel_results(sim_start,sim_stop,Results,Time);

@@ -93,7 +93,7 @@ alias(PV_BID_facade_Inv,f);
 
 Parameter PV_roof_cap_Inv(PV_BID_roof_Inv) Invested PV capacity-roof
           PV_facade_cap_Inv(PV_BID_facade_Inv) Invested PV capacity-facade
-          PV_inverter_PF_Inv(PV_BID_roof_Inv) Invested PV roof inverters power factor
+          PV_inverter_PF_Inv            Invested PV roof inverters power factor
 ;
 $GDXIN MtoG.gdx
 $LOAD PV_roof_cap_Inv
