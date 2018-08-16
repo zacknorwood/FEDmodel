@@ -331,6 +331,9 @@ eq_dhn_constraint(h, DH_Node_ID)..
          DH_node_transfer_limits(h, DH_Node_ID)*1000 + temp_slack(h, DH_Node_ID)  =g= sum( i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i) )
                  - (h_RMMC(h)) $(sameas(DH_Node_ID, 'Fysik'))
                  - (H_VKA4(h) + H_VKA1(h) + h_Pana1(h) + h_RGK1(h) + h_AbsC(h) + h_AbsCInv(h) + H_P2T(h) + 0.75*h_TURB(h) + h_HP(h) + TES_dis(h) - TES_ch(h) + h_imp_AH(h) - h_exp_AH(h)) $(sameas(DH_Node_ID, 'Maskin'))
+                 + sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sch(h,i))
+                 - sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sdis(h,i))
+                 - sum(DHNodeToB_ID(DH_Node_ID, i), h_BAC_savings(h,i))
 ;
 *                 - () $(sameas(DH_Node_ID, 'Bibliotek'))
 *                 - () $(sameas(DH_Node_ID, 'EDIT'))
