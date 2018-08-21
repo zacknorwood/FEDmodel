@@ -156,6 +156,8 @@ $LOAD el_demand
 $LOAD h_demand
 $LOAD c_demand
 $GDXIN
+*Must be deleted
+el_demand(h,i_nonAH_el)=0;
 *-----------Forcasted energy prices from MATLAB---------------------------------
 PARAMETERS
            el_price(h)       ELECTRICTY PRICE IN THE EXTERNAL GRID

@@ -25,25 +25,21 @@ for i=sim_start:sim_stop
     end
    
     if (not(isempty(Results(i).dispatch.H_VKA1)) && Results(i).dispatch.H_VKA1(1,1)==1)
-        hp1_h(count)=Results(i).dispatch.H_VKA1(1,2);
+        VKA1_h(count)=Results(i).dispatch.H_VKA1(1,2);
     else 
-        hp1_h(count)=0;
+        VKA1_h(count)=0;
     end
  
      if (not(isempty(Results(i).dispatch.H_VKA4)) && Results(i).dispatch.H_VKA4(1,1)==1)
-        hp2_h(count)=Results(i).dispatch.H_VKA4(1,2);
+        VKA4_h(count)=Results(i).dispatch.H_VKA4(1,2);
     else 
-        hp2_h(count)=0;
+        VKA4_h(count)=0;
      end
     
-    if (not(isempty(Results(i).dispatch.h_imp_nonAH)) && Results(i).dispatch.h_imp_nonAH(1,1)==1)
-       import_h(count)=Results(i).dispatch.h_imp_nonAH(1,2);
+    if (not(isempty(Results(i).dispatch.h_imp_AH)) && Results(i).dispatch.h_imp_AH(1,1)==1)
+       import_h(count)=Results(i).dispatch.h_imp_AH(1,2);
     else 
         import_h(count)=0;
-    end
-    
-    if (not(isempty(Results(i).dispatch.h_imp_AH)) && Results(i).dispatch.h_imp_AH(1,1)==1)
-       import_h(count)=Results(i).dispatch.h_imp_AH(1,2)+ import_h(count);
     end
 
     if (not(isempty(Results(i).dispatch.h_exp_AH)) && Results(i).dispatch.h_exp_AH(1,1)==1)
@@ -65,10 +61,6 @@ for i=sim_start:sim_stop
         import_el(count)=0;
     end
     
-    if (not(isempty(Results(i).dispatch.e_imp_nonAH)) && Results(i).dispatch.e_imp_nonAH(1,1)==1)
-       import_el(count)=Results(i).dispatch.e_imp_nonAH(1,2)+import_el(count);
-    end
-    
       if (not(isempty(Results(i).dispatch.c_AbsC)) && Results(i).dispatch.c_AbsC(1,1)==1)
        absC(count)=Results(i).dispatch.c_AbsC(1,2);
     else 
@@ -77,15 +69,15 @@ for i=sim_start:sim_stop
   
         
       if (not(isempty(Results(i).dispatch.C_VKA1)) && Results(i).dispatch.C_VKA1(1,1)==1)
-      hp1_c(count)=Results(i).dispatch.C_VKA1(1,2);
+      VKA1_c(count)=Results(i).dispatch.C_VKA1(1,2);
     else 
-        hp1_c(count)=0;
+        VKA1_c(count)=0;
       end
     
       if (not(isempty(Results(i).dispatch.C_VKA4)) && Results(i).dispatch.C_VKA4(1,1)==1)
-      hp2_c(count)=Results(i).dispatch.C_VKA4(1,2);
+      VKA4_c(count)=Results(i).dispatch.C_VKA4(1,2);
     else 
-        hp2_c(count)=0;
+        VKA4_c(count)=0;
       end
     
       if (not(isempty(Results(i).dispatch.c_RM)) && Results(i).dispatch.c_RM(1,1)==1)
@@ -115,27 +107,29 @@ end
 
     xlswrite('results',pana1',strcat('A3:A',num2str(count+2)));
     xlswrite('results',{'Dispatch'},'A2:A2');
-    xlswrite('results',{'P1'},'A1:B1');
-    xlswrite('results',xlsread('Input_dispatch_model\P1P2_dispatchable.xlsx',1,strcat('C',num2str(sim_start),':C',num2str(sim_stop))),strcat('B3:B',num2str(count+2)));
+    xlswrite('results',{'Pana1'},'A1:B1');
+    xlswrite('results',xlsread('Input_dispatch_model\Panna1 2016-2017.xls',2,strcat('B',num2str(sim_start+2),':B',num2str(sim_stop+2))),strcat('B3:B',num2str(count+2)));
 
     xlswrite('results',pana2',strcat('C3:C',num2str(count+2)));
-    xlswrite('results',{'P2'},'C1:D1');
+    xlswrite('results',{'Pana2'},'C1:D1');
     xlswrite('results',{'Dispatch'},'C2:C2');
+    xlswrite('results',xlsread('Input_dispatch_model\P1P2_dispatchable.xlsx',1,strcat('C',num2str(sim_start),':C',num2str(sim_stop))),strcat('D3:D',num2str(count+2)));
       
     xlswrite('results',fgc',strcat('G3:G',num2str(count+2)));
     xlswrite('results',{'FGC'},'G1:H1');
     xlswrite('results',{'Dispatch'},'G2:G2');
+    xlswrite('results',xlsread('Input_dispatch_model\Panna1 2016-2017.xls',2,strcat('C',num2str(sim_start+2),':C',num2str(sim_stop+2))),strcat('H3:H',num2str(count+2)));
       
-    xlswrite('results',hp1_h',strcat('I3:I',num2str(count+2)));
-    xlswrite('results',{'HP1_H'},'I1:J1');
+    xlswrite('results',VKA1_h',strcat('I3:I',num2str(count+2)));
+    xlswrite('results',{'VKA1_H'},'I1:J1');
     xlswrite('results',{'Dispatch'},'I2:I2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\värmepump VKA1.xls',1,strcat('H',num2str(sim_start-1990),':H',num2str(sim_stop-1990))),strcat('J3:J',num2str(count+2)));
+    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\värmepump VKA1.xls',1,strcat('C',num2str(sim_start-1990),':C',num2str(sim_stop-1990))),strcat('J3:J',num2str(count+2)));
 
 
-    xlswrite('results',hp2_h',strcat('K3:K',num2str(count+2)));
-    xlswrite('results',{'HP2_H'},'K1:L1');
+    xlswrite('results',VKA4_h',strcat('K3:K',num2str(count+2)));
+    xlswrite('results',{'VKA4_H'},'K1:L1');
     xlswrite('results',{'Dispatch'},'K2:K2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\värmepump VKA4.xls',1,strcat('H',num2str(sim_start-1438),':H',num2str(sim_stop-1438))),strcat('L3:L',num2str(count+2)));
+    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\värmepump VKA4.xls',1,strcat('C',num2str(sim_start-1438),':C',num2str(sim_stop-1438))),strcat('L3:L',num2str(count+2)));
 
     xlswrite('results',import_h',strcat('M3:M',num2str(count+2)));
     xlswrite('results',{'Import H'},'M1:N1');
@@ -160,20 +154,20 @@ end
     xlswrite('results',{'Dispatch'},'U2:U2');
     xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('C',num2str(sim_start-15),':C',num2str(sim_stop-15)))*1000,strcat('V3:V',num2str(count+2)));
     
-    xlswrite('results',hp1_c',strcat('W3:W',num2str(count+2)));
-    xlswrite('results',{'HP1_C'},'W1:X1');
+    xlswrite('results',VKA1_c',strcat('W3:W',num2str(count+2)));
+    xlswrite('results',{'VKA1_C'},'W1:X1');
     xlswrite('results',{'Dispatch'},'W2:W2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\värmepump VKA1.xls',1,strcat('C',num2str(sim_start-1990),':C',num2str(sim_stop-1990))),strcat('X3:X',num2str(count+2)));
+    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\värmepump VKA1.xls',1,strcat('H',num2str(sim_start-1990),':H',num2str(sim_stop-1990))),strcat('X3:X',num2str(count+2)));
 
-    xlswrite('results',hp2_c',strcat('Y3:Y',num2str(count+2)));
-    xlswrite('results',{'HP2_C'},'Y1:Z1');
+    xlswrite('results',VKA4_c',strcat('Y3:Y',num2str(count+2)));
+    xlswrite('results',{'VKA4_C'},'Y1:Z1');
     xlswrite('results',{'Dispatch'},'Y2:Y2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\värmepump VKA4.xls',1,strcat('C',num2str(sim_start-1438),':C',num2str(sim_stop-1438))),strcat('Z3:Z',num2str(count+2)));
+    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\värmepump VKA4.xls',1,strcat('H',num2str(sim_start-1438),':H',num2str(sim_stop-1438))),strcat('Z3:Z',num2str(count+2)));
 
     xlswrite('results',aac_c',strcat('AA3:AA',num2str(count+2)));
     xlswrite('results',{'AAC_C'},'AA1:AB1');
     xlswrite('results',{'Dispatch'},'AA2:AA2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('Q',num2str(sim_start-15),':Q',num2str(sim_stop-15)))*1000,strcat('AB3:AB',num2str(count+2)));
+    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('N',num2str(sim_start-15),':N',num2str(sim_stop-15)))*1000,strcat('AB3:AB',num2str(count+2)));
     
     xlswrite('results',refr',strcat('AC3:AC',num2str(count+2)));
     xlswrite('results',{'Refrig'},'AC1:AD1');
@@ -183,11 +177,23 @@ end
     xlswrite('results',{'AAC_EL'},'AE1:AF1');
     xlswrite('results',{'Dispatch'},'AE2:AE2');
     
+    %xlswrite('results',aac_el',strcat('AF3:AF',num2str(count+2)));
+    xlswrite('results',{'C_RMMC'},'AF1:AG1');
+    xlswrite('results',{'Dispatch'},'AF2:AF2');
    
+    %xlswrite('results',aac_el',strcat('AH3:AH',num2str(count+2)));
+    xlswrite('results',{'H_RMMC'},'AH1:AI1');
+    xlswrite('results',{'Dispatch'},'AH2:AH2');
+    
+       
+    %xlswrite('results',aac_el',strcat('AJ3:AJ',num2str(count+2)));
+    xlswrite('results',{'EL_RMMC'},'AJ1:AK1');
+    xlswrite('results',{'Dispatch'},'AJ2:AJ2');
+    
 %Print running time and simulation infos
-    xlswrite('results',{Time.point}','Sim infos','B4:B6');
-    xlswrite('results',{Time.value}','Sim infos','D4:D6');
-    xlswrite('results',{'Running time'},'Sim infos','C3:C3');
+    xlswrite('results',{Time.point}','Sim infos','B3:B6');
+    xlswrite('results',{Time.value}','Sim infos','D3:D6');
+    xlswrite('results',{'Running time'},'Sim infos','C2:C2');
     xlswrite('results',[sim_start; sim_stop;],'Sim infos','B8:B9');
     [num,text,raw,]=xlsread('Input_dispatch_model\measured_demand.xlsx',1,strcat('A',num2str(sim_start),':A',num2str(sim_start)));
     xlswrite('results',text,'Sim infos','C8:C8');

@@ -5,7 +5,7 @@ function [e_demand_measured, h_demand_measured,c_demand_measured,...
 %This function is used to read mesurment between the indicated indices
 
 demand_range=strcat('B',int2str(t_init),':AJ',int2str(t_len+t_init-1));
-gen_range=strcat('B',int2str(t_init),':B',int2str(t_len+t_init-1)); 
+gen_range=strcat('B',int2str(2+t_init),':B',int2str(2+t_len+t_init-1)); 
 price_ramge=strcat('B',int2str(t_init),':B',int2str(t_len+t_init-1));
 tout_ramge=strcat('B',int2str(t_init),':B',int2str(t_len+t_init-1));%'B2:B100';
 irradiance_range=strcat('B',int2str(t_init),':BU',int2str(t_len+t_init-1));

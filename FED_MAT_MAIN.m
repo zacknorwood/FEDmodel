@@ -99,18 +99,18 @@ BID.uels=num2cell(BID_temp);
 %re-formulated
 %P1P2 dispatchability***********This could be replaced with a code****
 sheet=1;
-xlRange = 'C2:C100';
+xlRange = 'C2:C17545';
 P1P2_disp=xlsread('Input_dispatch_model\P1P2_dispatchable.xlsx',sheet,xlRange);
 P1P2_disp(isnan(P1P2_disp))=0;
     
 %DH export season
 sheet=1;
-xlRange = 'C2:C100';
+xlRange = 'C2:C17545';
 DH_exp_season=xlsread('Input_dispatch_model\DH_export_season.xlsx',sheet,xlRange);
     
 %BAC_savings_period
 sheet=1;
-xlRange = 'C2:C100';
+xlRange = 'C2:C17545';
 BAC_sav_period=xlsread('Input_dispatch_model\BAC_parameters.xlsx',sheet,xlRange);
 
 %Read static properties of the model
@@ -118,59 +118,59 @@ BAC_sav_period=xlsread('Input_dispatch_model\BAC_parameters.xlsx',sheet,xlRange)
 
 %% FIXED MODEL INPUT DATA - FXED INVESTMENT OPTIONS
 %Option to set if any investments are to be fixed
-opt_fx_inv=1;
+opt_fx_inv=0;
 temp_opt_fx_inv = struct('name','opt_fx_inv','type','parameter','form','full','val',opt_fx_inv);
 
 %Option for RMMC investment
-opt_fx_inv_RMMC=1;  %Set to 1 if the investment in MC2 cooling connection is made
+opt_fx_inv_RMMC=0;  %Set to 1 if the investment in MC2 cooling connection is made
 temp_opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',opt_fx_inv_RMMC);
 
 %Option for new AbsChiller investment
-opt_fx_inv_AbsCInv=1;
+opt_fx_inv_AbsCInv=0;
 temp_opt_fx_inv_AbsCInv = struct('name','opt_fx_inv_AbsCInv','type','parameter','form','full','val',opt_fx_inv_AbsCInv);
 opt_fx_inv_AbsCInv_cap=0;
 temp_opt_fx_inv_AbsCInv_cap = struct('name','opt_fx_inv_AbsCInv_cap','type','parameter','form','full','val',opt_fx_inv_AbsCInv_cap);
 
 %Option for P2 investment
-opt_fx_inv_P2=1;
+opt_fx_inv_P2=0;
 temp_opt_fx_inv_P2 = struct('name','opt_fx_inv_P2','type','parameter','form','full','val',opt_fx_inv_P2);
 
 %Option for Turbine investment
-opt_fx_inv_TURB=1;
+opt_fx_inv_TURB=0;
 temp_opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',opt_fx_inv_TURB);
 
 %Option for new HP investment
-opt_fx_inv_HP=1;
+opt_fx_inv_HP=0;
 temp_opt_fx_inv_HP = struct('name','opt_fx_inv_HP','type','parameter','form','full','val',opt_fx_inv_HP);
 opt_fx_inv_HP_cap=800;
 temp_opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',opt_fx_inv_HP_cap);
 
 %Option for new HP investment
-opt_fx_inv_RMInv=1;
+opt_fx_inv_RMInv=0;
 temp_opt_fx_inv_RMInv = struct('name','opt_fx_inv_RMInv','type','parameter','form','full','val',opt_fx_inv_RMInv);
 opt_fx_inv_RMInv_cap=0;
 temp_opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','form','full','val',opt_fx_inv_RMInv_cap);
 
 %Option for TES investment
-opt_fx_inv_TES=1;
+opt_fx_inv_TES=0;
 temp_opt_fx_inv_TES = struct('name','opt_fx_inv_TES','type','parameter','form','full','val',opt_fx_inv_TES);
 opt_fx_inv_TES_cap=0;
 temp_opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',opt_fx_inv_TES_cap);
 
 %Option for BES investment
-opt_fx_inv_BES=1;
+opt_fx_inv_BES=0;
 temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',opt_fx_inv_BES);
-opt_fx_inv_BES_cap=200;
+opt_fx_inv_BES_cap=0; %must be set to 200
 temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',opt_fx_inv_BES_cap);
-opt_fx_inv_BES_maxP=100;
+opt_fx_inv_BES_maxP=0;  %must be set to 100
 temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full','val',opt_fx_inv_BES_maxP);
 
 %Option for BFCh investment
-opt_fx_inv_BFCh=1;
+opt_fx_inv_BFCh=0;
 temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
-opt_fx_inv_BFCh_cap=100;
+opt_fx_inv_BFCh_cap=0; %must be set to 100
 temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full','val',opt_fx_inv_BFCh_cap);
-opt_fx_inv_BFCh_maxP=50;
+opt_fx_inv_BFCh_maxP=0; %must be set to 50
 temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full','val',opt_fx_inv_BFCh_maxP);
 
 %Option for BTES investment
@@ -438,17 +438,17 @@ for t=sim_start:sim_stop
     tout.uels=h_sim.uels;
     
     %P1P2 dispatchability
-    P1P2_dispatchable_temp=P1P2_disp(1:forcast_horizon,:);
+    P1P2_dispatchable_temp=P1P2_disp((t_init_m-1):(t_len_m+t_init_m-2),:);
     P1P2_dispatchable.val = P1P2_dispatchable_temp;
     P1P2_dispatchable.uels=h_sim.uels;
     
     %Heat export season
-    DH_exp_season_temp=DH_exp_season(1:forcast_horizon,:);
+    DH_exp_season_temp=DH_exp_season((t_init_m-1):(t_len_m+t_init_m-2),:);
     DH_export_season.val = DH_exp_season_temp;
     DH_export_season.uels=h_sim.uels;
     
     %BAC saving period
-    BAC_sav_period_temp=BAC_sav_period(1:forcast_horizon,:);
+    BAC_sav_period_temp=BAC_sav_period((t_init_m-1):(t_len_m+t_init_m-2),:);
     BAC_savings_period.val = BAC_sav_period_temp;
     BAC_savings_period.uels=h_sim.uels;
     
@@ -488,7 +488,7 @@ for t=sim_start:sim_stop
     PEF_DH.uels=h_sim.uels;
     
     %Initial SoC of different storage systems (1=BTES_D, 2=BTES_S, 3=TES, 4=BFCh, 5=BES)
-    if t==1445 
+    if t==sim_start
         Initial(1:5)=0;
     else
     Initial=readGtoM(t);
@@ -541,16 +541,16 @@ tic
  %% Store the results from each iteration
  
  Results(t).dispatch = fstore_results(h_sim,B_ID,BTES_properties);
- gams_runtime_storing=toc;
-
+Time(3).point='Gams running and storing';
+Time(3).value=toc;
 end
 
  %% Post processing results 
  
  %use the 'plot_results.m' script to plot desired results
 %%
-Time(3).point='Total';
+Time(4).point='Total';
 total=profile('info');
 total=total.FunctionTable.TotalTime;
-Time(3).value=total(1);
+Time(4).value=total(1);
 excel_results(sim_start,sim_stop,Results,Time);
