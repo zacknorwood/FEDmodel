@@ -18,8 +18,8 @@ for i=sim_start:sim_stop
         pana2(count)=0;
     end
     
-    if (not(isempty(Results(i).dispatch.qF1)) && Results(i).dispatch.qF1(1,1)==1)
-        fgc(count)=Results(i).dispatch.qF1(1,2);
+    if (not(isempty(Results(i).dispatch.h_RGK1)) && Results(i).dispatch.h_RGK1(1,1)==1)
+        fgc(count)=Results(i).dispatch.h_RGK1(1,2);
     else 
         fgc(count)=0;
     end
