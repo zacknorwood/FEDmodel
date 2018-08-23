@@ -93,7 +93,7 @@ BID_temp(71)=75;
 BID_temp(72)=76;
 BID.uels=num2cell(BID_temp);
 
-%% ********FIXED MODEL INPUT DATA************
+%% ********FIXED MODEL INPUT DATA and variable input data************
 
 %P1P2 dispatchability, DH export period and BAC saving period need to be
 %re-formulated
@@ -115,6 +115,12 @@ BAC_sav_period=xlsread('Input_dispatch_model\BAC_parameters.xlsx',sheet,xlRange)
 
 %Read static properties of the model
 [ pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
+
+%Read forecasted values and variable input data
+    [e_demand_measured, h_demand_measured,c_demand_measured,...
+     h_B1_measured,h_F1_measured,e_price_measured,...
+     el_cirtificate_m,h_price_measured,tout_measured,...
+     irradiance_measured_roof,irradiance_measured_facades] = fread_measurments(2, 17000);
 
 %% FIXED MODEL INPUT DATA - FXED INVESTMENT OPTIONS
 %Option to set if any investments are to be fixed
@@ -370,10 +376,7 @@ for t=sim_start:sim_stop
     %Read measured data
     tic
     t_init_m=t;  %OBS: t_init_m  should be greater than t_len_m  
-    [e_demand_measured, h_demand_measured,c_demand_measured,...
-          h_B1_measured,h_F1_measured,e_price_measured,...
-          el_cirtificate_m,h_price_measured,tout_measured,...
-          irradiance_measured_roof,irradiance_measured_facades] = fread_measurments(t_init_m, t_len_m);
+    
     
     forcast_start=t;
     forcast_end=forcast_start+forcast_horizon-1;    
@@ -383,57 +386,57 @@ for t=sim_start:sim_stop
     %as measurment
     
     %Forcasted solar PV irradiance Roof
-    irradiance_roof_forcast=irradiance_measured_roof(1:forcast_horizon,:);
+    irradiance_roof_forcast=irradiance_measured_roof((t_init_m-1):(t_len_m+t_init_m-2),:);
     G_roof.val = irradiance_roof_forcast;
     G_roof.uels={h_sim.uels,BID.uels};
     
     %Forcasted solar PV irradiance Roof 
-    irradiance_facades_forcast=irradiance_measured_facades(1:forcast_horizon,:);
+    irradiance_facades_forcast=irradiance_measured_facades((t_init_m-1):(t_len_m+t_init_m-2),:);
     G_facade.val = irradiance_facades_forcast;
     G_facade.uels={h_sim.uels,BID.uels};
     
     %Forcasted el demand
-    e_demand_forcast=e_demand_measured(1:forcast_horizon,:);
+    e_demand_forcast=e_demand_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
     e_demand.val = e_demand_forcast;
     e_demand.uels={h_sim.uels,B_ID.uels};
     
     %Forcasted heat demand
-    h_demand_forcast=h_demand_measured(1:forcast_horizon,:);
+    h_demand_forcast=h_demand_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
     h_demand.val = h_demand_forcast;
     h_demand.uels={h_sim.uels,B_ID.uels};
     
     %Forcasted cooling demand
-    c_demand_forcast=c_demand_measured(1:forcast_horizon,:);
+    c_demand_forcast=c_demand_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
     c_demand.val = c_demand_forcast;
     c_demand.uels={h_sim.uels,B_ID.uels};
     
     %Heat generaion from boiler 1 in the base case
-    h_B1_forcast=h_B1_measured(1:forcast_horizon,:);
+    h_B1_forcast=h_B1_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
     qB1.val = h_B1_forcast;
     qB1.uels=h_sim.uels;
     
     %Heat generaion from the Flue gas condencer in the base case
-    h_F1_forcast=h_F1_measured(1:forcast_horizon,:);
+    h_F1_forcast=h_F1_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
     qF1.val = h_F1_forcast;
     qF1.uels=h_sim.uels;
     
     %Forcasted Nprdpool el price
-    el_price_forcast=e_price_measured(1:forcast_horizon,:);
+    el_price_forcast=e_price_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
     el_price.val = el_price_forcast;
     el_price.uels=h_sim.uels;
     
     %Forcasted el cirtificate
-    el_cirtificate_forcast=el_cirtificate_m(1:forcast_horizon,:);
+    el_cirtificate_forcast=el_cirtificate_m((t_init_m-1):(t_len_m+t_init_m-2),:);
     el_cirtificate.val = el_cirtificate_forcast;
     el_cirtificate.uels=h_sim.uels;
     
     %Forcasted GE's heat price
-    h_price_forcast=h_price_measured(1:forcast_horizon,:);
+    h_price_forcast=h_price_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
     h_price.val = h_price_forcast;
     h_price.uels=h_sim.uels;
     
     %Forcasted outdoor temprature
-    tout_forcast=tout_measured(1:forcast_horizon,:);
+    tout_forcast=tout_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
     tout.val = tout_forcast;
     tout.uels=h_sim.uels;
     
@@ -540,7 +543,7 @@ tic
  
  %% Store the results from each iteration
  
- Results(t).dispatch = fstore_results(h_sim,B_ID,BTES_properties);
+Results(t).dispatch = fstore_results(h_sim,B_ID,BTES_properties);
 Time(3).point='Gams running and storing';
 Time(3).value=toc;
 end

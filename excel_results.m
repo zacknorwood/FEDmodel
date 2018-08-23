@@ -108,7 +108,7 @@ end
     xlswrite('results',pana1',strcat('A3:A',num2str(count+2)));
     xlswrite('results',{'Dispatch'},'A2:A2');
     xlswrite('results',{'Pana1'},'A1:B1');
-    xlswrite('results',xlsread('Input_dispatch_model\Panna1 2016-2017.xls',2,strcat('B',num2str(sim_start+2),':B',num2str(sim_stop+2))),strcat('B3:B',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\Panna1 2016-2017.xls',2,strcat('B',num2str(sim_start+2),':B',num2str(sim_stop+2)))*1000,strcat('B3:B',num2str(count+2)));
 
     xlswrite('results',pana2',strcat('C3:C',num2str(count+2)));
     xlswrite('results',{'Pana2'},'C1:D1');
@@ -118,7 +118,7 @@ end
     xlswrite('results',fgc',strcat('G3:G',num2str(count+2)));
     xlswrite('results',{'FGC'},'G1:H1');
     xlswrite('results',{'Dispatch'},'G2:G2');
-    xlswrite('results',xlsread('Input_dispatch_model\Panna1 2016-2017.xls',2,strcat('C',num2str(sim_start+2),':C',num2str(sim_stop+2))),strcat('H3:H',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\Panna1 2016-2017.xls',2,strcat('C',num2str(sim_start+2),':C',num2str(sim_stop+2)))*1000,strcat('H3:H',num2str(count+2)));
       
     xlswrite('results',VKA1_h',strcat('I3:I',num2str(count+2)));
     xlswrite('results',{'VKA1_H'},'I1:J1');
@@ -178,17 +178,17 @@ end
     xlswrite('results',{'Dispatch'},'AE2:AE2');
     
     %xlswrite('results',aac_el',strcat('AF3:AF',num2str(count+2)));
-    xlswrite('results',{'C_RMMC'},'AF1:AG1');
-    xlswrite('results',{'Dispatch'},'AF2:AF2');
+    xlswrite('results',{'C_RMMC'},'AG1:AH1');
+    xlswrite('results',{'Dispatch'},'AG2:AG2');
    
     %xlswrite('results',aac_el',strcat('AH3:AH',num2str(count+2)));
-    xlswrite('results',{'H_RMMC'},'AH1:AI1');
-    xlswrite('results',{'Dispatch'},'AH2:AH2');
+    xlswrite('results',{'H_RMMC'},'AI1:AJ1');
+    xlswrite('results',{'Dispatch'},'AI2:AI2');
     
        
     %xlswrite('results',aac_el',strcat('AJ3:AJ',num2str(count+2)));
-    xlswrite('results',{'EL_RMMC'},'AJ1:AK1');
-    xlswrite('results',{'Dispatch'},'AJ2:AJ2');
+    xlswrite('results',{'EL_RMMC'},'AK1:AL1');
+    xlswrite('results',{'Dispatch'},'AK2:AK2');
     
 %Print running time and simulation infos
     xlswrite('results',{Time.point}','Sim infos','B3:B6');

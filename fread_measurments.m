@@ -31,13 +31,13 @@ c_demand_measured(isnan(c_demand_measured))=0;
 %Measured HEAT GENERATION FROM THERMAL BOILER (B1)
 sheet=3;
 xlRange = gen_range;
-h_B1_measured=xlsread('Input_dispatch_model\Panna1 2016-2017.xls',sheet,xlRange);
+h_B1_measured=xlsread('Input_dispatch_model\Panna1 2016-2017.xls',sheet,xlRange)*1000;
 h_B1_measured(isnan(h_B1_measured))=0;
     
 %Measured HEAT GENERATION FROM FLUE GAS CONDENCER (F1)
 sheet=4;
 xlRange = gen_range;
-h_F1_measured=xlsread('Input_dispatch_model\Panna1 2016-2017.xls',sheet,xlRange);
+h_F1_measured=xlsread('Input_dispatch_model\Panna1 2016-2017.xls',sheet,xlRange)*1000;
 h_F1_measured(isnan(h_F1_measured))=0;
     
 %Measured el price in NordPool in SEK/kWh

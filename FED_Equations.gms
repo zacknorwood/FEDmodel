@@ -167,17 +167,17 @@ equation
 ***************For Existing units***********************************************
 *-----------------VKA1 equations------------------------------------------------
 eq_VKA11(h)..
-        H_VKA1(h) =l= VKA1_H_COP*el_VKA1(h);
+        H_VKA1(h) =e= VKA1_H_COP*el_VKA1(h);
 eq_VKA12(h)..
-        C_VKA1(h) =l= VKA1_C_COP*el_VKA1(h);
+        C_VKA1(h) =e= VKA1_C_COP*el_VKA1(h);
 eq_VKA13(h)..
         el_VKA1(h) =l= VKA1_el_cap;
 
 *-----------------VKA4 equations------------------------------------------------
 eq_VKA41(h)..
-        H_VKA4(h) =l= VKA4_H_COP*el_VKA4(h);
+        H_VKA4(h) =e= VKA4_H_COP*el_VKA4(h);
 eq_VKA42(h)..
-        C_VKA4(h) =l= VKA4_C_COP*el_VKA4(h);
+        C_VKA4(h) =e= VKA4_C_COP*el_VKA4(h);
 eq_VKA43(h)..
         el_VKA4(h) =l= VKA4_el_cap;
 
@@ -404,7 +404,7 @@ eq_hbalance1(h)..
 eq_hbalance2(h)..
              h_exp_AH(h) =l= h_Pana1(h);
 eq_hbalance3(h)..
-             sum(i,h_demand(h,i)) =l=h_imp_AH(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
+             sum(i,h_demand(h,i)) =e=h_imp_AH(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
                                      + H_VKA4(h) - h_AbsC(h) + H_P2T(h) + 0.75*h_TURB(h) + h_RMMC(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
@@ -417,7 +417,7 @@ eq_hbalance4(h)..
 
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
-         sum(i_AH_c,c_demand_AH(h,i_AH_c))=l=C_DC(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
+         sum(i_AH_c,c_demand_AH(h,i_AH_c))=e=C_DC(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_AAC(h) + c_HP(h) + c_RMInv(h)
                                 + c_AbsCInv(h);
 
