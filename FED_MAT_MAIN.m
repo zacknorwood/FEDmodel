@@ -341,17 +341,22 @@ DH_Node_ID.name = 'DH_Node_ID';
 DH_Node_ID.uels = {DH_Node_Fysik.name, DH_Node_Bibliotek.name, DH_Node_Maskin.name, DH_Node_EDIT.name, DH_Node_VoV.name, DH_Node_Eklanda.name};
 
 %% District cooling network transfer limits - initialize nodes and flow limits
-DC_Nodes_Names = {'Empty', 'List', 'Of', 'Nodes'};
-DC_Nodes_Constituents = {...
-    {'Empty House 1', 'Empty House 2'};...
-    {'List House'};...
-    {'Of House'};...
-    {'Nodes House'};...
-};
-DC_Nodes.names = DC_Nodes_Names;
-DC_Nodes.constituents = DC_Nodes_Constituents;
-DC_Nodes.maximum_flow = [7777, 7777, 7777, 7777, 7777, 7777];
-clear DC_Nodes_Names DC_Nodes_Constituents
+DC_Node_VoV.name = 'VoV';
+DC_Node_VoV.uels = {};
+DC_Node_Maskin.name = 'Maskin';
+DC_Node_Maskin.uels = {};
+DC_Node_EDIT.name = 'EDIT';
+DC_Node_EDIT.uels = {};
+DC_Node_Fysik.name = 'Fysik';
+DC_Node_Fysik.uels = {};
+DC_Node_Kemi.name = 'Kemi';
+DC_Node_Kemi.uels = {};
+
+DC_Nodes.name = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_Node_Fysik.name, DC_Node_Kemi.name};
+DC_Nodes.maximum_flow = [26, 44, 32, 34, 32] .* 1/1000; % % l/s * m3/l = m3/s which is assumed input by fget_dc_transfer_limits below
+
+DC_Node_ID.name = 'DH_NodeID';
+DC_Nodes.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_Node_Fysik.name, DC_Node_Kemi.name};
 
 %Forcasted solar PV irradiance -roof
 G_roof = struct('name','G_roof','type','parameter');
@@ -466,6 +471,7 @@ for t=sim_start:sim_stop
     DH_Nodes_Transfer_Limits=fget_dh_transfer_limits(DH_Nodes, h_sim, tout);
     
     %District cooling network node transfer limits
+    DC_Nodes_Transfer_Limits = fget_dc_transfer_limits(DC_Nodes, h_sim);
     
     %Maximum CO2 emission in the base case
     FED_CO20=FED_CO20(1:forcast_horizon);
@@ -517,7 +523,8 @@ wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
      BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period,...
      PV_BID_roof_Inv,PV_roof_cap_Inv,PV_BID_facade_Inv,PV_facade_cap_Inv,...
      temp_optn1, temp_optn2, temp_optn3, FED_Inv_lim,...
-     DH_Node_ID, DH_Nodes_Transfer_Limits);
+     DH_Node_ID, DH_Nodes_Transfer_Limits,...
+     DC_Node_ID, DC_Nodes_Transfer_Limits);
  
 %wgdx('MtoG_pv.gdx',G_facade,area_roof_max,area_facade_max);
 

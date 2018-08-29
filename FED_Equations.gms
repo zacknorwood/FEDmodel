@@ -83,6 +83,7 @@ equation
            eq_hbalance4  heating supply-demand balance excluding nonAH buildings
 
            eq_dhn_constraint District heating network transfer limit
+           eq_dcn_constraint District cooling network transfer limit
 
            eq_cbalance   Balance equation cooling
 
@@ -300,6 +301,29 @@ eq_RMInv1(h)..
 eq_RMInv2(h)..
              c_RMInv(h) =l= RMInv_cap;
 
+**************************Network constraints***********************************
+*---------------District heating network constraints----------------------------
+
+eq_dhn_constraint(h, DH_Node_ID)..
+         DH_node_transfer_limits(h, DH_Node_ID) =g= sum(i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i))
+                 - (h_RMMC(h)) $(sameas(DH_Node_ID, 'Fysik'))
+                 - (H_VKA4(h) + H_VKA1(h) + h_Pana1(h) + h_RGK1(h) + h_AbsC(h)
+                 + h_AbsCInv(h) + H_P2T(h) + 0.75*h_TURB(h) + h_HP(h) + TES_dis(h)
+                 - TES_ch(h) + h_imp_AH(h) - h_exp_AH(h)) $(sameas(DH_Node_ID, 'Maskin'))
+                 + sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sch(h,i))
+                 - sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sdis(h,i))
+                 - sum(DHNodeToB_ID(DH_Node_ID, i), h_BAC_savings(h,i))
+
+                 + sum(DHNodeToB_ID('Eklanda', i), BTES_Sch(h,i))$(sameas(DH_Node_ID, 'VoV'))
+                 - sum(DHNodeToB_ID('Eklanda', i), BTES_Sdis(h,i))$(sameas(DH_Node_ID, 'VoV'))
+                 - sum(DHNodeToB_ID('Eklanda', i), h_BAC_savings(h,i))$(sameas(DH_Node_ID, 'VoV'))
+                 + sum(i, h_demand(h, i)$DHNodeToB_ID('Eklanda', i))$(sameas(DH_Node_ID, 'VoV'))
+;
+
+
+eq_dcn_constraint(h, DC_Node_ID)...
+         DC_node_transfer_limits(h, DC_Node_ID) =g= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
+
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
 eq_hbalance1(h)..
@@ -317,29 +341,6 @@ eq_hbalance3(h)..
 eq_hbalance4(h)..
              h_imp_nonAH(h)=e=sum(i_nonAH_h,h_demand_nonAH(h,i_nonAH_h))
                        - (sum(i_nonAH_h,BTES_Sdis(h,i_nonAH_h))*BTES_dis_eff-sum(i_nonAH_h,BTES_Sch(h,i_nonAH_h))/BTES_chr_eff);
-
-*---------------District heating network constraints----------------------------
-$ontext
-       Node Fysik is infeasible (reavealed from temp_slack values).
-       Should be fixed by doing:
-       1) Need to add all production units to the equation
-         a) replace 'H_VKA4(h) with the hourly sum of all production in the Fysik node
-       2) Need to add all charging/discharging of heat storage to equation
-*$(not DH_node_transfer_limits(h, DH_Node_ID) = NA)..
-$offtext
-eq_dhn_constraint(h, DH_Node_ID)..
-         DH_node_transfer_limits(h, DH_Node_ID)*1000 + temp_slack(h, DH_Node_ID)  =g= sum( i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i) )
-                 - (h_RMMC(h)) $(sameas(DH_Node_ID, 'Fysik'))
-                 - (H_VKA4(h) + H_VKA1(h) + h_Pana1(h) + h_RGK1(h) + h_AbsC(h) + h_AbsCInv(h) + H_P2T(h) + 0.75*h_TURB(h) + h_HP(h) + TES_dis(h) - TES_ch(h) + h_imp_AH(h) - h_exp_AH(h)) $(sameas(DH_Node_ID, 'Maskin'))
-                 + sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sch(h,i))
-                 - sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sdis(h,i))
-                 - sum(DHNodeToB_ID(DH_Node_ID, i), h_BAC_savings(h,i))
-;
-*                 - () $(sameas(DH_Node_ID, 'Bibliotek'))
-*                 - () $(sameas(DH_Node_ID, 'EDIT'))
-*                 - () $(sameas(DH_Node_ID, 'VoV'))
-*                 - () $(sameas(DH_Node_ID, 'Eklanda'));
-
 
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
