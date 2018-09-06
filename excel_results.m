@@ -2,10 +2,12 @@ function[]= excel_results(sim_start,sim_stop,Results,Time)
 % Function that stores results in excel file
 %stores dispatch for Panna1, Panna2, Flue G. cond., Heatpump1, Heatpump2,
 %Import/Export heating, Turbines prod., PV prod, Import elec., AbsC cooling
-%prod, AAC cooling prod, Refrigirator cooling prod.
+%prod, AAC cooling prod, Refrigirator cooling prod., storage untis etc.
 count=0;
 for i=sim_start:sim_stop
     count=count+1;
+    
+    %--------Dispatch of different Units, Export/Import ------------------
     if (not(isempty(Results(i).dispatch.h_Pana1)) && Results(i).dispatch.h_Pana1(1,1)==1)
         pana1(count)=Results(i).dispatch.h_Pana1(1,2);
     else 
@@ -41,6 +43,12 @@ for i=sim_start:sim_stop
     else 
         import_h(count)=0;
     end
+    
+     if (not(isempty(Results(i).dispatch.h_imp_nonAH)) && Results(i).dispatch.h_imp_nonAH(1,1)==1)
+       h_imp_nonAH(count)=Results(i).dispatch.h_imp_nonAH(1,2);
+    else 
+        h_imp_nonAH(count)=0;
+    end
 
     if (not(isempty(Results(i).dispatch.h_exp_AH)) && Results(i).dispatch.h_exp_AH(1,1)==1)
        export_h(count)=Results(i).dispatch.h_exp_AH(1,2);
@@ -54,7 +62,6 @@ for i=sim_start:sim_stop
         turbine(count)=0;
     end
     
-    
     if (not(isempty(Results(i).dispatch.e_imp_AH)) && Results(i).dispatch.e_imp_AH(1,1)==1)
        import_el(count)=Results(i).dispatch.e_imp_AH(1,2);
     else 
@@ -66,8 +73,7 @@ for i=sim_start:sim_stop
     else 
         absC(count)=0;
       end
-  
-        
+   
       if (not(isempty(Results(i).dispatch.C_VKA1)) && Results(i).dispatch.C_VKA1(1,1)==1)
       VKA1_c(count)=Results(i).dispatch.C_VKA1(1,2);
     else 
@@ -96,7 +102,149 @@ for i=sim_start:sim_stop
       aac_c(count)=Results(i).dispatch.c_AAC(1,2);
     else 
         aac_c(count)=0;
+         end
+         
+         if (not(isempty(Results(i).dispatch.cool_demand)) && Results(i).dispatch.cool_demand(1,1)==1)
+      cool_demand(count)=Results(i).dispatch.cool_demand(1,2);
+    else 
+        cool_demand(count)=0;
+         end        
+          
+         if (not(isempty(Results(i).dispatch.elec_demand)) && Results(i).dispatch.elec_demand(1,1)==1)
+      elec_demand(count)=Results(i).dispatch.elec_demand(1,2);
+    else 
+        elec_demand(count)=0;
+         end
+         
+          if (not(isempty(Results(i).dispatch.heat_demand)) && Results(i).dispatch.heat_demand(1,1)==1)
+      heat_demand(count)=Results(i).dispatch.heat_demand(1,2);
+    else 
+        heat_demand(count)=0;
+         end
+         
+  %----------------Storage units--------------------------------------------      
+         if (not(isempty(Results(i).dispatch.BES_en)) && Results(i).dispatch.BES_en(1,1)==1 && Results(i).dispatch.BES_en(1,2)==1)
+      BES_en(count)=Results(i).dispatch.BES_en(1,3);
+    else 
+        BES_en(count)=0;
+         end
+         
+           if (not(isempty(Results(i).dispatch.BES_ch)) && Results(i).dispatch.BES_ch(1,1)==1 && Results(i).dispatch.BES_ch(1,2)==1)
+      BES_ch(count)=Results(i).dispatch.BES_ch(1,3);
+    else 
+        BES_ch(count)=0;
+           end
+      
+           if (not(isempty(Results(i).dispatch.BES_dis)) && Results(i).dispatch.BES_dis(1,1)==1 && Results(i).dispatch.BES_dis(1,2)==1)
+      BES_dis(count)=Results(i).dispatch.BES_dis(1,3);
+    else 
+        BES_dis(count)=0;
+           end
+      
+           if (not(isempty(Results(i).dispatch.BFCh_en)) && Results(i).dispatch.BFCh_en(1,1)==1 && Results(i).dispatch.BFCh_en(1,2)==1)
+      BFCh_en(count)=Results(i).dispatch.BFCh_en(1,3);
+    else 
+        BFCh_en(count)=0;
+           end
+      
+           if (not(isempty(Results(i).dispatch.BFCh_ch)) && Results(i).dispatch.BFCh_ch(1,1)==1 && Results(i).dispatch.BFCh_ch(1,2)==1)
+      BFCh_ch(count)=Results(i).dispatch.BFCh_ch(1,3);
+    else 
+        BFCh_ch(count)=0;
+           end    
+      
+        if (not(isempty(Results(i).dispatch.BFCh_dis)) && Results(i).dispatch.BFCh_dis(1,1)==1 && Results(i).dispatch.BFCh_dis(1,2)==1)
+      BFCh_dis(count)=Results(i).dispatch.BFCh_dis(1,3);
+    else 
+        BFCh_dis(count)=0;
+        end 
+      
+        if (not(isempty(Results(i).dispatch.TES_ch)) && Results(i).dispatch.TES_ch(1,1)==1)
+      TES_ch(count)=Results(i).dispatch.TES_ch(1,2);
+    else 
+        TES_ch(count)=0;
+        end  
+      
+         if (not(isempty(Results(i).dispatch.TES_dis)) && Results(i).dispatch.TES_dis(1,1)==1)
+      TES_dis(count)=Results(i).dispatch.TES_dis(1,2);
+    else 
+        TES_dis(count)=0;
+         end 
+      
+          if (not(isempty(Results(i).dispatch.TES_en)) && Results(i).dispatch.TES_en(1,1)==1)
+      TES_en(count)=Results(i).dispatch.TES_en(1,2);
+    else 
+        TES_en(count)=0;
+          end 
+      
+           if (not(isempty(Results(i).dispatch.BTES_Sch)) && Results(i).dispatch.BTES_Sch(1,1)==1 && Results(i).dispatch.BTES_Sch(1,2)==1)
+      BTES_Sch(count)=Results(i).dispatch.BTES_Sch(1,3);
+    else 
+        BTES_Sch(count)=0;
+           end  
+      
+       
+             if (not(isempty(Results(i).dispatch.BTES_Sdis)) && Results(i).dispatch.BTES_Sdis(1,1)==1 && Results(i).dispatch.BTES_Sdis(1,2)==1)
+      BTES_Sdis(count)=Results(i).dispatch.BTES_Sdis(1,3);
+    else 
+        BTES_Sdis(count)=0;
+             end  
+      
+             if (not(isempty(Results(i).dispatch.BTES_Sen)) && Results(i).dispatch.BTES_Sen(1,1)==1 && Results(i).dispatch.BTES_Sen(1,2)==1)
+      BTES_Sen(count)=Results(i).dispatch.BTES_Sen(1,3);
+    else 
+        BTES_Sen(count)=0;
+             end
+      
+              if (not(isempty(Results(i).dispatch.BTES_Den)) && Results(i).dispatch.BTES_Den(1,1)==1 && Results(i).dispatch.BTES_Den(1,2)==1)
+      BTES_Den(count)=Results(i).dispatch.BTES_Den(1,3);
+    else 
+        BTES_Den(count)=0;
+              end  
+      %--------------Costs----------------------------
+             if (not(isempty(Results(i).dispatch.totCost)))
+      totCost(count)=Results(i).dispatch.totCost;
+    else 
+        totCost(count)=0;
+             end  
+              
+               if (not(isempty(Results(i).dispatch.var_cost_new)))
+      var_cost_new(count)=Results(i).dispatch.var_cost_new;
+    else 
+        var_cost_new(count)=0;
+               end 
+                                   
+               if (not(isempty(Results(i).dispatch.var_cost_existing)))
+      var_cost_existing(count)=Results(i).dispatch.var_cost_existing;
+    else 
+        var_cost_existing(count)=0;
+               end  
+              
+  %-------------------CO2/PE---------------------------
+      if (not(isempty(Results(i).dispatch.FED_PE)) && Results(i).dispatch.FED_PE(1,1)==1)
+      FED_PE(count)=Results(i).dispatch.FED_PE(1,2);
+    else 
+        FED_PE(count)=0;
       end
+               
+      if (not(isempty(Results(i).dispatch.MA_FED_PE)) && Results(i).dispatch.MA_FED_PE(1,1)==1)
+      MA_FED_PE(count)=Results(i).dispatch.MA_FED_PE(1,2);
+    else 
+        MA_FED_PE(count)=0;
+      end
+                                             
+      if (not(isempty(Results(i).dispatch.FED_CO2)) && Results(i).dispatch.FED_CO2(1,1)==1)
+      FED_CO2(count)=Results(i).dispatch.FED_CO2(1,2);
+    else 
+        FED_CO2(count)=0;
+      end
+               
+      if (not(isempty(Results(i).dispatch.MA_FED_CO2)) && Results(i).dispatch.MA_FED_CO2(1,1)==1)
+      MA_FED_CO2(count)=Results(i).dispatch.MA_FED_CO2(1,2);
+    else 
+        MA_FED_CO2(count)=0;
+      end
+                            
 end
 
 %Print dispatch outcome and historical dispatch
@@ -152,7 +300,7 @@ end
     xlswrite('results',absC',strcat('U3:U',num2str(count+2)));
     xlswrite('results',{'AbsC'},'U1:V1');
     xlswrite('results',{'Dispatch'},'U2:U2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('C',num2str(sim_start-15),':C',num2str(sim_stop-15)))*1000,strcat('V3:V',num2str(count+2)));
+    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('C',num2str(sim_start+3),':C',num2str(sim_stop+3)))*1000,strcat('V3:V',num2str(count+2)));
     
     xlswrite('results',VKA1_c',strcat('W3:W',num2str(count+2)));
     xlswrite('results',{'VKA1_C'},'W1:X1');
@@ -167,7 +315,7 @@ end
     xlswrite('results',aac_c',strcat('AA3:AA',num2str(count+2)));
     xlswrite('results',{'AAC_C'},'AA1:AB1');
     xlswrite('results',{'Dispatch'},'AA2:AA2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('N',num2str(sim_start-15),':N',num2str(sim_stop-15)))*1000,strcat('AB3:AB',num2str(count+2)));
+    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('N',num2str(sim_start+3),':N',num2str(sim_stop+3)))*1000,strcat('AB3:AB',num2str(count+2)));
     
     xlswrite('results',refr',strcat('AC3:AC',num2str(count+2)));
     xlswrite('results',{'Refrig'},'AC1:AD1');
@@ -184,11 +332,90 @@ end
     %xlswrite('results',aac_el',strcat('AH3:AH',num2str(count+2)));
     xlswrite('results',{'H_RMMC'},'AI1:AJ1');
     xlswrite('results',{'Dispatch'},'AI2:AI2');
-    
-       
+           
     %xlswrite('results',aac_el',strcat('AJ3:AJ',num2str(count+2)));
     xlswrite('results',{'EL_RMMC'},'AK1:AL1');
     xlswrite('results',{'Dispatch'},'AK2:AK2');
+    
+    xlswrite('results',cool_demand',strcat('AN2:AN',num2str(count+2)));
+    xlswrite('results',{'Cooling Demand'},'AN1:AN1');
+    
+    xlswrite('results',heat_demand',strcat('AR2:AR',num2str(count+2)));
+    xlswrite('results',{'Heating Demand'},'AR1:AR1');
+    
+    xlswrite('results',elec_demand',strcat('AV2:AV',num2str(count+2)));
+    xlswrite('results',{'Electricity Demand'},'AV1:AV1');
+    
+    xlswrite('results',h_imp_nonAH',strcat('BA2:BA',num2str(count+2)));
+    xlswrite('results',{'Import H nonAH'},'BA1:BA1');
+%Storage Units
+    xlswrite('results',BES_en','Storages',strcat('A3:A',num2str(count+2)));
+    xlswrite('results',{'BES_en'},'Storages','A2:A2');
+    xlswrite('results',{'Battery'},'Storages','A1:C1');
+
+    xlswrite('results',BES_ch','Storages',strcat('B3:B',num2str(count+2)));
+    xlswrite('results',{'BES_ch'},'Storages','B2:B2');
+
+    xlswrite('results',BES_dis','Storages',strcat('C3:C',num2str(count+2)));
+    xlswrite('results',{'BES_dis'},'Storages','C2:C2');
+
+    xlswrite('results',BFCh_en','Storages',strcat('D3:D',num2str(count+2)));
+    xlswrite('results',{'BFCh_en'},'Storages','D2:D2');
+    xlswrite('results',{'Battery Fast Charge'},'Storages','D1:F1');
+    
+    xlswrite('results',BFCh_ch','Storages',strcat('E3:E',num2str(count+2)));
+    xlswrite('results',{'BFCh_ch'},'Storages','E2:E2');
+    
+    xlswrite('results',BFCh_dis','Storages',strcat('F3:F',num2str(count+2)));
+    xlswrite('results',{'BFCh_dis'},'Storages','F2:F2');
+    
+    xlswrite('results',TES_en','Storages',strcat('H3:H',num2str(count+2)));
+    xlswrite('results',{'TES_en'},'Storages','H2:H2');
+    xlswrite('results',{'TES'},'Storages','H1:J1'); 
+    
+    xlswrite('results',TES_ch','Storages',strcat('I3:I',num2str(count+2)));
+    xlswrite('results',{'TES_ch'},'Storages','I2:I2');
+    
+    xlswrite('results',TES_dis','Storages',strcat('J3:J',num2str(count+2)));
+    xlswrite('results',{'TES_dis'},'Storages','J2:J2');
+    
+    xlswrite('results',BTES_Sen','Storages',strcat('K3:K',num2str(count+2)));
+    xlswrite('results',{'BTES_Sen'},'Storages','K2:K2');
+    xlswrite('results',{'BTES_S'},'Storages','K1:M1'); 
+    
+    xlswrite('results',BTES_Sch','Storages',strcat('L3:L',num2str(count+2)));
+    xlswrite('results',{'BTES_Sch'},'Storages','L2:L2');
+    
+    xlswrite('results',BTES_Sdis','Storages',strcat('M3:M',num2str(count+2)));
+    xlswrite('results',{'BTES_Sdis'},'Storages','M2:M2');
+    
+    xlswrite('results',BTES_Den','Storages',strcat('N3:N',num2str(count+2)));
+    xlswrite('results',{'BTES_Den'},'Storages','N2:N2');
+    xlswrite('results',{'BTES_D'},'Storages','N1:N1'); 
+    
+%-------------Costs----------------------    
+    xlswrite('results',totCost','Costs','A2:A2');
+    xlswrite('results',{'Total Cost'},'Costs','A1:A1');
+
+    xlswrite('results',var_cost_existing','Costs','B2:B2');
+    xlswrite('results',{'Variable Cost Exist.'},'Costs','B1:B1');
+
+    xlswrite('results',var_cost_new','Costs','C2:C2');
+    xlswrite('results',{'Variable Cost New.'},'Costs','C1:C1');
+    
+%--------------CO2 and PE factors-------------------
+    xlswrite('results',FED_PE','CO2_PE',strcat('A2:A',num2str(count+2)));
+    xlswrite('results',{'FED PE'},'CO2_PE','A1:A1');
+    
+    xlswrite('results',MA_FED_PE','CO2_PE',strcat('B2:B',num2str(count+2)));
+    xlswrite('results',{'Marginal FED PE'},'CO2_PE','B1:B1');
+    
+    xlswrite('results',FED_CO2','CO2_PE',strcat('C2:C',num2str(count+2)));
+    xlswrite('results',{'FED CO2'},'CO2_PE','C1:C1');
+       
+    xlswrite('results',MA_FED_CO2','CO2_PE',strcat('D2:D',num2str(count+2)));
+    xlswrite('results',{'Marginal FED CO2'},'CO2_PE','D1:D1');  
+    
     
 %Print running time and simulation infos
     xlswrite('results',{Time.point}','Sim infos','B3:B6');

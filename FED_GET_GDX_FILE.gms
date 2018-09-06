@@ -150,6 +150,9 @@ PARAMETERS
            el_demand(h,B_ID)    ELECTRICITY DEMAND IN THE FED BUILDINGS
            h_demand(h,B_ID)     Heating DEMAND IN THE FED BUILDINGS
            c_demand(h,B_ID)     Cooling DEMAND IN THE FED BUILDINGS
+           cool_demand(h)       Total cooling demand
+           heat_demand(h)       Total heat demand
+           elec_demand(h)       Total elec. demand
 ;
 $GDXIN MtoG.gdx
 $LOAD el_demand
@@ -235,8 +238,10 @@ PARAMETERS
             PEF_P2             PE factor of Panna2 (P2)
             CO2F_exG(h)        CO2 factor of the electricity grid
             PEF_exG(h)         PE factor of the electricity grid
-            CO2F_DH(h)         CO2 factor of the district heating grid
-            PEF_DH(h)          PE factor of the district heating grid
+            CO2F_DH(h)         CO2 av. factor of the district heating grid
+            PEF_DH(h)          PE av. factor of the district heating grid
+            MA_CO2F_DH(h)      CO2 marginal factor of the district heating grid
+            MA_PEF_DH(h)       PE marginal factor of the district heating grid
 ;
 $GDXIN MtoG.gdx
 $LOAD CO2_max
@@ -252,6 +257,8 @@ $LOAD CO2F_exG
 $LOAD PEF_exG
 $LOAD CO2F_DH
 $LOAD PEF_DH
+$LOAD MA_CO2F_DH
+$LOAD MA_PEF_DH
 $GDXIN
 
 *-----------Investmet limit----------------------------------------------------
@@ -282,6 +289,7 @@ PARAMETERS
          opt_fx_inv_BFCh       options to fix investment in new BFCh
          opt_fx_inv_BFCh_cap   capacity of the new BFCh
          opt_fx_inv_BFCh_maxP    power factor limit of the new BFCh
+         opt_marg_factors        option to choose between marginal and average factors
 ;
 $GDXIN MtoG.gdx
 $LOAD opt_fx_inv
@@ -302,6 +310,7 @@ $LOAD opt_fx_inv_BFCh
 $LOAD opt_fx_inv_BFCh_cap
 $LOAD opt_fx_inv_BES_maxP
 $load opt_fx_inv_BFCh_maxP
+$load opt_marg_factors
 $GDXIN
 
 *-------Initial SoC of Storage systems------*
@@ -320,6 +329,12 @@ $lOAD opt_fx_inv_BTES_S_init
 $lOAD opt_fx_inv_BTES_D_init
 $GDXIN
 *the combination is used to comment out sections codes inside
-$Ontext
-
-$Offtext
+*$Ontext
+parameters
+  import
+  export
+$GDXIN MtoG.gdx
+$lOAD import
+$lOAD export
+$GDXIN
+*$Offtext

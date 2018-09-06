@@ -9,7 +9,9 @@ equation
            eq_VKA42     cooling generation of VKA4
            eq_VKA43     maximum electricity usage by VKA4
 
-           eq_h_Pana1            Eqauation related to Panna1 heat production
+           eq1_h_Pana1            Eqauation related to Panna1 heat production
+           eq2_h_Pana1         ramp constraint set to 1MW
+           eq3_h_Pana1         ramp constraint set to 1MW
            eq_h_Panna1_dispatch  Equation determining when Panna1 is dispatchable
 
            eq_h_RGK1           Eqauation related to flue gas heat production
@@ -137,9 +139,12 @@ equation
            eq_dcpowerflow11  slack angle constraint
            eq_dcpowerflow12  slack voltage constraint
 
-           eq_PE         Hourly PE use in the FED system
-           eq_totPE      Total PE use in the FED system
-           eq_CO2        FED CO2 emission
+           eq_PE         Hourly average PE use in the FED system
+           eq_PE_ma      Hourly marginal PE use in the FED system
+           eq_totPE      Total average PE use in the FED system
+           eq_totPE_ma   Total marginal PE use in the FED system
+           eq_CO2        FED CO2 average emission
+           eq_CO2_ma     FED CO2 marginal emission
 
            eq_max_exG maximum monthly peak demand
            eq_PTexG   monthly power tariff
@@ -154,10 +159,13 @@ equation
            eq_Ainv_cost  total annualized investment cost
            eq_invCost    with aim to minimize investment cost
            eq_totCost    with aim to minimize total cost including fuel and O&M
-           eq_CO2_tot    with aim to minimize total FED CO2 emission
+           eq_CO2_tot    with aim to minimize total FED aver. CO2 emission
+           eq_CO2_tot_ma with aim to minimize total FED marginal CO2 emission
            eq_peak_CO2   with aim to to reduce CO2 peak
 
            eq_obj        Objective function
+eq_imp
+eq_exp
 ;
 
 *-------------------------------------------------------------------------------
@@ -182,8 +190,14 @@ eq_VKA43(h)..
         el_VKA4(h) =l= VKA4_el_cap;
 
 *------------------Panna1 equation(when dispachable)----------------------------
-eq_h_Pana1(h)..
+eq1_h_Pana1(h)..
         h_Pana1(h)=l=Panna1_cap;
+
+eq2_h_Pana1(h)$(ord(h) gt 1)..
+        h_Pana1(h-1)- h_Pana1(h)=g=-1000;
+
+eq3_h_Pana1(h)$(ord(h) gt 1)..
+        h_Pana1(h-1)- h_Pana1(h)=l=1000;
 
 eq_h_Panna1_dispatch(h)$(P1P2_dispatchable(h)=0)..
         h_Pana1(h) =e= qB1(h);
@@ -296,7 +310,7 @@ eq_TESinv(h)..
 
 *------------------BTES equations (Building srorage)----------------------------
 eq_BTES_Sen1(h,i) $ (ord(h) eq 1)..
-         BTES_Sen(h,i) =e= opt_fx_inv_BTES_S_init;
+         BTES_Sen(h,i) =e= opt_fx_inv_BTES_S_init$(ord(i) eq 1);
 * sw_BTES*BTES_Sen_int(i);
 eq_BTES_Sch(h,i) ..
          BTES_Sch(h,i) =l= B_BITES(i)*BTES_Sch_max(h,i);
@@ -306,7 +320,7 @@ eq_BTES_Sen2(h,i) $ (ord(h) gt 1)..
          BTES_Sen(h,i) =e= (BTES_kSloss(i)*BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
                            + BTES_Sch(h,i)*BTES_Sch_eff - link_BS_BD(h,i));
 eq_BTES_Den1(h,i) $ (ord(h) eq 1)..
-         BTES_Den(h,i) =e= opt_fx_inv_BTES_D_init;
+         BTES_Den(h,i) =e= opt_fx_inv_BTES_D_init$(ord(i) eq 1);
 * sw_BTES*BTES_Den_int(i);
 eq_BTES_Den2(h,i) $ (ord(h) gt 1)..
          BTES_Den(h,i) =e= (BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));
@@ -322,51 +336,51 @@ eq_BAC_savings(h,i)..
          h_BAC_savings(h,i) =l= BAC_savings_period(h)*B_BAC(i)*BAC_savings_factor*h_demand(h,i);
 
 *-----------------Battery constraints-------------------------------------------
-eq_BES1(h) $ (ord(h) eq 1)..
-             BES_en(h)=e= opt_fx_inv_BES_init ;
+eq_BES1(h,j) $ (ord(h) eq 1)..
+             BES_en(h,j)=e= opt_fx_inv_BES_init$(ord(j) eq 28) ;
 *sw_BES*BES_cap;
-eq_BES2(h)$(ord(h) gt 1)..
-             BES_en(h)=e=(BES_en(h-1)+BES_ch(h)-BES_dis(h));
-eq_BES3(h) ..
-             BES_en(h)=l=BES_cap;
-eq_BES_ch(h) ..
+eq_BES2(h,j)$(ord(h) gt 1)..
+             BES_en(h,j)=e=(BES_en(h-1,j)+BES_ch(h,j)-BES_dis(h,j));
+eq_BES3(h,j) ..
+             BES_en(h,j)=l=BES_cap(j);
+eq_BES_ch(h,j) ..
 *Assuming 1C charging
-             BES_ch(h)=l=(BES_cap-BES_en(h));
-eq_BES_dis(h)..
+             BES_ch(h,j)=l=(BES_cap(j)-BES_en(h,j));
+eq_BES_dis(h,j)..
 *Assuming 1C discharging
-             BES_dis(h)=l=BES_en(h);
+             BES_dis(h,j)=l=BES_en(h,j);
 
-eq_BES_reac1(h)..BES_reac(h)=l=opt_fx_inv_BES_maxP;
-eq_BES_reac2(h)..BES_reac(h)=g=-opt_fx_inv_BES_maxP;
-eq_BES_reac3(h)..-BES_ch(h)+BES_dis(h)=g=-opt_fx_inv_BES_maxP;
-eq_BES_reac4(h)..-BES_ch(h)+BES_dis(h)=l=opt_fx_inv_BES_maxP;
-eq_BES_reac5(h)..-0.58*BES_reac(h)-BES_ch(h)+BES_dis(h)=l=1.15*opt_fx_inv_BES_maxP;
-eq_BES_reac6(h)..-0.58*BES_reac(h)-BES_ch(h)+BES_dis(h)=g=-1.15*opt_fx_inv_BES_maxP;
-eq_BES_reac7(h)..0.58*BES_reac(h)-BES_ch(h)+BES_dis(h)=l=1.15*opt_fx_inv_BES_maxP;
-eq_BES_reac8(h)..0.58*BES_reac(h)-BES_ch(h)+BES_dis(h)=g=-1.15*opt_fx_inv_BES_maxP;
+eq_BES_reac1(h,j)..BES_reac(h,j)=l=opt_fx_inv_BES_maxP(j);
+eq_BES_reac2(h,j)..BES_reac(h,j)=g=-opt_fx_inv_BES_maxP(j);
+eq_BES_reac3(h,j)..-BES_ch(h,j)+BES_dis(h,j)=g=-opt_fx_inv_BES_maxP(j);
+eq_BES_reac4(h,j)..-BES_ch(h,j)+BES_dis(h,j)=l=opt_fx_inv_BES_maxP(j);
+eq_BES_reac5(h,j)..-0.58*BES_reac(h,j)-BES_ch(h,j)+BES_dis(h,j)=l=1.15*opt_fx_inv_BES_maxP(j);
+eq_BES_reac6(h,j)..-0.58*BES_reac(h,j)-BES_ch(h,j)+BES_dis(h,j)=g=-1.15*opt_fx_inv_BES_maxP(j);
+eq_BES_reac7(h,j)..0.58*BES_reac(h,j)-BES_ch(h,j)+BES_dis(h,j)=l=1.15*opt_fx_inv_BES_maxP(j);
+eq_BES_reac8(h,j)..0.58*BES_reac(h,j)-BES_ch(h,j)+BES_dis(h,j)=g=-1.15*opt_fx_inv_BES_maxP(j);
 *-----------------Battery Fast Charge constraints-------------------------------------------
-eq_BFCh1(h) $ (ord(h) eq 1)..
-             BFCh_en(h)=e= opt_fx_inv_BFCh_init;
+eq_BFCh1(h,j) $ (ord(h) eq 1)..
+             BFCh_en(h,j)=e= opt_fx_inv_BFCh_init$(ord(j) eq 5);
 *sw_BES*BES_cap;
-eq_BFCh2(h)$(ord(h) gt 1)..
-             BFCh_en(h)=e=(BFCh_en(h-1)+BFCh_ch(h)-BFCh_dis(h));
-eq_BFCh3(h) ..
-             BFCh_en(h)=l=BFCh_cap;
-eq_BFCh_ch(h) ..
+eq_BFCh2(h,j)$(ord(h) gt 1)..
+             BFCh_en(h,j)=e=(BFCh_en(h-1,j)+BFCh_ch(h,j)-BFCh_dis(h,j));
+eq_BFCh3(h,j) ..
+             BFCh_en(h,j)=l=BFCh_cap(j);
+eq_BFCh_ch(h,j) ..
 *Assuming 1C charging
-             BFCh_ch(h)=l=(BFCh_cap-BFCh_en(h));
-eq_BFCh_dis(h)..
+             BFCh_ch(h,j)=l=(BFCh_cap(j)-BFCh_en(h,j));
+eq_BFCh_dis(h,j)..
 *Assuming 1C discharging
-             BFCh_dis(h)=l=BFCh_en(h);
+             BFCh_dis(h,j)=l=BFCh_en(h,j);
 
-eq_BFCh_reac1(h)..BFCh_reac(h)=l=opt_fx_inv_BFCh_maxP;
-eq_BFCh_reac2(h)..BFCh_reac(h)=g=-opt_fx_inv_BFCh_maxP;
-eq_BFCh_reac3(h)..BFCh_ch(h)+BFCh_dis(h)=g=-opt_fx_inv_BFCh_maxP;
-eq_BFCh_reac4(h)..BFCh_ch(h)+BFCh_dis(h)=l=opt_fx_inv_BFCh_maxP;
-eq_BFCh_reac5(h)..-0.58*BFCh_reac(h)+BFCh_ch(h)+BFCh_dis(h)=l=1.15*opt_fx_inv_BFCh_maxP;
-eq_BFCh_reac6(h)..-0.58*BFCh_reac(h)+BFCh_ch(h)+BFCh_dis(h)=g=-1.15*opt_fx_inv_BFCh_maxP;
-eq_BFCh_reac7(h)..0.58*BFCh_reac(h)+BFCh_ch(h)+BFCh_dis(h)=l=1.15*opt_fx_inv_BFCh_maxP;
-eq_BFCh_reac8(h)..0.58*BFCh_reac(h)+BFCh_ch(h)+BFCh_dis(h)=g=-1.15*opt_fx_inv_BFCh_maxP;
+eq_BFCh_reac1(h,j)..BFCh_reac(h,j)=l=opt_fx_inv_BFCh_maxP(j);
+eq_BFCh_reac2(h,j)..BFCh_reac(h,j)=g=-opt_fx_inv_BFCh_maxP(j);
+eq_BFCh_reac3(h,j)..BFCh_ch(h,j)+BFCh_dis(h,j)=g=-opt_fx_inv_BFCh_maxP(j);
+eq_BFCh_reac4(h,j)..BFCh_ch(h,j)+BFCh_dis(h,j)=l=opt_fx_inv_BFCh_maxP(j);
+eq_BFCh_reac5(h,j)..-0.58*BFCh_reac(h,j)+BFCh_ch(h,j)+BFCh_dis(h,j)=l=1.15*opt_fx_inv_BFCh_maxP(j);
+eq_BFCh_reac6(h,j)..-0.58*BFCh_reac(h,j)+BFCh_ch(h,j)+BFCh_dis(h,j)=g=-1.15*opt_fx_inv_BFCh_maxP(j);
+eq_BFCh_reac7(h,j)..0.58*BFCh_reac(h,j)+BFCh_ch(h,j)+BFCh_dis(h,j)=l=1.15*opt_fx_inv_BFCh_maxP(j);
+eq_BFCh_reac8(h,j)..0.58*BFCh_reac(h,j)+BFCh_ch(h,j)+BFCh_dis(h,j)=g=-1.15*opt_fx_inv_BFCh_maxP(j);
 *-----------------Solar PV equations--------------------------------------------
 ** Original Matlab Code (P is per WattPeak of Solar PV)
 *P(index)=
@@ -426,7 +440,7 @@ eq_cbalance(h)..
 eq_ebalance3(h)..
         sum(i_AH_el,el_demand(h,i_AH_el)) =l= e_imp_AH(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - e_RMMC(h) - e_AAC(h)
                                  + e_existPV(h) + e_PV(h) - e_HP(h) - e_RMInv(h)
-                                 + (BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff)
+                                 + sum(j,(BES_dis(h,j)*BES_dis_eff - BES_ch(h,j)/BES_ch_eff)+(BFCh_dis(h,j)*BFCh_dis_eff - BFCh_ch(h,j)/BFCh_ch_eff))
                                  + e_TURB(h);
 eq_ebalance4(h)..
         sum(i_nonAH_el,el_demand(h,i_nonAH_el)) =l= e_imp_nonAH(h);
@@ -434,14 +448,14 @@ eq_ebalance4(h)..
 *------------Electrical Network constraints------------*
 eq_dcpowerflow1(h,Bus_IDs)..((e_imp_AH(h) - e_exp_AH(h))/Sb)$(ord(Bus_IDs)=13)-((el_VKA1(h) + el_VKA4(h))/Sb)$(ord(Bus_IDs)=20)
             + sum(BID,e_existPV_act(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(r,e_PV_act_roof(h,r)$BusToBID(Bus_IDs,r))/Sb+sum(f,(PV_facade_cap_Inv(f)*PV_power_facade(h,f))$BusToBID(Bus_IDs,f))/Sb+
-            ((BES_dis(h)*BES_dis_eff - BES_ch(h)/BES_ch_eff)/Sb)$(ord(Bus_IDs)=28)+(e_TURB(h)/Sb)$(ord(Bus_IDs)=16)+
-            ((BFCh_dis(h)*BFCh_dis_eff - BFCh_ch(h)/BFCh_ch_eff)/Sb)$(ord(Bus_IDs)=5)-sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb
+            ((BES_dis(h,Bus_IDs)*BES_dis_eff - BES_ch(h,Bus_IDs)/BES_ch_eff)/Sb)$(ord(Bus_IDs)=28)+(e_TURB(h)/Sb)$(ord(Bus_IDs)=16)+
+            ((BFCh_dis(h,Bus_IDs)*BFCh_dis_eff - BFCh_ch(h,Bus_IDs)/BFCh_ch_eff)/Sb)$(ord(Bus_IDs)=5)-sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb
 =e=sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),gij(Bus_IDs,j)*(V(h,Bus_IDs)-V(h,j)))-
 sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),bij(Bus_IDs,j)*(delta(h,Bus_IDs)-delta(h,j)));;
 
 
 eq_dcpowerflow2(h,Bus_IDs)..(re_imp_AH(h)/Sb)$(ord(Bus_IDs)=13)-0.2031*sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb+(e_TURB_reac(h)/Sb)$(ord(Bus_IDs)=16)+
-                             (BES_reac(h)/Sb)$(ord(Bus_IDs)=28)+(BFCh_reac(h)/Sb)$(ord(Bus_IDs)=5)+sum(BID,e_existPV_reac(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(r,e_PV_reac_roof(h,r)$BusToBID(Bus_IDs,r))/Sb
+                             (BES_reac(h,Bus_IDs)/Sb)$(ord(Bus_IDs)=28)+(BFCh_reac(h,Bus_IDs)/Sb)$(ord(Bus_IDs)=5)+sum(BID,e_existPV_reac(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(r,e_PV_reac_roof(h,r)$BusToBID(Bus_IDs,r))/Sb
 =e=-(bii(Bus_IDs)+sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),gij(Bus_IDs,j)*(delta(h,Bus_IDs)-delta(h,j)))-
 sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),bij(Bus_IDs,j)*(V(h,Bus_IDs)-V(h,j))));
 
@@ -470,9 +484,17 @@ eq_PE(h)..
                      + (h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*PEF_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*PEF_P1
                      + fuel_P2(h)*PEF_P2;
 
+eq_PE_ma(h)..
+        MA_FED_PE(h)=e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*PEF_exG(h)
+                     + e_existPV(h)*PEF_PV + e_PV(h)*PEF_PV
+                     + (h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*MA_PEF_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*PEF_P1
+                     + fuel_P2(h)*PEF_P2;
 **********************Total PE use in the FED system****************************
 eq_totPE..
          tot_PE=e=sum(h,FED_PE(h));
+
+eq_totPE_ma..
+         MA_tot_PE=e=sum(h,MA_FED_PE(h));
 
 *---------------FED CO2 emission------------------------------------------------
 eq_CO2(h)..
@@ -481,10 +503,18 @@ eq_CO2(h)..
                       + (h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*CO2F_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*CO2F_P1
                       + fuel_P2(h) * CO2F_P2;
 
+eq_CO2_ma(h)..
+       MA_FED_CO2(h) =e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*CO2F_exG(h)
+                      + e_existPV(h)*CO2F_PV + e_PV(h)*CO2F_PV
+                      + (h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*MA_CO2F_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*CO2F_P1
+                      + fuel_P2(h) * CO2F_P2;
+
 ****************Total CO2 emission in the FED system****************************
 eq_CO2_TOT..
          FED_CO2_tot =e= sum(h, FED_CO2(h));
 
+eq_CO2_TOT_ma..
+         MA_FED_CO2_tot =e= sum(h, MA_FED_CO2(h));
 **************** Power tariffs *******************
 eq_max_exG(h,m)..
                max_exG(m) =g= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*HoM(h,m);
@@ -505,7 +535,7 @@ eq_fix_cost_existing..
 eq_fix_cost_new..
          fix_cost_new =e=  (sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*fix_cost('PV')
                            + HP_cap*fix_cost('HP')
-                           + BES_cap*fix_cost('BES')
+                           + sum(j,BES_cap(j)*fix_cost('BES'))
                            + TES_cap*fix_cost('TES')
                            + RMInv_cap*fix_cost('RMInv')
                            + fix_cost('BTES')*sum(i,B_BITES(i))
@@ -529,7 +559,7 @@ eq_var_cost_new..
          var_cost_new =e=  sum(h,e_PV(h)*utot_cost('PV',h))
                            + sum(h,h_HP(h)*utot_cost('HP',h))
                            + sum(h,c_RMInv(h)*utot_cost('RMInv',h))
-                           + sum(h,BES_dis(h)*utot_cost('BES',h))
+                           + sum((h,j),BES_dis(h,j)*utot_cost('BES',h))
                            + sum(h,TES_dis(h)*utot_cost('TES',h))
                            + sum((h,i),BTES_Sch(h,i)*utot_cost('BTES',h))
                            + sum(h,h_P2(h)*utot_cost('P2',h))
@@ -540,7 +570,7 @@ eq_Ainv_cost..
                 + HP_cap*cost_inv_opt('HP')/lifT_inv_opt('HP')
                 + RMInv_cap*cost_inv_opt('RMInv')/lifT_inv_opt('RMInv')
                 + (sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*cost_inv_opt('PV')/lifT_inv_opt('PV')
-                + BES_cap*cost_inv_opt('BES')/lifT_inv_opt('BES')
+                + sum(j,BES_cap(j)*cost_inv_opt('BES')/lifT_inv_opt('BES'))
                 + (TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/lifT_inv_opt('TES')
                 + cost_inv_opt('BTES')*sum(i,B_BITES(i))/lifT_inv_opt('BTES')
                 + cost_inv_opt('BAC')*sum(i,B_BAC(i))/lifT_inv_opt('BAC')
@@ -556,7 +586,7 @@ eq_invCost..
          invCost =e= HP_cap*cost_inv_opt('HP')
                      + RMInv_cap*cost_inv_opt('RMInv')
                      + (sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*cost_inv_opt('PV')
-                     + BES_cap*cost_inv_opt('BES')
+                     + sum(j,BES_cap(j)*cost_inv_opt('BES'))
                      + ((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
                      + cost_inv_opt('BTES')*sum(i,B_BITES(i))
                      + cost_inv_opt('BAC')*sum(i,B_BAC(i))
@@ -570,6 +600,9 @@ eq_peak_CO2(h)..
 ****************Objective function**********************************************
 eq_obj..
          obj =e= min_totCost*totCost
-                + min_totPE*tot_PE
-                + min_totCO2*FED_CO2_tot;
+                + (min_totPE*tot_PE*(1-opt_marg_factors)+min_totPE*MA_tot_PE*opt_marg_factors)
+                + (min_totCO2*FED_CO2_tot*(1-opt_marg_factors)+min_totCO2*MA_FED_CO2_tot*opt_marg_factors);
+eq_imp(h)..import(h)=e=h_imp_AH(h);
+eq_exp(h)..h_exp_AH(h)=e=export(h);
+
 ********************************************************************************

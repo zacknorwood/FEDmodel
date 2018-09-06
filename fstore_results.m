@@ -1,4 +1,4 @@
-function [ data ] = fstore_results(h_sim,B_ID,BTES_properties)
+function [ data ] = fstore_results(h_sim,B_ID,BTES_properties,Buses_IDs)
 %Function that prepares simulation results for storage
 
 %Simulation results
@@ -11,12 +11,15 @@ data.min_totCO2=gdx2mat(gdxData,'min_totCO2');
 
 %Extract electricity, heat and cooling demand in the FED system
 data.el_demand=gdx2mat(gdxData,'el_demand',{h_sim.uels,B_ID.uels});
+data.elec_demand=gdx2mat(gdxData,'elec_demand',{h_sim.uels});
 data.el_demand_nonAH=gdx2mat(gdxData,'el_demand_nonAH',{h_sim.uels,B_ID.uels});
 
 data.h_demand=gdx2mat(gdxData,'h_demand',{h_sim.uels,B_ID.uels});
+data.heat_demand=gdx2mat(gdxData,'heat_demand',{h_sim.uels});
 data.h_demand_nonAH=gdx2mat(gdxData,'h_demand_nonAH',{h_sim.uels,B_ID.uels});
 
 data.c_demand=gdx2mat(gdxData,'c_demand',{h_sim.uels,B_ID.uels});
+data.cool_demand=gdx2mat(gdxData,'cool_demand',{h_sim.uels});
 data.c_demand_AH=gdx2mat(gdxData,'c_demand_AH',{h_sim.uels,B_ID.uels});
 
 %Electricity import and export
@@ -43,7 +46,13 @@ data.tout=gdx2mat(gdxData,'tout',h_sim.uels);
 
 %FED CO2 and PE
 data.FED_PE=gdx2mat(gdxData,'FED_PE',h_sim.uels);
+data.MA_FED_PE=gdx2mat(gdxData,'MA_FED_PE',h_sim.uels);
+data.tot_PE=gdx2mat(gdxData,'tot_PE');
+data.MA_tot_PE=gdx2mat(gdxData,'MA_tot_PE');
 data.FED_CO2=gdx2mat(gdxData,'FED_CO2',h_sim.uels);
+data.MA_FED_CO2=gdx2mat(gdxData,'MA_FED_CO2',h_sim.uels);
+data.FED_CO2_tot=gdx2mat(gdxData,'FED_CO2_tot');
+data.MA_FED_CO2_tot=gdx2mat(gdxData,'MA_FED_CO2_tot');
 data.CO2F_PV=gdx2mat(gdxData,'CO2F_PV');
 data.PEF_PV=gdx2mat(gdxData,'PEF_PV');
 data.CO2F_P1=gdx2mat(gdxData,'CO2F_P1');
@@ -90,6 +99,14 @@ data.HP_cap=gdx2mat(gdxData,'HP_cap');
 data.invCost_HP=gdx2mat(gdxData,'invCost_HP');
 
 %storage
+data.BES_en=gdx2mat(gdxData,'BES_en',{h_sim.uels,Buses_IDs.uels});
+data.BES_ch=gdx2mat(gdxData,'BES_ch',{h_sim.uels,Buses_IDs.uels});
+data.BES_dis=gdx2mat(gdxData,'BES_dis',{h_sim.uels,Buses_IDs.uels});
+data.BES_reac=gdx2mat(gdxData,'BES_reac',{h_sim.uels,Buses_IDs.uels});
+data.BFCh_en=gdx2mat(gdxData,'BFCh_en',{h_sim.uels,Buses_IDs.uels});
+data.BFCh_ch=gdx2mat(gdxData,'BFCh_ch',{h_sim.uels,Buses_IDs.uels});
+data.BFCh_dis=gdx2mat(gdxData,'BFCh_dis',{h_sim.uels,Buses_IDs.uels});
+data.BFCh_reac=gdx2mat(gdxData,'BFCh_reac',{h_sim.uels,Buses_IDs.uels});
 data.TES_ch=gdx2mat(gdxData,'TES_ch',h_sim.uels);
 data.TES_dis=gdx2mat(gdxData,'TES_dis',h_sim.uels);
 data.TES_en=gdx2mat(gdxData,'TES_en',h_sim.uels);
@@ -98,10 +115,10 @@ data.TES_inv=gdx2mat(gdxData,'TES_inv');
 data.invCost_TES=gdx2mat(gdxData,'invCost_TES');
 data.TES_dis_eff=gdx2mat(gdxData,'TES_dis_eff');
 data.TES_chr_eff=gdx2mat(gdxData,'TES_chr_eff');
-data.BTES_Sch=gdx2mat(gdxData,'BTES_Sch',{h_sim.uels,BTES_properties.uels});
-data.BTES_Sdis=gdx2mat(gdxData,'BTES_Sdis',{h_sim.uels,BTES_properties.uels});
-data.BTES_Sen=gdx2mat(gdxData,'BTES_Sen',{h_sim.uels,BTES_properties.uels});
-data.BTES_Den=gdx2mat(gdxData,'BTES_Den',{h_sim.uels,BTES_properties.uels});
+data.BTES_Sch=gdx2mat(gdxData,'BTES_Sch',{h_sim.uels,B_ID.uels});
+data.BTES_Sdis=gdx2mat(gdxData,'BTES_Sdis',{h_sim.uels,B_ID.uels});
+data.BTES_Sen=gdx2mat(gdxData,'BTES_Sen',{h_sim.uels,B_ID.uels});
+data.BTES_Den=gdx2mat(gdxData,'BTES_Den',{h_sim.uels,B_ID.uels});
 data.BTES_Sloss=gdx2mat(gdxData,'BTES_Sloss',{h_sim.uels,BTES_properties.uels});
 data.BTES_Dloss=gdx2mat(gdxData,'BTES_Dloss',{h_sim.uels,BTES_properties.uels});
 data.link_BS_BD=gdx2mat(gdxData,'link_BS_BD',{h_sim.uels,BTES_properties.uels});
@@ -130,5 +147,13 @@ data.e_TURB=gdx2mat(gdxData,'e_TURB',h_sim.uels);
 data.h_TURB=gdx2mat(gdxData,'h_TURB',h_sim.uels);
 data.P2_eff=gdx2mat(gdxData,'P2_eff');
 data.TURB_eff=gdx2mat(gdxData,'TURB_eff');
+
+%Costs
+data.totCost=gdx2mat(gdxData,'totCost');
+data.Ainv_cost=gdx2mat(gdxData,'Ainv_cost');
+data.fix_cost_existing=gdx2mat(gdxData,'fix_cost_existing');
+data.fix_cost_new=gdx2mat(gdxData,'fix_cost_new');
+data.var_cost_existing=gdx2mat(gdxData,'var_cost_existing');
+data.var_cost_new=gdx2mat(gdxData,'var_cost_new');
 end
 

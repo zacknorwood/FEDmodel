@@ -123,8 +123,13 @@ BAC_sav_period=xlsread('Input_dispatch_model\BAC_parameters.xlsx',sheet,xlRange)
      irradiance_measured_roof,irradiance_measured_facades] = fread_measurments(2, 17000);
 
 %% FIXED MODEL INPUT DATA - FXED INVESTMENT OPTIONS
+
+%Option to choose between marginal and average factors
+opt_marg_factors=0;
+temp_opt_marg_factors = struct('name','opt_marg_factors','type','parameter','form','full','val',opt_marg_factors);
+
 %Option to set if any investments are to be fixed
-opt_fx_inv=0;
+opt_fx_inv=1;
 temp_opt_fx_inv = struct('name','opt_fx_inv','type','parameter','form','full','val',opt_fx_inv);
 
 %Option for RMMC investment
@@ -132,7 +137,7 @@ opt_fx_inv_RMMC=0;  %Set to 1 if the investment in MC2 cooling connection is mad
 temp_opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',opt_fx_inv_RMMC);
 
 %Option for new AbsChiller investment
-opt_fx_inv_AbsCInv=0;
+opt_fx_inv_AbsCInv=1;
 temp_opt_fx_inv_AbsCInv = struct('name','opt_fx_inv_AbsCInv','type','parameter','form','full','val',opt_fx_inv_AbsCInv);
 opt_fx_inv_AbsCInv_cap=0;
 temp_opt_fx_inv_AbsCInv_cap = struct('name','opt_fx_inv_AbsCInv_cap','type','parameter','form','full','val',opt_fx_inv_AbsCInv_cap);
@@ -166,18 +171,28 @@ temp_opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter',
 %Option for BES investment
 opt_fx_inv_BES=0;
 temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',opt_fx_inv_BES);
-opt_fx_inv_BES_cap=0; %must be set to 200
-temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',opt_fx_inv_BES_cap);
-opt_fx_inv_BES_maxP=0;  %must be set to 100
-temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full','val',opt_fx_inv_BES_maxP);
+opt_fx_inv_BES_cap=[0]; %must be set to 200
+temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full');
+temp_opt_fx_inv_BES_cap.val=opt_fx_inv_BES_cap;
+temp_opt_fx_inv_BES_cap.uels={'28'};
+
+opt_fx_inv_BES_maxP=[0];  %must be set to 100
+temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full');
+temp_opt_fx_inv_BES_maxP.val=opt_fx_inv_BES_maxP;
+temp_opt_fx_inv_BES_maxP.uels={'5'};
 
 %Option for BFCh investment
 opt_fx_inv_BFCh=0;
 temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
-opt_fx_inv_BFCh_cap=0; %must be set to 100
-temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full','val',opt_fx_inv_BFCh_cap);
+opt_fx_inv_BFCh_cap=[0]; %must be set to 100
+temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full');
+temp_opt_fx_inv_BFCh_cap.val=opt_fx_inv_BFCh_cap;
+temp_opt_fx_inv_BFCh_cap.uels={'O0007043'};
+
 opt_fx_inv_BFCh_maxP=0; %must be set to 50
-temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full','val',opt_fx_inv_BFCh_maxP);
+temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full');
+temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
+temp_opt_fx_inv_BFCh_maxP.uels={'O0007043'};
 
 %Option for BTES investment
 BITES_Inv.name='BITES_Inv';
@@ -281,6 +296,9 @@ while Re_calculate_CO2PEF==0
     break;
 end
 
+%Import marginal CO2 and PE factors
+DH_CO2F_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'X5:X17900');
+DH_PEF_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'Y5:Y17900');
 %% FIXED MODEL INPUT DATA - FED INVESTMENT LIMIT
 
 FED_inv = 68570065;%68570065; %76761000;  %this is projected FED investment cost in SEK
@@ -345,13 +363,19 @@ FED_PE_totref = struct('name','PE_tot_ref','type','parameter');
 CO2F_exG = struct('name','CO2F_exG','type','parameter','form','full');
 PEF_exG = struct('name','PEF_exG','type','parameter','form','full');
 CO2F_DH = struct('name','CO2F_DH','type','parameter','form','full');
+MA_CO2F_DH = struct('name','MA_CO2F_DH','type','parameter','form','full');
 PEF_DH = struct('name','PEF_DH','type','parameter','form','full');
+MA_PEF_DH = struct('name','MA_PEF_DH','type','parameter','form','full');
 
 %Forcasted solar PV irradiance -roof
 G_roof = struct('name','G_roof','type','parameter');
 
 %Forcasted solar PV irradiance -facade
 G_facade = struct('name','G_facade','type','parameter');
+
+%This must be deleted
+export = struct('name','export','type','parameter','form','full');
+import = struct('name','import','type','parameter','form','full');
 
 %% SIMULATION OPTIONS
 
@@ -365,8 +389,8 @@ temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',op
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 
 %SIMULATION START AND STOP TIME
-sim_start=2000;
-sim_stop=2167;
+sim_start=2002;
+sim_stop=2169; 
 forcast_horizon=10;
 t_len_m=10;
 Time(1).point='fixed inputs';
@@ -456,8 +480,8 @@ for t=sim_start:sim_stop
     BAC_savings_period.uels=h_sim.uels;
     
     %Maximum CO2 emission in the base case
-    FED_CO20=FED_CO20(1:forcast_horizon);
-    FED_CO2_max.val = max(FED_CO20);
+    FED_CO201=FED_CO20((t_init_m-1):(t_len_m+t_init_m-2),:);
+    FED_CO2_max.val = max(FED_CO201);
     
     %Reference peak CO2 emission in the base case
     data=sort(FED_CO20,'descend');
@@ -467,28 +491,34 @@ for t=sim_start:sim_stop
     FED_CO2_peakref.val = CO2ref;
     
     %Total PE use in the FED system in the base case
-    FED_PE0=FED_PE0(1:forcast_horizon);
-    FED_PE_totref.val = sum(FED_PE0);
+    FED_PE01=FED_PE0((t_init_m-1):(t_len_m+t_init_m-2),:);
+    FED_PE_totref.val = sum(FED_PE01);
     
     %CO2 factors of the external el grid
-    el_exGCO2F=el_exGCO2F(1:forcast_horizon);
-    CO2F_exG.val = el_exGCO2F;
+    el_exGCO2F1=el_exGCO2F((t_init_m-1):(t_len_m+t_init_m-2),:);
+    CO2F_exG.val = el_exGCO2F1;
     CO2F_exG.uels=h_sim.uels;
 
     %PE factors of the external el grid
-    el_exGPEF=el_exGPEF(1:forcast_horizon);
-    PEF_exG.val = el_exGPEF;
+    el_exGPEF1=el_exGPEF((t_init_m-1):(t_len_m+t_init_m-2),:);
+    PEF_exG.val = el_exGPEF1;
     PEF_exG.uels=h_sim.uels;
 
-    %CO2 factors of the external DH grid
-    DH_CO2F=DH_CO2F(1:forcast_horizon);
-    CO2F_DH.val = DH_CO2F;
+    %CO2 factors of the external DH grid (AVERAGE AND MARGINAL)
+    DH_CO2F1=DH_CO2F((t_init_m-1):(t_len_m+t_init_m-2),:);
+    CO2F_DH.val = DH_CO2F1;
     CO2F_DH.uels=h_sim.uels;
+    DH_CO2F1=DH_CO2F_ma((t_init_m-1):(t_len_m+t_init_m-2),:);
+    MA_CO2F_DH.val = DH_CO2F1;
+    MA_CO2F_DH.uels=h_sim.uels;
 
     %PE factors of the external DH grid
-    DH_PEF=DH_PEF(1:forcast_horizon);
-    PEF_DH.val = DH_PEF;
+    DH_PEF1=DH_PEF((t_init_m-1):(t_len_m+t_init_m-2),:);
+    PEF_DH.val = DH_PEF1;
     PEF_DH.uels=h_sim.uels;
+    DH_PEF1=DH_PEF_ma((t_init_m-1):(t_len_m+t_init_m-2),:);
+    MA_PEF_DH.val = DH_PEF1;
+    MA_PEF_DH.uels=h_sim.uels;
     
     %Initial SoC of different storage systems (1=BTES_D, 2=BTES_S, 3=TES, 4=BFCh, 5=BES)
     if t==sim_start
@@ -511,17 +541,23 @@ for t=sim_start:sim_stop
  
     opt_fx_inv_BTES_D_init=Initial(1);
     temp_opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',opt_fx_inv_BTES_D_init);
-
-
+    
+% This must be deleted
+export1=xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',2,strcat('D',num2str(t_init_m+3),':D',num2str(t_len_m+t_init_m-1+3)))*1000;
+import1=xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',2,strcat('C',num2str(t_init_m+3),':C',num2str(t_len_m+t_init_m-1+3)))*1000;
+export.val = export1;
+export.uels=h_sim.uels;
+import.val = import1;
+import.uels=h_sim.uels;
     %% RUN GAMS model
 
 wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
      temp_opt_fx_inv_AbsCInv,temp_opt_fx_inv_AbsCInv_cap,...
      temp_opt_fx_inv_P2,temp_opt_fx_inv_TURB,temp_opt_fx_inv_HP, temp_opt_fx_inv_HP_cap,...
      temp_opt_fx_inv_RMInv, temp_opt_fx_inv_RMInv_cap,...
-     temp_opt_fx_inv_TES, temp_opt_fx_inv_TES_cap, ...
+     temp_opt_fx_inv_TES, temp_opt_fx_inv_TES_cap,temp_opt_marg_factors, ...
      temp_opt_fx_inv_BES, temp_opt_fx_inv_BES_cap, h_sim,BITES_Inv,BAC_Inv,...
-     FED_PE_totref, FED_CO2_max, FED_CO2_peakref,CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,...
+     FED_PE_totref, FED_CO2_max, FED_CO2_peakref,CO2F_exG, PEF_exG, MA_CO2F_DH, CO2F_DH, MA_PEF_DH, PEF_DH,...
      temp_CO2F_PV, temp_PEF_PV, temp_CO2F_P1, temp_PEF_P1, temp_CO2F_P2, temp_PEF_P2,...
      B_ID,B_ID_AH_el,B_ID_nonAH_el,B_ID_AH_h,B_ID_nonAH_h,B_ID_AH_c,B_ID_nonAH_c,B_ID_nonBITES,BID,...
      e_demand,h_demand,c_demand,qB1,qF1,el_price,el_cirtificate,h_price,tout,...     
@@ -529,7 +565,7 @@ wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
      PV_BID_roof_Inv,PV_roof_cap_Inv,PV_BID_facade_Inv,PV_facade_cap_Inv,...
      temp_optn1, temp_optn2, temp_optn3, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap,...
      temp_opt_fx_inv_BES_maxP,temp_opt_fx_inv_BFCh_maxP,PV_inverter_PF_Inv,temp_opt_fx_inv_BTES_D_init,temp_opt_fx_inv_BTES_S_init,...
-     temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init);
+     temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init,export,import);
  
 %wgdx('MtoG_pv.gdx',G_facade,area_roof_max,area_facade_max);
 Time(2).point='Wgdx and Inputs';
@@ -543,7 +579,7 @@ tic
  
  %% Store the results from each iteration
  
-Results(t).dispatch = fstore_results(h_sim,B_ID,BTES_properties);
+Results(t).dispatch = fstore_results(h_sim,B_ID,BTES_properties,Buses_IDs);
 Time(3).point='Gams running and storing';
 Time(3).value=toc;
 end

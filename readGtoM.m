@@ -33,7 +33,7 @@ function[InitialSoC]=readGtoM(currenthour);
      s=size(initial(i).uels{1,1},2);
    for j=1:s
      if str2num(initial(i).uels{1,1}{1,j})==currenthour;
-     temp=initial(i).val(j)
+     temp=initial(i).val(j);
      end
    end
    InitialSoC(i)=temp;

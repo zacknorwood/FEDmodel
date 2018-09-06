@@ -41,7 +41,7 @@ h_demand_nonAH_sum  total demand for non AH buildings
 
 invCost_HP = HP_cap.l*cost_inv_opt('HP');
 invCost_PV = sum(BID, PV_cap_roof.l(BID)*cost_inv_opt('PV')) + sum(BID, PV_cap_facade.l(BID)*cost_inv_opt('PV')) ;
-invCost_BEV = BES_cap.l*cost_inv_opt('BES');
+invCost_BEV = sum(j,BES_cap.l(j)*cost_inv_opt('BES'));
 invCost_TES = (TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
 invCost_BITES = cost_inv_opt('BTES')*sum(i,B_BITES.l(i));
 invCost_BAC = cost_inv_opt('BAC')*sum(i,B_BAC.l(i));
@@ -76,16 +76,19 @@ AH_el_exp_tot=sum(h,e_exp_AH.l(h));
 AH_h_imp_tot=sum(h,h_imp_AH.l(h));
 AH_h_exp_tot=sum(h,h_exp_AH.l(h));
 
+cool_demand(h)= sum(i,c_demand(h,i));
+heat_demand(h)= sum(i,h_demand(h,i));
+elec_demand(h)= sum(i,el_demand(h,i));
 execute_unload 'GtoM' min_totCost, min_totPE, min_totCO2,
                       el_demand, el_demand_nonAH, h_demand, c_demand, c_demand_AH,
                       e_imp_AH, e_exp_AH, e_imp_nonAH,AH_el_imp_tot, AH_el_exp_tot,
                       h_imp_AH, h_exp_AH, h_imp_nonAH, AH_h_imp_tot, AH_h_exp_tot,
                       C_DC,
                       h_demand_nonAH, h_demand, h_demand_nonAH_sum
-                      el_sell_price, el_price, h_price, tout,
+                      el_sell_price, el_price, h_price, tout, cool_demand,heat_demand,elec_demand
                       BTES_model,
-                      FED_PE, FED_CO2, CO2F_PV, PEF_PV, CO2F_P1, PEF_P1, CO2F_P2, PEF_P2, CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,
-                      h_Pana1, h_RGK1, qB1, qF1, fuel_P1, P1_eff,
+                      FED_PE, MA_FED_PE, FED_CO2,MA_FED_CO2,MA_FED_CO2_tot, FED_CO2_tot, CO2F_PV, PEF_PV, CO2F_P1, PEF_P1, CO2F_P2, PEF_P2, CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,
+                      h_Pana1, h_RGK1, qB1, qF1, fuel_P1, P1_eff,tot_PE, MA_tot_PE,
                       H_VKA1, C_VKA1, el_VKA1,
                       H_VKA4, C_VKA4, el_VKA4,
                       B_P2, invCost_P2, fuel_P2, h_P2, H_P2T, B_TURB, invCost_TURB, e_TURB, h_TURB, P2_eff, TURB_eff,
@@ -123,3 +126,4 @@ execute_unload 'inv_opt' inv_opt;
 execute_unload 'coefs' coefs;
 execute_unload 'BTES_properties' BTES_properties;
 
+display Panna1_cap.l;
