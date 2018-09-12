@@ -56,13 +56,13 @@ for node = 1:length(DH_Nodes.name)
         if hour >= summer_begins && hour <= summer_ends
             delta_T_current = summer_mode_delta_T;
         else
-            % ignored output '~' is the minimum difference between the
+            % Ignored output '~' is the minimum difference between the
             % index of delta_T_DH and current outside temperature tout
             [~, index_current_temp] = min(abs([delta_T_DH{1:5,1}]-tout.val(hour)));
             delta_T_current = delta_T_DH{index_current_temp, 2};
         end
 
-        % Transfer limit [kWh/h] = m3/s * kg/m3 * kJ/kgK
+        % Transfer limit [kWh/h] = m3/s * kg/m3 * kJ/kgK * K
         DH_transfer_limits.val(hour,node) = maximum_flow_rate * Rho_Water * CP_Water * delta_T_current;
     end
 end

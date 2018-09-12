@@ -20,7 +20,7 @@ DC_transfer_limits.uels = {times.uels, DC_Nodes.name};
 for node = 1:length(DC_Nodes.name)
     maximum_flow_rate = DC_Nodes.maximum_flow(node);
     for hour = 1:length(times.uels)
-        % Transfer limit [kWh/h] = m3/s * kg/m3 * kJ/kgK
+        % Transfer limit [kWh/h] = m3/s * kg/m3 * kJ/kgK * K
         if hour >= summer_begins && hour <= summer_ends
             delta_T_DC = summer_delta_T_DC;
         else

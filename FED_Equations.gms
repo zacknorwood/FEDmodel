@@ -323,6 +323,10 @@ eq_dhn_constraint(h, DH_Node_ID)..
 
 eq_dcn_constraint(h, DC_Node_ID)...
          DC_node_transfer_limits(h, DC_Node_ID) =g= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
+                 - (C_VKA1(h) + C_VKA4(h) + c_HP(h) + c_AbsCInv(h)
+                 - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik')
+                 + sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, 'EDIT'))$(sameas(DC_Node_ID, 'Maskin'))
+;
 
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
