@@ -112,7 +112,7 @@ scalar
 *--------------AAC(Ambient Air Cooler), cooling source--------------------------
 * Source Per
 scalar
-         AAC_COP Coefficent of performance of AAC /60/
+         AAC_COP Coefficent of performance of AAC /10/
          AAC_eff Efficiency of AAC /0.95/
          AAC_TempLim Temperature limit of AAC/12/
 ;

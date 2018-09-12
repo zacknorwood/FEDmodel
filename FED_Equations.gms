@@ -446,10 +446,11 @@ eq_ebalance4(h)..
         sum(i_nonAH_el,el_demand(h,i_nonAH_el)) =l= e_imp_nonAH(h);
 
 *------------Electrical Network constraints------------*
+
 eq_dcpowerflow1(h,Bus_IDs)..((e_imp_AH(h) - e_exp_AH(h))/Sb)$(ord(Bus_IDs)=13)-((el_VKA1(h) + el_VKA4(h))/Sb)$(ord(Bus_IDs)=20)
             + sum(BID,e_existPV_act(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(r,e_PV_act_roof(h,r)$BusToBID(Bus_IDs,r))/Sb+sum(f,(PV_facade_cap_Inv(f)*PV_power_facade(h,f))$BusToBID(Bus_IDs,f))/Sb+
             ((BES_dis(h,Bus_IDs)*BES_dis_eff - BES_ch(h,Bus_IDs)/BES_ch_eff)/Sb)$(ord(Bus_IDs)=28)+(e_TURB(h)/Sb)$(ord(Bus_IDs)=16)+
-            ((BFCh_dis(h,Bus_IDs)*BFCh_dis_eff - BFCh_ch(h,Bus_IDs)/BFCh_ch_eff)/Sb)$(ord(Bus_IDs)=5)-sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb
+            ((BFCh_dis(h,Bus_IDs)*BFCh_dis_eff - BFCh_ch(h,Bus_IDs)/BFCh_ch_eff)/Sb)$(ord(Bus_IDs)=5)-sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb-((el_RM(h)+e_RMMC(h)+e_AAC(h)+e_HP(h)+e_RMInv(h))/Sb)$(ord(Bus_IDs)=10)
 =e=sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),gij(Bus_IDs,j)*(V(h,Bus_IDs)-V(h,j)))-
 sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),bij(Bus_IDs,j)*(delta(h,Bus_IDs)-delta(h,j)));;
 
@@ -472,9 +473,10 @@ eq_dcpowerflow10(h,Bus_IDs,j)$(currentlimits(Bus_IDs,j) ne 0)..-gij(Bus_IDs,j)*(
 
 eq_dcpowerflow11(h)..delta(h,"13")=e=0;
 eq_dcpowerflow12(h)..V(h,"13")=e=1;
+
 *-----------------Comments on El Network implementation------------------------*
 $ontext
-1)el_RM(h),e_RMMC(h),e_AAC(h), e_HP(h),e_RMInv(h) are not included
+1)el_RM(h),e_RMMC(h),e_AAC(h), e_HP(h),e_RMInv(h) are set to KC
 2)inverter of FBch is the same with the pv additional constraints must be added
 $offtext
 *--------------FED Primary energy use-------------------------------------------

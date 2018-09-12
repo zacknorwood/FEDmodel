@@ -71,7 +71,6 @@ $load bij
 $load bii
 $LOAD currentlimits
 $GDXIN
-
 *----------------Solar PV data--------------------------------------------------
 SET
     BID        Building IDs used for PV calculations

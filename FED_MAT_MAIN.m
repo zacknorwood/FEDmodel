@@ -390,7 +390,7 @@ temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',o
 
 %SIMULATION START AND STOP TIME
 sim_start=2002;
-sim_stop=2169; 
+sim_stop=2003; 
 forcast_horizon=10;
 t_len_m=10;
 Time(1).point='fixed inputs';
