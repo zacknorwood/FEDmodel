@@ -4,11 +4,11 @@ function [e_demand_measured, h_demand_measured,c_demand_measured,...
           irradiance_measured_roof,irradiance_measured_facades] = fread_measurments(t_init, t_len)
 %This function is used to read mesurment between the indicated indices
 
-demand_range=strcat('B',int2str(2+t_init-t_len),':AJ',int2str(2+t_init-1));
-gen_range=strcat('B',int2str(4+t_init-t_len),':B',int2str(4+t_init-1)); 
-price_ramge=strcat('B',int2str(2+t_init-t_len),':B',int2str(2+t_init-1));
-tout_ramge=strcat('B',int2str(2+t_init-t_len),':B',int2str(2+t_init-1));%'B2:B100';
-irradiance_range=strcat('B',int2str(2+t_init-t_len),':BU',int2str(2+t_init-1));
+demand_range=strcat('B',int2str(t_init),':AJ',int2str(t_len+t_init-1));
+gen_range=strcat('B',int2str(2+t_init),':B',int2str(2+t_len+t_init-1)); 
+price_ramge=strcat('B',int2str(t_init),':B',int2str(t_len+t_init-1));
+tout_ramge=strcat('B',int2str(t_init),':B',int2str(t_len+t_init-1));%'B2:B100';
+irradiance_range=strcat('B',int2str(t_init),':BU',int2str(t_len+t_init-1));
 
 %Measured electricity demand in kW
 sheet=1;
@@ -31,13 +31,13 @@ c_demand_measured(isnan(c_demand_measured))=0;
 %Measured HEAT GENERATION FROM THERMAL BOILER (B1)
 sheet=3;
 xlRange = gen_range;
-h_B1_measured=xlsread('Input_dispatch_model\Panna1 2016-2017.xls',sheet,xlRange);
+h_B1_measured=xlsread('Input_dispatch_model\Panna1 2016-2017.xls',sheet,xlRange)*1000;
 h_B1_measured(isnan(h_B1_measured))=0;
     
 %Measured HEAT GENERATION FROM FLUE GAS CONDENCER (F1)
 sheet=4;
 xlRange = gen_range;
-h_F1_measured=xlsread('Input_dispatch_model\Panna1 2016-2017.xls',sheet,xlRange);
+h_F1_measured=xlsread('Input_dispatch_model\Panna1 2016-2017.xls',sheet,xlRange)*1000;
 h_F1_measured(isnan(h_F1_measured))=0;
     
 %Measured el price in NordPool in SEK/kWh

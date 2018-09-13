@@ -15,7 +15,6 @@ $GDXIN MtoG.gdx
 $LOAD B_ID
 $GDXIN
 Alias (B_ID, i) ;
-
 *-----------Simulation time, Bites and BAC investments--------------------------
 set h              SIMULATION TIME
     BITES_Inv(i)   used for fixed BITES inv option
@@ -88,8 +87,31 @@ $LOAD i_AH_c
 $LOAD i_nonAH_c
 $LOAD i_nonBITES
 $GDXIN
+*---------------Buses IDs of electrical network, Admittance matrix & current limits----------------------*
+set Bus_IDs;
 
-*********************This part need be updated**********************************
+$GDXIN MtoG.gdx
+$LOAD Bus_IDs
+$GDXIN
+alias(Bus_IDs,j);
+set BusToB_ID(Bus_IDs,i_AH_el)  Mapping between buses and buildings /15.O3060133, 5.O3060132, 21.O0007001, 11.(O0011001,O0013001,O0007005),
+                                                 20.(O0007008,O0007888), 9.(O0007017,O0007006), 34.(O0007022,O0007025,O0007028), 32.(O0007024,O0007018,Studentbostader),
+                                                 40.(O0007012,O0007021,O0007014), 30.O0007040, 24.(O0007019,Karhus_CFAB,Karhus_studenter), 26.(O0007023,O0007026), 28.(O0007027,O0007043)/
+;
+parameter Sb Base power (KW) /1000/;
+parameter Ib Base current (A) /54.98/;
+Parameter bij(Bus_IDs,j)
+Parameter gij(Bus_IDs,j)
+Parameter bii(Bus_IDs)
+Parameter Y(Bus_IDs,j)  elements magnitudes of admittance matrix
+Parameter Theta(Bus_IDs,j)   elements angles of admittance matrix
+Parameter currentlimits(Bus_IDs,j) current limits
+$GDXIN Input_dispatch_model\AdmittanceMatrix.gdx
+$load gij
+$load bij
+$load bii
+$LOAD currentlimits
+$GDXIN
 *----------------Solar PV data--------------------------------------------------
 SET
     BID        Building IDs used for PV calculations
@@ -106,14 +128,23 @@ $GDXIN MtoG.gdx
 $LOAD PV_BID_roof_Inv
 $LOAD PV_BID_facade_Inv
 $GDXIN
+alias(PV_BID_roof_Inv,r);
+alias(PV_BID_facade_Inv,f);
 
 Parameter PV_roof_cap_Inv(PV_BID_roof_Inv) Invested PV capacity-roof
-          PV_facade_cap_Inv(PV_BID_facade_Inv) Invested PV capacity-roof;
+          PV_facade_cap_Inv(PV_BID_facade_Inv) Invested PV capacity-facade
+          PV_inverter_PF_Inv            Invested PV roof inverters power factor
+;
 $GDXIN MtoG.gdx
 $LOAD PV_roof_cap_Inv
 $LOAD PV_facade_cap_Inv
+$load PV_inverter_PF_Inv
 $GDXIN
-*-----------------------------------------
+
+set BusToBID(Bus_IDs,BID)   Mapping between buses and BIDs
+/15.(6,44), 5.(54,55,53,4), 21.(52,43,47), 11.(40,50,51), 20.28, 9.(12,46,45), 34.(56,32,37,33,35),
+ 32.(29,9,19,20,22,8), 40.(18,60,1,36), 30.(68,70,69,62,65), 24.(57,25,24,11), 26.(10,48,49), 28.(23,27,75)/
+;
 *----------------PREPARE THE FULL INPUT DATA------------------------------------
 SET
     m   Number of month                   /1*24/
@@ -159,13 +190,17 @@ PARAMETERS
            el_demand(h,B_ID)    ELECTRICITY DEMAND IN THE FED BUILDINGS
            h_demand(h,B_ID)     Heating DEMAND IN THE FED BUILDINGS
            c_demand(h,B_ID)     Cooling DEMAND IN THE FED BUILDINGS
+           cool_demand(h)       Total cooling demand
+           heat_demand(h)       Total heat demand
+           elec_demand(h)       Total elec. demand
 ;
 $GDXIN MtoG.gdx
 $LOAD el_demand
 $LOAD h_demand
 $LOAD c_demand
 $GDXIN
-
+*Must be deleted
+el_demand(h,i_nonAH_el)=0;
 *-----------Forcasted energy prices from MATLAB---------------------------------
 PARAMETERS
            el_price(h)       ELECTRICTY PRICE IN THE EXTERNAL GRID
@@ -243,8 +278,10 @@ PARAMETERS
             PEF_P2             PE factor of Panna2 (P2)
             CO2F_exG(h)        CO2 factor of the electricity grid
             PEF_exG(h)         PE factor of the electricity grid
-            CO2F_DH(h)         CO2 factor of the district heating grid
-            PEF_DH(h)          PE factor of the district heating grid
+            CO2F_DH(h)         CO2 av. factor of the district heating grid
+            PEF_DH(h)          PE av. factor of the district heating grid
+            MA_CO2F_DH(h)      CO2 marginal factor of the district heating grid
+            MA_PEF_DH(h)       PE marginal factor of the district heating grid
 ;
 $GDXIN MtoG.gdx
 $LOAD CO2_max
@@ -260,6 +297,8 @@ $LOAD CO2F_exG
 $LOAD PEF_exG
 $LOAD CO2F_DH
 $LOAD PEF_DH
+$LOAD MA_CO2F_DH
+$LOAD MA_PEF_DH
 $GDXIN
 
 *-----------Investmet limit----------------------------------------------------
@@ -284,8 +323,13 @@ PARAMETERS
          opt_fx_inv_RMInv_cap Capacity of the fixed new RM
          opt_fx_inv_TES       options to fix investment in new TES
          opt_fx_inv_TES_cap   capacity of the new TES
-         opt_fx_inv_BES       options to fix investment in new TES
-         opt_fx_inv_BES_cap   capacity of the new TES
+         opt_fx_inv_BES       options to fix investment in new BES
+         opt_fx_inv_BES_cap   capacity of the new BES
+         opt_fx_inv_BES_maxP    power factor limit of the new BES
+         opt_fx_inv_BFCh       options to fix investment in new BFCh
+         opt_fx_inv_BFCh_cap   capacity of the new BFCh
+         opt_fx_inv_BFCh_maxP    power factor limit of the new BFCh
+         opt_marg_factors        option to choose between marginal and average factors
 ;
 $GDXIN MtoG.gdx
 $LOAD opt_fx_inv
@@ -302,9 +346,35 @@ $LOAD opt_fx_inv_TES
 $LOAD opt_fx_inv_TES_cap
 $LOAD opt_fx_inv_BES
 $LOAD opt_fx_inv_BES_cap
+$LOAD opt_fx_inv_BFCh
+$LOAD opt_fx_inv_BFCh_cap
+$LOAD opt_fx_inv_BES_maxP
+$load opt_fx_inv_BFCh_maxP
+$load opt_marg_factors
 $GDXIN
 
+*-------Initial SoC of Storage systems------*
+Parameters
+      opt_fx_inv_BES_init   BES Init. SoC
+      opt_fx_inv_BFCh_init  BFCh Init. SoC
+      opt_fx_inv_TES_init    TES Init. SoC
+      opt_fx_inv_BTES_S_init  BTES_S Init. SoC
+      opt_fx_inv_BTES_D_init  BTES_D Init. SoC
+;
+$GDXIN MtoG.gdx
+$lOAD opt_fx_inv_BES_init
+$lOAD opt_fx_inv_BFCh_init
+$lOAD opt_fx_inv_TES_init
+$lOAD opt_fx_inv_BTES_S_init
+$lOAD opt_fx_inv_BTES_D_init
+$GDXIN
 *the combination is used to comment out sections codes inside
-$Ontext
-
-$Offtext
+*$Ontext
+parameters
+  import
+  export
+$GDXIN MtoG.gdx
+$lOAD import
+$lOAD export
+$GDXIN
+*$Offtext

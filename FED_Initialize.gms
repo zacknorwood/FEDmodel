@@ -105,7 +105,7 @@ scalar
 * Source for these numbers?
 scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
-         AbsH_COP       Coeffiicent of performance for absorption heating investment /1.7/
+
 *AbsC_eff Efficiency of AbsC /0.95/
 ;
 
@@ -138,7 +138,8 @@ scalar
 *----------------Panna 2  ------------------------------------------------------
 scalar
       P2_eff                 Efficiency of P2 /0.9/
-      P2_cap                 Capacity of P2 /6000/
+*Capacity must be set to 6000 when refurbishment is done
+      P2_cap                 Capacity of P2 /0/
       P2_max                 Maximum output from P2 /6000/
       P2_min                 Minimum output from P2 /1000/
       P2_reseach_prod        Heat output during research /1500/
@@ -149,7 +150,8 @@ scalar
 * turbine efficiency from Danish energy agency reports
       TURB_eff Efficiency of turbine /0.25/
 * Max turbine output from AH WP4.2 report
-      TURB_cap Maximum power output of turbine /800/
+*Must be set to 800 when refurbishment is done
+      TURB_cap Maximum power output of turbine /0/
 ;
 
 *--------------MC2 Refrigerator Machines, cooling source------------------------
@@ -274,6 +276,8 @@ scalar
 scalar
          BES_ch_eff    Charging efficiency /0.95/
          BES_dis_eff   Discharding efficiency /0.95/
+         BFCh_ch_eff    Charging efficiency /0.95/
+         BFCh_dis_eff   Discharding efficiency /0.95/
 ;
 
 *--------------set building energy demands--------------------------------------

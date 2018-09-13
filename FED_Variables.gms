@@ -65,6 +65,8 @@ AAC_cap.fx = cap_sup_unit('AAC');
 *----------------existing PV----------------------------------------------------
 positive variable
          e_existPV(h)    electricity output of existing PV
+         e_existPV_act(h,BID) active power output of existing PVs
+         e_existPV_reac(h,BID) reactive power output of existing PVs
 ;
 
 ******************New investments***********************************************
@@ -103,6 +105,9 @@ positive variable
          e_TURB(h)         electricity generated in turbine-gen
          h_TURB(h)         steam demand in turbine
          H_P2T(h)          steam generated in P2-turb combo
+;
+Variable
+         e_TURB_reac(h)    Turbines reactive power
 ;
 binary variable
          B_TURB            Decision variable for turbine investment
@@ -165,6 +170,8 @@ positive variable
          e_PV(h)            electricity produced by PV
          PV_cap_roof(BID)   capacity of solar modules on roof
          PV_cap_facade(BID) capacity of solar modules on facade
+         e_PV_reac_roof(h,BID)      PVs reactive power
+         e_PV_act_roof(h,BID)      PVs active power
 ;
 PV_cap_roof.fx(BID)=0;
 PV_cap_facade.fx(BID)=0;
@@ -172,13 +179,18 @@ PV_cap_roof.fx(PV_BID_roof_Inv) $ (opt_fx_inv eq 1) = PV_roof_cap_Inv(PV_BID_roo
 PV_cap_facade.fx(PV_BID_facade_Inv) $ (opt_fx_inv eq 1) = PV_facade_cap_Inv(PV_BID_facade_Inv);
 *------------------Battery related----------------------------------------------
 positive variables
-         BES_en(h)       Energy stored in the battry at time t and building i
-         BES_ch(h)       Battery charing at time t and building i
-         BES_dis(h)      Battery discharging at time t and building i
-         BES_cap         Capacity of the battery at building i
-;
-BES_cap.fx $ (opt_fx_inv eq 1 and opt_fx_inv_BES eq 1) = opt_fx_inv_BES_cap;
+         BES_en(h,j)                                                                                                                                                                                                          (h)       Energy stored in the battry at time t and building i
+         BES_ch(h,j)       Battery charing at time t and building i
+         BES_dis(h,j)      Battery discharging at time t and building i
+         BES_cap(j)         Capacity of the battery at building i
 
+         BFCh_en(h,j)                                                                                                                                                                                                          (h)       Energy stored in the battry at time t and building i
+         BFCh_ch(h,j)       Battery charing at time t and building i
+         BFCh_dis(h,j)      Battery discharging at time t and building i
+         BFCh_cap(j)         Capacity of the battery at building i
+;
+BES_cap.fx(j) $ (opt_fx_inv eq 1 and opt_fx_inv_BES eq 1) = opt_fx_inv_BES_cap(j);
+BFCh_cap.fx(j) $ (opt_fx_inv eq 1 and opt_fx_inv_BFCh eq 1) = opt_fx_inv_BFCh_cap(j);
 *------------------Refrigeration machine investment related---------------------
 positive variable
          c_RMInv(h)           cooling power available from RMInv
@@ -191,10 +203,17 @@ positive variable
          e_exp_AH(h)        Exported electricty from the AH system
          e_imp_AH(h)        Imported electricty to the AH system
          e_imp_nonAH(h)     Imported electricty to the AH system
+         V(h,Bus_IDs)       Voltage magnitudes of EL Grid
 ;
 e_imp_AH.up(h)=exG_max_cap;
 e_exp_AH.up(h)=exG_max_cap;
 
+variable
+        re_imp_AH(h)        Imported reactive to the AH system
+        delta(h,Bus_IDs)    Voltage angles of EL Grid
+        BES_reac(h,j)         BES reactive power
+        BFCh_reac(h,j)        BFCh reactive power
+;
 *------------------Grid DH related----------------------------------------------
 positive variable
          h_exp_AH(h)        Exported heat from the AH system
@@ -216,10 +235,14 @@ C_DC.fx(h) = 0;
 
 *-------------------------PE and CO2 related -----------------------------------
 variable
-         FED_CO2(h)     Hourly CO2 emissions in the FED system
-         tot_CO2        Total CO2 emissions of the FED system
-         FED_PE(h)      Hourly PE use in the FED system
-         tot_PE         Total PE use in the FED system
+         FED_CO2(h)     Hourly CO2 av. emissions in the FED system
+         tot_CO2        Total CO2 av. emissions of the FED system
+         MA_FED_CO2(h)  Hourly CO2 marginal emissions in the FED system
+         MA_tot_CO2     Total CO2 marginal emissions of the FED system
+         FED_PE(h)      Hourly av. PE use in the FED system
+         MA_FED_PE(h)   Hourly marginal PE use in the FED system
+         tot_PE         Total av. PE use in the FED system
+         MA_tot_PE      Total marginal PE use in the FED system
 
 ;
 
@@ -240,7 +263,8 @@ variable
          Ainv_cost          total annualized investment cost
          totCost            total cost
          invCost            total investment cost
-         FED_CO2_tot        total CO2 emissions from the FED system
+         FED_CO2_tot        total av. CO2 emissions from the FED system
+         MA_FED_CO2_tot     total marginal CO2 emissions from the FED system
          peak_CO2           CO2 peak
          obj                objective function
 ;

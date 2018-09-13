@@ -2,9 +2,8 @@
 
 %% Calculate CO2 emission factor and PE use factor of the external grids 
 
-get_CO2PE_exGrids;
 %% Imported el to the AH system
-
+get_CO2PE_exGrids;
 sheet=1;
 xlRange = 'C1443:C10203';
 el_Import_AH=xlsread('Input_data_FED_SIMULATOR\AH_el_import.xlsx',sheet,xlRange);  %electricity imported to the FED system 2016 kWh
@@ -146,7 +145,6 @@ FED_PE0=el_import.*el_exGPEF + el_pv.*PEF_PV ...
       + q_import.*DH_PEF + fuel_P1*PEF_P1;
 FED_PE0(isnan(FED_PE0))=0;
 %%
-
 % AH_el_CO2F = (el_Import_2016_AH.*el_exGCO2F + el_pv.*CO2F_PV)./(el_Import_2016_AH + el_pv);
 % AH_el_CO2F(isnan(AH_el_CO2F))=0;
 % AH_el_PEF = (el_Import_2016_AH.*el_exGPEF + el_pv.*PEF_PV)./(el_Import_2016_AH + el_pv);
