@@ -1,8 +1,9 @@
 ********************************************************************************
 *---------------------Declare variables and equations---------------------------
 ********************************************************************************
-positive variable
-         temp_slack(h, DH_Node_ID) temporary slack variable to troubleshoot constraint
+variable
+         DH_node_flows(h, DH_Node_ID) Total flows for nodes in district heating system
+         DC_node_flows(h, DC_Node_ID) Total flows for nodes in district cooling system
 ;
 
 *******************Dispaching existing units************************************

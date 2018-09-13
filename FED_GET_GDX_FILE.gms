@@ -61,7 +61,7 @@ PARAMETERS
            DC_node_transfer_limits(h,DC_Node_ID) Transfer limits MWh per h for DC nodes
 ;
 $GDXIN MtoG.gdx
-$LOAD DC_Node_ID
+$LOAD DC_node_transfer_limits
 $GDXIN
 
 set DCNodeToB_ID(DC_Node_ID, B_ID)  Mapping between district cooling nodes and buildings /VoV.(CAdministration,VOV1,Arkitektur,VOV2),

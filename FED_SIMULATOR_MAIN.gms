@@ -78,7 +78,6 @@ AH_el_imp_tot=sum(h,e_imp_AH.l(h));
 AH_el_exp_tot=sum(h,e_exp_AH.l(h));
 AH_h_imp_tot=sum(h,h_imp_AH.l(h));
 AH_h_exp_tot=sum(h,h_exp_AH.l(h));
-sum_temp_slack(h, DH_Node_ID) = temp_slack.l(h, DH_Node_ID)
 
 execute_unload 'GtoM' min_totCost, min_totPE, min_totCO2,
                       el_demand, el_demand_nonAH, h_demand, c_demand, c_demand_AH,
@@ -107,6 +106,7 @@ execute_unload 'GtoM' min_totCost, min_totPE, min_totCO2,
                       totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
                       DH_export_season, P1P2_dispatchable, inv_lim
                       c_RMInv, e_RMInv, RMInv_cap, invCost_RMInv,
+                      DH_node_flows, DC_node_flows,
                       model_status;
 
 execute_unload 'h' h;
