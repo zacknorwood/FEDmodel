@@ -121,6 +121,12 @@ equation
            eq_hbalance2  maximum heating export from AH system
            eq_hbalance3  heating supply-demand balance excluding AH buildings
            eq_hbalance4  heating supply-demand balance excluding nonAH buildings
+
+           eq_dhn_constraint District heating network transfer limit
+           eq_dh_node_flows Summing of flows in district heating network
+           eq_dcn_constraint District cooling network transfer limit
+           eq_DC_node_flows Summing of flows in district cooling network
+
            eq_cbalance   Balance equation cooling
 
            eq_ebalance3  supply demand balance equation from AH
@@ -410,6 +416,57 @@ eq_RMInv1(h)..
              c_RMInv(h) =e= RMInv_COP*e_RMInv(h);
 eq_RMInv2(h)..
              c_RMInv(h) =l= RMInv_cap;
+
+**************************Network constraints***********************************
+*---------------District heating network constraints----------------------------
+
+eq_dhn_constraint(h, DH_Node_ID)..
+         DH_node_transfer_limits(h, DH_Node_ID) =g= sum(i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i))
+                 - (h_RMMC(h)) $(sameas(DH_Node_ID, 'Fysik'))
+                 - (H_VKA4(h) + H_VKA1(h) + h_Pana1(h) + h_RGK1(h) + h_AbsC(h)
+                 + h_AbsCInv(h) + H_P2T(h) + 0.75*h_TURB(h) + h_HP(h) + TES_dis(h)
+                 - TES_ch(h) + h_imp_AH(h) - h_exp_AH(h)) $(sameas(DH_Node_ID, 'Maskin'))
+                 + sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sch(h,i))
+                 - sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sdis(h,i))
+                 - sum(DHNodeToB_ID(DH_Node_ID, i), h_BAC_savings(h,i))
+
+                 + sum(DHNodeToB_ID('Eklanda', i), BTES_Sch(h,i))$(sameas(DH_Node_ID, 'VoV'))
+                 - sum(DHNodeToB_ID('Eklanda', i), BTES_Sdis(h,i))$(sameas(DH_Node_ID, 'VoV'))
+                 - sum(DHNodeToB_ID('Eklanda', i), h_BAC_savings(h,i))$(sameas(DH_Node_ID, 'VoV'))
+                 + sum(i, h_demand(h, i)$DHNodeToB_ID('Eklanda', i))$(sameas(DH_Node_ID, 'VoV'))
+;
+eq_dh_node_flows(h, DH_Node_ID)..
+         DH_node_flows(h, DH_Node_ID) =e= sum(i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i))
+                 - (h_RMMC(h)) $(sameas(DH_Node_ID, 'Fysik'))
+                 - (H_VKA4(h) + H_VKA1(h) + h_Pana1(h) + h_RGK1(h) + h_AbsC(h)
+                 + h_AbsCInv(h) + H_P2T(h) + 0.75*h_TURB(h) + h_HP(h) + TES_dis(h)
+                 - TES_ch(h) + h_imp_AH(h) - h_exp_AH(h)) $(sameas(DH_Node_ID, 'Maskin'))
+                 + sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sch(h,i))
+                 - sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sdis(h,i))
+                 - sum(DHNodeToB_ID(DH_Node_ID, i), h_BAC_savings(h,i))
+
+                 + sum(DHNodeToB_ID('Eklanda', i), BTES_Sch(h,i))$(sameas(DH_Node_ID, 'VoV'))
+                 - sum(DHNodeToB_ID('Eklanda', i), BTES_Sdis(h,i))$(sameas(DH_Node_ID, 'VoV'))
+                 - sum(DHNodeToB_ID('Eklanda', i), h_BAC_savings(h,i))$(sameas(DH_Node_ID, 'VoV'))
+                 + sum(i, h_demand(h, i)$DHNodeToB_ID('Eklanda', i))$(sameas(DH_Node_ID, 'VoV'))
+;
+
+
+eq_dcn_constraint(h, DC_Node_ID)..
+         DC_node_transfer_limits(h, DC_Node_ID) =g= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
+                 - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
+                 - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
+                 + sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, 'EDIT'))$(sameas(DC_Node_ID, 'Maskin'))
+;
+
+eq_DC_node_flows(h, DC_Node_ID)..
+         DC_node_flows(h, DC_Node_ID) =e= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
+                 - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
+                 - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
+                 + sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, 'EDIT'))$(sameas(DC_Node_ID, 'Maskin'))
+
+;
+* - (C_VKA4(h) + c_HP(h) + c_AbsCInv(h)  + c_AbsC(h)  are at KC and thus
 
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------

@@ -28,6 +28,47 @@ $LOAD BAC_Inv
 $LOAD BTES_properties
 $GDXIN
 
+*-----------DH heating nodes----------------------------------------------------
+set DH_Node_ID     District heating network node names
+;
+$GDXIN MtoG.gdx
+$LOAD DH_Node_ID
+$GDXIN
+
+PARAMETERS
+           DH_node_transfer_limits(h,DH_Node_ID) Transfer limits MWh per h for DH nodes
+;
+$GDXIN MtoG.gdx
+$LOAD DH_node_transfer_limits
+$GDXIN
+
+set DHNodeToB_ID(DH_Node_ID, B_ID)  Mapping between district heating nodes and buildings /Fysik.(Fysik_Origo, Kemi, NyaMatte, MC2, Fysik_Soliden, Polymerteknologi, Keramforskning),
+                                                                                          Bibliotek.Bibliotek,
+                                                                                          Maskin.(Maskinteknik,Lokalkontor),
+                                                                                          EDIT.(Elkraftteknik,Edit,Idelara,HA,HB,HC,SSPA,Studentbostader),
+                                                                                          VoV.(Karhus_CFAB,Karhus_studenter,CAdministration,VOV1,Arkitektur,VOV2),
+                                                                                          Eklanda.GamlaMatte/
+*ITGYMNASIET belongs to Fysik node
+*-----------DC heating nodes----------------------------------------------------
+set DC_Node_ID    District cooling network node names
+;
+$GDXIN MtoG.gdx
+$LOAD DC_Node_ID
+$GDXIN
+
+PARAMETERS
+           DC_node_transfer_limits(h,DC_Node_ID) Transfer limits MWh per h for DC nodes
+;
+$GDXIN MtoG.gdx
+$LOAD DC_node_transfer_limits
+$GDXIN
+
+set DCNodeToB_ID(DC_Node_ID, B_ID)  Mapping between district cooling nodes and buildings /VoV.(CAdministration,VOV1,Arkitektur,VOV2),
+                                                                                          Maskin.(Maskinteknik,Lokalkontor,HA,HB),
+                                                                                          EDIT.(Elkraftteknik,Edit,Idelara,HC),
+                                                                                          Fysik.(Fysik_Origo, NyaMatte, MC2, Fysik_Soliden, Polymerteknologi),
+                                                                                          Kemi.(Kemi,Keramforskning)/
+
 *--------------Building catagories based on how energy is supplied--------------
 set i_AH_el(i) buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok
     i_nonAH_el(i) buildings considered in the FED system not connected to the AH(Akadamiskahus) el netwrok
