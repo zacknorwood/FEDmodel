@@ -490,14 +490,14 @@ eq_dcn_constraint(h, DC_Node_ID)..
          DC_node_transfer_limits(h, DC_Node_ID) =g= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
                  - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
                  - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
-                 + sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, 'EDIT'))$(sameas(DC_Node_ID, 'Maskin'))
+                 + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))
 ;
 
 eq_DC_node_flows(h, DC_Node_ID)..
          DC_node_flows(h, DC_Node_ID) =e= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
                  - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
                  - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
-                 + sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, 'EDIT'))$(sameas(DC_Node_ID, 'Maskin'))
+                 + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))
 
 ;
 * - (C_VKA4(h) + c_HP(h) + c_AbsCInv(h)  + c_AbsC(h)  are at KC and thus
