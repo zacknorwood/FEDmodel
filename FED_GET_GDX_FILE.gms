@@ -241,11 +241,15 @@ PARAMETERS
             PEF_DH(h)          PE av. factor of the district heating grid
             MA_CO2F_DH(h)      CO2 marginal factor of the district heating grid
             MA_PEF_DH(h)       PE marginal factor of the district heating grid
+            MA_CO2F_exG(h)     CO2 marginal factor of the electrical grid
+            MA_PEF_exG(h)      PE marginal factor of the electrical grid
+            max_exG_prev       max exG of previous dispatch
+            MA_Cost_DH         DH marginal cost
 ;
 $GDXIN MtoG.gdx
-$LOAD CO2_max
-$LOAD CO2_peak_ref
-$LOAD PE_tot_ref
+*$LOAD CO2_max
+*$LOAD CO2_peak_ref
+*$LOAD PE_tot_ref
 $LOAD CO2F_PV
 $LOAD PEF_PV
 $LOAD CO2F_P1
@@ -258,8 +262,11 @@ $LOAD CO2F_DH
 $LOAD PEF_DH
 $LOAD MA_CO2F_DH
 $LOAD MA_PEF_DH
+$load MA_PEF_exG
+$load MA_CO2F_exG
+$load max_exG_prev
+$load MA_Cost_DH
 $GDXIN
-
 *-----------Investmet limit----------------------------------------------------
 parameters
             inv_lim            Maximum value of the investment in SEK
@@ -319,6 +326,7 @@ Parameters
       opt_fx_inv_TES_init    TES Init. SoC
       opt_fx_inv_BTES_S_init  BTES_S Init. SoC
       opt_fx_inv_BTES_D_init  BTES_D Init. SoC
+      Pana1_prev_disp
 ;
 $GDXIN MtoG.gdx
 $lOAD opt_fx_inv_BES_init
@@ -326,14 +334,20 @@ $lOAD opt_fx_inv_BFCh_init
 $lOAD opt_fx_inv_TES_init
 $lOAD opt_fx_inv_BTES_S_init
 $lOAD opt_fx_inv_BTES_D_init
+$load Pana1_prev_disp
 $GDXIN
 *the combination is used to comment out sections codes inside
 *$Ontext
 parameters
   import
   export
+B_Heating_cost(h,i)             heating cost of buildings
+B_Electricity_cost(h,i_AH_el)   electricity cost of building
+B_Cooling_cost(h,i_AH_c)       cooling cost of buildings
+;
 $GDXIN MtoG.gdx
 $lOAD import
 $lOAD export
 $GDXIN
 *$Offtext
+

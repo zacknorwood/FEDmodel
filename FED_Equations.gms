@@ -12,6 +12,8 @@ equation
            eq1_h_Pana1            Eqauation related to Panna1 heat production
            eq2_h_Pana1         ramp constraint set to 1MW
            eq3_h_Pana1         ramp constraint set to 1MW
+           eq4_h_Pana1         ramp constraint set to 1MW
+           eq5_h_Pana1         ramp constraint set to 1MW
            eq_h_Panna1_dispatch  Equation determining when Panna1 is dispatchable
 
            eq_h_RGK1           Eqauation related to flue gas heat production
@@ -59,6 +61,8 @@ equation
            eq_HP2       cooling production from HP
            eq_HP3       for determining capacity of HP
 
+           eq_TESen0    initial energy content of the TES
+           eq_TESen1    initial energy content of the TES
            eq_TESen1    initial energy content of the TES
            eq_TESen2    energy content of the TES at hour h
            eq_TESen3    for determining the capacity of TES
@@ -68,8 +72,10 @@ equation
 
            eq_BTES_Sch   charging rate of shallow part the building
            eq_BTES_Sdis  discharging rate of shallow part the building
+           eq_BTES_Sen0  initial energy content of shallow part of the building
            eq_BTES_Sen1  initial energy content of shallow part of the building
            eq_BTES_Sen2  energy content of shallow part of the building at hour h
+           eq_BTES_Den0  initial energy content of deep part of the building
            eq_BTES_Den1  initial energy content of deep part of the building
            eq_BTES_Den2  energy content of deep part of the building at hour h
            eq_BS_BD      energy flow between the shallow and deep part of the building
@@ -117,10 +123,9 @@ equation
            eq_RMInv1     cooling production from RMInv
            eq_RMInv2     capacity determination of RMInv
 
-           eq_hbalance1  AbsC uses heat either from GE's DH grid or Panna1
-           eq_hbalance2  maximum heating export from AH system
-           eq_hbalance3  heating supply-demand balance excluding AH buildings
-           eq_hbalance4  heating supply-demand balance excluding nonAH buildings
+           eq_hbalance1  maximum heating export from AH system
+           eq_hbalance2  heating supply-demand balance excluding AH buildings
+           eq_hbalance3  heating supply-demand balance excluding nonAH buildings
            eq_cbalance   Balance equation cooling
 
            eq_ebalance3  supply demand balance equation from AH
@@ -146,13 +151,19 @@ equation
            eq_CO2        FED CO2 average emission
            eq_CO2_ma     FED CO2 marginal emission
 
-           eq_max_exG maximum monthly peak demand
+           eq_max_exG1 maximum monthly peak demand
+           eq_max_exG2 maximum monthly peak demand
            eq_PTexG   monthly power tariff
 
            eq_mean_DH daily mean power DH
            eq_PT_DH   power tariff DH
 
            eq_fix_cost_existing total fixed cost for existing units
+           eq1_fix_cost_DH      equation adding fixed cost for DH (4000SEK if import 0 otherwise)
+           eq2_fix_cost_DH      equation adding fixed cost for DH (4000SEK if import 0 otherwise)
+           eq3_fix_cost_DH      equation adding fixed cost for DH (4000SEK if import 0 otherwise)
+           eq4_fix_cost_DH      equation adding fixed cost for DH (4000SEK if import 0 otherwise)
+
            eq_fix_cost_new      total fixed cost for new units
            eq_var_cost_existing total variable cost for existing units
            eq_var_cost_new      total variable cost for new units
@@ -164,8 +175,10 @@ equation
            eq_peak_CO2   with aim to to reduce CO2 peak
 
            eq_obj        Objective function
-eq_imp
-eq_exp
+           eq_oper_cost             Operation cost for each hour
+;
+
+***************---------Must be deleted-------*************
 ;
 
 *-------------------------------------------------------------------------------
@@ -193,11 +206,17 @@ eq_VKA43(h)..
 eq1_h_Pana1(h)..
         h_Pana1(h)=l=Panna1_cap;
 
-eq2_h_Pana1(h)$(ord(h) gt 1)..
+eq2_h_Pana1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1)..
         h_Pana1(h-1)- h_Pana1(h)=g=-1000;
 
-eq3_h_Pana1(h)$(ord(h) gt 1)..
+eq3_h_Pana1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1)..
         h_Pana1(h-1)- h_Pana1(h)=l=1000;
+
+eq4_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1)..
+             Pana1_prev_disp- h_Pana1(h)=l=1000;
+
+eq5_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1)..
+             Pana1_prev_disp- h_Pana1(h)=g=-1000;
 
 eq_h_Panna1_dispatch(h)$(P1P2_dispatchable(h)=0)..
         h_Pana1(h) =e= qB1(h);
@@ -291,6 +310,9 @@ eq_HP3(h)..
              h_HP(h) =l= HP_cap;
 
 *------------------TES equations------------------------------------------------
+eq_TESen0(h,i)$(ord(h) eq 1)..
+             TES_en(h) =e= TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
+
 eq_TESen1(h,i)$(ord(h) eq 1)..
              TES_en(h) =e= opt_fx_inv_TES_init;
 *sw_TES*TES_cap*TES_density;
@@ -309,6 +331,9 @@ eq_TESinv(h)..
 *             TES_cap =G= sw_TES*TES_inv * 100;
 
 *------------------BTES equations (Building srorage)----------------------------
+eq_BTES_Sen0(h,i) $ (ord(h) eq 1)..
+         BTES_Sen(h,i) =e= (BTES_kSloss(i)*BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
+                           + BTES_Sch(h,i)*BTES_Sch_eff - link_BS_BD(h,i));
 eq_BTES_Sen1(h,i) $ (ord(h) eq 1)..
          BTES_Sen(h,i) =e= opt_fx_inv_BTES_S_init$(ord(i) eq 1);
 * sw_BTES*BTES_Sen_int(i);
@@ -322,6 +347,8 @@ eq_BTES_Sen2(h,i) $ (ord(h) gt 1)..
 eq_BTES_Den1(h,i) $ (ord(h) eq 1)..
          BTES_Den(h,i) =e= opt_fx_inv_BTES_D_init$(ord(i) eq 1);
 * sw_BTES*BTES_Den_int(i);
+eq_BTES_Den0(h,i) $ (ord(h) eq 1)..
+         BTES_Den(h,i) =e= (BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));
 eq_BTES_Den2(h,i) $ (ord(h) gt 1)..
          BTES_Den(h,i) =e= (BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));
 eq_BS_BD(h,i) $ (BTES_model('BTES_Scap',i) ne 0)..
@@ -414,18 +441,16 @@ eq_RMInv2(h)..
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
 eq_hbalance1(h)..
-             h_imp_AH(h) - h_exp_AH(h) + h_Pana1(h) =g= h_AbsC(h);
-eq_hbalance2(h)..
              h_exp_AH(h) =l= h_Pana1(h);
-eq_hbalance3(h)..
+eq_hbalance2(h)..
              sum(i,h_demand(h,i)) =e=h_imp_AH(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
-                                     + H_VKA4(h) - h_AbsC(h) + H_P2T(h) + 0.75*h_TURB(h) + h_RMMC(h)
+                                     + H_VKA4(h) + H_P2T(h) + 0.75*h_TURB(h) + h_RMMC(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
                                      + (sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
                                      + (sum(i,h_BAC_savings(h,i)))
                                      - h_AbsCInv(h);
-eq_hbalance4(h)..
+eq_hbalance3(h)..
              h_imp_nonAH(h)=e=sum(i_nonAH_h,h_demand_nonAH(h,i_nonAH_h))
                        - (sum(i_nonAH_h,BTES_Sdis(h,i_nonAH_h))*BTES_dis_eff-sum(i_nonAH_h,BTES_Sch(h,i_nonAH_h))/BTES_chr_eff);
 
@@ -483,13 +508,13 @@ $offtext
 eq_PE(h)..
         FED_PE(h)=e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*PEF_exG(h)
                      + e_existPV(h)*PEF_PV + e_PV(h)*PEF_PV
-                     + (h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*PEF_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*PEF_P1
+                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*PEF_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*PEF_P1
                      + fuel_P2(h)*PEF_P2;
 
 eq_PE_ma(h)..
-        MA_FED_PE(h)=e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*PEF_exG(h)
+        MA_FED_PE(h)=e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*MA_PEF_exG(h)
                      + e_existPV(h)*PEF_PV + e_PV(h)*PEF_PV
-                     + (h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*MA_PEF_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*PEF_P1
+                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*MA_PEF_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*PEF_P1
                      + fuel_P2(h)*PEF_P2;
 **********************Total PE use in the FED system****************************
 eq_totPE..
@@ -502,13 +527,13 @@ eq_totPE_ma..
 eq_CO2(h)..
        FED_CO2(h) =e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*CO2F_exG(h)
                       + e_existPV(h)*CO2F_PV + e_PV(h)*CO2F_PV
-                      + (h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*CO2F_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*CO2F_P1
+                      + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*CO2F_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*CO2F_P1
                       + fuel_P2(h) * CO2F_P2;
 
 eq_CO2_ma(h)..
-       MA_FED_CO2(h) =e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*CO2F_exG(h)
+       MA_FED_CO2(h) =e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*MA_CO2F_exG(h)
                       + e_existPV(h)*CO2F_PV + e_PV(h)*CO2F_PV
-                      + (h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*MA_CO2F_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*CO2F_P1
+                      + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*MA_CO2F_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*CO2F_P1
                       + fuel_P2(h) * CO2F_P2;
 
 ****************Total CO2 emission in the FED system****************************
@@ -518,13 +543,17 @@ eq_CO2_TOT..
 eq_CO2_TOT_ma..
          MA_FED_CO2_tot =e= sum(h, MA_FED_CO2(h));
 **************** Power tariffs *******************
-eq_max_exG(h,m)..
+eq_max_exG1(h,m)..
                max_exG(m) =g= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*HoM(h,m);
+
+eq_max_exG2(h,m)..
+               max_exG(m) =g= max_exG_prev*HoM(h,m);
+
 eq_PTexG(m)..
                PT_exG(m) =e= max_exG(m)*PT_cost('exG');
 
 eq_mean_DH(d)..
-              mean_DH(d) =g=   sum(h,(h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d))/24;
+              mean_DH(d) =g=   sum(h,(h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d))/24;
 
 eq_PT_DH(d)..
               PT_DH      =g=   mean_DH(d)*PT_cost('DH');
@@ -532,7 +561,12 @@ eq_PT_DH(d)..
 **************** Objective function ***********************
 *       sup_unit   supply units /PV, HP, BES, TES, BTES, RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP/
 eq_fix_cost_existing..
-         fix_cost_existing =e= sum(sup_unit,fix_cost(sup_unit)*cap_sup_unit(sup_unit));
+         fix_cost_existing =e=sum(sup_unit,fix_cost(sup_unit)*cap_sup_unit(sup_unit));
+
+eq1_fix_cost_DH(h)..h_imp_AH(h)+1000000*y_temp(h)=g=0;
+eq2_fix_cost_DH(h)..w(h)+1000000*y_temp(h)=g=166.666;
+eq3_fix_cost_DH(h)..w(h)+1000000*(1-y_temp(h))=g=41.666;
+eq4_fix_cost_DH(h)..h_imp_AH(h)-(1-y_temp(h))*10000000=l=0;
 
 eq_fix_cost_new..
          fix_cost_new =e=  (sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*fix_cost('PV')
@@ -545,10 +579,10 @@ eq_fix_cost_new..
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
 eq_var_cost_existing..
-         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)) + sum(m,PT_exG(m))
+         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)+sum(m,PT_exG(m)*HoM(h,m)))
                                -sum(h,e_exp_AH(h)*el_sell_price(h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h))  + PT_DH
-                               - sum(h,h_exp_AH(h)*DH_export_season(h)*0.3)
+                               - sum(h,sum(m,(h_exp_AH(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12))))
                                + sum(h,h_Pana1(h)*utot_cost('P1',h))
                                + sum(h,H_VKA1(h)*utot_cost('HP',h))
                                + sum(h,H_VKA4(h)*utot_cost('HP',h))
@@ -556,7 +590,11 @@ eq_var_cost_existing..
                                + sum(h,c_RM(h)*utot_cost('RM',h))
                                + sum(h,c_RMMC(h)*utot_cost('RM',h))
                                + sum(h,c_AAC(h)*utot_cost('AAC',h))
-                               + sum(h,e_existPV(h)*utot_cost('PV',h));
+                               + sum(h,e_existPV(h)*utot_cost('PV',h))
+                               + sum(h,sum(m,(h_AbsC(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10))))
+                               + sum(h,sum(m,(h_AbsC(h)*0.7*HoM(h,m))$((ord(m) =11))))
+                               + sum(h,sum(m,(h_AbsC(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))));
+
 eq_var_cost_new..
          var_cost_new =e=  sum(h,e_PV(h)*utot_cost('PV',h))
                            + sum(h,h_HP(h)*utot_cost('HP',h))
@@ -604,7 +642,30 @@ eq_obj..
          obj =e= min_totCost*totCost
                 + (min_totPE*tot_PE*(1-opt_marg_factors)+min_totPE*MA_tot_PE*opt_marg_factors)
                 + (min_totCO2*FED_CO2_tot*(1-opt_marg_factors)+min_totCO2*MA_FED_CO2_tot*opt_marg_factors);
-eq_imp(h)..import(h)=e=h_imp_AH(h);
-eq_exp(h)..h_exp_AH(h)=e=export(h);
+
+***************---------Must be checked-------*************
+eq_oper_cost(h) ..
+operation_cost(h)=e= fix_cost_existing +  (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)
+                               -e_exp_AH(h)*el_sell_price(h)
+                               + (h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h)
+                               -sum(m,(h_exp_AH(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12)))
+                               + h_Pana1(h)*utot_cost('P1',h)
+                               + H_VKA1(h)*utot_cost('HP',h)
+                               + H_VKA4(h)*utot_cost('HP',h)
+                               + c_AbsC(h)*utot_cost('AbsC',h)
+                               + c_RM(h)*utot_cost('RM',h)
+                               + c_RMMC(h)*utot_cost('RM',h)
+                               + c_AAC(h)*utot_cost('AAC',h)
+                               + e_existPV(h)*utot_cost('PV',h)
+                               + fix_cost_new
+                           +e_PV(h)*utot_cost('PV',h)
+                           + h_HP(h)*utot_cost('HP',h)
+                           + c_RMInv(h)*utot_cost('RMInv',h)
+                           + sum(j,BES_dis(h,j)*utot_cost('BES',h))
+                           + TES_dis(h)*utot_cost('TES',h)
+                           + sum(i,BTES_Sch(h,i)*utot_cost('BTES',h))
+                           + h_P2(h)*utot_cost('P2',h)
+                           + e_TURB(h)*utot_cost('TURB',h)
+                           + c_AbsCInv(h)*utot_cost('AbsCInv',h);
 
 ********************************************************************************

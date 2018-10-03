@@ -120,8 +120,13 @@ for i=sim_start:sim_stop
       heat_demand(count)=Results(i).dispatch.heat_demand(1,2);
     else 
         heat_demand(count)=0;
-         end
+          end
          
+            if (not(isempty(Results(i).dispatch.c_RM)) && Results(i).dispatch.c_RM(1,1)==1)
+      c_RM(count)=Results(i).dispatch.c_RM(1,2);
+    else 
+        c_RM(count)=0;
+         end
   %----------------Storage units--------------------------------------------      
          if (not(isempty(Results(i).dispatch.BES_en)) && Results(i).dispatch.BES_en(1,1)==1 && Results(i).dispatch.BES_en(1,2)==1)
       BES_en(count)=Results(i).dispatch.BES_en(1,3);
@@ -176,49 +181,65 @@ for i=sim_start:sim_stop
     else 
         TES_en(count)=0;
           end 
+          
+         BTES_Sch(count)=0;
+      for k=1:35
+           if (not(isempty(Results(i).dispatch.BTES_Sch)) && Results(i).dispatch.BTES_Sch(k,1)==1)
+      BTES_Sch(count)= BTES_Sch(count)+Results(i).dispatch.BTES_Sch(k,3);
+           end
+      end
       
-           if (not(isempty(Results(i).dispatch.BTES_Sch)) && Results(i).dispatch.BTES_Sch(1,1)==1 && Results(i).dispatch.BTES_Sch(1,2)==1)
-      BTES_Sch(count)=Results(i).dispatch.BTES_Sch(1,3);
-    else 
-        BTES_Sch(count)=0;
-           end  
-      
-       
-             if (not(isempty(Results(i).dispatch.BTES_Sdis)) && Results(i).dispatch.BTES_Sdis(1,1)==1 && Results(i).dispatch.BTES_Sdis(1,2)==1)
-      BTES_Sdis(count)=Results(i).dispatch.BTES_Sdis(1,3);
-    else 
-        BTES_Sdis(count)=0;
-             end  
-      
-             if (not(isempty(Results(i).dispatch.BTES_Sen)) && Results(i).dispatch.BTES_Sen(1,1)==1 && Results(i).dispatch.BTES_Sen(1,2)==1)
-      BTES_Sen(count)=Results(i).dispatch.BTES_Sen(1,3);
-    else 
-        BTES_Sen(count)=0;
+       BTES_Sdis(count)=0;
+       for k=1:35
+             if (not(isempty(Results(i).dispatch.BTES_Sdis)) && Results(i).dispatch.BTES_Sdis(k,1)==1)
+      BTES_Sdis(count)=BTES_Sdis(count)+Results(i).dispatch.BTES_Sdis(k,3);
              end
+       end  
       
-              if (not(isempty(Results(i).dispatch.BTES_Den)) && Results(i).dispatch.BTES_Den(1,1)==1 && Results(i).dispatch.BTES_Den(1,2)==1)
-      BTES_Den(count)=Results(i).dispatch.BTES_Den(1,3);
-    else 
-        BTES_Den(count)=0;
-              end  
+           BTES_Sen(count)=0; 
+        for k=1:35
+             if (not(isempty(Results(i).dispatch.BTES_Sen)) && Results(i).dispatch.BTES_Sen(k,1)==1)
+      BTES_Sen(count)=BTES_Sen(count)+Results(i).dispatch.BTES_Sen(k,3);
+             end
+        end
+      
+          BTES_Den(count)=0;
+          for k=1:35
+              if (not(isempty(Results(i).dispatch.BTES_Den)) && Results(i).dispatch.BTES_Den(k,1)==1)
+      BTES_Den(count)= BTES_Den(count)+Results(i).dispatch.BTES_Den(k,3);
+              end
+          end  
       %--------------Costs----------------------------
-             if (not(isempty(Results(i).dispatch.totCost)))
-      totCost(count)=Results(i).dispatch.totCost;
+             if (not(isempty(Results(i).dispatch.operation_cost)) && Results(i).dispatch.operation_cost(1,1)==1)
+      totCost(count)=Results(i).dispatch.operation_cost(1,2);
     else 
         totCost(count)=0;
              end  
               
-               if (not(isempty(Results(i).dispatch.var_cost_new)))
-      var_cost_new(count)=Results(i).dispatch.var_cost_new;
+            if (not(isempty(Results(i).dispatch.operation_cost)) && Results(i).dispatch.operation_cost(1,1)==1)
+      totCost(count)=Results(i).dispatch.operation_cost(1,2);
     else 
-        var_cost_new(count)=0;
-               end 
-                                   
-               if (not(isempty(Results(i).dispatch.var_cost_existing)))
-      var_cost_existing(count)=Results(i).dispatch.var_cost_existing;
-    else 
-        var_cost_existing(count)=0;
-               end  
+        totCost(count)=0;
+            end  
+             
+            for k=1:35
+                if (not(isempty(Results(i).dispatch.B_Heating_cost)) && Results(i).dispatch.B_Heating_cost(k,1)==1)
+      B_Heating_cost(count,Results(i).dispatch.B_Heating_cost(k,2))=Results(i).dispatch.B_Heating_cost(k,3);
+                end
+            end
+             
+             for k=1:35
+                if (not(isempty(Results(i).dispatch.B_Electricity_cost)) && Results(i).dispatch.B_Electricity_cost(k,1)==1)
+      B_Electricity_cost(count,Results(i).dispatch.B_Electricity_cost(k,2))=Results(i).dispatch.B_Electricity_cost(k,3);
+                end
+             end
+             
+            for k=1:35
+              if (not(isempty(Results(i).dispatch.B_Cooling_cost)) && Results(i).dispatch.B_Cooling_cost(k,1)==1)
+      B_Cooling_cost(count,Results(i).dispatch.B_Cooling_cost(k,2))=Results(i).dispatch.B_Cooling_cost(k,3);
+              end
+            end 
+             
               
   %-------------------CO2/PE---------------------------
       if (not(isempty(Results(i).dispatch.FED_PE)) && Results(i).dispatch.FED_PE(1,1)==1)
@@ -393,18 +414,23 @@ end
     xlswrite('results',{'BTES_Den'},'Storages','N2:N2');
     xlswrite('results',{'BTES_D'},'Storages','N1:N1'); 
     
+    xlswrite('results',c_RM','Storages',strcat('O3:O',num2str(count+2)));
+    xlswrite('results',{'c_RM'},'Storages','O2:O2');
+    xlswrite('results',{'c_RM'},'Storages','O1:O1'); 
 %-------------Costs----------------------    
-    xlswrite('results',totCost','Costs','A2:A2');
+    xlswrite('results',totCost','Costs',strcat('A2:A',num2str(count+2)));
     xlswrite('results',{'Total Cost'},'Costs','A1:A1');
 
-    xlswrite('results',var_cost_existing','Costs','B2:B2');
-    xlswrite('results',{'Variable Cost Exist.'},'Costs','B1:B1');
-
-    xlswrite('results',var_cost_new','Costs','C2:C2');
-    xlswrite('results',{'Variable Cost New.'},'Costs','C1:C1');
+    xlswrite('results',B_Heating_cost,'B_Heating_cost',strcat('A2:AJ',num2str(count+2)));
+    xlswrite('results',{'B_Heating_cost'},'Costs','A1:A1');
     
+    xlswrite('results',B_Electricity_cost,'B_Electricity_cost',strcat('A2:AJ',num2str(count+2)));
+    xlswrite('results',{'B_Electricity_cost'},'Costs','A1:A1');
+    
+    xlswrite('results',B_Cooling_cost,'B_Cooling_cost',strcat('A2:AJ',num2str(count+2)));
+    xlswrite('results',{'B_Cooling_cost'},'Costs','A1:A1');
 %--------------CO2 and PE factors-------------------
-    xlswrite('results',FED_PE','CO2_PE',strcat('A2:A',num2str(count+2)));
+    xlswrite('results',FED_PE','CO2_PE',strcat('A2:AJ',num2str(count+2)));
     xlswrite('results',{'FED PE'},'CO2_PE','A1:A1');
     
     xlswrite('results',MA_FED_PE','CO2_PE',strcat('B2:B',num2str(count+2)));

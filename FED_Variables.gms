@@ -215,7 +215,11 @@ positive variable
          h_exp_AH(h)        Exported heat from the AH system
          h_imp_AH(h)        Imported heat to the AH system
          h_imp_nonAH(h)     Imported heat to the AH system
+         w(h)                  Fixed cost for using DH network (4000SEK if import otherwise 1000)
 ;
+
+binary variable
+y_temp(h);
 * Set maximum import and export to the grid.
 h_imp_AH.up(h)=  DH_max_cap;
 
@@ -263,5 +267,6 @@ variable
          MA_FED_CO2_tot     total marginal CO2 emissions from the FED system
          peak_CO2           CO2 peak
          obj                objective function
+         operation_cost(h)     cost for each hour
 ;
 *invCost.up $ (min_totCost eq 0) = inv_lim;

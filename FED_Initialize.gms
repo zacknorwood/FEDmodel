@@ -329,7 +329,7 @@ parameter
 
 * 0.0031 is grid tariff per kWh from Göteborg Energi home page; 0.011sek/kWh average profit for GE for large customers
 price('exG',h)=net_tariff + unit_avrg_prof_buy + el_price(h);
-price('DH',h)=h_price(h);
+price('DH',h)=h_price(h)$(opt_marg_factors eq 0)+MA_Cost_DH(h)$(opt_marg_factors eq 1);
 
 el_sell_price(h) =el_price(h) - unit_prof_sell - net_tariff  +  el_cirtificate(h) + ursprungsgaranti;
 *the data is obtained from Energimyndigheten 2015 wood chips for District Heating Uses
@@ -397,9 +397,9 @@ scalar
          CO2_lim    Desired or limiting value of CO2
 ;
 
-PE_lim=(1-0.3)*PE_tot_ref;
-dCO2=CO2_max-CO2_peak_ref;
-CO2_lim=CO2_peak_ref+0.2*dCO2;
+*PE_lim=(1-0.3)*PE_tot_ref;
+*dCO2=CO2_max-CO2_peak_ref;
+*CO2_lim=CO2_peak_ref+0.2*dCO2;
 *--------------Limit on investment----------------------------------------------
 $Ontext
 

@@ -79,6 +79,10 @@ AH_h_exp_tot=sum(h,h_exp_AH.l(h));
 cool_demand(h)= sum(i,c_demand(h,i));
 heat_demand(h)= sum(i,h_demand(h,i));
 elec_demand(h)= sum(i,el_demand(h,i));
+B_Heating_cost(h,i)= abs(eq_hbalance3.M(h))*h_demand(h,i);
+B_Electricity_cost(h,i_AH_el)=abs(eq_ebalance3.M(h))*el_demand(h,i_AH_el);
+B_Cooling_cost(h,i_AH_c)=abs(eq_cbalance.M(h))*c_demand_AH(h,i_AH_c);
+max_exG_prev=sum(m, max_exG.l(m));
 execute_unload 'GtoM' min_totCost, min_totPE, min_totCO2,
                       el_demand, el_demand_nonAH, h_demand, c_demand, c_demand_AH,
                       e_imp_AH, e_exp_AH, e_imp_nonAH,AH_el_imp_tot, AH_el_exp_tot,
@@ -107,7 +111,7 @@ execute_unload 'GtoM' min_totCost, min_totPE, min_totCO2,
                       DH_export_season, P1P2_dispatchable, inv_lim
                       c_RMInv, e_RMInv, RMInv_cap, invCost_RMInv,BFCh_en,BFCh_ch,
                       BES_reac,BFCh_reac,BFCh_dis,e_existPV_reac,e_existPV_act,e_TURB_reac,e_PV_reac_roof,e_PV_act_roof,e_TURB_reac,
-                      model_status;
+                      model_status,operation_cost,B_Heating_cost,B_Electricity_cost,B_Cooling_cost,max_exG_prev;
 
 execute_unload 'h' h;
 execute_unload 'BID' BID;
@@ -125,5 +129,4 @@ execute_unload 'sup_unit' sup_unit;
 execute_unload 'inv_opt' inv_opt;
 execute_unload 'coefs' coefs;
 execute_unload 'BTES_properties' BTES_properties;
-
-display Panna1_cap.l;
+     
