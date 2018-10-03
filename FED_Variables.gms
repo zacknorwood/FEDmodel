@@ -1,6 +1,10 @@
 ********************************************************************************
 *---------------------Declare variables and equations---------------------------
 ********************************************************************************
+variable
+         DH_node_flows(h, DH_Node_ID) Total flows for nodes in district heating system
+         DC_node_flows(h, DC_Node_ID) Total flows for nodes in district cooling system
+;
 
 *******************Dispaching existing units************************************
 *------------------VKA1 Heatpump related----------------------------------------

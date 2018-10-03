@@ -128,7 +128,7 @@ scalar
 * source Uhttps://ec.europa.eu/energy/sites/ener/files/documents/Report%20WP2.pdf
 scalar
          AbsCInv_COP    Coefficient of performance for absorption cooling investment /0.5/
-         AbsH_COP       Coeffiicent of performance for absorption heating investment /1.7/
+*         AbsH_COP       Coeffiicent of performance for absorption heating investment /1.7/
 
 *        AbsCInv_fx     Fixed cost for investment in Abs chiller /64400/
 *         AbsCInv_MaxCap Maximum possible investment in kW cooling /100000/
