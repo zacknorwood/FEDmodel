@@ -112,12 +112,9 @@ execute_unload 'GtoM' min_totCost, min_totPE, min_totCO2,
                       DH_export_season, P1P2_dispatchable, inv_lim,
                       c_RMInv, e_RMInv, RMInv_cap, invCost_RMInv,BFCh_en,BFCh_ch,
                       BES_reac,BFCh_reac,BFCh_dis,e_existPV_reac,e_existPV_act,e_TURB_reac,e_PV_reac_roof,e_PV_act_roof,e_TURB_reac,
-<<<<<<< HEAD
-                      model_status,operation_cost,B_Heating_cost,B_Electricity_cost,B_Cooling_cost,max_exG_prev;
-=======
+                      model_status,operation_cost,B_Heating_cost,B_Electricity_cost,B_Cooling_cost,max_exG_prev,
                       DH_node_flows, DC_node_flows,
                       model_status;
->>>>>>> 537589765aa032bdbdf35ad78f42fbd916bd652a
 
 execute_unload 'h' h;
 execute_unload 'BID' BID;
@@ -136,10 +133,9 @@ execute_unload 'inv_opt' inv_opt;
 execute_unload 'coefs' coefs;
 <<<<<<< HEAD
 execute_unload 'BTES_properties' BTES_properties;
-     
-=======
+
 execute_unload 'BTES_properties' BTES_properties
 execute_unload 'temp_slack', sum_temp_slack;
 
 display Panna1_cap.l;
->>>>>>> 537589765aa032bdbdf35ad78f42fbd916bd652a
+

@@ -123,11 +123,11 @@ equation
            eq_RMInv1     cooling production from RMInv
            eq_RMInv2     capacity determination of RMInv
 
-<<<<<<< HEAD
+
            eq_hbalance1  maximum heating export from AH system
            eq_hbalance2  heating supply-demand balance excluding AH buildings
            eq_hbalance3  heating supply-demand balance excluding nonAH buildings
-=======
+
            eq_hbalance1  AbsC uses heat either from GE's DH grid or Panna1
            eq_hbalance2  maximum heating export from AH system
            eq_hbalance3  heating supply-demand balance excluding AH buildings
@@ -138,7 +138,7 @@ equation
            eq_dcn_constraint District cooling network transfer limit
            eq_DC_node_flows Summing of flows in district cooling network
 
->>>>>>> 537589765aa032bdbdf35ad78f42fbd916bd652a
+
            eq_cbalance   Balance equation cooling
 
            eq_ebalance3  supply demand balance equation from AH

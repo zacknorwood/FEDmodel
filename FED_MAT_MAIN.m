@@ -22,7 +22,7 @@ B_ID.uels={'O3060132', 'O3060101', 'O3060102_3', 'O3060104_15', 'O0007043','O000
            'O0007022', 'O0007025', 'O0007012', 'O0007021', 'O0007028','O0007001',...
            'O3060133', 'O0007024', 'O0007005', 'O0013001','O0011001',...
            'O0007018', 'O3060137', 'Karhuset', 'O3060138','O0007023', 'O0007026', 'O0007027',...
-           'Karhus_studenter', 'Chabo'}; 
+           'Karhus_studenter', 'Chabo','ITGYMNASIET'}; 
 
 B_ID_AH_el.name='i_AH_el';
 B_ID_AH_el.uels={'O3060132', 'O0007043', 'O0007017',...
@@ -300,18 +300,13 @@ while Re_calculate_CO2PEF==0
     break;
 end
 
-<<<<<<< HEAD
 %Import marginal CO2 and PE factors, marginal DH cost
 DH_cost_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'W5:W17900');
 DH_CO2F_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'X5:X17900');
 DH_PEF_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'Y5:Y17900');
 EL_CO2F_ma=sum(csvread('Input_data_FED_SIMULATOR\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[230  820   490   24     12  45 700   11  24  24],2);
 EL_PEF_ma=sum(csvread('Input_data_FED_SIMULATOR\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[2.99  2.45  1.93  1.01   3.29  1.25 2.47 1.03 1.01  1.01],2);
-=======
-%Import marginal CO2 and PE factors
-DH_CO2F_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjÃ¤rrvÃ¤rme marginal.xlsx',2,'X5:X17900');
-DH_PEF_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjÃ¤rrvÃ¤rme marginal.xlsx',2,'Y5:Y17900');
->>>>>>> 537589765aa032bdbdf35ad78f42fbd916bd652a
+
 %% FIXED MODEL INPUT DATA - FED INVESTMENT LIMIT
 
 FED_inv = 68570065;%68570065; %76761000;  %this is projected FED investment cost in SEK
@@ -385,17 +380,17 @@ MA_Cost_DH = struct('name','MA_Cost_DH','type','parameter','form','full');
 
 %% District heating network transfer limits - initialize nodes and flow limits
 DH_Node_Fysik.name = 'Fysik';
-DH_Node_Fysik.uels = {'Fysik_Origo', 'Kemi', 'ITGYMNASIET', 'NyaMatte', 'MC2', 'Fysik_Soliden', 'Polymerteknologi', 'Keramforskning'};
+DH_Node_Fysik.uels = {'O0007001', 'O3060132', 'ITGYMNASIET', 'O0007006', 'O3060133', 'O0011001', 'O0007005', 'O0013001'};
 DH_Node_Bibliotek.name = 'Bibliotek';
-DH_Node_Bibliotek.uels = {'Bibliotek'};
+DH_Node_Bibliotek.uels = {'O0007017'};
 DH_Node_Maskin.name = 'Maskin';
-DH_Node_Maskin.uels = {'Maskinteknik', 'Lokalkontor'};
+DH_Node_Maskin.uels = {'O0007028', 'O0007888'};
 DH_Node_EDIT.name = 'EDIT';
-DH_Node_EDIT.uels = {'Elkraftteknik', 'Edit', 'Idelara', 'HA', 'HB', 'HC', 'SSPA', 'Studentbostader'};
+DH_Node_EDIT.uels = {'O0007012', 'O0007024', 'O0007018', 'O0007022', 'O0007025', 'O0007021', 'SSPA', 'Studentbostader'};
 DH_Node_VoV.name = 'VoV';
-DH_Node_VoV.uels = {'Karhus_CFAB','Karhus_studenter', 'CAdministration', 'VOV1', 'Arkitektur', 'VOV2'};
+DH_Node_VoV.uels = {'Karhus_CFAB','Karhus_studenter', 'O0007019', 'O0007023', 'O0007026', 'O0007027'};
 DH_Node_Eklanda.name = 'Eklanda';
-DH_Node_Eklanda.uels = {'GamlaMatte'};
+DH_Node_Eklanda.uels = {'O0007040'};
 
 DH_Nodes.name = {DH_Node_Fysik.name, DH_Node_Bibliotek.name, DH_Node_Maskin.name, DH_Node_EDIT.name, DH_Node_VoV.name, DH_Node_Eklanda.name};
 DH_Nodes.maximum_flow = [31, 2, Inf, 13, 55, Inf] .* 1/1000 ; % l/s * m3/l = m3/s which is assumed input by fget_dh_transfer_limits below
@@ -443,14 +438,9 @@ temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',op
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 
 %SIMULATION START AND STOP TIME
-<<<<<<< HEAD
-sim_start=2600;
-sim_stop=2797; 
-=======
-
 sim_start=2002;
-sim_stop=2003; 
->>>>>>> 537589765aa032bdbdf35ad78f42fbd916bd652a
+sim_stop=2203; 
+
 forcast_horizon=10;
 t_len_m=10;
 Time(1).point='fixed inputs';
@@ -647,14 +637,11 @@ wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
      PV_BID_roof_Inv,PV_roof_cap_Inv,PV_BID_facade_Inv,PV_facade_cap_Inv,...
      temp_optn1, temp_optn2, temp_optn3, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap,...
      temp_opt_fx_inv_BES_maxP,temp_opt_fx_inv_BFCh_maxP,PV_inverter_PF_Inv,temp_opt_fx_inv_BTES_D_init,temp_opt_fx_inv_BTES_S_init,...
-<<<<<<< HEAD
      temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init,export,import,temp_Pana1_prev_disp,...
-     MA_PEF_exG,MA_CO2F_exG,temp_max_exG_prev,MA_Cost_DH);
-=======
-     temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init,export,import,...
+     MA_PEF_exG,MA_CO2F_exG,temp_max_exG_prev,MA_Cost_DH,...
      DH_Node_ID, DH_Nodes_Transfer_Limits,...
      DC_Node_ID, DC_Nodes_Transfer_Limits);
->>>>>>> 537589765aa032bdbdf35ad78f42fbd916bd652a
+
  
 %wgdx('MtoG_pv.gdx',G_facade,area_roof_max,area_facade_max);
 Time(2).point='Wgdx and Inputs';

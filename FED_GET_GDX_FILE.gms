@@ -42,12 +42,12 @@ $GDXIN MtoG.gdx
 $LOAD DH_node_transfer_limits
 $GDXIN
 
-set DHNodeToB_ID(DH_Node_ID, B_ID)  Mapping between district heating nodes and buildings /Fysik.(Fysik_Origo, Kemi, NyaMatte, MC2, Fysik_Soliden, Polymerteknologi, Keramforskning),
-                                                                                          Bibliotek.Bibliotek,
-                                                                                          Maskin.(Maskinteknik,Lokalkontor),
-                                                                                          EDIT.(Elkraftteknik,Edit,Idelara,HA,HB,HC,SSPA,Studentbostader),
-                                                                                          VoV.(Karhus_CFAB,Karhus_studenter,CAdministration,VOV1,Arkitektur,VOV2),
-                                                                                          Eklanda.GamlaMatte/
+set DHNodeToB_ID(DH_Node_ID, B_ID)  Mapping between district heating nodes and buildings /Fysik.(O0007001, O3060132, O0007006, O3060133, O0011001, O0007005, O0013001),
+                                                                                          Bibliotek.O0007017,
+                                                                                          Maskin.(O0007028,O0007888),
+                                                                                          EDIT.(O0007012,O0007024,O0007018,O0007022,O0007025,O0007021,SSPA,Studentbostader),
+                                                                                          VoV.(Karhus_CFAB,Karhus_studenter,O0007019,O0007023,O0007026,O0007027),
+                                                                                          Eklanda.O0007040/
 *ITGYMNASIET belongs to Fysik node
 *-----------DC heating nodes----------------------------------------------------
 set DC_Node_ID    District cooling network node names
@@ -63,11 +63,11 @@ $GDXIN MtoG.gdx
 $LOAD DC_node_transfer_limits
 $GDXIN
 
-set DCNodeToB_ID(DC_Node_ID, B_ID)  Mapping between district cooling nodes and buildings /VoV.(CAdministration,VOV1,Arkitektur,VOV2),
-                                                                                          Maskin.(Maskinteknik,Lokalkontor,HA,HB),
-                                                                                          EDIT.(Elkraftteknik,Edit,Idelara,HC),
-                                                                                          Fysik.(Fysik_Origo, NyaMatte, MC2, Fysik_Soliden, Polymerteknologi),
-                                                                                          Kemi.(Kemi,Keramforskning)/
+set DCNodeToB_ID(DC_Node_ID, B_ID)  Mapping between district cooling nodes and buildings /VoV.(O0007019,O0007023,O0007026,O0007027),
+                                                                                          Maskin.(O0007028,O0007888,O0007022,O0007025),
+                                                                                          EDIT.(O0007012,O0007024,O0007018,O0007021),
+                                                                                          Fysik.(O0007001, O0007006, O3060133, O0011001, O0007005),
+                                                                                          Kemi.(O3060132,O0013001)/
 
 *--------------Building catagories based on how energy is supplied--------------
 set i_AH_el(i) buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok

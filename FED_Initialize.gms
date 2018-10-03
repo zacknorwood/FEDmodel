@@ -362,10 +362,10 @@ var_cost('P1',h)= 5.4 / kilo * EUR_to_SEK_2015;
 *var_cost('RGK1',h)= 5.4 / kilo * EUR_to_SEK_2015; ???
 var_cost('P2',h)= 5.4 / kilo * EUR_to_SEK_2015;
 * AbsC variable O&M inclusive electricity, adjusted by COP for absorption heating compared to cooling factors
-var_cost('AbsC',h)= 0.9 / kilo * AbsH_COP/AbsC_COP * EUR_to_SEK_2015;
+var_cost('AbsC',h)= 0.9 / kilo * AbsC_COP * EUR_to_SEK_2015;
 fix_cost('AbsC')= 3000 / kilo * EUR_to_SEK_2015;
 * AbsCInv variable O&M inclusive electricity, adjusted by COP for absorption heating compared to cooling factors
-var_cost('AbsCInv',h)= 0.9 / kilo * AbsH_COP/AbsCInv_COP * EUR_to_SEK_2015;
+var_cost('AbsCInv',h)= 0.9 / kilo * AbsCInv_COP * EUR_to_SEK_2015;
 fix_cost('AbsCInv')= 3000 / kilo * EUR_to_SEK_2015;
 * No data on ambient air chillers, assume same as absorption heater for both variable O&M and fixed costs
 var_cost('AAC',h)= 0.9 / kilo * EUR_to_SEK_2015;
