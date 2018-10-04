@@ -2,6 +2,7 @@
 *----------------------------Define equations-----------------------------------
 ********************************************************************************
 equation
+
            eq_VKA11     heating generatin of VKA1
            eq_VKA12     cooling generation of VKA1
            eq_VKA13     maximum electricity usage by VKA1
@@ -25,10 +26,6 @@ equation
            eq_RM1       Refrigerator equation
            eq_RM2       Refrigerator equation
 
-           eq_RMMC1     MC2 Refrigerator equation - heating
-           eq_RMMC2     MC2 Refrigerator equation - cooling
-           eq_RMMC3     MC2 investment constraint
-
            eq_ACC1      Refrigerator equation
            eq_ACC2      Refrigerator equation
            eq_ACC3      Temperature limit of Ambient Air Cooler
@@ -40,7 +37,9 @@ equation
            eq_existPV_reactive3 Reactive power limit of existing PVs
            eq_existPV_reactive4 Reactive power limit of existing PVs
 
-
+           eq_RMMC1     MC2 Refrigerator equation - heating
+           eq_RMMC2     MC2 Refrigerator equation - cooling
+           eq_RMMC3     MC2 investment constraint
 
            eq1_AbsCInv  Production equation-AbsChiller investment
            eq2_AbsCInv  Investment capacity-AbsChiller investment
@@ -62,7 +61,6 @@ equation
            eq_HP3       for determining capacity of HP
 
            eq_TESen0    initial energy content of the TES
-           eq_TESen1    initial energy content of the TES
            eq_TESen1    initial energy content of the TES
            eq_TESen2    energy content of the TES at hour h
            eq_TESen3    for determining the capacity of TES
@@ -128,11 +126,6 @@ equation
            eq_hbalance2  heating supply-demand balance excluding AH buildings
            eq_hbalance3  heating supply-demand balance excluding nonAH buildings
 
-           eq_hbalance1  AbsC uses heat either from GE's DH grid or Panna1
-           eq_hbalance2  maximum heating export from AH system
-           eq_hbalance3  heating supply-demand balance excluding AH buildings
-           eq_hbalance4  heating supply-demand balance excluding nonAH buildings
-
            eq_dhn_constraint District heating network transfer limit
            eq_dh_node_flows Summing of flows in district heating network
            eq_dcn_constraint District cooling network transfer limit
@@ -143,7 +136,6 @@ equation
 
            eq_ebalance3  supply demand balance equation from AH
            eq_ebalance4  electrical import equation to nonAH
-
            eq_dcpowerflow1  active power balance equation
            eq_dcpowerflow2  reactive power balance equation
            eq_dcpowerflow3  line limits equations
@@ -183,15 +175,12 @@ equation
            eq_Ainv_cost  total annualized investment cost
            eq_invCost    with aim to minimize investment cost
            eq_totCost    with aim to minimize total cost including fuel and O&M
-           eq_CO2_tot    with aim to minimize total FED aver. CO2 emission
-           eq_CO2_tot_ma with aim to minimize total FED marginal CO2 emission
+           eq_CO2_TOT    with aim to minimize total FED aver. CO2 emission
+           eq_CO2_TOT_ma with aim to minimize total FED marginal CO2 emission
            eq_peak_CO2   with aim to to reduce CO2 peak
 
            eq_obj        Objective function
            eq_oper_cost             Operation cost for each hour
-;
-
-***************---------Must be deleted-------*************
 ;
 
 *-------------------------------------------------------------------------------
@@ -377,7 +366,7 @@ eq_BAC_savings(h,i)..
 
 *-----------------Battery constraints-------------------------------------------
 eq_BES1(h,j) $ (ord(h) eq 1)..
-             BES_en(h,j)=e= opt_fx_inv_BES_init$(ord(j) eq 28) ;
+             BES_en(h,j)=e= opt_fx_inv_BES_init;
 *sw_BES*BES_cap;
 eq_BES2(h,j)$(ord(h) gt 1)..
              BES_en(h,j)=e=(BES_en(h-1,j)+BES_ch(h,j)-BES_dis(h,j));
@@ -400,7 +389,7 @@ eq_BES_reac7(h,j)..0.58*BES_reac(h,j)-BES_ch(h,j)+BES_dis(h,j)=l=1.15*opt_fx_inv
 eq_BES_reac8(h,j)..0.58*BES_reac(h,j)-BES_ch(h,j)+BES_dis(h,j)=g=-1.15*opt_fx_inv_BES_maxP(j);
 *-----------------Battery Fast Charge constraints-------------------------------------------
 eq_BFCh1(h,j) $ (ord(h) eq 1)..
-             BFCh_en(h,j)=e= opt_fx_inv_BFCh_init$(ord(j) eq 5);
+             BFCh_en(h,j)=e= opt_fx_inv_BFCh_init;
 *sw_BES*BES_cap;
 eq_BFCh2(h,j)$(ord(h) gt 1)..
              BFCh_en(h,j)=e=(BFCh_en(h-1,j)+BFCh_ch(h,j)-BFCh_dis(h,j));
@@ -490,16 +479,17 @@ eq_dcn_constraint(h, DC_Node_ID)..
          DC_node_transfer_limits(h, DC_Node_ID) =g= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
                  - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
                  - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
-                 + sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, 'EDIT'))$(sameas(DC_Node_ID, 'Maskin'))
+                 + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))
 ;
 
 eq_DC_node_flows(h, DC_Node_ID)..
          DC_node_flows(h, DC_Node_ID) =e= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
                  - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
                  - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
-                 + sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, 'EDIT'))$(sameas(DC_Node_ID, 'Maskin'))
+                 + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))
 
 ;
+
 * - (C_VKA4(h) + c_HP(h) + c_AbsCInv(h)  + c_AbsC(h)  are at KC and thus
 
 **************************Demand Supply constraints*****************************
@@ -538,14 +528,14 @@ eq_ebalance4(h)..
 
 eq_dcpowerflow1(h,Bus_IDs)..((e_imp_AH(h) - e_exp_AH(h))/Sb)$(ord(Bus_IDs)=13)-((el_VKA1(h) + el_VKA4(h))/Sb)$(ord(Bus_IDs)=20)
             + sum(BID,e_existPV_act(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(r,e_PV_act_roof(h,r)$BusToBID(Bus_IDs,r))/Sb+sum(f,(PV_facade_cap_Inv(f)*PV_power_facade(h,f))$BusToBID(Bus_IDs,f))/Sb+
-            ((BES_dis(h,Bus_IDs)*BES_dis_eff - BES_ch(h,Bus_IDs)/BES_ch_eff)/Sb)$(ord(Bus_IDs)=28)+(e_TURB(h)/Sb)$(ord(Bus_IDs)=16)+
-            ((BFCh_dis(h,Bus_IDs)*BFCh_dis_eff - BFCh_ch(h,Bus_IDs)/BFCh_ch_eff)/Sb)$(ord(Bus_IDs)=5)-sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb-((el_RM(h)+e_RMMC(h)+e_AAC(h)+e_HP(h)+e_RMInv(h))/Sb)$(ord(Bus_IDs)=10)
+            ((BES_dis(h,Bus_IDs)*BES_dis_eff - BES_ch(h,Bus_IDs)/BES_ch_eff)/Sb)+(e_TURB(h)/Sb)$(ord(Bus_IDs)=16)+
+            ((BFCh_dis(h,Bus_IDs)*BFCh_dis_eff - BFCh_ch(h,Bus_IDs)/BFCh_ch_eff)/Sb)-sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb-((el_RM(h)+e_RMMC(h)+e_AAC(h)+e_HP(h)+e_RMInv(h))/Sb)$(ord(Bus_IDs)=10)
 =e=sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),gij(Bus_IDs,j)*(V(h,Bus_IDs)-V(h,j)))-
-sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),bij(Bus_IDs,j)*(delta(h,Bus_IDs)-delta(h,j)));;
+sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),bij(Bus_IDs,j)*(delta(h,Bus_IDs)-delta(h,j)));
 
 
 eq_dcpowerflow2(h,Bus_IDs)..(re_imp_AH(h)/Sb)$(ord(Bus_IDs)=13)-0.2031*sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb+(e_TURB_reac(h)/Sb)$(ord(Bus_IDs)=16)+
-                             (BES_reac(h,Bus_IDs)/Sb)$(ord(Bus_IDs)=28)+(BFCh_reac(h,Bus_IDs)/Sb)$(ord(Bus_IDs)=5)+sum(BID,e_existPV_reac(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(r,e_PV_reac_roof(h,r)$BusToBID(Bus_IDs,r))/Sb
+                             (BES_reac(h,Bus_IDs)/Sb)+(BFCh_reac(h,Bus_IDs)/Sb)+sum(BID,e_existPV_reac(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(r,e_PV_reac_roof(h,r)$BusToBID(Bus_IDs,r))/Sb
 =e=-(bii(Bus_IDs)+sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),gij(Bus_IDs,j)*(delta(h,Bus_IDs)-delta(h,j)))-
 sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),bij(Bus_IDs,j)*(V(h,Bus_IDs)-V(h,j))));
 
@@ -703,11 +693,12 @@ eq_peak_CO2(h)..
 
 ****************Objective function**********************************************
 eq_obj..
-         obj =e= min_totCost*totCost
+         obj=e= min_totCost*totCost
                 + (min_totPE*tot_PE*(1-opt_marg_factors)+min_totPE*MA_tot_PE*opt_marg_factors)
                 + (min_totCO2*FED_CO2_tot*(1-opt_marg_factors)+min_totCO2*MA_FED_CO2_tot*opt_marg_factors);
 
-***************---------Must be checked-------*************
+****************---------Must be checked-------*************
+
 eq_oper_cost(h) ..
 operation_cost(h)=e= fix_cost_existing +  (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)
                                -e_exp_AH(h)*el_sell_price(h)

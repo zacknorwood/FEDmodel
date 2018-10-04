@@ -173,30 +173,38 @@ opt_fx_inv_TES_cap=0;
 temp_opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',opt_fx_inv_TES_cap);
 
 %Option for BES investment
+BES_BID_temp=[28]; %OBS: Reffers to bus 28
+BES_BID_inv.name='BES_BID_inv';
+BES_BID_inv.uels=num2cell(BES_BID_temp);
+
 opt_fx_inv_BES=1;
 temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',opt_fx_inv_BES);
 opt_fx_inv_BES_cap=[0]; %must be set to 200
 temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full');
 temp_opt_fx_inv_BES_cap.val=opt_fx_inv_BES_cap;
-temp_opt_fx_inv_BES_cap.uels={'28'};
+temp_opt_fx_inv_BES_cap.uels=BES_BID_inv.uels;
 
 opt_fx_inv_BES_maxP=[0];  %must be set to 100
 temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full');
 temp_opt_fx_inv_BES_maxP.val=opt_fx_inv_BES_maxP;
-temp_opt_fx_inv_BES_maxP.uels={'5'};
+temp_opt_fx_inv_BES_maxP.uels=BES_BID_inv.uels;
 
 %Option for BFCh investment
+BFCh_BID_roof_temp=[5]; %OBS: Reffers to Bus 5
+BFCh_BID_roof_inv.name='PV_BID_roof_Inv';
+BFCh_BID_roof_inv.uels=num2cell(PV_BID_roof_Inv_temp);
+
 opt_fx_inv_BFCh=0;
 temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
 opt_fx_inv_BFCh_cap=[0]; %must be set to 100
 temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full');
 temp_opt_fx_inv_BFCh_cap.val=opt_fx_inv_BFCh_cap;
-temp_opt_fx_inv_BFCh_cap.uels={'O0007043'};
+temp_opt_fx_inv_BFCh_cap.uels=BFCh_BID_roof_inv.uels;
 
 opt_fx_inv_BFCh_maxP=0; %must be set to 50
 temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full');
 temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
-temp_opt_fx_inv_BFCh_maxP.uels={'O0007043'};
+temp_opt_fx_inv_BFCh_maxP.uels=BFCh_BID_roof_inv.uels;
 
 %Option for BTES investment
 BITES_Inv.name='BITES_Inv';
@@ -438,8 +446,8 @@ temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',op
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 
 %SIMULATION START AND STOP TIME
-sim_start=2002;
-sim_stop=2203; 
+sim_start=2000;
+sim_stop=5002; 
 
 forcast_horizon=10;
 t_len_m=10;
