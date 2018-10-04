@@ -607,7 +607,7 @@ eq_PTexG(m)..
                PT_exG(m) =e= max_exG(m)*PT_cost('exG');
 
 eq_mean_DH(d)..
-              mean_DH(d) =g=   sum(h,(h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d))/24;
+              mean_DH(d) =g=   sum(h,(h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d))/10;
 
 eq_PT_DH(d)..
               PT_DH      =g=   mean_DH(d)*PT_cost('DH');
@@ -698,7 +698,7 @@ eq_obj..
                 + (min_totCO2*FED_CO2_tot*(1-opt_marg_factors)+min_totCO2*MA_FED_CO2_tot*opt_marg_factors);
 
 ****************---------Must be checked-------*************
-
+**********Actual cost of AH****************
 eq_oper_cost(h) ..
 operation_cost(h)=e= fix_cost_existing +  (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)
                                -e_exp_AH(h)*el_sell_price(h)
@@ -712,6 +712,9 @@ operation_cost(h)=e= fix_cost_existing +  (e_imp_AH(h) + e_imp_nonAH(h))*utot_co
                                + c_RMMC(h)*utot_cost('RM',h)
                                + c_AAC(h)*utot_cost('AAC',h)
                                + e_existPV(h)*utot_cost('PV',h)
+                               + sum(m,(h_AbsC(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10)))
+                               + sum(m,(h_AbsC(h)*0.7*HoM(h,m))$((ord(m) =11)))
+                               + sum(m,(h_AbsC(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12)))
                                + fix_cost_new
                            +e_PV(h)*utot_cost('PV',h)
                            + h_HP(h)*utot_cost('HP',h)

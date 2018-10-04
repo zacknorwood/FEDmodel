@@ -190,21 +190,21 @@ temp_opt_fx_inv_BES_maxP.val=opt_fx_inv_BES_maxP;
 temp_opt_fx_inv_BES_maxP.uels=BES_BID_inv.uels;
 
 %Option for BFCh investment
-BFCh_BID_roof_temp=[5]; %OBS: Reffers to Bus 5
-BFCh_BID_roof_inv.name='PV_BID_roof_Inv';
-BFCh_BID_roof_inv.uels=num2cell(PV_BID_roof_Inv_temp);
+BFCh_BID_temp=[5]; %OBS: Reffers to Bus 5
+BFCh_BID_inv.name='BFCh_BID_inv';
+BFCh_BID_inv.uels=num2cell(BFCh_BID_temp);
 
 opt_fx_inv_BFCh=0;
 temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
 opt_fx_inv_BFCh_cap=[0]; %must be set to 100
 temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full');
 temp_opt_fx_inv_BFCh_cap.val=opt_fx_inv_BFCh_cap;
-temp_opt_fx_inv_BFCh_cap.uels=BFCh_BID_roof_inv.uels;
+temp_opt_fx_inv_BFCh_cap.uels=BFCh_BID_inv.uels;
 
 opt_fx_inv_BFCh_maxP=0; %must be set to 50
 temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full');
 temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
-temp_opt_fx_inv_BFCh_maxP.uels=BFCh_BID_roof_inv.uels;
+temp_opt_fx_inv_BFCh_maxP.uels=BFCh_BID_inv.uels;
 
 %Option for BTES investment
 BITES_Inv.name='BITES_Inv';
@@ -446,8 +446,8 @@ temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',op
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 
 %SIMULATION START AND STOP TIME
-sim_start=2000;
-sim_stop=5002; 
+sim_start=2186;
+sim_stop=2906; 
 
 forcast_horizon=10;
 t_len_m=10;
@@ -602,11 +602,15 @@ for t=sim_start:sim_stop
     import.uels=h_sim.uels; 
 
     %Initial SoC of different storage systems (1=BTES_D, 2=BTES_S, 3=TES, 4=BFCh, 5=BES)
+    if (isinteger((t-sim_start)/720) || (t==sim_start))
+         max_exG_prev=0;
+    else
+        [x, max_exG_prev]=readGtoM(t);
+    end
     if t==sim_start
         Initial(1:6)=0;
-        max_exG_prev=0;
     else
-    [Initial, max_exG_prev]=readGtoM(t);
+    [Initial, x]=readGtoM(t);
     end
     Pana1_prev_disp=Initial(6);
     temp_Pana1_prev_disp = struct('name','Pana1_prev_disp','type','parameter','form','full','val',Pana1_prev_disp);
