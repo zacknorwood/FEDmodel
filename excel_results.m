@@ -183,28 +183,28 @@ for i=sim_start:sim_stop
           end 
           
          BTES_Sch(count)=0;
-      for k=1:35
+      for k=1:size(Results(i).dispatch.BTES_Sch,1)
            if (not(isempty(Results(i).dispatch.BTES_Sch)) && Results(i).dispatch.BTES_Sch(k,1)==1)
       BTES_Sch(count)= BTES_Sch(count)+Results(i).dispatch.BTES_Sch(k,3);
            end
       end
       
        BTES_Sdis(count)=0;
-       for k=1:35
+       for k=1:size(Results(i).dispatch.BTES_Sdis,1)
              if (not(isempty(Results(i).dispatch.BTES_Sdis)) && Results(i).dispatch.BTES_Sdis(k,1)==1)
       BTES_Sdis(count)=BTES_Sdis(count)+Results(i).dispatch.BTES_Sdis(k,3);
              end
        end  
       
            BTES_Sen(count)=0; 
-        for k=1:35
+        for k=1:size(Results(i).dispatch.BTES_Sen,1)
              if (not(isempty(Results(i).dispatch.BTES_Sen)) && Results(i).dispatch.BTES_Sen(k,1)==1)
       BTES_Sen(count)=BTES_Sen(count)+Results(i).dispatch.BTES_Sen(k,3);
              end
         end
       
           BTES_Den(count)=0;
-          for k=1:35
+          for k=1:size(Results(i).dispatch.BTES_Den,1)
               if (not(isempty(Results(i).dispatch.BTES_Den)) && Results(i).dispatch.BTES_Den(k,1)==1)
       BTES_Den(count)= BTES_Den(count)+Results(i).dispatch.BTES_Den(k,3);
               end
@@ -222,19 +222,19 @@ for i=sim_start:sim_stop
         totCost(count)=0;
             end  
              
-            for k=1:35
+            for k=1:size(Results(i).dispatch.B_Heating_cost,1)
                 if (not(isempty(Results(i).dispatch.B_Heating_cost)) && Results(i).dispatch.B_Heating_cost(k,1)==1)
       B_Heating_cost(count,Results(i).dispatch.B_Heating_cost(k,2))=Results(i).dispatch.B_Heating_cost(k,3);
                 end
             end
              
-             for k=1:35
+             for k=1:size(Results(i).dispatch.B_Electricity_cost,1)
                 if (not(isempty(Results(i).dispatch.B_Electricity_cost)) && Results(i).dispatch.B_Electricity_cost(k,1)==1)
       B_Electricity_cost(count,Results(i).dispatch.B_Electricity_cost(k,2))=Results(i).dispatch.B_Electricity_cost(k,3);
                 end
              end
              
-            for k=1:35
+            for k=1:size(Results(i).dispatch.B_Cooling_cost,1)
               if (not(isempty(Results(i).dispatch.B_Cooling_cost)) && Results(i).dispatch.B_Cooling_cost(k,1)==1)
       B_Cooling_cost(count,Results(i).dispatch.B_Cooling_cost(k,2))=Results(i).dispatch.B_Cooling_cost(k,3);
               end
@@ -422,13 +422,13 @@ end
     xlswrite('results',{'Total Cost'},'Costs','A1:A1');
 
     xlswrite('results',B_Heating_cost,'B_Heating_cost',strcat('A2:AJ',num2str(count+2)));
-    xlswrite('results',{'B_Heating_cost'},'Costs','A1:A1');
+    xlswrite('results',{'B_Heating_cost'},'B_Heating_cost','A1:A1');
     
     xlswrite('results',B_Electricity_cost,'B_Electricity_cost',strcat('A2:AJ',num2str(count+2)));
-    xlswrite('results',{'B_Electricity_cost'},'Costs','A1:A1');
+    xlswrite('results',{'B_Electricity_cost'},'B_Electricity_cost','A1:A1');
     
     xlswrite('results',B_Cooling_cost,'B_Cooling_cost',strcat('A2:AJ',num2str(count+2)));
-    xlswrite('results',{'B_Cooling_cost'},'Costs','A1:A1');
+    xlswrite('results',{'B_Cooling_cost'},'B_Cooling_cost','A1:A1');
 %--------------CO2 and PE factors-------------------
     xlswrite('results',FED_PE','CO2_PE',strcat('A2:AJ',num2str(count+2)));
     xlswrite('results',{'FED PE'},'CO2_PE','A1:A1');

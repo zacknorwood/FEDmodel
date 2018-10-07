@@ -1,5 +1,6 @@
 function[InitialSoC,max_exG_prev]=readGtoM(currenthour);
-%Read GtoM.gdx
+%Read GtoM.gdx Assume placement of storage systems in one place otherwise
+%needs modification
 
  BES_en.name='BES_en';
  BES_en.form='full';

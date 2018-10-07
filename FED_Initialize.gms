@@ -124,7 +124,11 @@ scalar
 ;
 
 *--------------Cold water basin at maskin, cold storage-------------------------
+<<<<<<< HEAD
 * Source communications with Per 
+=======
+* Source communications with Per
+>>>>>>> master
 * charging and discharging efficiencies are assumed values
 scalar
          CWB_max_cap_kwh     Maximum capacity available /814/

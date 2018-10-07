@@ -380,15 +380,9 @@ $GDXIN
 *the combination is used to comment out sections codes inside
 *$Ontext
 parameters
-  import
-  export
 B_Heating_cost(h,i)             heating cost of buildings
 B_Electricity_cost(h,i_AH_el)   electricity cost of building
 B_Cooling_cost(h,i_AH_c)       cooling cost of buildings
 ;
-$GDXIN MtoG.gdx
-$lOAD import
-$lOAD export
-$GDXIN
 *$Offtext
 
