@@ -131,10 +131,7 @@ execute_unload 'd' d;
 execute_unload 'sup_unit' sup_unit;
 execute_unload 'inv_opt' inv_opt;
 execute_unload 'coefs' coefs;
-<<<<<<< HEAD
-=======
 
->>>>>>> master
 execute_unload 'BTES_properties' BTES_properties;
 
 execute_unload 'BTES_properties' BTES_properties

@@ -26,16 +26,6 @@ equation
            eq_RM1       Refrigerator equation
            eq_RM2       Refrigerator equation
 
-<<<<<<< HEAD
-           eq_RMMC1     MC2 Refrigerator equation - heating
-           eq_RMMC2     MC2 Refrigerator equation - cooling
-           eq_RMMC3     MC2 investment constraint
-
-           eq_CWB_en_init        Cold Water Basin initial charge state
-           eq_CWB_en             Cold Water Basin charge equation
-
-=======
->>>>>>> master
            eq_ACC1      Refrigerator equation
            eq_ACC2      Refrigerator equation
            eq_ACC3      Temperature limit of Ambient Air Cooler
@@ -258,17 +248,11 @@ eq_RM2(h)..
 *----------Cold Water Basin equations (cold storage)----------------------------
 eq_CWB_en_init(h)$(ord(h) eq 1)..
          CWB_en(h) =e= CWB_en_init;
-<<<<<<< HEAD
 
 eq_CWB_en(h)$(ord(h) gt 1)..
          CWB_en(h) =e= CWB_en(h-1)+CWB_ch(h)-CWB_dis(h);
 
-=======
-eq_CWB_en(h)$(ord(h) gt 1)..
-         CWB_en(h) =e= CWB_en(h-1)+CWB_ch(h)-CWB_dis(h);
 
-
->>>>>>> master
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
 eq_ACC1(h)..
              c_AAC(h) =e= AAC_COP*e_AAC(h);
@@ -506,27 +490,16 @@ eq_dcn_constraint(h, DC_Node_ID)..
          DC_node_transfer_limits(h, DC_Node_ID) =g= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
                  - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
                  - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
-<<<<<<< HEAD
-                 + (CWB_ch(h)/CWB_chr_eff - CWB_dis_eff*CWB_dis(h))$(sameas(DC_Node_ID, 'Maskin'))
-                 + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))
-=======
                  + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))
                  + (CWB_ch(h)/CWB_chr_eff - CWB_dis_eff*CWB_dis(h))$(sameas(DC_Node_ID, 'Maskin'))
->>>>>>> master
 ;
 
 eq_DC_node_flows(h, DC_Node_ID)..
          DC_node_flows(h, DC_Node_ID) =e= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
                  - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
                  - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
-<<<<<<< HEAD
-                 + (CWB_ch(h)/CWB_chr_eff - CWB_dis_eff*CWB_dis(h))$(sameas(DC_Node_ID, 'Maskin'))
-                 + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))
-=======
                  + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))
                  + (CWB_ch(h)/CWB_chr_eff - CWB_dis_eff*CWB_dis(h))$(sameas(DC_Node_ID, 'Maskin'))
->>>>>>> master
-
 ;
 
 * - (C_VKA4(h) + c_HP(h) + c_AbsCInv(h)  + c_AbsC(h)  are at KC and thus
