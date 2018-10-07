@@ -123,6 +123,18 @@ scalar
       RM_eff Coefficent of performance of AC /0.95/
 ;
 
+*--------------Cold water basin at maskin, cold storage-------------------------
+* Source communications with Per 
+* charging and discharging efficiencies are assumed values
+scalar
+         CWB_max_cap_kwh     Maximum capacity available /814/
+         CWB_chr_eff         Cold Water Basin charging efficiency /0.95/
+         CWB_dis_eff         Cold Water Basin discharging efficiency /0.95/
+         CWB_ch_max          Maximum charging rate in kWh per hour /203.5/
+         CWB_dis_max         Maximum discharge rate in kWh per hour /35/
+         CWB_en_init         Initial charge state of CWB /0/
+;
+
 **************Investment options************************************************
 *----------------Absorption Chiller Investment----------------------------------
 * source Uhttps://ec.europa.eu/energy/sites/ener/files/documents/Report%20WP2.pdf

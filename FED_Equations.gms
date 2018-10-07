@@ -29,6 +29,9 @@ equation
            eq_RMMC2     MC2 Refrigerator equation - cooling
            eq_RMMC3     MC2 investment constraint
 
+           eq_CWB_en_init        Cold Water Basin initial charge state
+           eq_CWB_en             Cold Water Basin charge equation
+
            eq_ACC1      Refrigerator equation
            eq_ACC2      Refrigerator equation
            eq_ACC3      Temperature limit of Ambient Air Cooler
@@ -191,9 +194,6 @@ equation
            eq_oper_cost             Operation cost for each hour
 ;
 
-***************---------Must be deleted-------*************
-;
-
 *-------------------------------------------------------------------------------
 *--------------------------Define equations-------------------------------------
 *-------------------------------------------------------------------------------
@@ -252,6 +252,13 @@ eq_RM1(h)..
              c_RM(h) =e= RM_COP*el_RM(h);
 eq_RM2(h)..
              c_RM(h) =l= RM_cap;
+
+*----------Cold Water Basin equations (cold storage)----------------------------
+eq_CWB_en_init(h)$(ord(h) eq 1)..
+         CWB_en(h) =e= CWB_en_init;
+
+eq_CWB_en(h)$(ord(h) gt 1)..
+         CWB_en(h) =e= CWB_en(h-1)+CWB_ch(h)-CWB_dis(h);
 
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
 eq_ACC1(h)..
@@ -406,7 +413,7 @@ eq_BFCh2(h,j)$(ord(h) gt 1)..
              BFCh_en(h,j)=e=(BFCh_en(h-1,j)+BFCh_ch(h,j)-BFCh_dis(h,j));
 eq_BFCh3(h,j) ..
              BFCh_en(h,j)=l=BFCh_cap(j);
-eq_BFCh_ch(h,j) ..
+eq_BFCh_ch(h,j)..
 *Assuming 1C charging
              BFCh_ch(h,j)=l=(BFCh_cap(j)-BFCh_en(h,j));
 eq_BFCh_dis(h,j)..
@@ -490,6 +497,7 @@ eq_dcn_constraint(h, DC_Node_ID)..
          DC_node_transfer_limits(h, DC_Node_ID) =g= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
                  - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
                  - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
+                 + (CWB_ch(h)/CWB_chr_eff - CWB_dis_eff*CWB_dis(h))$(sameas(DC_Node_ID, 'Maskin'))
                  + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))
 ;
 
@@ -497,6 +505,7 @@ eq_DC_node_flows(h, DC_Node_ID)..
          DC_node_flows(h, DC_Node_ID) =e= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
                  - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
                  - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
+                 + (CWB_ch(h)/CWB_chr_eff - CWB_dis_eff*CWB_dis(h))$(sameas(DC_Node_ID, 'Maskin'))
                  + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))
 
 ;
@@ -522,7 +531,8 @@ eq_hbalance3(h)..
 eq_cbalance(h)..
          sum(i_AH_c,c_demand_AH(h,i_AH_c))=e=C_DC(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_AAC(h) + c_HP(h) + c_RMInv(h)
-                                + c_AbsCInv(h);
+                                + c_AbsCInv(h)
+                                + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
 
 *--------------Demand supply balance for electricity ---------------------------
 
