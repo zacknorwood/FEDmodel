@@ -430,7 +430,7 @@ end
     xlswrite('results',B_Cooling_cost,'B_Cooling_cost',strcat('A2:AJ',num2str(count+2)));
     xlswrite('results',{'B_Cooling_cost'},'B_Cooling_cost','A1:A1');
 %--------------CO2 and PE factors-------------------
-    xlswrite('results',FED_PE','CO2_PE',strcat('A2:AJ',num2str(count+2)));
+    xlswrite('results',FED_PE','CO2_PE',strcat('A2:A',num2str(count+2)));
     xlswrite('results',{'FED PE'},'CO2_PE','A1:A1');
     
     xlswrite('results',MA_FED_PE','CO2_PE',strcat('B2:B',num2str(count+2)));

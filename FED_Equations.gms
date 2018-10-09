@@ -60,10 +60,11 @@ equation
            eq_HP2       cooling production from HP
            eq_HP3       for determining capacity of HP
 
-           eq_TESen0    initial energy content of the TES
+           eq_TESen0    initial discharge
            eq_TESen1    initial energy content of the TES
            eq_TESen2    energy content of the TES at hour h
            eq_TESen3    for determining the capacity of TES
+           eq_TESen4    initial charge
            eq_TESdis    discharging rate of the TES
            eq_TESch     charging rate of the TES
            eq_TESinv    investment decision for TES
@@ -313,7 +314,10 @@ eq_HP3(h)..
 
 *------------------TES equations------------------------------------------------
 eq_TESen0(h,i)$(ord(h) eq 1)..
-             TES_en(h) =e= TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
+             TES_ch(h) =e= 0;
+
+eq_TESen4(h,i)$(ord(h) eq 1)..
+             TES_dis(h) =e= 0;
 
 eq_TESen1(h,i)$(ord(h) eq 1)..
              TES_en(h) =e= opt_fx_inv_TES_init;
@@ -633,9 +637,9 @@ eq_fix_cost_new..
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
 eq_var_cost_existing..
-         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)+sum(m,PT_exG(m)*HoM(h,m)))
+         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h))
                                -sum(h,e_exp_AH(h)*el_sell_price(h))
-                               + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h))  + PT_DH
+                               + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h))
                                - sum(h,sum(m,(h_exp_AH(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12))))
                                + sum(h,h_Pana1(h)*utot_cost('P1',h))
                                + sum(h,H_VKA1(h)*utot_cost('HP',h))
