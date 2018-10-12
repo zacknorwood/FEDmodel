@@ -210,14 +210,9 @@ for i=sim_start:sim_stop
               end
           end  
       %--------------Costs----------------------------
-             if (not(isempty(Results(i).dispatch.operation_cost)) && Results(i).dispatch.operation_cost(1,1)==1)
-      totCost(count)=Results(i).dispatch.operation_cost(1,2);
-    else 
-        totCost(count)=0;
-             end  
               
-            if (not(isempty(Results(i).dispatch.operation_cost)) && Results(i).dispatch.operation_cost(1,1)==1)
-      totCost(count)=Results(i).dispatch.operation_cost(1,2);
+            if (not(isempty(Results(i).dispatch.operation_cost_AH)) && Results(i).dispatch.operation_cost_AH(1,1)==1)
+      totCost(count)=Results(i).dispatch.operation_cost_AH(1,2);
     else 
         totCost(count)=0;
             end  
