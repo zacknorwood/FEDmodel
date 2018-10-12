@@ -131,12 +131,12 @@ BAC_sav_period=xlsread('Input_dispatch_model\BAC_parameters.xlsx',sheet,xlRange)
 [ pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
 
 %Read forecasted values and variable input data
-    [e_demand_measured, h_demand_measured,c_demand_measured,...
-     h_B1_measured,h_F1_measured,e_price_measured,...
-     el_cirtificate_m,h_price_measured,tout_measured,...
-     irradiance_measured_roof,irradiance_measured_facades] = fread_measurments(2, 17000);
+[e_demand_measured, h_demand_measured,c_demand_measured,...
+ h_B1_measured,h_F1_measured,e_price_measured,...
+ el_cirtificate_m,h_price_measured,tout_measured,...
+ irradiance_measured_roof,irradiance_measured_facades] = fread_measurments(2, 17000);
  
- % This must be deleted
+% This must be deleted
 export1=xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',2,'D5:D11100')*1000;
 import1=xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',2,'C5:C11100')*1000;
 Panna1_forecast=load('Panna1_forecast');
@@ -182,7 +182,7 @@ opt_fx_inv_RMInv_cap=0;
 temp_opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','form','full','val',opt_fx_inv_RMInv_cap);
 
 %Option for TES investment
-opt_fx_inv_TES=1;
+opt_fx_inv_TES=0;
 temp_opt_fx_inv_TES = struct('name','opt_fx_inv_TES','type','parameter','form','full','val',opt_fx_inv_TES);
 opt_fx_inv_TES_cap=0;
 temp_opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',opt_fx_inv_TES_cap);
