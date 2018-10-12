@@ -455,7 +455,7 @@ eq_RMInv2(h)..
 *---------------District heating network constraints----------------------------
 
 eq_dhn_constraint(h, DH_Node_ID)..
-         DH_node_transfer_limits(h, DH_Node_ID) =g= sum(i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i))
+         DH_node_transfer_limits(h, DH_Node_ID) + DH_node_slack(h, DH_Node_ID) =g= sum(i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i))
                  - (h_RMMC(h)) $(sameas(DH_Node_ID, 'Fysik'))
                  - (H_VKA4(h) + H_VKA1(h) + h_Pana1(h) + h_RGK1(h) + h_AbsC(h)
                  + h_AbsCInv(h) + H_P2T(h) + 0.75*h_TURB(h) + h_HP(h) + TES_dis(h)
@@ -487,7 +487,7 @@ eq_dh_node_flows(h, DH_Node_ID)..
 
 
 eq_dcn_constraint(h, DC_Node_ID)..
-         DC_node_transfer_limits(h, DC_Node_ID) =g= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
+         DC_node_transfer_limits(h, DC_Node_ID) + DC_node_slack(h, DC_Node_ID) =g= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
                  - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
                  - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
                  + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))

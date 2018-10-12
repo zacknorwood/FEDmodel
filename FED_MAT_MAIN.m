@@ -459,11 +459,11 @@ temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',op
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 
 %SIMULATION START AND STOP TIME
-sim_start=2186;
-sim_stop=2186; 
+sim_start=7500;
+sim_stop=7502; 
 
-forcast_horizon=10;
-t_len_m=10;
+forcast_horizon=20;
+t_len_m=20;
 Time(1).point='fixed inputs';
 Time(1).value=toc;
 for t=sim_start:sim_stop

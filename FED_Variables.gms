@@ -4,7 +4,14 @@
 variable
          DH_node_flows(h, DH_Node_ID) Total flows for nodes in district heating system
          DC_node_flows(h, DC_Node_ID) Total flows for nodes in district cooling system
+         DH_node_slack(h, DH_Node_ID) Slack variable for nodes in district heating system
+         DC_node_slack(h, DC_Node_ID) Slack variable for nodes in district cooling system
 ;
+
+DH_node_slack.lo(h, DH_Node_ID)=0;
+DH_node_slack.up(h, DH_Node_ID)=50;
+DC_node_slack.lo(h, DC_Node_ID)=0;
+DC_node_slack.up(h, DC_Node_ID)=0;
 
 *******************Dispaching existing units************************************
 *------------------VKA1 Heatpump related----------------------------------------
