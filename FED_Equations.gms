@@ -18,7 +18,8 @@ equation
            eq6_h_Pana1         fixed panna1 for synth baseline
            eq_h_Panna1_dispatch  Equation determining when Panna1 is dispatchable
 
-           eq_h_RGK1           Eqauation related to flue gas heat production
+           eq_h_RGK11           Eqauation related to flue gas heat production
+           eq_h_RGK12          Fixed FGC for synthetic baseline
            eq_h_RGK1_dispatch  Equation determining when flue gas is dispatchable
 
            eq_AbsC1     for determining capacity of AR
@@ -229,8 +230,11 @@ eq6_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 1).
 eq_h_Panna1_dispatch(h)$(P1P2_dispatchable(h)=0)..
         h_Pana1(h) =e= qB1(h);
 
-eq_h_RGK1(h)..
-        h_RGK1(h)$(P1P2_dispatchable(h)=1)=l=h_Pana1(h)/6;
+eq_h_RGK11(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 0)..
+        h_RGK1(h)=l=h_Pana1(h)/6;
+
+eq_h_RGK12(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 1)..
+        h_RGK1(h)=e=FGC(h);
 
 eq_h_RGK1_dispatch(h)$(P1P2_dispatchable(h)=0)..
         h_RGK1(h) =e= qF1(h);
