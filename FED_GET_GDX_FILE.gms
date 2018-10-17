@@ -258,11 +258,13 @@ PARAMETERS
             min_totCost        Option to minimize total cost
             min_totPE          OPtion to minimize tottal PE use
             min_totCO2         OPtion to minimize total CO2 emission
+            synth_baseline     Option for synthetic baseline
 ;
 $GDXIN MtoG.gdx
 $LOAD min_totCost
 $LOAD min_totPE
 $LOAD min_totCO2
+$load synth_baseline
 $GDXIN
 
 *---------CO2 and PE factors----------------------------------------------------
@@ -368,6 +370,7 @@ Parameters
       opt_fx_inv_BTES_S_init  BTES_S Init. SoC
       opt_fx_inv_BTES_D_init  BTES_D Init. SoC
       Pana1_prev_disp
+      Panna1
 ;
 $GDXIN MtoG.gdx
 $lOAD opt_fx_inv_BES_init
@@ -376,6 +379,7 @@ $lOAD opt_fx_inv_TES_init
 $lOAD opt_fx_inv_BTES_S_init
 $lOAD opt_fx_inv_BTES_D_init
 $load Pana1_prev_disp
+$load Panna1
 $GDXIN
 *the combination is used to comment out sections codes inside
 *$Ontext

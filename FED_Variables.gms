@@ -281,6 +281,5 @@ variable
          MA_FED_CO2_tot     total marginal CO2 emissions from the FED system
          peak_CO2           CO2 peak
          obj                objective function
-         operation_cost(h)     cost for each hour
 ;
 *invCost.up $ (min_totCost eq 0) = inv_lim;
