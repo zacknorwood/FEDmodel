@@ -60,15 +60,16 @@ h_demand_nonAH_sum(h) = sum(i_nonAH_h, h_demand_nonAH(h,i_nonAH_h));
 **********Calculated operation cost of the FED system****************
 Parameters
          tot_operation_cost_AH    Total operation cost of the AH system
-         operation_cost_AH(h)     Hourly operation of cost of the AH system
+         tot_var_cost_AH          Total variable of cost of the AH system
+         tot_fixed_cost           Total fixed of cost of the AH system
          fix_cost_existing_AH     Fixed cost of existibg generating units in the AH system
          fix_cost_new_AH          Fixed cost of new generating units in the AH system
-         var_cost_existing_AH(h)  Variable cost of existing generating units in AH system
-         var_cost_new_AH(h)       Variable cost of new generating units in AH system
+         var_cost_existing_AH     Variable cost of existing generating units in AH system
+         var_cost_new_AH          Variable cost of new generating units in AH system
 ;
 
 
-fix_cost_existing_AH = sum(sup_unit,fix_cost(sup_unit)*cap_sup_unit(sup_unit))/10**6;
+fix_cost_existing_AH = sum(sup_unit,fix_cost(sup_unit)*cap_sup_unit(sup_unit))/10**3;
 ************BIDs associated to AH buildings need to be filtered here************
 fix_cost_new_AH = ((sum(BID, PV_cap_roof.l(BID) + PV_cap_facade.l(BID)))*fix_cost('PV')
                   + HP_cap.l*fix_cost('HP')
@@ -78,24 +79,24 @@ fix_cost_new_AH = ((sum(BID, PV_cap_roof.l(BID) + PV_cap_facade.l(BID)))*fix_cos
                   + fix_cost('BTES')*sum(i,B_BITES.l(i))
                   + B_P2.l * fix_cost('P2')
                   + B_TURB.l * fix_cost('TURB')
-                  + AbsCInv_cap.l*fix_cost('AbsCInv'))/10**6;
+                  + AbsCInv_cap.l*fix_cost('AbsCInv'))/10**3;
 
-var_cost_existing_AH(h) = (e_imp_AH.l(h)*utot_cost('exG',h)+sum(m,PT_exG.l(m)*HoM(h,m))
-                          -e_exp_AH.l(h)*el_sell_price(h)
-                          + h_imp_AH.l(h)*utot_cost('DH',h) + PT_DH.l
-                          - sum(m,(h_exp_AH.l(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12)))
-                          + h_Pana1.l(h)*utot_cost('P1',h)
-                          + H_VKA1.l(h)*utot_cost('HP',h)
-                          + H_VKA4.l(h)*utot_cost('HP',h)
-                          + c_AbsC.l(h)*utot_cost('AbsC',h)
-                          + c_RM.l(h)*utot_cost('RM',h)
-                          + c_RMMC.l(h)*utot_cost('RM',h)
-                          + c_AAC.l(h)*utot_cost('AAC',h)
-                          + e_existPV.l(h)*utot_cost('PV',h)
-                          + sum(m,(h_AbsC.l(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10)))
-                          + sum(m,(h_AbsC.l(h)*0.7*HoM(h,m))$((ord(m) =11)))
-                          + sum(m,(h_AbsC.l(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))))/10**6;
-var_cost_new_AH(h)   =     (e_PV.l(h)*utot_cost('PV',h)
+var_cost_existing_AH = (sum(h, (e_imp_AH.l(h))*utot_cost('exG',h)+sum(m,PT_exG.l(m)*HoM(h,m)))
+                               -sum(h,e_exp_AH.l(h)*el_sell_price(h))
+                               + sum(h,(h_imp_AH.l(h))*utot_cost('DH',h))  + PT_DH.l
+                               - sum(h,sum(m,(h_exp_AH.l(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12))))
+                               + sum(h,h_Pana1.l(h)*utot_cost('P1',h))
+                               + sum(h,H_VKA1.l(h)*utot_cost('HP',h))
+                               + sum(h,H_VKA4.l(h)*utot_cost('HP',h))
+                               + sum(h,c_AbsC.l(h)*utot_cost('AbsC',h))
+                               + sum(h,c_RM.l(h)*utot_cost('RM',h))
+                               + sum(h,c_RMMC.l(h)*utot_cost('RM',h))
+                               + sum(h,c_AAC.l(h)*utot_cost('AAC',h))
+                               + sum(h,e_existPV.l(h)*utot_cost('PV',h))
+                               + sum(h,sum(m,(h_AbsC.l(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10))))
+                               + sum(h,sum(m,(h_AbsC.l(h)*0.7*HoM(h,m))$((ord(m) =11))))
+                               + sum(h,sum(m,(h_AbsC.l(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12)))))/10**3;
+var_cost_new_AH   =     sum(h,(e_PV.l(h)*utot_cost('PV',h)
                            + h_HP.l(h)*utot_cost('HP',h)
                            + c_RMInv.l(h)*utot_cost('RMInv',h)
                            + sum(j,BES_dis.l(h,j)*utot_cost('BES',h))
@@ -103,11 +104,11 @@ var_cost_new_AH(h)   =     (e_PV.l(h)*utot_cost('PV',h)
                            + sum(i,BTES_Sch.l(h,i)*utot_cost('BTES',h))
                            + h_P2.l(h)*utot_cost('P2',h)
                            + e_TURB.l(h)*utot_cost('TURB',h)
-                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h))/10**6;
+                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h)))/10**3;
 
-operation_cost_AH(h)=fix_cost_existing_AH+fix_cost_new_AH+ var_cost_existing_AH(h)+var_cost_new_AH(h);
-tot_operation_cost_AH=sum(h,operation_cost_AH(h));
-******************Base case*****************************************************
+tot_var_cost_AH= var_cost_existing_AH+var_cost_new_AH;
+tot_fixed_cost=fix_cost_existing_AH + fix_cost_new_AH;
+tot_operation_cost_AH=tot_var_cost_AH + tot_fixed_cost;
 
 
 ********************Output data from GAMS to MATLAB*********************
@@ -169,7 +170,7 @@ execute_unload 'GtoM' min_totCost, min_totPE, min_totCO2,
                       c_RMInv, e_RMInv, RMInv_cap, invCost_RMInv,BFCh_en,BFCh_ch,
                       BES_reac,BFCh_reac,BFCh_dis,e_existPV_reac,e_existPV_act,e_TURB_reac,e_PV_reac_roof,e_PV_act_roof,e_TURB_reac,
                       model_status,B_Heating_cost,B_Electricity_cost,B_Cooling_cost,max_exG_prev,
-                      tot_operation_cost_AH, operation_cost_AH, fix_cost_existing_AH, fix_cost_new_AH, var_cost_existing_AH, var_cost_new_AH,
+                      tot_operation_cost_AH, tot_var_cost_AH, tot_fixed_cost, fix_cost_existing_AH, fix_cost_new_AH, var_cost_existing_AH, var_cost_new_AH,
                       DH_node_flows, DC_node_flows,
                       model_status;
 
