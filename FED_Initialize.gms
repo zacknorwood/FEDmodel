@@ -21,7 +21,7 @@ Parameter
 Parameter
 *RM capacity at AH is set to 900kW which the capacity of RM at Kemi (2*450 kW)
          cap_sup_unit(sup_unit)   operational capacity of the existing units
-                     /PV 65, P1 8000, AbsC 2300, AAC 1000, RM 900, RMMC 4200, RGK1 1000/
+                     /PV 65, P1 8000, AbsC 2300, AAC 1000, RM 900, RMMC 4200, RGK1 1200/
 ;
 
 *************** different costs of the investment options

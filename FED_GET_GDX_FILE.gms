@@ -371,6 +371,7 @@ Parameters
       opt_fx_inv_BTES_D_init  BTES_D Init. SoC
       Pana1_prev_disp
       Panna1
+      FGC
 ;
 $GDXIN MtoG.gdx
 $lOAD opt_fx_inv_BES_init
@@ -380,6 +381,7 @@ $lOAD opt_fx_inv_BTES_S_init
 $lOAD opt_fx_inv_BTES_D_init
 $load Pana1_prev_disp
 $load Panna1
+$load FGC
 $GDXIN
 *the combination is used to comment out sections codes inside
 *$Ontext

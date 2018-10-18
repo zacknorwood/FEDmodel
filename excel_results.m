@@ -211,12 +211,13 @@ for i=sim_start:sim_stop
           end  
       %--------------Costs----------------------------
               
-            if (not(isempty(Results(i).dispatch.operation_cost_AH)) && Results(i).dispatch.operation_cost_AH(1,1)==1)
-      totCost(count)=Results(i).dispatch.operation_cost_AH(1,2);
-    else 
-        totCost(count)=0;
-            end  
-             
+           
+      tot_fixed_cost(count)=Results(i).dispatch.tot_fixed_cost;
+ 
+      tot_var_cost_AH(count)=Results(i).dispatch.tot_var_cost_AH;
+            
+      tot_operation_cost_AH(count)=Results(i).dispatch.tot_operation_cost_AH;
+  
             for k=1:size(Results(i).dispatch.B_Heating_cost,1)
                 if (not(isempty(Results(i).dispatch.B_Heating_cost)) && Results(i).dispatch.B_Heating_cost(k,1)==1)
       B_Heating_cost(count,Results(i).dispatch.B_Heating_cost(k,2))=Results(i).dispatch.B_Heating_cost(k,3);
@@ -413,8 +414,14 @@ end
     xlswrite('results',{'c_RM'},'Storages','O2:O2');
     xlswrite('results',{'c_RM'},'Storages','O1:O1'); 
 %-------------Costs----------------------    
-    xlswrite('results',totCost','Costs',strcat('A2:A',num2str(count+2)));
-    xlswrite('results',{'Total Cost'},'Costs','A1:A1');
+    xlswrite('results',tot_var_cost_AH','Costs','A2:A2');
+    xlswrite('results',{'tot_var_cost_AH'},'Costs','A1:A1');
+    
+    xlswrite('results',tot_fixed_cost','Costs','B2:B2');
+    xlswrite('results',{'tot_fixed_cost'},'Costs','B1:B1');
+    
+    xlswrite('results',tot_operation_cost_AH','Costs','C2:C2');
+    xlswrite('results',{'tot_operation_cost_AH'},'Costs','C1:C1');
 
     xlswrite('results',B_Heating_cost,'B_Heating_cost',strcat('A2:AJ',num2str(count+2)));
     xlswrite('results',{'B_Heating_cost'},'B_Heating_cost','A1:A1');
