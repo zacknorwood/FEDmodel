@@ -15,9 +15,11 @@ equation
            eq3_h_Pana1         ramp constraint set to 1MW
            eq4_h_Pana1         ramp constraint set to 1MW
            eq5_h_Pana1         ramp constraint set to 1MW
+           eq6_h_Pana1         fixed panna1 for synth baseline
            eq_h_Panna1_dispatch  Equation determining when Panna1 is dispatchable
 
-           eq_h_RGK1           Eqauation related to flue gas heat production
+           eq_h_RGK11           Eqauation related to flue gas heat production
+           eq_h_RGK12          Fixed FGC for synthetic baseline
            eq_h_RGK1_dispatch  Equation determining when flue gas is dispatchable
 
            eq_AbsC1     for determining capacity of AR
@@ -183,7 +185,6 @@ equation
            eq_peak_CO2   with aim to to reduce CO2 peak
 
            eq_obj        Objective function
-           eq_oper_cost             Operation cost for each hour
 ;
 
 *-------------------------------------------------------------------------------
@@ -211,23 +212,29 @@ eq_VKA43(h)..
 eq1_h_Pana1(h)..
         h_Pana1(h)=l=Panna1_cap;
 
-eq2_h_Pana1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1)..
+eq2_h_Pana1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0)..
         h_Pana1(h-1)- h_Pana1(h)=g=-1000;
 
-eq3_h_Pana1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1)..
+eq3_h_Pana1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0)..
         h_Pana1(h-1)- h_Pana1(h)=l=1000;
 
-eq4_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1)..
+eq4_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0)..
              Pana1_prev_disp- h_Pana1(h)=l=1000;
 
-eq5_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1)..
+eq5_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0)..
              Pana1_prev_disp- h_Pana1(h)=g=-1000;
+
+eq6_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 1)..
+            h_Pana1(h)=e= Panna1(h);
 
 eq_h_Panna1_dispatch(h)$(P1P2_dispatchable(h)=0)..
         h_Pana1(h) =e= qB1(h);
 
-eq_h_RGK1(h)..
-        h_RGK1(h)$(P1P2_dispatchable(h)=1)=l=h_Pana1(h)/6;
+eq_h_RGK11(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 0)..
+        h_RGK1(h)=l=h_Pana1(h)/6;
+
+eq_h_RGK12(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 1)..
+        h_RGK1(h)=e=FGC(h);
 
 eq_h_RGK1_dispatch(h)$(P1P2_dispatchable(h)=0)..
         h_RGK1(h) =e= qF1(h);
@@ -646,9 +653,9 @@ eq_fix_cost_new..
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
 eq_var_cost_existing..
-         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)+sum(m,PT_exG(m)*HoM(h,m)))
+         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h))
                                -sum(h,e_exp_AH(h)*el_sell_price(h))
-                               + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h))  + PT_DH
+                               + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h))
                                - sum(h,sum(m,(h_exp_AH(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12))))
                                + sum(h,h_Pana1(h)*utot_cost('P1',h))
                                + sum(h,H_VKA1(h)*utot_cost('HP',h))
@@ -709,34 +716,5 @@ eq_obj..
          obj=e= min_totCost*totCost
                 + (min_totPE*tot_PE*(1-opt_marg_factors)+min_totPE*MA_tot_PE*opt_marg_factors)
                 + (min_totCO2*FED_CO2_tot*(1-opt_marg_factors)+min_totCO2*MA_FED_CO2_tot*opt_marg_factors);
-
-****************---------Must be checked-------*************
-**********Actual cost of AH****************
-eq_oper_cost(h) ..
-operation_cost(h)=e= fix_cost_existing +  (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)
-                               -e_exp_AH(h)*el_sell_price(h)
-                               + (h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h)
-                               -sum(m,(h_exp_AH(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12)))
-                               + h_Pana1(h)*utot_cost('P1',h)
-                               + H_VKA1(h)*utot_cost('HP',h)
-                               + H_VKA4(h)*utot_cost('HP',h)
-                               + c_AbsC(h)*utot_cost('AbsC',h)
-                               + c_RM(h)*utot_cost('RM',h)
-                               + c_RMMC(h)*utot_cost('RM',h)
-                               + c_AAC(h)*utot_cost('AAC',h)
-                               + e_existPV(h)*utot_cost('PV',h)
-                               + sum(m,(h_AbsC(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10)))
-                               + sum(m,(h_AbsC(h)*0.7*HoM(h,m))$((ord(m) =11)))
-                               + sum(m,(h_AbsC(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12)))
-                               + fix_cost_new
-                           +e_PV(h)*utot_cost('PV',h)
-                           + h_HP(h)*utot_cost('HP',h)
-                           + c_RMInv(h)*utot_cost('RMInv',h)
-                           + sum(j,BES_dis(h,j)*utot_cost('BES',h))
-                           + TES_dis(h)*utot_cost('TES',h)
-                           + sum(i,BTES_Sch(h,i)*utot_cost('BTES',h))
-                           + h_P2(h)*utot_cost('P2',h)
-                           + e_TURB(h)*utot_cost('TURB',h)
-                           + c_AbsCInv(h)*utot_cost('AbsCInv',h);
 
 ********************************************************************************

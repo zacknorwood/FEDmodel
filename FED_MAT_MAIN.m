@@ -139,7 +139,10 @@ BAC_sav_period=xlsread('Input_dispatch_model\BAC_parameters.xlsx',sheet,xlRange)
 % This must be deleted
 export1=xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',2,'D5:D11100')*1000;
 import1=xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',2,'C5:C11100')*1000;
-
+Panna1_forecast=load('Panna1_forecast');
+Panna1_forecast=abs((Panna1_forecast.Panna1_forecast')*1000);
+FGC_forecast=load('FGC_forecast');
+FGC_forecast=abs((FGC_forecast.FGC_forecasting'));
 %% FIXED MODEL INPUT DATA - FXED INVESTMENT OPTIONS
 
 %Option to choose between marginal and average factors
@@ -204,7 +207,7 @@ temp_opt_fx_inv_BES_maxP.val=opt_fx_inv_BES_maxP;
 temp_opt_fx_inv_BES_maxP.uels=BES_BID_inv.uels;
 
 %Option for BFCh investment
-BFCh_BID_temp=[5]; %OBS: Reffers to Bus 5
+BFCh_BID_temp=[34]; %OBS: Reffers to Bus 5
 BFCh_BID_inv.name='BFCh_BID_inv';
 BFCh_BID_inv.uels=num2cell(BFCh_BID_temp);
 
@@ -324,9 +327,9 @@ while Re_calculate_CO2PEF==0
 end
 
 %Import marginal CO2 and PE factors, marginal DH cost
-DH_cost_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'W5:W17900');
-DH_CO2F_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'X5:X17900');
-DH_PEF_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'Y5:Y17900');
+DH_cost_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjï¿½rrvï¿½rme marginal.xlsx',2,'W5:W17900');
+DH_CO2F_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjï¿½rrvï¿½rme marginal.xlsx',2,'X5:X17900');
+DH_PEF_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjï¿½rrvï¿½rme marginal.xlsx',2,'Y5:Y17900');
 EL_CO2F_ma=sum(csvread('Input_data_FED_SIMULATOR\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[230  820   490   24     12  45 700   11  24  24],2);
 EL_PEF_ma=sum(csvread('Input_data_FED_SIMULATOR\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[2.99  2.45  1.93  1.01   3.29  1.25 2.47 1.03 1.01  1.01],2);
 
@@ -443,24 +446,24 @@ G_roof = struct('name','G_roof','type','parameter');
 %Forcasted solar PV irradiance -facade
 G_facade = struct('name','G_facade','type','parameter');
 
-%This must be deleted
-export = struct('name','export','type','parameter','form','full');
-import = struct('name','import','type','parameter','form','full');
-
+Panna1 = struct('name','Panna1','type','parameter','form','full');
+FGC = struct('name','FGC','type','parameter','form','full');
 %% SIMULATION OPTIONS
+synth_baseline=1; %Option for synthetic baseline 
 
 % optimization option
 option1=1;    %minimize total cost
 option2=0;    %minimize tottal PE use
 option3=0;    %minimize total CO2 emission
 
+temp_synth_baseline = struct('name','synth_baseline','type','parameter','form','full','val',synth_baseline);
 temp_optn1 = struct('name','min_totCost','type','parameter','form','full','val',option1);
 temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',option2);
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 
 %SIMULATION START AND STOP TIME
-sim_start=7500;
-sim_stop=7502; 
+sim_start=2000;
+sim_stop=2000; 
 
 forcast_horizon=20;
 t_len_m=20;
@@ -608,11 +611,10 @@ for t=sim_start:sim_stop
     MA_PEF_DH.val = DH_PEF1;
     MA_PEF_DH.uels=h_sim.uels;
     
-    %This must be deleted
-    export.val = export1((t_init_m-1):(t_len_m+t_init_m-2),:);
-    export.uels=h_sim.uels;
-    import.val = import1((t_init_m-1):(t_len_m+t_init_m-2),:);
-    import.uels=h_sim.uels; 
+    Panna1.val = Panna1_forecast((t_init_m-26):(t_len_m+t_init_m-27),:);
+    Panna1.uels=h_sim.uels; 
+    FGC.val = FGC_forecast((t_init_m-26):(t_len_m+t_init_m-27),:);
+    FGC.uels=h_sim.uels; 
 
     %Initial SoC of different storage systems (1=BTES_D, 2=BTES_S, 3=TES, 4=BFCh, 5=BES)
     if (isinteger((t-sim_start)/720) || (t==sim_start))
@@ -660,9 +662,9 @@ wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
      e_demand,h_demand,c_demand,qB1,qF1,el_price,el_cirtificate,h_price,tout,...     
      BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period,...
      PV_BID_roof_Inv,PV_roof_cap_Inv,PV_BID_facade_Inv,PV_facade_cap_Inv,...
-     temp_optn1, temp_optn2, temp_optn3, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap,...
+     temp_optn1, temp_optn2, temp_optn3, temp_synth_baseline, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap,...
      temp_opt_fx_inv_BES_maxP,temp_opt_fx_inv_BFCh_maxP,PV_inverter_PF_Inv,temp_opt_fx_inv_BTES_D_init,temp_opt_fx_inv_BTES_S_init,...
-     temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init,export,import,temp_Pana1_prev_disp,...
+     temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init,Panna1,FGC,temp_Pana1_prev_disp,...
      MA_PEF_exG,MA_CO2F_exG,temp_max_exG_prev,MA_Cost_DH,...
      DH_Node_ID, DH_Nodes_Transfer_Limits,...
      DC_Node_ID, DC_Nodes_Transfer_Limits);
@@ -674,7 +676,7 @@ Time(2).value=toc;
 tic
  RUN_GAMS_MODEL = 1;
  while RUN_GAMS_MODEL==1
-     system 'gams FED_SIMULATOR_MAIN lo=3';
+     system 'C:\GAMS\win64\24.9\gams FED_SIMULATOR_MAIN lo=3';
      %system 'C:\GAMS\win64\24.9\gams FED_SIMULATOR_MAIN lo=3';
      break;
  end
