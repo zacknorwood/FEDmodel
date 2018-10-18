@@ -3,6 +3,9 @@ function DH_transfer_limits = fget_dh_transfer_limits(DH_Nodes, times, tout, tem
 if nargin() == 3
     temperature_case = 1;
 end
+% Allow temperatures to exceed specified supply and return temperatures by
+% a certain 'slack_temperature'
+slack_temperature = 3;
 
 %summer season begins and ends, inclusive
 % May starts in hour 2905
@@ -63,7 +66,7 @@ for node = 1:length(DH_Nodes.name)
         end
 
         % Transfer limit [kWh/h] = m3/s * kg/m3 * kJ/kgK * K
-        DH_transfer_limits.val(hour,node) = maximum_flow_rate * Rho_Water * CP_Water * delta_T_current;
+        DH_transfer_limits.val(hour,node) = maximum_flow_rate * Rho_Water * CP_Water * (delta_T_current + slack_temperature);
     end
 end
 
