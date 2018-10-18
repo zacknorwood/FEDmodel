@@ -327,9 +327,9 @@ while Re_calculate_CO2PEF==0
 end
 
 %Import marginal CO2 and PE factors, marginal DH cost
-DH_cost_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjï¿½rrvï¿½rme marginal.xlsx',2,'W5:W17900');
-DH_CO2F_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjï¿½rrvï¿½rme marginal.xlsx',2,'X5:X17900');
-DH_PEF_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjï¿½rrvï¿½rme marginal.xlsx',2,'Y5:Y17900');
+DH_cost_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'W5:W17900');
+DH_CO2F_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'X5:X17900');
+DH_PEF_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'Y5:Y17900');
 EL_CO2F_ma=sum(csvread('Input_data_FED_SIMULATOR\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[230  820   490   24     12  45 700   11  24  24],2);
 EL_PEF_ma=sum(csvread('Input_data_FED_SIMULATOR\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[2.99  2.45  1.93  1.01   3.29  1.25 2.47 1.03 1.01  1.01],2);
 
