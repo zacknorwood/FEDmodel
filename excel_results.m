@@ -276,7 +276,10 @@ for i=sim_start:sim_stop
                             
 end
 
-%Print dispatch outcome and historical dispatch
+%Print dispatch outcome and historical dispatch (last line of each section
+%refers to historical dispatch, need modifications depending of the excel sheets we have)
+
+%------------------Units Dsipatch-------------------------
     xlswrite('results',export_h',strcat('E3:E',num2str(count+2)));
     xlswrite('results',{'Export H'},'E1:F1');
     xlswrite('results',{'Dispatch'},'E2:E2');
@@ -329,7 +332,7 @@ end
     xlswrite('results',absC',strcat('U3:U',num2str(count+2)));
     xlswrite('results',{'AbsC'},'U1:V1');
     xlswrite('results',{'Dispatch'},'U2:U2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('C',num2str(sim_start+3),':C',num2str(sim_stop+3)))*1000,strcat('V3:V',num2str(count+2)));
+    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('R',num2str(sim_start+4),':R',num2str(sim_stop+4)))*1000,strcat('V3:V',num2str(count+2)));
     
     xlswrite('results',VKA1_c',strcat('W3:W',num2str(count+2)));
     xlswrite('results',{'VKA1_C'},'W1:X1');
@@ -344,7 +347,7 @@ end
     xlswrite('results',aac_c',strcat('AA3:AA',num2str(count+2)));
     xlswrite('results',{'AAC_C'},'AA1:AB1');
     xlswrite('results',{'Dispatch'},'AA2:AA2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('N',num2str(sim_start+3),':N',num2str(sim_stop+3)))*1000,strcat('AB3:AB',num2str(count+2)));
+    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('Q',num2str(sim_start+4),':Q',num2str(sim_stop+4)))*1000,strcat('AB3:AB',num2str(count+2)));
     
     xlswrite('results',refr',strcat('AC3:AC',num2str(count+2)));
     xlswrite('results',{'Refrig'},'AC1:AD1');
@@ -377,7 +380,8 @@ end
     
     xlswrite('results',h_imp_nonAH',strcat('BA2:BA',num2str(count+2)));
     xlswrite('results',{'Import H nonAH'},'BA1:BA1');
-%Storage Units
+    
+%-------------Storage Units------------------
     xlswrite('results',BES_en','Storages',strcat('A3:A',num2str(count+2)));
     xlswrite('results',{'BES_en'},'Storages','A2:A2');
     xlswrite('results',{'Battery'},'Storages','A1:C1');
@@ -432,6 +436,14 @@ end
     xlswrite('results',tot_fixed_cost','Costs','B2:B2');
     xlswrite('results',{'tot_fixed_cost'},'Costs','B1:B1');
     
+    
+    xlswrite('results',sim_PT_exG','Costs','C2:C2');
+    xlswrite('results',{'sim_PT_exG'},'Costs','C1:C1');
+    
+    
+    xlswrite('results',PT_DH','Costs','D2:D2');
+    xlswrite('results',{'PT_DH'},'Costs','D1:D1');
+    
     %xlswrite('results',tot_operation_cost_AH','Costs','C2:C2');
     %xlswrite('results',{'tot_operation_cost_AH'},'Costs','C1:C1');
 
@@ -443,6 +455,7 @@ end
     
     xlswrite('results',B_Cooling_cost,'B_Cooling_cost',strcat('A2:AJ',num2str(count+2)));
     xlswrite('results',{'B_Cooling_cost'},'B_Cooling_cost','A1:A1');
+    
 %--------------CO2 and PE factors-------------------
     xlswrite('results',FED_PE','CO2_PE',strcat('A2:A',num2str(count+2)));
     xlswrite('results',{'FED PE'},'CO2_PE','A1:A1');

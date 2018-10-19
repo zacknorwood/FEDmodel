@@ -6,9 +6,18 @@ equation
            eq_VKA11     heating generatin of VKA1
            eq_VKA12     cooling generation of VKA1
            eq_VKA13     maximum electricity usage by VKA1
+           eq_VKA14    ramp constraints for synth baseline
+           eq_VKA15    ramp constraints for synth baseline
+           eq_VKA16    ramp constraints for synth baseline
+           eq_VKA17    ramp constraints for synth baseline
+
            eq_VKA41     heating generation of VKA4
            eq_VKA42     cooling generation of VKA4
            eq_VKA43     maximum electricity usage by VKA4
+           eq_VKA44    ramp constraints for synth baseline
+           eq_VKA45    ramp constraints for synth baseline
+           eq_VKA46    ramp constraints for synth baseline
+           eq_VKA47    ramp constraints for synth baseline
 
            eq1_h_Pana1            Eqauation related to Panna1 heat production
            eq2_h_Pana1         ramp constraint set to 1MW
@@ -200,6 +209,18 @@ eq_VKA12(h)..
 eq_VKA13(h)..
         el_VKA1(h) =l= VKA1_el_cap;
 
+eq_VKA14(h)$(ord(h) gt 1 and synth_baseline eq 1)..
+        H_VKA1(h-1)- H_VKA1(h)=g=-1;
+
+eq_VKA15(h)$(ord(h) gt 1 and synth_baseline eq 1)..
+        H_VKA1(h-1)- H_VKA1(h)=l=1;
+
+eq_VKA16(h)$(ord(h) eq 1 and synth_baseline eq 1)..
+             VKA1_prev_disp- H_VKA1(h)=l=1;
+
+eq_VKA17(h)$(ord(h) eq 1 and synth_baseline eq 1)..
+             VKA1_prev_disp- H_VKA1(h)=g=-1;
+
 *-----------------VKA4 equations------------------------------------------------
 eq_VKA41(h)..
         H_VKA4(h) =e= VKA4_H_COP*el_VKA4(h);
@@ -207,6 +228,18 @@ eq_VKA42(h)..
         C_VKA4(h) =e= VKA4_C_COP*el_VKA4(h);
 eq_VKA43(h)..
         el_VKA4(h) =l= VKA4_el_cap;
+
+eq_VKA44(h)$(ord(h) gt 1 and synth_baseline eq 1)..
+        H_VKA4(h-1)- H_VKA4(h)=g=-1;
+
+eq_VKA45(h)$(ord(h) gt 1 and synth_baseline eq 1)..
+        H_VKA4(h-1)- H_VKA4(h)=l=1;
+
+eq_VKA46(h)$(ord(h) eq 1 and synth_baseline eq 1)..
+             VKA1_prev_disp- H_VKA4(h)=l=1;
+
+eq_VKA47(h)$(ord(h) eq 1 and synth_baseline eq 1)..
+             VKA1_prev_disp- H_VKA4(h)=g=-1;
 
 *------------------Panna1 equation(when dispachable)----------------------------
 eq1_h_Pana1(h)..
