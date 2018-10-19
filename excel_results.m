@@ -32,11 +32,11 @@ for i=sim_start:sim_stop
         VKA1_h(count)=0;
     end
  
-     if (not(isempty(Results(i).dispatch.H_VKA4)) && Results(i).dispatch.H_VKA4(1,1)==1)
+    if (not(isempty(Results(i).dispatch.H_VKA4)) && Results(i).dispatch.H_VKA4(1,1)==1)
         VKA4_h(count)=Results(i).dispatch.H_VKA4(1,2);
     else 
         VKA4_h(count)=0;
-     end
+    end
     
     if (not(isempty(Results(i).dispatch.h_imp_AH)) && Results(i).dispatch.h_imp_AH(1,1)==1)
        import_h(count)=Results(i).dispatch.h_imp_AH(1,2);
@@ -44,7 +44,7 @@ for i=sim_start:sim_stop
         import_h(count)=0;
     end
     
-     if (not(isempty(Results(i).dispatch.h_imp_nonAH)) && Results(i).dispatch.h_imp_nonAH(1,1)==1)
+    if (not(isempty(Results(i).dispatch.h_imp_nonAH)) && Results(i).dispatch.h_imp_nonAH(1,1)==1)
        h_imp_nonAH(count)=Results(i).dispatch.h_imp_nonAH(1,2);
     else 
         h_imp_nonAH(count)=0;
@@ -68,199 +68,211 @@ for i=sim_start:sim_stop
         import_el(count)=0;
     end
     
-      if (not(isempty(Results(i).dispatch.c_AbsC)) && Results(i).dispatch.c_AbsC(1,1)==1)
+    if (not(isempty(Results(i).dispatch.c_AbsC)) && Results(i).dispatch.c_AbsC(1,1)==1)
        absC(count)=Results(i).dispatch.c_AbsC(1,2);
     else 
         absC(count)=0;
-      end
+    end
    
-      if (not(isempty(Results(i).dispatch.C_VKA1)) && Results(i).dispatch.C_VKA1(1,1)==1)
+    if (not(isempty(Results(i).dispatch.C_VKA1)) && Results(i).dispatch.C_VKA1(1,1)==1)
       VKA1_c(count)=Results(i).dispatch.C_VKA1(1,2);
     else 
         VKA1_c(count)=0;
-      end
+    end
     
-      if (not(isempty(Results(i).dispatch.C_VKA4)) && Results(i).dispatch.C_VKA4(1,1)==1)
+    if (not(isempty(Results(i).dispatch.C_VKA4)) && Results(i).dispatch.C_VKA4(1,1)==1)
       VKA4_c(count)=Results(i).dispatch.C_VKA4(1,2);
     else 
         VKA4_c(count)=0;
-      end
+    end
     
-      if (not(isempty(Results(i).dispatch.c_RM)) && Results(i).dispatch.c_RM(1,1)==1)
+    if (not(isempty(Results(i).dispatch.c_RM)) && Results(i).dispatch.c_RM(1,1)==1)
       refr(count)=Results(i).dispatch.c_RM(1,2);
     else 
         refr(count)=0;
-      end
+    end
       
-       if (not(isempty(Results(i).dispatch.e_AAC)) && Results(i).dispatch.e_AAC(1,1)==1)
+    if (not(isempty(Results(i).dispatch.e_AAC)) && Results(i).dispatch.e_AAC(1,1)==1)
       aac_el(count)=Results(i).dispatch.e_AAC(1,2);
     else 
         aac_el(count)=0;
-       end
+    end
        
-         if (not(isempty(Results(i).dispatch.c_AAC)) && Results(i).dispatch.c_AAC(1,1)==1)
+    if (not(isempty(Results(i).dispatch.c_AAC)) && Results(i).dispatch.c_AAC(1,1)==1)
       aac_c(count)=Results(i).dispatch.c_AAC(1,2);
     else 
         aac_c(count)=0;
-         end
+    end
          
-         if (not(isempty(Results(i).dispatch.cool_demand)) && Results(i).dispatch.cool_demand(1,1)==1)
+    if (not(isempty(Results(i).dispatch.cool_demand)) && Results(i).dispatch.cool_demand(1,1)==1)
       cool_demand(count)=Results(i).dispatch.cool_demand(1,2);
     else 
         cool_demand(count)=0;
-         end        
+    end        
           
-         if (not(isempty(Results(i).dispatch.elec_demand)) && Results(i).dispatch.elec_demand(1,1)==1)
+    if (not(isempty(Results(i).dispatch.elec_demand)) && Results(i).dispatch.elec_demand(1,1)==1)
       elec_demand(count)=Results(i).dispatch.elec_demand(1,2);
     else 
         elec_demand(count)=0;
-         end
+    end
          
-          if (not(isempty(Results(i).dispatch.heat_demand)) && Results(i).dispatch.heat_demand(1,1)==1)
+    if (not(isempty(Results(i).dispatch.heat_demand)) && Results(i).dispatch.heat_demand(1,1)==1)
       heat_demand(count)=Results(i).dispatch.heat_demand(1,2);
     else 
         heat_demand(count)=0;
-          end
+    end
          
-            if (not(isempty(Results(i).dispatch.c_RM)) && Results(i).dispatch.c_RM(1,1)==1)
+    if (not(isempty(Results(i).dispatch.c_RM)) && Results(i).dispatch.c_RM(1,1)==1)
       c_RM(count)=Results(i).dispatch.c_RM(1,2);
     else 
         c_RM(count)=0;
-         end
+    end
   %----------------Storage units--------------------------------------------      
-         if (not(isempty(Results(i).dispatch.BES_en)) && Results(i).dispatch.BES_en(1,1)==1 && Results(i).dispatch.BES_en(1,2)==1)
+    if (not(isempty(Results(i).dispatch.BES_en)) && Results(i).dispatch.BES_en(1,1)==1 && Results(i).dispatch.BES_en(1,2)==1)
       BES_en(count)=Results(i).dispatch.BES_en(1,3);
     else 
         BES_en(count)=0;
-         end
+    end
          
-           if (not(isempty(Results(i).dispatch.BES_ch)) && Results(i).dispatch.BES_ch(1,1)==1 && Results(i).dispatch.BES_ch(1,2)==1)
+    if (not(isempty(Results(i).dispatch.BES_ch)) && Results(i).dispatch.BES_ch(1,1)==1 && Results(i).dispatch.BES_ch(1,2)==1)
       BES_ch(count)=Results(i).dispatch.BES_ch(1,3);
     else 
         BES_ch(count)=0;
-           end
+    end
       
-           if (not(isempty(Results(i).dispatch.BES_dis)) && Results(i).dispatch.BES_dis(1,1)==1 && Results(i).dispatch.BES_dis(1,2)==1)
+    if (not(isempty(Results(i).dispatch.BES_dis)) && Results(i).dispatch.BES_dis(1,1)==1 && Results(i).dispatch.BES_dis(1,2)==1)
       BES_dis(count)=Results(i).dispatch.BES_dis(1,3);
     else 
         BES_dis(count)=0;
-           end
+    end
       
-           if (not(isempty(Results(i).dispatch.BFCh_en)) && Results(i).dispatch.BFCh_en(1,1)==1 && Results(i).dispatch.BFCh_en(1,2)==1)
+    if (not(isempty(Results(i).dispatch.BFCh_en)) && Results(i).dispatch.BFCh_en(1,1)==1 && Results(i).dispatch.BFCh_en(1,2)==1)
       BFCh_en(count)=Results(i).dispatch.BFCh_en(1,3);
     else 
         BFCh_en(count)=0;
-           end
+    end
       
-           if (not(isempty(Results(i).dispatch.BFCh_ch)) && Results(i).dispatch.BFCh_ch(1,1)==1 && Results(i).dispatch.BFCh_ch(1,2)==1)
+    if (not(isempty(Results(i).dispatch.BFCh_ch)) && Results(i).dispatch.BFCh_ch(1,1)==1 && Results(i).dispatch.BFCh_ch(1,2)==1)
       BFCh_ch(count)=Results(i).dispatch.BFCh_ch(1,3);
     else 
         BFCh_ch(count)=0;
-           end    
+    end    
       
-        if (not(isempty(Results(i).dispatch.BFCh_dis)) && Results(i).dispatch.BFCh_dis(1,1)==1 && Results(i).dispatch.BFCh_dis(1,2)==1)
+    if (not(isempty(Results(i).dispatch.BFCh_dis)) && Results(i).dispatch.BFCh_dis(1,1)==1 && Results(i).dispatch.BFCh_dis(1,2)==1)
       BFCh_dis(count)=Results(i).dispatch.BFCh_dis(1,3);
     else 
         BFCh_dis(count)=0;
-        end 
+    end 
       
-        if (not(isempty(Results(i).dispatch.TES_ch)) && Results(i).dispatch.TES_ch(1,1)==1)
+    if (not(isempty(Results(i).dispatch.TES_ch)) && Results(i).dispatch.TES_ch(1,1)==1)
       TES_ch(count)=Results(i).dispatch.TES_ch(1,2);
     else 
         TES_ch(count)=0;
-        end  
+    end  
       
-         if (not(isempty(Results(i).dispatch.TES_dis)) && Results(i).dispatch.TES_dis(1,1)==1)
+    if (not(isempty(Results(i).dispatch.TES_dis)) && Results(i).dispatch.TES_dis(1,1)==1)
       TES_dis(count)=Results(i).dispatch.TES_dis(1,2);
     else 
         TES_dis(count)=0;
-         end 
+    end 
       
-          if (not(isempty(Results(i).dispatch.TES_en)) && Results(i).dispatch.TES_en(1,1)==1)
+    if (not(isempty(Results(i).dispatch.TES_en)) && Results(i).dispatch.TES_en(1,1)==1)
       TES_en(count)=Results(i).dispatch.TES_en(1,2);
     else 
         TES_en(count)=0;
-          end 
+    end 
           
-         BTES_Sch(count)=0;
-      for k=1:size(Results(i).dispatch.BTES_Sch,1)
-           if (not(isempty(Results(i).dispatch.BTES_Sch)) && Results(i).dispatch.BTES_Sch(k,1)==1)
-      BTES_Sch(count)= BTES_Sch(count)+Results(i).dispatch.BTES_Sch(k,3);
-           end
-      end
-      
-       BTES_Sdis(count)=0;
-       for k=1:size(Results(i).dispatch.BTES_Sdis,1)
-             if (not(isempty(Results(i).dispatch.BTES_Sdis)) && Results(i).dispatch.BTES_Sdis(k,1)==1)
-      BTES_Sdis(count)=BTES_Sdis(count)+Results(i).dispatch.BTES_Sdis(k,3);
-             end
-       end  
-      
-           BTES_Sen(count)=0; 
-        for k=1:size(Results(i).dispatch.BTES_Sen,1)
-             if (not(isempty(Results(i).dispatch.BTES_Sen)) && Results(i).dispatch.BTES_Sen(k,1)==1)
-      BTES_Sen(count)=BTES_Sen(count)+Results(i).dispatch.BTES_Sen(k,3);
-             end
+    BTES_Sch(count)=0;
+    for k=1:size(Results(i).dispatch.BTES_Sch,1)
+        if (not(isempty(Results(i).dispatch.BTES_Sch)) && Results(i).dispatch.BTES_Sch(k,1)==1)
+            BTES_Sch(count)= BTES_Sch(count)+Results(i).dispatch.BTES_Sch(k,3);
         end
+    end
       
-          BTES_Den(count)=0;
-          for k=1:size(Results(i).dispatch.BTES_Den,1)
-              if (not(isempty(Results(i).dispatch.BTES_Den)) && Results(i).dispatch.BTES_Den(k,1)==1)
-      BTES_Den(count)= BTES_Den(count)+Results(i).dispatch.BTES_Den(k,3);
-              end
-          end  
-      %--------------Costs----------------------------
-              
+    BTES_Sdis(count)=0;
+    for k=1:size(Results(i).dispatch.BTES_Sdis,1)
+        if (not(isempty(Results(i).dispatch.BTES_Sdis)) && Results(i).dispatch.BTES_Sdis(k,1)==1)
+            BTES_Sdis(count)=BTES_Sdis(count)+Results(i).dispatch.BTES_Sdis(k,3);
+        end
+    end
+      
+    BTES_Sen(count)=0; 
+    for k=1:size(Results(i).dispatch.BTES_Sen,1)
+        if (not(isempty(Results(i).dispatch.BTES_Sen)) && Results(i).dispatch.BTES_Sen(k,1)==1)
+            BTES_Sen(count)=BTES_Sen(count)+Results(i).dispatch.BTES_Sen(k,3);
+        end
+    end
+      
+    BTES_Den(count)=0;
+    for k=1:size(Results(i).dispatch.BTES_Den,1)
+        if (not(isempty(Results(i).dispatch.BTES_Den)) && Results(i).dispatch.BTES_Den(k,1)==1)
+            BTES_Den(count)= BTES_Den(count)+Results(i).dispatch.BTES_Den(k,3);
+        end
+    end
+    
+    %--------------Costs----------------------------
+    if (not(isempty(Results(i).dispatch.tot_var_cost_AH)) && Results(i).dispatch.tot_var_cost_AH(1,1)==1)
+        tot_var_cost_AH(count)=Results(i).dispatch.tot_var_cost_AH(1,2);
+    else
+        tot_var_cost_AH(count)=0;
+    end        
            
-      tot_fixed_cost(count)=Results(i).dispatch.tot_fixed_cost;
+    tot_fixed_cost(count)=Results(i).dispatch.tot_fixed_cost;
+    sim_PT_exG(count)=Results(i).dispatch.sim_PT_exG;
+    
+    if (not(isempty(Results(i).dispatch.PT_DH)))
+        PT_DH(count)=Results(i).dispatch.PT_DH;
+    else
+        PT_DH(count)=0;
+    end    
  
-      tot_var_cost_AH(count)=Results(i).dispatch.tot_var_cost_AH;
+    %tot_var_cost_AH(count)=Results(i).dispatch.tot_var_cost_AH;
             
-      tot_operation_cost_AH(count)=Results(i).dispatch.tot_operation_cost_AH;
-  
-            for k=1:size(Results(i).dispatch.B_Heating_cost,1)
-                if (not(isempty(Results(i).dispatch.B_Heating_cost)) && Results(i).dispatch.B_Heating_cost(k,1)==1)
-      B_Heating_cost(count,Results(i).dispatch.B_Heating_cost(k,2))=Results(i).dispatch.B_Heating_cost(k,3);
-                end
-            end
+    %tot_operation_cost_AH(count)=Results(i).dispatch.tot_operation_cost_AH;
+    
+    for k=1:size(Results(i).dispatch.B_Heating_cost,1)
+        if (not(isempty(Results(i).dispatch.B_Heating_cost)) && Results(i).dispatch.B_Heating_cost(k,1)==1)
+            B_Heating_cost(count,Results(i).dispatch.B_Heating_cost(k,2))=Results(i).dispatch.B_Heating_cost(k,3);
+        end
+    end
              
-             for k=1:size(Results(i).dispatch.B_Electricity_cost,1)
-                if (not(isempty(Results(i).dispatch.B_Electricity_cost)) && Results(i).dispatch.B_Electricity_cost(k,1)==1)
-      B_Electricity_cost(count,Results(i).dispatch.B_Electricity_cost(k,2))=Results(i).dispatch.B_Electricity_cost(k,3);
-                end
-             end
+    for k=1:size(Results(i).dispatch.B_Electricity_cost,1)
+        if (not(isempty(Results(i).dispatch.B_Electricity_cost)) && Results(i).dispatch.B_Electricity_cost(k,1)==1)
+            B_Electricity_cost(count,Results(i).dispatch.B_Electricity_cost(k,2))=Results(i).dispatch.B_Electricity_cost(k,3);
+        end
+    end
              
-            for k=1:size(Results(i).dispatch.B_Cooling_cost,1)
-              if (not(isempty(Results(i).dispatch.B_Cooling_cost)) && Results(i).dispatch.B_Cooling_cost(k,1)==1)
-      B_Cooling_cost(count,Results(i).dispatch.B_Cooling_cost(k,2))=Results(i).dispatch.B_Cooling_cost(k,3);
-              end
-            end 
+    for k=1:size(Results(i).dispatch.B_Cooling_cost,1)
+        if (not(isempty(Results(i).dispatch.B_Cooling_cost)) && Results(i).dispatch.B_Cooling_cost(k,1)==1)
+            B_Cooling_cost(count,Results(i).dispatch.B_Cooling_cost(k,2))=Results(i).dispatch.B_Cooling_cost(k,3);
+        end
+    end
              
               
   %-------------------CO2/PE---------------------------
-      if (not(isempty(Results(i).dispatch.FED_PE)) && Results(i).dispatch.FED_PE(1,1)==1)
-      FED_PE(count)=Results(i).dispatch.FED_PE(1,2);
-    else 
+    if (not(isempty(Results(i).dispatch.FED_PE)) && Results(i).dispatch.FED_PE(1,1)==1)
+        FED_PE(count)=Results(i).dispatch.FED_PE(1,2);
+    else
         FED_PE(count)=0;
-      end
+    end
                
-      if (not(isempty(Results(i).dispatch.MA_FED_PE)) && Results(i).dispatch.MA_FED_PE(1,1)==1)
-      MA_FED_PE(count)=Results(i).dispatch.MA_FED_PE(1,2);
-    else 
+    if (not(isempty(Results(i).dispatch.MA_FED_PE)) && Results(i).dispatch.MA_FED_PE(1,1)==1)
+        MA_FED_PE(count)=Results(i).dispatch.MA_FED_PE(1,2);
+    else
         MA_FED_PE(count)=0;
-      end
+    end
                                              
-      if (not(isempty(Results(i).dispatch.FED_CO2)) && Results(i).dispatch.FED_CO2(1,1)==1)
-      FED_CO2(count)=Results(i).dispatch.FED_CO2(1,2);
-    else 
+    if (not(isempty(Results(i).dispatch.FED_CO2)) && Results(i).dispatch.FED_CO2(1,1)==1)
+        FED_CO2(count)=Results(i).dispatch.FED_CO2(1,2);
+    else
         FED_CO2(count)=0;
-      end
+    end
                
-      if (not(isempty(Results(i).dispatch.MA_FED_CO2)) && Results(i).dispatch.MA_FED_CO2(1,1)==1)
-      MA_FED_CO2(count)=Results(i).dispatch.MA_FED_CO2(1,2);
-    else 
+    if (not(isempty(Results(i).dispatch.MA_FED_CO2)) && Results(i).dispatch.MA_FED_CO2(1,1)==1)
+        MA_FED_CO2(count)=Results(i).dispatch.MA_FED_CO2(1,2);
+    else
         MA_FED_CO2(count)=0;
-      end
+    end
                             
 end
 
@@ -414,14 +426,14 @@ end
     xlswrite('results',{'c_RM'},'Storages','O2:O2');
     xlswrite('results',{'c_RM'},'Storages','O1:O1'); 
 %-------------Costs----------------------    
-    xlswrite('results',tot_var_cost_AH','Costs','A2:A2');
+    xlswrite('results',tot_var_cost_AH','Costs',strcat('A2:A',num2str(count+2)));
     xlswrite('results',{'tot_var_cost_AH'},'Costs','A1:A1');
     
     xlswrite('results',tot_fixed_cost','Costs','B2:B2');
     xlswrite('results',{'tot_fixed_cost'},'Costs','B1:B1');
     
-    xlswrite('results',tot_operation_cost_AH','Costs','C2:C2');
-    xlswrite('results',{'tot_operation_cost_AH'},'Costs','C1:C1');
+    %xlswrite('results',tot_operation_cost_AH','Costs','C2:C2');
+    %xlswrite('results',{'tot_operation_cost_AH'},'Costs','C1:C1');
 
     xlswrite('results',B_Heating_cost,'B_Heating_cost',strcat('A2:AJ',num2str(count+2)));
     xlswrite('results',{'B_Heating_cost'},'B_Heating_cost','A1:A1');

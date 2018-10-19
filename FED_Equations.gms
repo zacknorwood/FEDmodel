@@ -653,9 +653,9 @@ eq_fix_cost_new..
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
 eq_var_cost_existing..
-         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h))
+         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)+sum(m,PT_exG(m)*HoM(h,m)))
                                -sum(h,e_exp_AH(h)*el_sell_price(h))
-                               + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h))
+                               + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h)) + PT_DH
                                - sum(h,sum(m,(h_exp_AH(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12))))
                                + sum(h,h_Pana1(h)*utot_cost('P1',h))
                                + sum(h,H_VKA1(h)*utot_cost('HP',h))
