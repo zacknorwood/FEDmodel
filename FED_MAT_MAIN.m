@@ -462,8 +462,8 @@ temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',op
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 
 %SIMULATION START AND STOP TIME
-sim_start=2000;
-sim_stop=2000; 
+sim_start=10192;
+sim_stop=10192; 
 
 forcast_horizon=10;
 t_len_m=10;
@@ -579,7 +579,7 @@ for t=sim_start:sim_stop
     el_exGCO2F1=el_exGCO2F((t_init_m-1):(t_len_m+t_init_m-2),:);
     CO2F_exG.val = el_exGCO2F1;
     CO2F_exG.uels=h_sim.uels;
-    el_exGCO2F1=EL_CO2F_ma((t_init_m-1-1441):(t_len_m+t_init_m-2-1441),:);
+    el_exGCO2F1=EL_CO2F_ma((t_init_m-1441):(t_len_m+t_init_m-1-1441),:);
     MA_CO2F_exG.val = el_exGCO2F1;
     MA_CO2F_exG.uels=h_sim.uels;
     
@@ -587,7 +587,7 @@ for t=sim_start:sim_stop
     el_exGPEF1=el_exGPEF((t_init_m-1):(t_len_m+t_init_m-2),:);
     PEF_exG.val = el_exGPEF1;
     PEF_exG.uels=h_sim.uels;
-    el_exGPEF1=EL_PEF_ma((t_init_m-1-1441):(t_len_m+t_init_m-2-1441),:);
+    el_exGPEF1=EL_PEF_ma((t_init_m-1441):(t_len_m+t_init_m-1-1441),:);
     MA_PEF_exG.val = el_exGPEF1;
     MA_PEF_exG.uels=h_sim.uels;
     
@@ -623,12 +623,18 @@ for t=sim_start:sim_stop
         [x, max_exG_prev]=readGtoM(t);
     end
     if t==sim_start
-        Initial(1:6)=0;
+        Initial(1:8)=0;
     else
     [Initial, x]=readGtoM(t);
     end
     Pana1_prev_disp=Initial(6);
     temp_Pana1_prev_disp = struct('name','Pana1_prev_disp','type','parameter','form','full','val',Pana1_prev_disp);
+    
+    VKA1_prev_disp=Initial(7);
+    temp_VKA1_prev_disp = struct('name','VKA1_prev_disp','type','parameter','form','full','val',VKA1_prev_disp);
+    
+    VKA4_prev_disp=Initial(8);
+    temp_VKA4_prev_disp = struct('name','VKA4_prev_disp','type','parameter','form','full','val',VKA4_prev_disp);
     
     temp_max_exG_prev = struct('name','max_exG_prev','type','parameter','form','full','val',max_exG_prev);
     
@@ -665,7 +671,7 @@ wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
      temp_optn1, temp_optn2, temp_optn3, temp_synth_baseline, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap,...
      temp_opt_fx_inv_BES_maxP,temp_opt_fx_inv_BFCh_maxP,PV_inverter_PF_Inv,temp_opt_fx_inv_BTES_D_init,temp_opt_fx_inv_BTES_S_init,...
      temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init,Panna1,FGC,temp_Pana1_prev_disp,...
-     MA_PEF_exG,MA_CO2F_exG,temp_max_exG_prev,MA_Cost_DH,...
+     MA_PEF_exG,MA_CO2F_exG,temp_max_exG_prev,MA_Cost_DH,temp_VKA1_prev_disp,temp_VKA4_prev_disp,...
      DH_Node_ID, DH_Nodes_Transfer_Limits,...
      DC_Node_ID, DC_Nodes_Transfer_Limits);
 

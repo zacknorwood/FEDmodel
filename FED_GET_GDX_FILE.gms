@@ -372,6 +372,8 @@ Parameters
       Pana1_prev_disp
       Panna1
       FGC
+      VKA1_prev_disp
+      VKA4_prev_disp
 ;
 $GDXIN MtoG.gdx
 $lOAD opt_fx_inv_BES_init
@@ -382,6 +384,8 @@ $lOAD opt_fx_inv_BTES_D_init
 $load Pana1_prev_disp
 $load Panna1
 $load FGC
+$load VKA1_prev_disp
+$load VKA4_prev_disp
 $GDXIN
 *the combination is used to comment out sections codes inside
 *$Ontext
