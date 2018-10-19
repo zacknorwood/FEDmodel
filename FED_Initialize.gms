@@ -345,18 +345,13 @@ price('DH',h)=h_price(h)$(opt_marg_factors eq 0)+MA_Cost_DH(h)$(opt_marg_factors
 
 el_sell_price(h) =el_price(h) - unit_prof_sell - net_tariff  +  el_cirtificate(h) + ursprungsgaranti;
 *the data is obtained from Energimyndigheten 2015 wood chips for District Heating Uses
-fuel_cost('CHP',h)= 0.353;
-*0.186;
+fuel_cost('CHP',h)=0.186;
 * Divided by efficiency to get actual fuel use when multiplying with heat output
-*woodchip cost of 0.353 kr/kWhr is obtained from AH
-fuel_cost('P1',h)=0.353;
-*0.186/P1_eff;
-fuel_cost('RGK1',h)=0.353;
-*0.186/RGK1_eff;
+fuel_cost('P1',h)=0.186/P1_eff;
+fuel_cost('RGK1',h)=0.186/RGK1_eff;
 *fuel_cost('P1',h)=0.186*fuel_P1(h)/q_P1(h);
 * Divided by efficiency to get actual fuel use when multiplying with heat output
-fuel_cost('P2',h)=0.353;
-*0.186/P2_eff;
+fuel_cost('P2',h)=0.186/P2_eff;
 var_cost(sup_unit,h)=0;
 fix_cost(sup_unit)=0;
 

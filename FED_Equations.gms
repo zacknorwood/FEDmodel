@@ -627,7 +627,7 @@ eq_PTexG(m)..
                PT_exG(m) =e= max_exG(m)*PT_cost('exG');
 
 eq_mean_DH(d)..
-              mean_DH(d) =g=   sum(h,(h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d));
+              mean_DH(d) =g=   sum(h,(h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d))/10;
 
 eq_PT_DH(d)..
               PT_DH      =g=   mean_DH(d)*PT_cost('DH');

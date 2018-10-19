@@ -449,7 +449,7 @@ G_facade = struct('name','G_facade','type','parameter');
 Panna1 = struct('name','Panna1','type','parameter','form','full');
 FGC = struct('name','FGC','type','parameter','form','full');
 %% SIMULATION OPTIONS
-synth_baseline=0; %Option for synthetic baseline 
+synth_baseline=1; %Option for synthetic baseline 
 
 % optimization option
 option1=1;    %minimize total cost
@@ -462,8 +462,8 @@ temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',op
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 
 %SIMULATION START AND STOP TIME
-sim_start=10192;
-sim_stop=10192; 
+sim_start=2000;
+sim_stop=2000; 
 
 forcast_horizon=10;
 t_len_m=10;
@@ -676,7 +676,7 @@ Time(2).value=toc;
 tic
  RUN_GAMS_MODEL = 1;
  while RUN_GAMS_MODEL==1
-     system 'gams FED_SIMULATOR_MAIN lo=3';
+     system 'C:\GAMS\win64\24.9\gams FED_SIMULATOR_MAIN lo=3';
      %system 'C:\GAMS\win64\24.9\gams FED_SIMULATOR_MAIN lo=3';
      break;
  end
