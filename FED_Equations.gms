@@ -45,6 +45,7 @@ equation
 
            eq_CWB_en_init        Cold Water Basin initial charge state
            eq_CWB_en             Cold Water Basin charge equation
+           eq_CWB_discharge      Cold Water Basin discharges only to Maskin
 
            eq1_AbsCInv  Production equation-AbsChiller investment
            eq2_AbsCInv  Investment capacity-AbsChiller investment
@@ -258,6 +259,9 @@ eq_CWB_en_init(h)$(ord(h) eq 1)..
 
 eq_CWB_en(h)$(ord(h) gt 1)..
          CWB_en(h) =e= CWB_en(h-1)+CWB_ch(h)-CWB_dis(h);
+
+eq_CWB_discharge(h)..
+         CWB_dis(h) =l= c_demand(h,'O0007028');
 
 
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
