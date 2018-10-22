@@ -168,12 +168,16 @@ binary variable
 positive variable
          h_BAC_savings(h,i) hourly heat consumption savings per building attributable to BAC investment
 ;
-
+*A condition need to be set here
+*0 is used in case there is no investment
+B_BITES.fx(i)=0;
 binary variable
          B_BAC(i)   Binary investment decision variable
 ;
+*0 is used in case there is no investment
 B_BAC.fx(i)=0;
-B_BAC.fx(BAC_Inv)=1;
+*A condition need to be set here
+*B_BAC.fx(BAC_Inv)=0;
 
 *----------------Solar PV PV relate variables-----------------------------------
 positive variable
