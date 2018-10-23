@@ -217,8 +217,17 @@ for i=sim_start:sim_stop
         tot_var_cost_AH(count)=0;
     end        
            
-    tot_fixed_cost(count)=Results(i).dispatch.tot_fixed_cost;
-    sim_PT_exG(count)=Results(i).dispatch.sim_PT_exG;
+    if (not(isempty(Results(i).dispatch.tot_fixed_cost)))
+        tot_fixed_cost(count)=Results(i).dispatch.tot_fixed_cost;
+    else
+        tot_fixed_cost(count)=0;
+    end
+    
+    if (not(isempty(Results(i).dispatch.sim_PT_exG)))
+        sim_PT_exG(count)=Results(i).dispatch.sim_PT_exG;
+    else
+        sim_PT_exG(count)=0;
+    end
     
     if (not(isempty(Results(i).dispatch.PT_DH)))
         PT_DH(count)=Results(i).dispatch.PT_DH;
@@ -283,7 +292,7 @@ end
     xlswrite('results',export_h',strcat('E3:E',num2str(count+2)));
     xlswrite('results',{'Export H'},'E1:F1');
     xlswrite('results',{'Dispatch'},'E2:E2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',2,strcat('D',num2str(sim_start+3),':D',num2str(sim_stop+3)))*1000,strcat('F3:F',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,strcat('D',num2str(sim_start+3),':D',num2str(sim_stop+3)))*1000,strcat('F3:F',num2str(count+2)));
 
     xlswrite('results',pana1',strcat('A3:A',num2str(count+2)));
     xlswrite('results',{'Dispatch'},'A2:A2');
@@ -303,18 +312,18 @@ end
     xlswrite('results',VKA1_h',strcat('I3:I',num2str(count+2)));
     xlswrite('results',{'VKA1_H'},'I1:J1');
     xlswrite('results',{'Dispatch'},'I2:I2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\v‰rmepump VKA1.xls',1,strcat('C',num2str(sim_start-1990),':C',num2str(sim_stop-1990))),strcat('J3:J',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\v√§rmepump VKA1.xls',1,strcat('C',num2str(sim_start-1990),':C',num2str(sim_stop-1990))),strcat('J3:J',num2str(count+2)));
 
 
     xlswrite('results',VKA4_h',strcat('K3:K',num2str(count+2)));
     xlswrite('results',{'VKA4_H'},'K1:L1');
     xlswrite('results',{'Dispatch'},'K2:K2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\v‰rmepump VKA4.xls',1,strcat('C',num2str(sim_start-1438),':C',num2str(sim_stop-1438))),strcat('L3:L',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\v√§rmepump VKA4.xls',1,strcat('C',num2str(sim_start-1438),':C',num2str(sim_stop-1438))),strcat('L3:L',num2str(count+2)));
 
     xlswrite('results',import_h',strcat('M3:M',num2str(count+2)));
     xlswrite('results',{'Import H'},'M1:N1');
     xlswrite('results',{'Dispatch'},'M2:M2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',2,strcat('C',num2str(sim_start+3),':C',num2str(sim_stop+3)))*1000,strcat('N3:N',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,strcat('C',num2str(sim_start+3),':C',num2str(sim_stop+3)))*1000,strcat('N3:N',num2str(count+2)));
 
     xlswrite('results',turbine',strcat('O3:O',num2str(count+2)));
     xlswrite('results',{'Turbine'},'O1:P1');
@@ -327,27 +336,27 @@ end
     xlswrite('results',import_el',strcat('S3:S',num2str(count+2)));
     xlswrite('results',{'Import El'},'S1:T1');
     xlswrite('results',{'Dispatch'},'S2:S2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\AH_el_import.xlsx',1,strcat('C',num2str(sim_start),':C',num2str(sim_stop))),strcat('T3:T',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\AH_el_import.xlsx',1,strcat('C',num2str(sim_start),':C',num2str(sim_stop))),strcat('T3:T',num2str(count+2)));
     
     xlswrite('results',absC',strcat('U3:U',num2str(count+2)));
     xlswrite('results',{'AbsC'},'U1:V1');
     xlswrite('results',{'Dispatch'},'U2:U2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('R',num2str(sim_start+4),':R',num2str(sim_stop+4)))*1000,strcat('V3:V',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\abs o frikyla 2016-2017.xlsx',1,strcat('R',num2str(sim_start+4),':R',num2str(sim_stop+4)))*1000,strcat('V3:V',num2str(count+2)));
     
     xlswrite('results',VKA1_c',strcat('W3:W',num2str(count+2)));
     xlswrite('results',{'VKA1_C'},'W1:X1');
     xlswrite('results',{'Dispatch'},'W2:W2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\v‰rmepump VKA1.xls',1,strcat('H',num2str(sim_start-1990),':H',num2str(sim_stop-1990))),strcat('X3:X',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\v√§rmepump VKA1.xls',1,strcat('H',num2str(sim_start-1990),':H',num2str(sim_stop-1990))),strcat('X3:X',num2str(count+2)));
 
     xlswrite('results',VKA4_c',strcat('Y3:Y',num2str(count+2)));
     xlswrite('results',{'VKA4_C'},'Y1:Z1');
     xlswrite('results',{'Dispatch'},'Y2:Y2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\v‰rmepump VKA4.xls',1,strcat('H',num2str(sim_start-1438),':H',num2str(sim_stop-1438))),strcat('Z3:Z',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\v√§rmepump VKA4.xls',1,strcat('H',num2str(sim_start-1438),':H',num2str(sim_stop-1438))),strcat('Z3:Z',num2str(count+2)));
 
     xlswrite('results',aac_c',strcat('AA3:AA',num2str(count+2)));
     xlswrite('results',{'AAC_C'},'AA1:AB1');
     xlswrite('results',{'Dispatch'},'AA2:AA2');
-    xlswrite('results',xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',1,strcat('Q',num2str(sim_start+4),':Q',num2str(sim_stop+4)))*1000,strcat('AB3:AB',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\abs o frikyla 2016-2017.xlsx',1,strcat('Q',num2str(sim_start+4),':Q',num2str(sim_stop+4)))*1000,strcat('AB3:AB',num2str(count+2)));
     
     xlswrite('results',refr',strcat('AC3:AC',num2str(count+2)));
     xlswrite('results',{'Refrig'},'AC1:AD1');
@@ -431,10 +440,18 @@ end
     xlswrite('results',{'c_RM'},'Storages','O1:O1'); 
 %-------------Costs----------------------    
     xlswrite('results',tot_var_cost_AH','Costs',strcat('A2:A',num2str(count+2)));
-    xlswrite('results',{'tot_var_cost_AH'},'Costs','A1:A1');
+    xlswrite('results',{'AH total variable cost'},'Costs','A1:A1');
     
     xlswrite('results',tot_fixed_cost','Costs','B2:B2');
-    xlswrite('results',{'tot_fixed_cost'},'Costs','B1:B1');
+    xlswrite('results',{'AH total fixed cost'},'Costs','B1:B1');
+    
+    
+    xlswrite('results',sim_PT_exG','Costs',strcat('C2:C',num2str(count+2)));
+    xlswrite('results',{'El grid peak tariff [PT_exG]'},'Costs','C1:C1');
+    
+    
+    xlswrite('results',PT_DH','Costs',strcat('D2:D',num2str(count+2)));
+    xlswrite('results',{'DH grid peak tariff [PT_DH]'},'Costs','D1:D1');
     
     
     xlswrite('results',sim_PT_exG','Costs','C2:C2');

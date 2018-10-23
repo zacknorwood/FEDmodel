@@ -109,26 +109,8 @@ BID.uels=num2cell(BID_temp);
 
 %% ********FIXED MODEL INPUT DATA and variable input data************
 
-%P1P2 dispatchability, DH export period and BAC saving period need to be
-%re-formulated
-%P1P2 dispatchability***********This could be replaced with a code****
-sheet=1;
-xlRange = 'C2:C17545';
-P1P2_disp=xlsread('Input_dispatch_model\P1P2_dispatchable.xlsx',sheet,xlRange);
-P1P2_disp(isnan(P1P2_disp))=0;
-    
-%DH export season
-sheet=1;
-xlRange = 'C2:C17545';
-DH_exp_season=xlsread('Input_dispatch_model\DH_export_season.xlsx',sheet,xlRange);
-    
-%BAC_savings_period
-sheet=1;
-xlRange = 'C2:C17545';
-BAC_sav_period=xlsread('Input_dispatch_model\BAC_parameters.xlsx',sheet,xlRange);
-
 %Read static properties of the model
-[ pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
+[P1P2_disp, DH_exp_season, BAC_sav_period, pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
 
 %Read forecasted values and variable input data
 [e_demand_measured, h_demand_measured,c_demand_measured,...
@@ -137,8 +119,8 @@ BAC_sav_period=xlsread('Input_dispatch_model\BAC_parameters.xlsx',sheet,xlRange)
  irradiance_measured_roof,irradiance_measured_facades] = fread_measurments(2, 17000);
  
 % This must be deleted
-export1=xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',2,'D5:D11100')*1000;
-import1=xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',2,'C5:C11100')*1000;
+export1=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,'D5:D11100')*1000;
+import1=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,'C5:C11100')*1000;
 Panna1_forecast=load('Panna1_forecast');
 Panna1_forecast=abs((Panna1_forecast.Panna1_forecast')*1000);
 FGC_forecast=load('FGC_forecast');
@@ -184,7 +166,7 @@ opt_fx_inv_RMInv_cap=0;
 temp_opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','form','full','val',opt_fx_inv_RMInv_cap);
 
 %Option for TES investment
-opt_fx_inv_TES=0;
+opt_fx_inv_TES=1;
 temp_opt_fx_inv_TES = struct('name','opt_fx_inv_TES','type','parameter','form','full','val',opt_fx_inv_TES);
 opt_fx_inv_TES_cap=0;
 temp_opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',opt_fx_inv_TES_cap);
@@ -327,11 +309,11 @@ while Re_calculate_CO2PEF==0
 end
 
 %Import marginal CO2 and PE factors, marginal DH cost
-DH_cost_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'W5:W17900');
-DH_CO2F_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'X5:X17900');
-DH_PEF_ma=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme marginal.xlsx',2,'Y5:Y17900');
-EL_CO2F_ma=sum(csvread('Input_data_FED_SIMULATOR\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[230  820   490   24     12  45 700   11  24  24],2);
-EL_PEF_ma=sum(csvread('Input_data_FED_SIMULATOR\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[2.99  2.45  1.93  1.01   3.29  1.25 2.47 1.03 1.01  1.01],2);
+DH_cost_ma=xlsread('Input_dispatch_model\Produktionsdata fjärrvärme marginal.xlsx',2,'W5:W17900');
+DH_CO2F_ma=xlsread('Input_dispatch_model\Produktionsdata fjärrvärme marginal.xlsx',2,'X5:X17900');
+DH_PEF_ma=xlsread('Input_dispatch_model\Produktionsdata fjärrvärme marginal.xlsx',2,'Y5:Y17900');
+EL_CO2F_ma=sum(csvread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[230  820   490   24     12  45 700   11  24  24],2);
+EL_PEF_ma=sum(csvread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[2.99  2.45  1.93  1.01   3.29  1.25 2.47 1.03 1.01  1.01],2);
 
 %% FIXED MODEL INPUT DATA - FED INVESTMENT LIMIT
 
@@ -462,8 +444,8 @@ temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',op
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 
 %SIMULATION START AND STOP TIME
-sim_start=10192;
-sim_stop=10192; 
+sim_start=1994; %1994; %24th of March 2016
+sim_stop=10192;%10192; %28th of February 2017
 
 forcast_horizon=10;
 t_len_m=10;

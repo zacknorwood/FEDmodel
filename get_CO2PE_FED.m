@@ -6,21 +6,21 @@
 get_CO2PE_exGrids;
 sheet=1;
 xlRange = 'C1443:C10203';
-el_Import_AH=xlsread('Input_data_FED_SIMULATOR\AH_el_import.xlsx',sheet,xlRange);  %electricity imported to the FED system 2016 kWh
+el_Import_AH=xlsread('Input_dispatch_model\AH_el_import.xlsx',sheet,xlRange);  %electricity imported to the FED system 2016 kWh
 %% AH heat import and export
 
 sheet=2;
 xlRange = 'C1447:C10207';
-h_Import_AH=1000*xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',sheet,xlRange);  
+h_Import_AH=1000*xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',sheet,xlRange);  
 
 sheet=2;
 xlRange = 'D1447:D10207';
-h_Exmport_AH=1000*xlsread('Input_data_FED_SIMULATOR\AH_h_import_exp.xlsx',sheet,xlRange); 
+h_Exmport_AH=1000*xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',sheet,xlRange); 
 %% FED Electricty demand
 
 sheet=2;
 xlRange = 'B2:AJ17521';
-el_demand_2016_2017=xlsread('Input_data_FED_SIMULATOR\FED_el_Demand_new.xlsx',sheet,xlRange);  %electricity demand in the FED system, 2016 kWh
+el_demand_2016_2017=xlsread('Input_dispatch_model\FED_el_Demand_new.xlsx',sheet,xlRange);  %electricity demand in the FED system, 2016 kWh
 el_demand_2016_2017(isnan(el_demand_2016_2017))=0;
 AH_el_demand=el_demand_2016_2017(:,1:24);
 nonAH_el_demand=el_demand_2016_2017(:,25:30);
@@ -29,7 +29,7 @@ el_demand_tot=sum(el_demand_2016_2017,2);
 
 sheet=2;
 xlRange = 'B2:AJ17521';
-heat_demand_2016_2017=xlsread('Input_data_FED_SIMULATOR\FED_heat_demand_new.xlsx',sheet,xlRange);  %electricity demand in the FED system, 2016 kWh
+heat_demand_2016_2017=xlsread('Input_dispatch_model\FED_heat_demand_new.xlsx',sheet,xlRange);  %electricity demand in the FED system, 2016 kWh
 heat_demand_2016_2017(isnan(heat_demand_2016_2017))=0;
 AH_heat_demand=heat_demand_2016_2017(:,1:24);
 nonAH_heat_demand=heat_demand_2016_2017(:,25:30);
@@ -38,7 +38,7 @@ heat_demand_tot=sum(heat_demand_2016_2017,2);
 
 sheet=2;
 xlRange = 'B2:AJ17521';
-cooling_demand_2016_2017=xlsread('Input_data_FED_SIMULATOR\FED_cooling_Demand_new.xlsx',sheet,xlRange);  %electricity demand in the FED system, 2016 kWh
+cooling_demand_2016_2017=xlsread('Input_dispatch_model\FED_cooling_Demand_new.xlsx',sheet,xlRange);  %electricity demand in the FED system, 2016 kWh
 cooling_demand_2016_2017(isnan(cooling_demand_2016_2017))=0;
 cooling_demand_tot=sum(cooling_demand_2016_2017,2);
 %% FED Local el generation
@@ -55,7 +55,7 @@ cooling_demand_tot=sum(cooling_demand_2016_2017,2);
 sheet=1;
 xlRange = 'Q5:Q17524'; 
 c0_AAC=zeros(len,1);
-c0_AAC_temp=1000*xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',sheet,xlRange);   
+c0_AAC_temp=1000*xlsread('Input_dispatch_model\abs o frikyla 2016-2017.xlsx',sheet,xlRange);   
 c0_AAC(1:length(c0_AAC_temp))=c0_AAC_temp;
 e0_AAC=c0_AAC/COP_AAC;
 
@@ -63,7 +63,7 @@ e0_AAC=c0_AAC/COP_AAC;
 sheet=1;
 xlRange = 'N5:N17524'; 
 c0_tot=zeros(len,1);
-c0_tot_temp=1000*xlsread('Input_data_FED_SIMULATOR\abs o frikyla 2016-2017.xlsx',sheet,xlRange);
+c0_tot_temp=1000*xlsread('Input_dispatch_model\abs o frikyla 2016-2017.xlsx',sheet,xlRange);
 c0_tot(1:length(c0_tot_temp))=c0_tot_temp;
 %q0_AbsC=round(q0_AbsC,2);
 c0_AbsC=c0_tot-c0_AAC;
@@ -91,7 +91,7 @@ h0_AbsC=c0_AbsC/COP_AbsC;
 sheet=2;
 xlRange = 'B4:B17523';
 e0_VKA1=zeros(len,1);
-e0_VKA1_temp=xlsread('Input_data_FED_SIMULATOR\värmepump VKA1.xls',sheet,xlRange); %electricity demand in the FED system, 2016 kWh
+e0_VKA1_temp=xlsread('Input_dispatch_model\värmepump VKA1.xls',sheet,xlRange); %electricity demand in the FED system, 2016 kWh
 e0_VKA1(1:length(e0_VKA1_temp),1)=e0_VKA1_temp;
 e0_VKA1(isnan(e0_VKA1))=0;
      
@@ -99,7 +99,7 @@ e0_VKA1(isnan(e0_VKA1))=0;
 sheet=2;
 xlRange = 'B4:B17523';
 e0_VKA4=zeros(len,1);
-e0_VKA4_temp=xlsread('Input_data_FED_SIMULATOR\värmepump VKA4.xls',sheet,xlRange); %electricity demand in the FED system, 2016 kWh
+e0_VKA4_temp=xlsread('Input_dispatch_model\värmepump VKA4.xls',sheet,xlRange); %electricity demand in the FED system, 2016 kWh
 e0_VKA4(1:length(e0_VKA4_temp),1)=e0_VKA4_temp;
 e0_VKA4(isnan(e0_VKA4))=0;
 %% Calculate the CO2 and PE of FED
