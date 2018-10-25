@@ -2,7 +2,8 @@
 *----------------------------Define equations-----------------------------------
 ********************************************************************************
 equation
-
+           eq_import    Forecasting import for Synthetic baseline
+           eq_export    Forecasting export for Synthetic baseline
            eq_VKA11     heating generatin of VKA1
            eq_VKA12     cooling generation of VKA1
            eq_VKA13     maximum electricity usage by VKA1
@@ -40,6 +41,10 @@ equation
            eq_ACC1      Refrigerator equation
            eq_ACC2      Refrigerator equation
            eq_ACC3      Temperature limit of Ambient Air Cooler
+           eq_ACC4      Ramp constraints for synth baseline
+           eq_ACC5      Ramp constraints for synth baseline
+           eq_ACC6      Ramp constraints for synth baseline
+           eq_ACC7      Ramp constraints for synth baseline
 
            eq_existPV   Production from existing PV install
            eq_existPV_active Active power production of existing PVs
@@ -140,10 +145,10 @@ equation
            eq_hbalance2  heating supply-demand balance excluding AH buildings
            eq_hbalance3  heating supply-demand balance excluding nonAH buildings
 
-           eq_dhn_constraint District heating network transfer limit
-           eq_dh_node_flows Summing of flows in district heating network
-           eq_dcn_constraint District cooling network transfer limit
-           eq_DC_node_flows Summing of flows in district cooling network
+*           eq_dhn_constraint District heating network transfer limit
+*           eq_dh_node_flows Summing of flows in district heating network
+*           eq_dcn_constraint District cooling network transfer limit
+*           eq_DC_node_flows Summing of flows in district cooling network
 
 
            eq_cbalance   Balance equation cooling
@@ -199,7 +204,11 @@ equation
 *-------------------------------------------------------------------------------
 *--------------------------Define equations-------------------------------------
 *-------------------------------------------------------------------------------
+eq_import(h)$(synth_baseline eq 1)..
+        h_imp_AH(h) =e= import(h);
 
+eq_export(h)$(synth_baseline eq 1)..
+        h_exp_AH(h) =e= export(h);
 ***************For Existing units***********************************************
 *-----------------VKA1 equations------------------------------------------------
 eq_VKA11(h)..
@@ -210,16 +219,16 @@ eq_VKA13(h)..
         el_VKA1(h) =l= VKA1_el_cap;
 
 eq_VKA14(h)$(ord(h) gt 1 and synth_baseline eq 1)..
-        H_VKA1(h-1)- H_VKA1(h)=g=-1;
+        H_VKA1(h-1)- H_VKA1(h)=g=-2000;
 
 eq_VKA15(h)$(ord(h) gt 1 and synth_baseline eq 1)..
-        H_VKA1(h-1)- H_VKA1(h)=l=1;
+        H_VKA1(h-1)- H_VKA1(h)=l=2000;
 
 eq_VKA16(h)$(ord(h) eq 1 and synth_baseline eq 1)..
-             VKA1_prev_disp- H_VKA1(h)=l=1;
+             VKA1_prev_disp- H_VKA1(h)=l=2000;
 
 eq_VKA17(h)$(ord(h) eq 1 and synth_baseline eq 1)..
-             VKA1_prev_disp- H_VKA1(h)=g=-1;
+             VKA1_prev_disp- H_VKA1(h)=g=-2000;
 
 *-----------------VKA4 equations------------------------------------------------
 eq_VKA41(h)..
@@ -230,16 +239,16 @@ eq_VKA43(h)..
         el_VKA4(h) =l= VKA4_el_cap;
 
 eq_VKA44(h)$(ord(h) gt 1 and synth_baseline eq 1)..
-        H_VKA4(h-1)- H_VKA4(h)=g=-1;
+        H_VKA4(h-1)- H_VKA4(h)=g=-2000;
 
 eq_VKA45(h)$(ord(h) gt 1 and synth_baseline eq 1)..
-        H_VKA4(h-1)- H_VKA4(h)=l=1;
+        H_VKA4(h-1)- H_VKA4(h)=l=2000;
 
 eq_VKA46(h)$(ord(h) eq 1 and synth_baseline eq 1)..
-             VKA1_prev_disp- H_VKA4(h)=l=1;
+             VKA1_prev_disp- H_VKA4(h)=l=2000;
 
 eq_VKA47(h)$(ord(h) eq 1 and synth_baseline eq 1)..
-             VKA1_prev_disp- H_VKA4(h)=g=-1;
+             VKA1_prev_disp- H_VKA4(h)=g=-2000;
 
 *------------------Panna1 equation(when dispachable)----------------------------
 eq1_h_Pana1(h)..
@@ -300,6 +309,19 @@ eq_ACC2(h)..
 
 eq_ACC3(h)$(tout(h)>AAC_TempLim)..
              c_AAC(h)=l= 0;
+
+eq_ACC4(h)$(ord(h) gt 1 and synth_baseline eq 1)..
+        c_AAC(h-1)- c_AAC(h)=g=-10000;
+
+eq_ACC5(h)$(ord(h) gt 1 and synth_baseline eq 1)..
+        c_AAC(h-1)- c_AAC(h)=l=10000;
+
+eq_ACC6(h)$(ord(h) eq 1 and synth_baseline eq 1)..
+             AAC_prev_disp- c_AAC(h)=l=10000;
+
+eq_ACC7(h)$(ord(h) eq 1 and synth_baseline eq 1)..
+             AAC_prev_disp- c_AAC(h)=g=-10000;
+
 
 *----------------Equations for existing PV--------------------------------------
 eq_existPV(h)..
@@ -492,7 +514,7 @@ eq_RMInv2(h)..
 
 **************************Network constraints***********************************
 *---------------District heating network constraints----------------------------
-
+$ontext
 eq_dhn_constraint(h, DH_Node_ID)..
          DH_node_transfer_limits(h, DH_Node_ID) =g= sum(i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i))
                  - (h_RMMC(h)) $(sameas(DH_Node_ID, 'Fysik'))
@@ -541,7 +563,7 @@ eq_DC_node_flows(h, DC_Node_ID)..
                  + (CWB_ch(h)/CWB_chr_eff - CWB_dis_eff*CWB_dis(h))$(sameas(DC_Node_ID, 'Maskin'))
 
 ;
-
+$offtext
 * - (C_VKA4(h) + c_HP(h) + c_AbsCInv(h)  + c_AbsC(h)  are at KC and thus
 
 **************************Demand Supply constraints*****************************
