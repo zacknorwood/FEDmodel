@@ -174,17 +174,24 @@ $LOAD area_roof_max
 $GDXIN
 ********************************************************************************
 
-*---Heat generated from Boiler 1 and the flue gas condencer in the base case----
+*-------------------Measured data in the base case------------------------------
 PARAMETERS
             qB1(h)         Heat out from boiler 1 (Panna1)
             qF1(h)         Heat out from FGC (Panna1)
-*            h_P1(h)           Total heat from Panna1
+            el_VKA1_0(h)   el used by VKA1 in the base case
+            el_VKA4_0(h)   el used by VKA4 in the base case
+            el_AAC_0(h)    el used by the AAC in the base case
+            h_AbsC_0(h)    heat used by the AbsC in the base case
 ;
 $GDXIN MtoG.gdx
 $LOAD qB1
 $LOAD qF1
-*$LOAD h_P1
+$LOAD el_VKA1_0
+$LOAD el_VKA4_0
+$LOAD el_AAC_0
+$LOAD h_ABsC_0
 $GDXIN
+
 *-----------Forcasted Demand data from MATLAB-----------------------------------
 PARAMETERS
            el_demand(h,B_ID)    ELECTRICITY DEMAND IN THE FED BUILDINGS
@@ -255,12 +262,14 @@ $GDXIN
 
 *---------Simulation option settings--------------------------------------------
 PARAMETERS
+            min_totCost_0      Option to run the base case scenario by minimizing tot cost
             min_totCost        Option to minimize total cost
             min_totPE          OPtion to minimize tottal PE use
             min_totCO2         OPtion to minimize total CO2 emission
             synth_baseline     Option for synthetic baseline
 ;
 $GDXIN MtoG.gdx
+$LOAD min_totCost_0
 $LOAD min_totCost
 $LOAD min_totPE
 $LOAD min_totCO2
@@ -322,15 +331,11 @@ $GDXIN
 PARAMETERS
          opt_fx_inv   option to fix investments
          opt_fx_inv_RMMC      options to fix the RMMC investment
-         opt_fx_inv_AbsCInv   options to fix investment in new AbsChiller
          opt_fx_inv_AbsCInv_cap capacity of the new AbsChiller
          opt_fx_inv_P2        options to fix the P2 investment
          opt_fx_inv_TURB      options to fix the TURB investment
-         opt_fx_inv_HP        options to fix investment in new HP
          opt_fx_inv_HP_cap    Capacity of the fixed new HP
-         opt_fx_inv_RMInv     options to fix investment in new RM
          opt_fx_inv_RMInv_cap Capacity of the fixed new RM
-         opt_fx_inv_TES       options to fix investment in new TES
          opt_fx_inv_TES_cap   capacity of the new TES
          opt_fx_inv_BES       options to fix investment in new BES
          opt_fx_inv_BES_cap   capacity of the new BES
@@ -343,15 +348,11 @@ PARAMETERS
 $GDXIN MtoG.gdx
 $LOAD opt_fx_inv
 $LOAD opt_fx_inv_RMMC
-$LOAD opt_fx_inv_AbsCInv
 $LOAD opt_fx_inv_AbsCInv_cap
 $LOAD opt_fx_inv_P2
 $LOAD opt_fx_inv_TURB
-$LOAD opt_fx_inv_HP
 $LOAD opt_fx_inv_HP_cap
-$LOAD opt_fx_inv_RMInv
 $LOAD opt_fx_inv_RMInv_cap
-$LOAD opt_fx_inv_TES
 $LOAD opt_fx_inv_TES_cap
 $LOAD opt_fx_inv_BES
 $LOAD opt_fx_inv_BES_cap
