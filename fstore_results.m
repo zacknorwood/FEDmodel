@@ -44,15 +44,27 @@ data.h_price=gdx2mat(gdxData,'h_price',h_sim.uels);
 %Outdoor temprature
 data.tout=gdx2mat(gdxData,'tout',h_sim.uels);
 
-%FED CO2 and PE
+%FED PE
 data.FED_PE=gdx2mat(gdxData,'FED_PE',h_sim.uels);
 data.MA_FED_PE=gdx2mat(gdxData,'MA_FED_PE',h_sim.uels);
 data.tot_PE=gdx2mat(gdxData,'tot_PE');
 data.MA_tot_PE=gdx2mat(gdxData,'MA_tot_PE');
+
+%AH PE
+data.AH_PE=gdx2mat(gdxData,'AH_PE',h_sim.uels);
+data.MA_AH_PE=gdx2mat(gdxData,'MA_AH_PE',h_sim.uels);
+
+%FED CO2
 data.FED_CO2=gdx2mat(gdxData,'FED_CO2',h_sim.uels);
 data.MA_FED_CO2=gdx2mat(gdxData,'MA_FED_CO2',h_sim.uels);
 data.FED_CO2_tot=gdx2mat(gdxData,'FED_CO2_tot');
 data.MA_FED_CO2_tot=gdx2mat(gdxData,'MA_FED_CO2_tot');
+
+%AH CO2
+data.AH_CO2=gdx2mat(gdxData,'AH_CO2',h_sim.uels);
+data.MA_AH_CO2=gdx2mat(gdxData,'MA_AH_CO2',h_sim.uels);
+
+%PEF and CO2F used in the simulation
 data.CO2F_PV=gdx2mat(gdxData,'CO2F_PV');
 data.PEF_PV=gdx2mat(gdxData,'PEF_PV');
 data.CO2F_P1=gdx2mat(gdxData,'CO2F_P1');
@@ -151,12 +163,15 @@ data.TURB_eff=gdx2mat(gdxData,'TURB_eff');
 %Costs
 data.totCost=gdx2mat(gdxData,'totCost');
 data.Ainv_cost=gdx2mat(gdxData,'Ainv_cost');
+
 data.fix_cost_existing=gdx2mat(gdxData,'fix_cost_existing');
 data.fix_cost_new=gdx2mat(gdxData,'fix_cost_new');
 data.var_cost_existing=gdx2mat(gdxData,'var_cost_existing');
 data.var_cost_new=gdx2mat(gdxData,'var_cost_new');
+
 data.tot_var_cost_AH=gdx2mat(gdxData,'tot_var_cost_AH',h_sim.uels);
 data.tot_fixed_cost=gdx2mat(gdxData,'tot_fixed_cost');
+
 data.sim_PT_exG=gdx2mat(gdxData,'sim_PT_exG');
 data.PT_DH=gdx2mat(gdxData,'PT_DH');
 %data.tot_operation_cost_AH=gdx2mat(gdxData,'tot_operation_cost_AH');

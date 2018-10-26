@@ -108,13 +108,16 @@ BID_temp(72)=76;
 BID.uels=num2cell(BID_temp);
 
 %% ********FIXED MODEL INPUT DATA and variable input data************
-
-%Read static properties of the model
+LOAD_EXCEL_DATA=1;
+while LOAD_EXCEL_DATA==1
+    %Read static properties of the model
 [P1P2_disp, DH_exp_season, BAC_sav_period, pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
 
 %Read forecasted values and variable input data
 [e_demand_measured, h_demand_measured,c_demand_measured,...
- h_B1_measured,h_F1_measured,e_price_measured,...
+ h_B1_measured,h_F1_measured,...
+ el_VKA1_measured,el_VKA4_measured,el_AAC_measured, h_AbsC_measured,...
+ e_price_measured,...
  el_cirtificate_m,h_price_measured,tout_measured,...
  irradiance_measured_roof,irradiance_measured_facades] = fread_measurments(2, 17000);
 
@@ -122,12 +125,21 @@ BID.uels=num2cell(BID_temp);
 temp=load('import_export_forecasting');
 forecast_import=(temp.forecast_import')*1000;
 forecast_export=(temp.forecast_export')*1000;
+
 Panna1_forecast=load('Panna1_forecast');
 Panna1_forecast=abs((Panna1_forecast.Panna1_forecast')*1000);
 FGC_forecast=load('FGC_forecast');
 FGC_forecast=abs((FGC_forecast.FGC_forecasting'));
+
+% This must be deleted
+%export1=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,'D5:D11100')*1000;
+%import1=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,'C5:C11100')*1000;
+    break;
+end
+
 %Import ANN data
 load('Input_dispatch_model\Heating_ANN');
+
 %% FIXED MODEL INPUT DATA - FXED INVESTMENT OPTIONS
 
 %Option to choose between marginal and average factors
@@ -139,39 +151,31 @@ opt_fx_inv=1;
 temp_opt_fx_inv = struct('name','opt_fx_inv','type','parameter','form','full','val',opt_fx_inv);
 
 %Option for RMMC investment
-opt_fx_inv_RMMC=0;  %Set to 1 if the investment in MC2 cooling connection is made
+opt_fx_inv_RMMC=0;  %0=no investment, 1=fixed investment, -1=variable of optimization
 temp_opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',opt_fx_inv_RMMC);
 
 %Option for new AbsChiller investment
-opt_fx_inv_AbsCInv=1;
-temp_opt_fx_inv_AbsCInv = struct('name','opt_fx_inv_AbsCInv','type','parameter','form','full','val',opt_fx_inv_AbsCInv);
-opt_fx_inv_AbsCInv_cap=0;
+opt_fx_inv_AbsCInv_cap=0; %>=0=fixed invetment, -1=variable of optimization
 temp_opt_fx_inv_AbsCInv_cap = struct('name','opt_fx_inv_AbsCInv_cap','type','parameter','form','full','val',opt_fx_inv_AbsCInv_cap);
 
 %Option for P2 investment
-opt_fx_inv_P2=0;
+opt_fx_inv_P2=0;  %0=no investment, 1=fixed investment, -1=variable of optimization
 temp_opt_fx_inv_P2 = struct('name','opt_fx_inv_P2','type','parameter','form','full','val',opt_fx_inv_P2);
 
 %Option for Turbine investment
-opt_fx_inv_TURB=0;
+opt_fx_inv_TURB=0;  %0=no investment, 1=fixed investment, -1=variable of optimization
 temp_opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',opt_fx_inv_TURB);
 
 %Option for new HP investment
-opt_fx_inv_HP=1;
-temp_opt_fx_inv_HP = struct('name','opt_fx_inv_HP','type','parameter','form','full','val',opt_fx_inv_HP);
-opt_fx_inv_HP_cap=0;
+opt_fx_inv_HP_cap=0;  %>=0 =fixed invetment, -1=variable of optimization
 temp_opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',opt_fx_inv_HP_cap);
 
 %Option for new RM investment
-opt_fx_inv_RMInv=1;
-temp_opt_fx_inv_RMInv = struct('name','opt_fx_inv_RMInv','type','parameter','form','full','val',opt_fx_inv_RMInv);
-opt_fx_inv_RMInv_cap=0;
+opt_fx_inv_RMInv_cap=0;  %>=0 =fixed invetment, -1=variable of optimization
 temp_opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','form','full','val',opt_fx_inv_RMInv_cap);
 
 %Option for TES investment
-opt_fx_inv_TES=1;
-temp_opt_fx_inv_TES = struct('name','opt_fx_inv_TES','type','parameter','form','full','val',opt_fx_inv_TES);
-opt_fx_inv_TES_cap=0;
+opt_fx_inv_TES_cap=0;    %>=0 =fixed invetment, -1=variable of optimization
 temp_opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',opt_fx_inv_TES_cap);
 
 %Option for BES investment
@@ -316,9 +320,9 @@ while Re_calculate_CO2PEF==0
 end
 
 %Import marginal CO2 and PE factors, marginal DH cost
-DH_cost_ma=xlsread('Input_dispatch_model\Produktionsdata fj�rrv�rme marginal.xlsx',2,'W5:W17900');
-DH_CO2F_ma=xlsread('Input_dispatch_model\Produktionsdata fj�rrv�rme marginal.xlsx',2,'X5:X17900');
-DH_PEF_ma=xlsread('Input_dispatch_model\Produktionsdata fj�rrv�rme marginal.xlsx',2,'Y5:Y17900');
+DH_cost_ma=xlsread('Input_dispatch_model\Produktionsdata fjÃ¤rrvÃ¤rme marginal.xlsx',2,'W5:W17900');
+DH_CO2F_ma=xlsread('Input_dispatch_model\Produktionsdata fjÃ¤rrvÃ¤rme marginal.xlsx',2,'X5:X17900');
+DH_PEF_ma=xlsread('Input_dispatch_model\Produktionsdata fjÃ¤rrvÃ¤rme marginal.xlsx',2,'Y5:Y17900');
 EL_CO2F_ma=sum(csvread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[230  820   490   24     12  45 700   11  24  24],2);
 EL_PEF_ma=sum(csvread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[2.99  2.45  1.93  1.01   3.29  1.25 2.47 1.03 1.01  1.01],2);
 
@@ -347,6 +351,18 @@ qB1 = struct('name','qB1','type','parameter','form','full');
 
 %Heat generaion from the Flue gas condencer in the base case
 qF1 = struct('name','qF1','type','parameter','form','full');
+
+%el used by VKA1 in the base case
+el_VKA1_0 = struct('name','el_VKA1_0','type','parameter','form','full');
+
+%el used by VKA4 in the base case
+el_VKA4_0 = struct('name','el_VKA4_0','type','parameter','form','full');
+
+%el used by AAC in the base case
+el_AAC_0 = struct('name','el_AAC_0','type','parameter','form','full');
+
+%heat used by AbsC in the base case
+h_AbsC_0 = struct('name','h_AbsC_0','type','parameter','form','full');
 
 %Forcasted Nprdpool el price
 el_price = struct('name','el_price','type','parameter','form','full');
@@ -439,15 +455,24 @@ import = struct('name','import','type','parameter','form','full');
 export = struct('name','export','type','parameter','form','full');
 Panna1 = struct('name','Panna1','type','parameter','form','full');
 FGC = struct('name','FGC','type','parameter','form','full');
+
 %% SIMULATION OPTIONS
 synth_baseline=0; %Option for synthetic baseline 
 
 % optimization option
+option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
 option1=1;    %minimize total cost
 option2=0;    %minimize tottal PE use
 option3=0;    %minimize total CO2 emission
 
+if (option0 == 1)
+    option1=1;    
+    option2=0;    
+    option3=0;
+end
+
 temp_synth_baseline = struct('name','synth_baseline','type','parameter','form','full','val',synth_baseline);
+temp_optn0 = struct('name','min_totCost_0','type','parameter','form','full','val',option0);
 temp_optn1 = struct('name','min_totCost','type','parameter','form','full','val',option1);
 temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',option2);
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
@@ -455,10 +480,10 @@ temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',o
 %SIMULATION START AND STOP TIME
 
 sim_start=1994; %1994; %24th of March 2016
-sim_stop=1994;%10192; %28th of February 2017
+sim_stop=1994; %10192; %28th of February 2017
 
-forcast_horizon=10;
-t_len_m=10;
+forcast_horizon=8200;
+t_len_m=8200;
 Time(1).point='fixed inputs';
 Time(1).value=toc;
 for t=sim_start:sim_stop
@@ -494,7 +519,7 @@ for t=sim_start:sim_stop
     h_demand_forcast=h_demand_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
     h_demand.val = h_demand_forcast;
     h_demand.uels={h_sim.uels,B_ID.uels};
-    %Sample code using ANN to forecast Edit heat demand for Delays(1:24)
+    %Sample code using ANN to forecast Edit heat demand
     heat_Edit_forecast=zeros(1,10);
     for i=1:t_len_m
     heat_Edit_forecast(i)=sim(net_Edit,vertcat(flip(temperature((t_init_m-25+i):(t_init_m-2+i))'),flip(workday_index(15719:15742)'),flip(month_index(15719:15742)'),flip(Timeofday_index(15719:15742)')));
@@ -517,11 +542,27 @@ for t=sim_start:sim_stop
     qF1.val = h_F1_forcast;
     qF1.uels=h_sim.uels;
     
+    %el used by VKA1 in the base case
+    el_VKA1_0.val=el_VKA1_measured((t_init_m-1):(t_len_m+t_init_m-2),:);    
+    el_VKA1_0.uels=h_sim.uels;
+    
+    %el used by VKA4 in the base case
+    el_VKA4_0.val=el_VKA4_measured((t_init_m-1):(t_len_m+t_init_m-2),:);    
+    el_VKA4_0.uels=h_sim.uels;
+    
+    %el used by AAC in the base case
+    el_AAC_0.val=el_AAC_measured((t_init_m-1):(t_len_m+t_init_m-2),:);    
+    el_AAC_0.uels=h_sim.uels;
+    
+    %h used by ABC in the base case
+    h_AbsC_0.val=h_AbsC_measured((t_init_m-1):(t_len_m+t_init_m-2),:);    
+    h_AbsC_0.uels=h_sim.uels;
+    
     %Forcasted Nprdpool el price
     el_price_forcast=e_price_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
     el_price.val = el_price_forcast;
     el_price.uels=h_sim.uels;
-    
+      
     %Forcasted el cirtificate
     el_cirtificate_forcast=el_cirtificate_m((t_init_m-1):(t_len_m+t_init_m-2),:);
     el_cirtificate.val = el_cirtificate_forcast;
@@ -663,20 +704,22 @@ for t=sim_start:sim_stop
     
 
     %% RUN GAMS model
-
-wgdx('MtoG.gdx', temp_opt_fx_inv,temp_opt_fx_inv_RMMC,...
-     temp_opt_fx_inv_AbsCInv,temp_opt_fx_inv_AbsCInv_cap,...
-     temp_opt_fx_inv_P2,temp_opt_fx_inv_TURB,temp_opt_fx_inv_HP, temp_opt_fx_inv_HP_cap,...
-     temp_opt_fx_inv_RMInv, temp_opt_fx_inv_RMInv_cap,...
-     temp_opt_fx_inv_TES, temp_opt_fx_inv_TES_cap,temp_opt_marg_factors, ...
+%temp_opt_fx_inv_AbsCInv,temp_opt_fx_inv_HP, temp_opt_fx_inv_RMInv, temp_opt_fx_inv_TES, 
+wgdx('MtoG.gdx', temp_opt_fx_inv, temp_opt_fx_inv_RMMC,...
+     temp_opt_fx_inv_AbsCInv_cap,...
+     temp_opt_fx_inv_P2,temp_opt_fx_inv_TURB,temp_opt_fx_inv_HP_cap,...
+     temp_opt_fx_inv_RMInv_cap,...
+     temp_opt_fx_inv_TES_cap,temp_opt_marg_factors, ...
      temp_opt_fx_inv_BES, temp_opt_fx_inv_BES_cap, h_sim,BITES_Inv,BAC_Inv,...
      CO2F_exG, PEF_exG, MA_CO2F_DH, CO2F_DH, MA_PEF_DH, PEF_DH,...
      temp_CO2F_PV, temp_PEF_PV, temp_CO2F_P1, temp_PEF_P1, temp_CO2F_P2, temp_PEF_P2,...
      B_ID,B_ID_AH_el,B_ID_nonAH_el,B_ID_AH_h,B_ID_nonAH_h,B_ID_AH_c,B_ID_nonAH_c,B_ID_nonBITES,BID,...
-     e_demand,h_demand,c_demand,qB1,qF1,el_price,el_cirtificate,h_price,tout,...     
+     e_demand,h_demand,c_demand,qB1,qF1,...
+     el_VKA1_0, el_VKA4_0,el_AAC_0,h_AbsC_0,...
+     el_price,el_cirtificate,h_price,tout,...     
      BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period,...
      PV_BID_roof_Inv,PV_roof_cap_Inv,PV_BID_facade_Inv,PV_facade_cap_Inv,...
-     temp_optn1, temp_optn2, temp_optn3, temp_synth_baseline, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap,...
+     temp_optn0,temp_optn1, temp_optn2, temp_optn3, temp_synth_baseline, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap,...
      temp_opt_fx_inv_BES_maxP,temp_opt_fx_inv_BFCh_maxP,PV_inverter_PF_Inv,temp_opt_fx_inv_BTES_D_init,temp_opt_fx_inv_BTES_S_init,...
      temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init,import,export,Panna1,FGC,temp_Pana1_prev_disp,...
      MA_PEF_exG,MA_CO2F_exG,temp_max_exG_prev,MA_Cost_DH,temp_VKA1_prev_disp,temp_VKA4_prev_disp,temp_AAC_prev_disp,...
@@ -701,7 +744,7 @@ Results(t).dispatch = fstore_results(h_sim,B_ID,BTES_properties,Buses_IDs);
 Time(3).point='Gams running and storing';
 Time(3).value=toc;
 end
-
+return
  %% Post processing results 
  
  %use the 'plot_results.m' script to plot desired results
