@@ -140,9 +140,9 @@ equation
            eq_hbalance2  heating supply-demand balance excluding AH buildings
            eq_hbalance3  heating supply-demand balance excluding nonAH buildings
 
-           eq_dhn_constraint District heating network transfer limit
+*           eq_dhn_constraint District heating network transfer limit
            eq_dh_node_flows Summing of flows in district heating network
-           eq_dcn_constraint District cooling network transfer limit
+*           eq_dcn_constraint District cooling network transfer limit
            eq_DC_node_flows Summing of flows in district cooling network
 
 
@@ -150,7 +150,7 @@ equation
 
            eq_ebalance3  supply demand balance equation from AH
            eq_ebalance4  electrical import equation to nonAH
-           eq_dcpowerflow1  active power balance equation
+*           eq_dcpowerflow1  active power balance equation
            eq_dcpowerflow2  reactive power balance equation
            eq_dcpowerflow3  line limits equations
            eq_dcpowerflow4  line limits equations
@@ -206,19 +206,19 @@ eq_VKA11(h)..
         H_VKA1(h) =e= VKA1_H_COP*el_VKA1(h);
 eq_VKA12(h)..
         C_VKA1(h) =e= VKA1_C_COP*el_VKA1(h);
-eq_VKA13(h)..
+eq_VKA13(h) $(min_totCost_0 eq 0)..
         el_VKA1(h) =l= VKA1_el_cap;
 
-eq_VKA14(h)$(ord(h) gt 1 and synth_baseline eq 1)..
+eq_VKA14(h)$(ord(h) gt 1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
         H_VKA1(h-1)- H_VKA1(h)=g=-1;
 
-eq_VKA15(h)$(ord(h) gt 1 and synth_baseline eq 1)..
+eq_VKA15(h)$(ord(h) gt 1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
         H_VKA1(h-1)- H_VKA1(h)=l=1;
 
-eq_VKA16(h)$(ord(h) eq 1 and synth_baseline eq 1)..
+eq_VKA16(h)$(ord(h) eq 1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
              VKA1_prev_disp- H_VKA1(h)=l=1;
 
-eq_VKA17(h)$(ord(h) eq 1 and synth_baseline eq 1)..
+eq_VKA17(h)$(ord(h) eq 1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
              VKA1_prev_disp- H_VKA1(h)=g=-1;
 
 *-----------------VKA4 equations------------------------------------------------
@@ -226,57 +226,57 @@ eq_VKA41(h)..
         H_VKA4(h) =e= VKA4_H_COP*el_VKA4(h);
 eq_VKA42(h)..
         C_VKA4(h) =e= VKA4_C_COP*el_VKA4(h);
-eq_VKA43(h)..
+eq_VKA43(h) $ (min_totCost_0 eq 0)..
         el_VKA4(h) =l= VKA4_el_cap;
 
-eq_VKA44(h)$(ord(h) gt 1 and synth_baseline eq 1)..
+eq_VKA44(h)$(ord(h) gt 1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
         H_VKA4(h-1)- H_VKA4(h)=g=-1;
 
-eq_VKA45(h)$(ord(h) gt 1 and synth_baseline eq 1)..
+eq_VKA45(h)$(ord(h) gt 1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
         H_VKA4(h-1)- H_VKA4(h)=l=1;
 
-eq_VKA46(h)$(ord(h) eq 1 and synth_baseline eq 1)..
+eq_VKA46(h)$(ord(h) eq 1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
              VKA1_prev_disp- H_VKA4(h)=l=1;
 
-eq_VKA47(h)$(ord(h) eq 1 and synth_baseline eq 1)..
+eq_VKA47(h)$(ord(h) eq 1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
              VKA1_prev_disp- H_VKA4(h)=g=-1;
 
 *------------------Panna1 equation(when dispachable)----------------------------
-eq1_h_Pana1(h)..
+eq1_h_Pana1(h) $ (min_totCost_0 eq 0)..
         h_Pana1(h)=l=Panna1_cap;
 
-eq2_h_Pana1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0)..
+eq2_h_Pana1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
         h_Pana1(h-1)- h_Pana1(h)=g=-1000;
 
-eq3_h_Pana1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0)..
+eq3_h_Pana1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
         h_Pana1(h-1)- h_Pana1(h)=l=1000;
 
-eq4_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0)..
+eq4_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
              Pana1_prev_disp- h_Pana1(h)=l=1000;
 
-eq5_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0)..
+eq5_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
              Pana1_prev_disp- h_Pana1(h)=g=-1000;
 
-eq6_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 1)..
+eq6_h_Pana1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
             h_Pana1(h)=e= Panna1(h);
 
-eq_h_Panna1_dispatch(h)$(P1P2_dispatchable(h)=0)..
+eq_h_Panna1_dispatch(h)$(P1P2_dispatchable(h)=0 and min_totCost_0 eq 0)..
         h_Pana1(h) =e= qB1(h);
 
-eq_h_RGK11(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 0)..
+eq_h_RGK11(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
         h_RGK1(h)=l=h_Pana1(h)/6;
 
-eq_h_RGK12(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 1)..
+eq_h_RGK12(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
         h_RGK1(h)=e=FGC(h);
 
-eq_h_RGK1_dispatch(h)$(P1P2_dispatchable(h)=0)..
+eq_h_RGK1_dispatch(h)$(P1P2_dispatchable(h)=0 and min_totCost_0 eq 0)..
         h_RGK1(h) =e= qF1(h);
 
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 eq_AbsC1(h)..
              c_AbsC(h) =e= AbsC_COP*h_AbsC(h);
 *AbsC_eff;
-eq_AbsC2(h)..
+eq_AbsC2(h) $ (min_totCost_0 eq 0)..
              c_AbsC(h) =l= AbsC_cap;
 
 *----------Refrigerator Machine equations (electricity => cooling)--------------
@@ -295,10 +295,10 @@ eq_CWB_en(h)$(ord(h) gt 1)..
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
 eq_ACC1(h)..
              c_AAC(h) =e= AAC_COP*e_AAC(h);
-eq_ACC2(h)..
+eq_ACC2(h) $ (min_totCost_0 eq 0)..
              c_AAC(h) =l= AAC_cap;
 
-eq_ACC3(h)$(tout(h)>AAC_TempLim)..
+eq_ACC3(h)$(tout(h)>AAC_TempLim and min_totCost_0 eq 0)..
              c_AAC(h)=l= 0;
 
 *----------------Equations for existing PV--------------------------------------
@@ -319,7 +319,7 @@ eq_RMMC1(h)..
          h_RMMC(h) =e= RMCC_H_COP * e_RMMC(h);
 eq_RMMC2(h)..
          c_RMMC(h) =e= RMCC_C_COP * e_RMMC(h);
-eq_RMMC3(h)..
+eq_RMMC3(h) $ (opt_fx_inv_RMMC ne 0)..
          c_RMMC(h) =l= RMMC_inv * RMMC_cap;
 
 *----------------Absorption Chiller Investment----------------------------------
@@ -493,21 +493,21 @@ eq_RMInv2(h)..
 **************************Network constraints***********************************
 *---------------District heating network constraints----------------------------
 
-eq_dhn_constraint(h, DH_Node_ID)..
-         DH_node_transfer_limits(h, DH_Node_ID) =g= sum(i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i))
-                 - (h_RMMC(h)) $(sameas(DH_Node_ID, 'Fysik'))
-                 - (H_VKA4(h) + H_VKA1(h) + h_Pana1(h) + h_RGK1(h) + h_AbsC(h)
-                 + h_AbsCInv(h) + H_P2T(h) + 0.75*h_TURB(h) + h_HP(h) + TES_dis(h)
-                 - TES_ch(h) + h_imp_AH(h) - h_exp_AH(h)) $(sameas(DH_Node_ID, 'Maskin'))
-                 + sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sch(h,i))
-                 - sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sdis(h,i))
-                 - sum(DHNodeToB_ID(DH_Node_ID, i), h_BAC_savings(h,i))
-
-                 + sum(DHNodeToB_ID('Eklanda', i), BTES_Sch(h,i))$(sameas(DH_Node_ID, 'VoV'))
-                 - sum(DHNodeToB_ID('Eklanda', i), BTES_Sdis(h,i))$(sameas(DH_Node_ID, 'VoV'))
-                 - sum(DHNodeToB_ID('Eklanda', i), h_BAC_savings(h,i))$(sameas(DH_Node_ID, 'VoV'))
-                 + sum(i, h_demand(h, i)$DHNodeToB_ID('Eklanda', i))$(sameas(DH_Node_ID, 'VoV'))
-;
+*eq_dhn_constraint(h, DH_Node_ID)..
+*         DH_node_transfer_limits(h, DH_Node_ID) =g= sum(i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i))
+*                 - (h_RMMC(h)) $(sameas(DH_Node_ID, 'Fysik'))
+*                 - (H_VKA4(h) + H_VKA1(h) + h_Pana1(h) + h_RGK1(h) + h_AbsC(h)
+*                 + h_AbsCInv(h) + H_P2T(h) + 0.75*h_TURB(h) + h_HP(h) + TES_dis(h)
+*                 - TES_ch(h) + h_imp_AH(h) - h_exp_AH(h)) $(sameas(DH_Node_ID, 'Maskin'))
+*                 + sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sch(h,i))
+*                 - sum(DHNodeToB_ID(DH_Node_ID, i), BTES_Sdis(h,i))
+*                 - sum(DHNodeToB_ID(DH_Node_ID, i), h_BAC_savings(h,i))
+*
+*                 + sum(DHNodeToB_ID('Eklanda', i), BTES_Sch(h,i))$(sameas(DH_Node_ID, 'VoV'))
+*                 - sum(DHNodeToB_ID('Eklanda', i), BTES_Sdis(h,i))$(sameas(DH_Node_ID, 'VoV'))
+*                 - sum(DHNodeToB_ID('Eklanda', i), h_BAC_savings(h,i))$(sameas(DH_Node_ID, 'VoV'))
+*                 + sum(i, h_demand(h, i)$DHNodeToB_ID('Eklanda', i))$(sameas(DH_Node_ID, 'VoV'))
+*;
 eq_dh_node_flows(h, DH_Node_ID)..
          DH_node_flows(h, DH_Node_ID) =e= sum(i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i))
                  - (h_RMMC(h)) $(sameas(DH_Node_ID, 'Fysik'))
@@ -525,13 +525,13 @@ eq_dh_node_flows(h, DH_Node_ID)..
 ;
 
 
-eq_dcn_constraint(h, DC_Node_ID)..
-         DC_node_transfer_limits(h, DC_Node_ID) =g= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
-                 - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
-                 - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
-                 + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))
-                 + (CWB_ch(h)/CWB_chr_eff - CWB_dis_eff*CWB_dis(h))$(sameas(DC_Node_ID, 'Maskin'))
-;
+*eq_dcn_constraint(h, DC_Node_ID)..
+*         DC_node_transfer_limits(h, DC_Node_ID) =g= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
+*                 - (c_RMMC(h)) $(sameas(DC_Node_ID, 'Fysik'))
+*                 - (C_VKA1(h))$(sameas(DC_Node_ID, 'Maskin'))
+*                 + sum(i, c_demand(h,i)$DCNodeToB_ID('EDIT', i))$(sameas(DC_Node_ID, 'Maskin'))
+*                 + (CWB_ch(h)/CWB_chr_eff - CWB_dis_eff*CWB_dis(h))$(sameas(DC_Node_ID, 'Maskin'))
+*;
 
 eq_DC_node_flows(h, DC_Node_ID)..
          DC_node_flows(h, DC_Node_ID) =e= sum(i, c_demand(h,i)$DCNodeToB_ID(DC_Node_ID, i))
@@ -579,12 +579,12 @@ eq_ebalance4(h)..
 
 *------------Electrical Network constraints------------*
 
-eq_dcpowerflow1(h,Bus_IDs)..((e_imp_AH(h) - e_exp_AH(h))/Sb)$(ord(Bus_IDs)=13)-((el_VKA1(h) + el_VKA4(h))/Sb)$(ord(Bus_IDs)=20)
-            + sum(BID,e_existPV_act(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(r,e_PV_act_roof(h,r)$BusToBID(Bus_IDs,r))/Sb+sum(f,(PV_facade_cap_Inv(f)*PV_power_facade(h,f))$BusToBID(Bus_IDs,f))/Sb+
-            ((BES_dis(h,Bus_IDs)*BES_dis_eff - BES_ch(h,Bus_IDs)/BES_ch_eff)/Sb)+(e_TURB(h)/Sb)$(ord(Bus_IDs)=16)+
-            ((BFCh_dis(h,Bus_IDs)*BFCh_dis_eff - BFCh_ch(h,Bus_IDs)/BFCh_ch_eff)/Sb)-sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb-((el_RM(h)+e_RMMC(h)+e_AAC(h)+e_HP(h)+e_RMInv(h))/Sb)$(ord(Bus_IDs)=10)
-=e=sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),gij(Bus_IDs,j)*(V(h,Bus_IDs)-V(h,j)))-
-sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),bij(Bus_IDs,j)*(delta(h,Bus_IDs)-delta(h,j)));
+*eq_dcpowerflow1(h,Bus_IDs)..((e_imp_AH(h) - e_exp_AH(h))/Sb)$(ord(Bus_IDs)=13)-((el_VKA1(h) + el_VKA4(h))/Sb)$(ord(Bus_IDs)=20)
+*            + sum(BID,e_existPV_act(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(r,e_PV_act_roof(h,r)$BusToBID(Bus_IDs,r))/Sb+sum(f,(PV_facade_cap_Inv(f)*PV_power_facade(h,f))$BusToBID(Bus_IDs,f))/Sb+
+*            ((BES_dis(h,Bus_IDs)*BES_dis_eff - BES_ch(h,Bus_IDs)/BES_ch_eff)/Sb)+(e_TURB(h)/Sb)$(ord(Bus_IDs)=16)+
+*            ((BFCh_dis(h,Bus_IDs)*BFCh_dis_eff - BFCh_ch(h,Bus_IDs)/BFCh_ch_eff)/Sb)-sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb-((el_RM(h)+e_RMMC(h)+e_AAC(h)+e_HP(h)+e_RMInv(h))/Sb)$(ord(Bus_IDs)=10)
+*=e=sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),gij(Bus_IDs,j)*(V(h,Bus_IDs)-V(h,j)))-
+*sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),bij(Bus_IDs,j)*(delta(h,Bus_IDs)-delta(h,j)));
 
 
 eq_dcpowerflow2(h,Bus_IDs)..(re_imp_AH(h)/Sb)$(ord(Bus_IDs)=13)-0.2031*sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb+(e_TURB_reac(h)/Sb)$(ord(Bus_IDs)=16)+
