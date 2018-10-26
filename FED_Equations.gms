@@ -2,7 +2,8 @@
 *----------------------------Define equations-----------------------------------
 ********************************************************************************
 equation
-
+           eq_import    Forecasting import for Synthetic baseline
+           eq_export    Forecasting export for Synthetic baseline
            eq_VKA11     heating generatin of VKA1
            eq_VKA12     cooling generation of VKA1
            eq_VKA13     maximum electricity usage by VKA1
@@ -40,6 +41,10 @@ equation
            eq_ACC1      Refrigerator equation
            eq_ACC2      Refrigerator equation
            eq_ACC3      Temperature limit of Ambient Air Cooler
+           eq_ACC4      Ramp constraints for synth baseline
+           eq_ACC5      Ramp constraints for synth baseline
+           eq_ACC6      Ramp constraints for synth baseline
+           eq_ACC7      Ramp constraints for synth baseline
 
            eq_existPV   Production from existing PV install
            eq_existPV_active Active power production of existing PVs
@@ -145,7 +150,6 @@ equation
 *           eq_dcn_constraint District cooling network transfer limit
            eq_DC_node_flows Summing of flows in district cooling network
 
-
            eq_cbalance   Balance equation cooling
 
            eq_ebalance3  supply demand balance equation from AH
@@ -199,7 +203,11 @@ equation
 *-------------------------------------------------------------------------------
 *--------------------------Define equations-------------------------------------
 *-------------------------------------------------------------------------------
+eq_import(h)$(synth_baseline eq 1)..
+        h_imp_AH(h) =e= import(h);
 
+eq_export(h)$(synth_baseline eq 1)..
+        h_exp_AH(h) =e= export(h);
 ***************For Existing units***********************************************
 *-----------------VKA1 equations------------------------------------------------
 eq_VKA11(h)..
@@ -300,6 +308,19 @@ eq_ACC2(h) $ (min_totCost_0 eq 0)..
 
 eq_ACC3(h)$(tout(h)>AAC_TempLim and min_totCost_0 eq 0)..
              c_AAC(h)=l= 0;
+
+eq_ACC4(h)$(ord(h) gt 1 and synth_baseline eq 1)..
+        c_AAC(h-1)- c_AAC(h)=g=-10000;
+
+eq_ACC5(h)$(ord(h) gt 1 and synth_baseline eq 1)..
+        c_AAC(h-1)- c_AAC(h)=l=10000;
+
+eq_ACC6(h)$(ord(h) eq 1 and synth_baseline eq 1)..
+             AAC_prev_disp- c_AAC(h)=l=10000;
+
+eq_ACC7(h)$(ord(h) eq 1 and synth_baseline eq 1)..
+             AAC_prev_disp- c_AAC(h)=g=-10000;
+
 
 *----------------Equations for existing PV--------------------------------------
 eq_existPV(h)..
@@ -492,7 +513,6 @@ eq_RMInv2(h)..
 
 **************************Network constraints***********************************
 *---------------District heating network constraints----------------------------
-
 *eq_dhn_constraint(h, DH_Node_ID)..
 *         DH_node_transfer_limits(h, DH_Node_ID) =g= sum(i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i))
 *                 - (h_RMMC(h)) $(sameas(DH_Node_ID, 'Fysik'))
@@ -508,6 +528,7 @@ eq_RMInv2(h)..
 *                 - sum(DHNodeToB_ID('Eklanda', i), h_BAC_savings(h,i))$(sameas(DH_Node_ID, 'VoV'))
 *                 + sum(i, h_demand(h, i)$DHNodeToB_ID('Eklanda', i))$(sameas(DH_Node_ID, 'VoV'))
 *;
+
 eq_dh_node_flows(h, DH_Node_ID)..
          DH_node_flows(h, DH_Node_ID) =e= sum(i, h_demand(h, i)$DHNodeToB_ID(DH_Node_ID, i))
                  - (h_RMMC(h)) $(sameas(DH_Node_ID, 'Fysik'))
@@ -541,7 +562,7 @@ eq_DC_node_flows(h, DC_Node_ID)..
                  + (CWB_ch(h)/CWB_chr_eff - CWB_dis_eff*CWB_dis(h))$(sameas(DC_Node_ID, 'Maskin'))
 
 ;
-
+$offtext
 * - (C_VKA4(h) + c_HP(h) + c_AbsCInv(h)  + c_AbsC(h)  are at KC and thus
 
 **************************Demand Supply constraints*****************************

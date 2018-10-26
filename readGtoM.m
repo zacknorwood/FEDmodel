@@ -34,6 +34,11 @@ function[InitialSoC,max_exG_prev]=readGtoM(currenthour);
  H_VKA4.form='full';
  H_VKA4.compress='true';
  
+  
+ c_AAC.name='c_AAC';
+ c_AAC.form='full';
+ c_AAC.compress='true';
+ 
  max_exG_prev1.name='max_exG_prev';
  max_exG_prev1.form='full';
  max_exG_prev1.compress='true';
@@ -46,10 +51,11 @@ function[InitialSoC,max_exG_prev]=readGtoM(currenthour);
   [Pana]=rgdx('GtoM',h_Pana1);
   [VKA1]=rgdx('GtoM',H_VKA1);
   [VKA4]=rgdx('GtoM',H_VKA4);
+  [AAC]=rgdx('GtoM',c_AAC);
   [max_exG_prev]=rgdx('GtoM',max_exG_prev1);
   max_exG_prev=max_exG_prev.val;
   
- initial(1:8)=[BTES_D,BTES_S,TES,BFCh,BES,Pana,VKA1,VKA4];
+ initial(1:9)=[BTES_D,BTES_S,TES,BFCh,BES,Pana,VKA1,VKA4,AAC];
  for i=1:5
      temp=0;
      s=size(initial(i).uels{1,1},2);
@@ -60,7 +66,7 @@ function[InitialSoC,max_exG_prev]=readGtoM(currenthour);
    end
      InitialSoC(i)=temp;
  end
- for i=6:8
+ for i=6:9
      temp=0;
      s=size(initial(i).uels{1,1},2);
    for j=1:s
