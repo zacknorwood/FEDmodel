@@ -494,7 +494,7 @@ for t=sim_start:sim_stop
     h_demand_forcast=h_demand_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
     h_demand.val = h_demand_forcast;
     h_demand.uels={h_sim.uels,B_ID.uels};
-    %Sample code using ANN to forecast Edit heat demand
+    %Sample code using ANN to forecast Edit heat demand for Delays(1:24)
     heat_Edit_forecast=zeros(1,10);
     for i=1:t_len_m
     heat_Edit_forecast(i)=sim(net_Edit,vertcat(flip(temperature((t_init_m-25+i):(t_init_m-2+i))'),flip(workday_index(15719:15742)'),flip(month_index(15719:15742)'),flip(Timeofday_index(15719:15742)')));
