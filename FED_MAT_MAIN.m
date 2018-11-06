@@ -2,7 +2,7 @@
 clc;       %clear texts in command window
 %clear;     %clear data in workspace
 close all; %close all figures
-%system('C:\Users\chraga\Documents\GitHub\FEDmodel\SEBEChalmers - Shading model\SEBEwithQGIS2LTR.bat')
+
 %% Assigning buildings ID to the buildings in the FED system
 
 %Building IDs
@@ -119,7 +119,7 @@ while LOAD_EXCEL_DATA==1
  el_VKA1_measured,el_VKA4_measured,el_AAC_measured, h_AbsC_measured,...
  e_price_measured,...
  el_cirtificate_m,h_price_measured,tout_measured,...
- irradiance_measured_roof,irradiance_measured_facades] = fread_measurments(2, 17000);
+ irradiance_measured_facades,irradiance_measured_roof] = fread_measurments(2, 17000);
 
 %This must be modified
 temp=load('import_export_forecasting');
@@ -179,46 +179,46 @@ opt_fx_inv_TES_cap=0;    %>=0 =fixed invetment, -1=variable of optimization
 temp_opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',opt_fx_inv_TES_cap);
 
 %Option for BES investment
-BES_BID_temp=[28]; %OBS: Reffers to bus 28
-BES_BID_inv.name='BES_BID_inv';
-BES_BID_inv.uels=num2cell(BES_BID_temp);
+BES_B_ID_temp={'O0007027'}; %OBS: Reffers to bus 28
+BES_B_ID_inv.name='BES_B_ID_inv';
+BES_B_ID_inv.uels=BES_B_ID_temp;
 
 opt_fx_inv_BES=1;
 temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',opt_fx_inv_BES);
-opt_fx_inv_BES_cap=[0]; %must be set to 200
+opt_fx_inv_BES_cap=[0.1]; %must be set to 200
 temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full');
 temp_opt_fx_inv_BES_cap.val=opt_fx_inv_BES_cap;
-temp_opt_fx_inv_BES_cap.uels=BES_BID_inv.uels;
+temp_opt_fx_inv_BES_cap.uels=BES_B_ID_inv.uels;
 
-opt_fx_inv_BES_maxP=[0];  %must be set to 100
+opt_fx_inv_BES_maxP=[0.1];  %must be set to 100
 temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full');
 temp_opt_fx_inv_BES_maxP.val=opt_fx_inv_BES_maxP;
-temp_opt_fx_inv_BES_maxP.uels=BES_BID_inv.uels;
+temp_opt_fx_inv_BES_maxP.uels=BES_B_ID_inv.uels;
 
 %Option for BFCh investment
-BFCh_BID_temp=[34]; %OBS: Reffers to Bus 5
-BFCh_BID_inv.name='BFCh_BID_inv';
-BFCh_BID_inv.uels=num2cell(BFCh_BID_temp);
+BFCh_B_ID_temp={'O0007028'}; %OBS: Reffers to Bus 5
+BFCh_B_ID_inv.name='BFCh_BID_inv';
+BFCh_B_ID_inv.uels=BFCh_B_ID_temp;
 
 opt_fx_inv_BFCh=0;
 temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
-opt_fx_inv_BFCh_cap=[0]; %must be set to 100
+opt_fx_inv_BFCh_cap=[0.1]; %must be set to 100
 temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full');
 temp_opt_fx_inv_BFCh_cap.val=opt_fx_inv_BFCh_cap;
-temp_opt_fx_inv_BFCh_cap.uels=BFCh_BID_inv.uels;
+temp_opt_fx_inv_BFCh_cap.uels=BFCh_B_ID_inv.uels;
 
-opt_fx_inv_BFCh_maxP=0; %must be set to 50
+opt_fx_inv_BFCh_maxP=[0.1]; %must be set to 50
 temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full');
 temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
-temp_opt_fx_inv_BFCh_maxP.uels=BFCh_BID_inv.uels;
+temp_opt_fx_inv_BFCh_maxP.uels=BFCh_B_ID_inv.uels;
 
 %Option for BTES investment
 BITES_Inv.name='BITES_Inv';
-BITES_Inv.uels={'Bibliotek','NyaMatte','Elkraftteknik','VOV1', 'Arkitektur', 'VOV2'};
+BITES_Inv.uels={'O0007017','O0007006','O0007012','O0007023', 'O0007026', 'O0007027'};
 
 %Option for BAC investment
 BAC_Inv.name='BAC_Inv';
-BAC_Inv.uels={'Bibliotek','NyaMatte','Elkraftteknik','VOV1', 'Arkitektur', 'VOV2'};
+BAC_Inv.uels={'O0007017','O0007006','O0007012','O0007023', 'O0007026', 'O0007027'};
 
 %Option for solar PV investment
 area_roof_max = struct('name','area_roof_max','type','parameter');
@@ -230,32 +230,32 @@ area_facade_max.uels=BID.uels;
 area_facade_max.val=pv_area_facades;
 
 %Placement of roof PVs
-PV_BID_roof_Inv_temp=[27]; %OBS: This is just a random Building ID, it need to corrected 
-PV_BID_roof_Inv.name='PV_BID_roof_Inv';
-PV_BID_roof_Inv.uels=num2cell(PV_BID_roof_Inv_temp);
+PV_B_ID_roof_Inv_temp={'O3060132','O0007027','O0007026','O0007024','O0007017','O0007028','O0007023'}; %OBS: This is just a random Building ID, it need to corrected 
+PV_B_ID_roof_Inv.name='PV_B_ID_roof_Inv';
+PV_B_ID_roof_Inv.uels=PV_B_ID_roof_Inv_temp;
 
 %Capacity of roof PVs
-PV_roof_cap_temp=[0];   %OBS: This is just a random PV capacity for the given buildings, it need to corrected
+PV_roof_cap_temp=[0.1 0.1 0.1 0.1 0.1 0.1 0.1];   %OBS:From the invested capacities just sum the capacities according to which building they are
 PV_roof_cap_Inv=struct('name','PV_roof_cap_Inv','type','parameter','form','full');
-PV_roof_cap_Inv.uels=PV_BID_roof_Inv.uels;
-PV_roof_cap_Inv.val=PV_roof_cap_temp';
+PV_roof_cap_Inv.uels=PV_B_ID_roof_Inv.uels;
+PV_roof_cap_Inv.val=PV_roof_cap_temp;
 
 %Placement of facade PVs
-PV_BID_facade_Inv_temp=[10]; %OBS: This is just a random Building ID, it need to corrected 
-PV_BID_facade_Inv.name='PV_BID_facade_Inv';
-PV_BID_facade_Inv.uels=num2cell(PV_BID_facade_Inv_temp);
+PV_B_ID_facade_Inv_temp={'O0007008'}; %OBS: This is just a random Building ID, it need to corrected 
+PV_BID_facade_Inv.name='PV_B_ID_facade_Inv';
+PV_BID_facade_Inv.uels=PV_B_ID_facade_Inv_temp;
 
 %Capacity of facade PVs
-PV_cap_facade_cap_temp=[0];
+PV_cap_facade_cap_temp=[0.1];
 PV_facade_cap_Inv=struct('name','PV_facade_cap_Inv','type','parameter','form','full');
 PV_facade_cap_Inv.uels=PV_BID_facade_Inv.uels;
 PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
 
 %Operated power factor of PV inverters
-PV_PF_inverter_PF_temp=[0.92];
+PV_PF_inverter_PF_temp=[0.92 0.92 0.92 0.92 0.92 0.92 0.92];
 PV_inverter_PF_Inv=struct('name','PV_inverter_PF_Inv','type','parameter','form','full');
-PV_inverter_PF_Inv.uels=PV_BID_roof_Inv.uels;
-PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp';
+PV_inverter_PF_Inv.uels=PV_B_ID_roof_Inv.uels;
+PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp;
 
 %% FIXED MODEL INPUT DATA - INPUT PE and CO2 FACTORS and Dispatch of local generating units
 
@@ -320,9 +320,9 @@ while Re_calculate_CO2PEF==0
 end
 
 %Import marginal CO2 and PE factors, marginal DH cost
-DH_cost_ma=xlsread('Input_dispatch_model\Produktionsdata fjÃ¤rrvÃ¤rme marginal.xlsx',2,'W5:W17900');
-DH_CO2F_ma=xlsread('Input_dispatch_model\Produktionsdata fjÃ¤rrvÃ¤rme marginal.xlsx',2,'X5:X17900');
-DH_PEF_ma=xlsread('Input_dispatch_model\Produktionsdata fjÃ¤rrvÃ¤rme marginal.xlsx',2,'Y5:Y17900');
+DH_cost_ma=xlsread('Input_dispatch_model\Produktionsdata fj�rrv�rme marginal.xlsx',2,'W5:W17900');
+DH_CO2F_ma=xlsread('Input_dispatch_model\Produktionsdata fj�rrv�rme marginal.xlsx',2,'X5:X17900');
+DH_PEF_ma=xlsread('Input_dispatch_model\Produktionsdata fj�rrv�rme marginal.xlsx',2,'Y5:Y17900');
 EL_CO2F_ma=sum(csvread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[230  820   490   24     12  45 700   11  24  24],2);
 EL_PEF_ma=sum(csvread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[2.99  2.45  1.93  1.01   3.29  1.25 2.47 1.03 1.01  1.01],2);
 
@@ -446,10 +446,10 @@ DC_Node_ID.name = 'DC_Node_ID';
 DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_Node_Fysik.name, DC_Node_Kemi.name};
 
 %Forcasted solar PV irradiance -roof
-G_roof = struct('name','G_roof','type','parameter');
+Gekv_roof = struct('name','G_roof','type','parameter','form','full');
 
 %Forcasted solar PV irradiance -facade
-G_facade = struct('name','G_facade','type','parameter');
+Gekv_facade = struct('name','G_facade','type','parameter','form','full');
 
 import = struct('name','import','type','parameter','form','full');
 export = struct('name','export','type','parameter','form','full');
@@ -482,8 +482,8 @@ temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',o
 sim_start=1994; %1994; %24th of March 2016
 sim_stop=1994; %10192; %28th of February 2017
 
-forcast_horizon=8200;
-t_len_m=8200;
+forcast_horizon=10;
+t_len_m=10;
 Time(1).point='fixed inputs';
 Time(1).value=toc;
 for t=sim_start:sim_stop
@@ -502,13 +502,13 @@ for t=sim_start:sim_stop
     
     %Forcasted solar PV irradiance Roof
     irradiance_roof_forcast=irradiance_measured_roof((t_init_m-1):(t_len_m+t_init_m-2),:);
-    G_roof.val = irradiance_roof_forcast;
-    G_roof.uels={h_sim.uels,BID.uels};
+    Gekv_roof.val = irradiance_roof_forcast;
+    Gekv_roof.uels={h_sim.uels,{'O3060132','O0007027','O0007026','O0007024','O0007017','O0007028','O0007023'}};
     
     %Forcasted solar PV irradiance Roof 
     irradiance_facades_forcast=irradiance_measured_facades((t_init_m-1):(t_len_m+t_init_m-2),:);
-    G_facade.val = irradiance_facades_forcast;
-    G_facade.uels={h_sim.uels,BID.uels};
+    Gekv_facade.val = irradiance_facades_forcast;
+    Gekv_facade.uels={h_sim.uels,{'O0007008'}};
     
     %Forcasted el demand
     e_demand_forcast=e_demand_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
@@ -522,7 +522,7 @@ for t=sim_start:sim_stop
     %Sample code using ANN to forecast Edit heat demand
     heat_Edit_forecast=zeros(1,10);
     for i=1:t_len_m
-    heat_Edit_forecast(i)=sim(net_Edit,vertcat(flip(temperature((t_init_m-25+i):(t_init_m-2+i))'),flip(workday_index(15719:15742)'),flip(month_index(15719:15742)'),flip(Timeofday_index(15719:15742)')));
+%    heat_Edit_forecast(i)=sim(net_Edit,vertcat(flip(temperature((t_init_m-25+i):(t_init_m-2+i))'),flip(workday_index(15719:15742)'),flip(month_index(15719:15742)'),flip(Timeofday_index(15719:15742)')));
     end
     heat_Edit.val = heat_Edit_forecast;
     heat_Edit.uels={h_sim.uels,'O0007024'};
@@ -716,9 +716,9 @@ wgdx('MtoG.gdx', temp_opt_fx_inv, temp_opt_fx_inv_RMMC,...
      B_ID,B_ID_AH_el,B_ID_nonAH_el,B_ID_AH_h,B_ID_nonAH_h,B_ID_AH_c,B_ID_nonAH_c,B_ID_nonBITES,BID,...
      e_demand,h_demand,c_demand,qB1,qF1,...
      el_VKA1_0, el_VKA4_0,el_AAC_0,h_AbsC_0,...
-     el_price,el_cirtificate,h_price,tout,...     
+     el_price,el_cirtificate,h_price,tout,Gekv_facade,Gekv_roof,...     
      BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period,...
-     PV_BID_roof_Inv,PV_roof_cap_Inv,PV_BID_facade_Inv,PV_facade_cap_Inv,...
+     PV_B_ID_roof_Inv,PV_roof_cap_Inv,PV_BID_facade_Inv,PV_facade_cap_Inv,...
      temp_optn0,temp_optn1, temp_optn2, temp_optn3, temp_synth_baseline, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap,...
      temp_opt_fx_inv_BES_maxP,temp_opt_fx_inv_BFCh_maxP,PV_inverter_PF_Inv,temp_opt_fx_inv_BTES_D_init,temp_opt_fx_inv_BTES_S_init,...
      temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init,import,export,Panna1,FGC,temp_Pana1_prev_disp,...

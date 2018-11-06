@@ -3,7 +3,7 @@ function [e_demand_measured, h_demand_measured,c_demand_measured,...
           el_VKA1_measured,el_VKA4_measured,el_AAC_measured, h_AbsC_measured,...
           e_price_measured,...
           el_cirtificate,h_price_measured,tout_measured,...
-          irradiance_measured_roof,irradiance_measured_facades] = fread_measurments(t_init, t_len)
+          irradiance_measured_facades,irradiance_measured_roof] = fread_measurments(t_init, t_len)
 %This function is used to read mesurment between the indicated indices
 
 demand_range=strcat('B',int2str(t_init),':AJ',int2str(t_len+t_init-1));
@@ -96,14 +96,7 @@ tout_measured=xlsread('Input_dispatch_model\measured_tout.xlsx',sheet,xlRange);
 tout_measured(isnan(tout_measured))=0;
 
 %Measured solar irradiance**************TO BE FIXED
-sheet=1;
-xlRange = irradiance_range;
-irradiance_measured_roof=xlsread('Input_dispatch_model\irradianceRoofs.xlsx',sheet,xlRange);
-irradiance_measured_roof(isnan(irradiance_measured_roof))=0;
-
-sheet=1;
-xlRange = irradiance_range;
-irradiance_measured_facades=xlsread('Input_dispatch_model\irradianceFacades.xlsx',sheet,xlRange);
-irradiance_measured_facades(isnan(irradiance_measured_facades))=0;
+irradiance_measured_roof=xlsread('Input_dispatch_model\Energy_Panel.xls',2,'A2:G8761');
+irradiance_measured_facades=xlsread('Input_dispatch_model\Energy_Panel.xls',3,'A2:A8761');
 end
 

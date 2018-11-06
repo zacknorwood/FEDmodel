@@ -94,7 +94,7 @@ $GDXIN MtoG.gdx
 $LOAD Bus_IDs
 $GDXIN
 alias(Bus_IDs,j);
-set BusToB_ID(Bus_IDs,i_AH_el)  Mapping between buses and buildings /15.O3060133, 5.O3060132, 21.O0007001, 11.(O0011001,O0013001,O0007005),
+set BusToB_ID(Bus_IDs,B_ID)  Mapping between buses and buildings /15.O3060133, 5.O3060132, 21.O0007001, 11.(O0011001,O0013001,O0007005),
                                                  20.(O0007008,O0007888), 9.(O0007017,O0007006), 34.(O0007022,O0007025,O0007028), 32.(O0007024,O0007018,Studentbostader),
                                                  40.(O0007012,O0007021,O0007014), 30.O0007040, 24.(O0007019,Karhus_CFAB,Karhus_studenter), 26.(O0007023,O0007026), 28.(O0007027,O0007043)/
 ;
@@ -121,18 +121,18 @@ $LOAD BID
 $GDXIN
 
 SET
-    PV_BID_roof_Inv(BID)   Buildings where solar PV invetment is made - roof
-    PV_BID_facade_Inv(BID) Buildings where solar PV invetment is made - facade
+    PV_B_ID_roof_Inv(B_ID)   Buildings where solar PV invetment is made - roof
+    PV_B_ID_facade_Inv(B_ID) Buildings where solar PV invetment is made - facade
 ;
 $GDXIN MtoG.gdx
-$LOAD PV_BID_roof_Inv
-$LOAD PV_BID_facade_Inv
+$LOAD PV_B_ID_roof_Inv
+$LOAD PV_B_ID_facade_Inv
 $GDXIN
-alias(PV_BID_roof_Inv,r);
-alias(PV_BID_facade_Inv,f);
+alias(PV_B_ID_roof_Inv,r);
+alias(PV_B_ID_facade_Inv,f);
 
-Parameter PV_roof_cap_Inv(PV_BID_roof_Inv) Invested PV capacity-roof
-          PV_facade_cap_Inv(PV_BID_facade_Inv) Invested PV capacity-facade
+Parameter PV_roof_cap_Inv(B_ID) Invested PV capacity-roof
+          PV_facade_cap_Inv(B_ID) Invested PV capacity-facade
           PV_inverter_PF_Inv            Invested PV roof inverters power factor
 ;
 $GDXIN MtoG.gdx
@@ -161,10 +161,10 @@ $LOAD HoM
 $GDXIN
 
 PARAMETERS
-            G_facade(h,BID)       irradiance on building facades
-            area_facade_max(BID)  irradiance on building facades
-            G_roof(h,BID)         irradiance on building facades
-            area_roof_max(BID)    irradiance on building facades
+            G_facade(h,B_ID)       irradiance on building facades
+            area_facade_max(B_ID)  irradiance on building facades
+            G_roof(h,B_ID)         irradiance on building facades
+            area_roof_max(B_ID)    irradiance on building facades
 ;
 $GDXIN Input_dispatch_model\IRRADIANCE_DATA.gdx
 $LOAD G_facade
