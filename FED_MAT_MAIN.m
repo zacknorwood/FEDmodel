@@ -229,24 +229,32 @@ area_facade_max = struct('name','area_facade_max','type','parameter');
 area_facade_max.uels=BID.uels;
 area_facade_max.val=pv_area_facades;
 
-%Placement of roof PVs
-PV_B_ID_roof_Inv_temp={'O3060132','O0007027','O0007026','O0007024','O0007017','O0007028','O0007023'}; %OBS: This is just a random Building ID, it need to corrected 
-PV_B_ID_roof_Inv.name='PV_B_ID_roof_Inv';
+%Placement of roof PVs (Existing)
+PV_B_ID_roof_Inv_temp1={'O0007026','O0007023'};
+
+%Placement of roof PVs (Investments)
+PV_B_ID_roof_Inv_temp2={'O3060132','O0007027','O0007024','O0007017','O0007028'}; %OBS:
+PV_B_ID_roof_Inv_temp=horzcat(PV_B_ID_roof_Inv_temp1,PV_B_ID_roof_Inv_temp2);%OBS: Merge all roof PVs
+PV_B_ID_roof_Inv.name='PV_B_ID_roof_Inv';                                                           
 PV_B_ID_roof_Inv.uels=PV_B_ID_roof_Inv_temp;
 
-%Capacity of roof PVs
-PV_roof_cap_temp=[0.1 0.1 0.1 0.1 0.1 0.1 0.1];   %OBS:From the invested capacities just sum the capacities according to which building they are
+%Capacity of roof PVs (Existing)
+PV_roof_cap_temp1=[50 42];   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5'
+
+%Capacity of roof PVs (investments)
+PV_roof_cap_temp2=[248 288 82 32 95];   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5'
+PV_roof_cap_temp=horzcat(PV_roof_cap_temp1,PV_roof_cap_temp2); %OBS: Merge all roof PVs
 PV_roof_cap_Inv=struct('name','PV_roof_cap_Inv','type','parameter','form','full');
 PV_roof_cap_Inv.uels=PV_B_ID_roof_Inv.uels;
 PV_roof_cap_Inv.val=PV_roof_cap_temp;
 
-%Placement of facade PVs
-PV_B_ID_facade_Inv_temp={'O0007008'}; %OBS: This is just a random Building ID, it need to corrected 
+%Placement of facade PVs (Existing)
+PV_B_ID_facade_Inv_temp={'O0007008'}; %OBS: This PV is existed one!
 PV_BID_facade_Inv.name='PV_B_ID_facade_Inv';
 PV_BID_facade_Inv.uels=PV_B_ID_facade_Inv_temp;
 
 %Capacity of facade PVs
-PV_cap_facade_cap_temp=[0.1];
+PV_cap_facade_cap_temp=[16];
 PV_facade_cap_Inv=struct('name','PV_facade_cap_Inv','type','parameter','form','full');
 PV_facade_cap_Inv.uels=PV_BID_facade_Inv.uels;
 PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
