@@ -185,29 +185,31 @@ B_BAC.fx(BAC_Inv) $ (opt_fx_inv eq 1) =0;
 *----------------Solar PV PV relate variables-----------------------------------
 positive variable
          e_PV(h)            electricity produced by PV
-         PV_cap_roof(BID)   capacity of solar modules on roof
-         PV_cap_facade(BID) capacity of solar modules on facade
-         e_PV_reac_roof(h,BID)      PVs reactive power
-         e_PV_act_roof(h,BID)      PVs active power
+
+         PV_cap_roof(i)   capacity of solar modules on roof
+         PV_cap_facade(i) capacity of solar modules on facade
+         e_PV_reac_roof(h,B_ID)      PVs reactive power
+         e_PV_act_roof(h,B_ID)      PVs active power
 ;
-PV_cap_roof.fx(BID) $ (opt_fx_inv eq 1)=0;
-PV_cap_facade.fx(BID) $ (opt_fx_inv eq 1)=0;
-PV_cap_roof.fx(PV_BID_roof_Inv) $ (opt_fx_inv eq 1) = PV_roof_cap_Inv(PV_BID_roof_Inv);
-PV_cap_facade.fx(PV_BID_facade_Inv) $ (opt_fx_inv eq 1) = PV_facade_cap_Inv(PV_BID_facade_Inv);
+PV_cap_roof.fx(i) $ (opt_fx_inv eq 1)=0;
+PV_cap_facade.fx(i) $ (opt_fx_inv eq 1)=0;
+PV_cap_roof.fx(PV_B_ID_roof_Inv) $ (opt_fx_inv eq 1) = PV_roof_cap_Inv(PV_B_ID_roof_Inv);
+PV_cap_facade.fx(PV_B_ID_facade_Inv) $ (opt_fx_inv eq 1) = PV_facade_cap_Inv(PV_B_ID_facade_Inv);
+
 *------------------Battery related----------------------------------------------
 positive variables
-         BES_en(h,j)                                                                                                                                                                                                          (h)       Energy stored in the battry at time t and building i
-         BES_ch(h,j)       Battery charing at time t and building i
-         BES_dis(h,j)      Battery discharging at time t and building i
-         BES_cap(j)         Capacity of the battery at building i
+         BES_en(h,i)     Energy stored in the battry at time t and building i
+         BES_ch(h,i)       Battery charing at time t and building i
+         BES_dis(h,i)      Battery discharging at time t and building i
+         BES_cap(i)         Capacity of the battery at building i
 
-         BFCh_en(h,j)                                                                                                                                                                                                          (h)       Energy stored in the battry at time t and building i
-         BFCh_ch(h,j)       Battery charing at time t and building i
-         BFCh_dis(h,j)      Battery discharging at time t and building i
-         BFCh_cap(j)         Capacity of the battery at building i
+         BFCh_en(h,i)       Energy stored in the battry at time t and building i
+         BFCh_ch(h,i)       Battery charing at time t and building i
+         BFCh_dis(h,i)      Battery discharging at time t and building i
+         BFCh_cap(i)         Capacity of the battery at building i
 ;
-BES_cap.fx(j) $ (opt_fx_inv eq 1 and opt_fx_inv_BES eq 1) = opt_fx_inv_BES_cap(j);
-BFCh_cap.fx(j) $ (opt_fx_inv eq 1 and opt_fx_inv_BFCh eq 1) = opt_fx_inv_BFCh_cap(j);
+BES_cap.fx(i) $ (opt_fx_inv eq 1 and opt_fx_inv_BES eq 1) = opt_fx_inv_BES_cap(i);
+BFCh_cap.fx(i) $ (opt_fx_inv eq 1 and opt_fx_inv_BFCh eq 1) = opt_fx_inv_BFCh_cap(i);
 *------------------Refrigeration machine investment related---------------------
 positive variable
          c_RMInv(h)           cooling power available from RMInv
@@ -228,8 +230,8 @@ e_exp_AH.up(h)=exG_max_cap;
 variable
         re_imp_AH(h)        Imported reactive to the AH system
         delta(h,Bus_IDs)    Voltage angles of EL Grid
-        BES_reac(h,j)         BES reactive power
-        BFCh_reac(h,j)        BFCh reactive power
+        BES_reac(h,i)         BES reactive power
+        BFCh_reac(h,i)        BFCh reactive power
 ;
 *------------------Grid DH related----------------------------------------------
 positive variable
