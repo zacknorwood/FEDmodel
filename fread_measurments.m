@@ -46,14 +46,14 @@ h_F1_measured(isnan(h_F1_measured))=0;
 %Measured el input for VKA1
 sheet=2;
 xlRange = strcat('C',int2str(2+t_init),':C',int2str(2+t_len+t_init-1));
-h_VKA1_measured=xlsread('Input_dispatch_model\värmepump VKA1.xls',sheet,xlRange);
+h_VKA1_measured=xlsread('Input_dispatch_model\varmepump VKA1.xls',sheet,xlRange);
 h_VKA1_measured(isnan(h_VKA1_measured))=0;
 el_VKA1_measured=h_VKA1_measured/3;
 
 %Measured el input for VKA4
 sheet=2;
 xlRange = strcat('C',int2str(2+t_init),':C',int2str(2+t_len+t_init-1));
-h_VKA4_measured=xlsread('Input_dispatch_model\värmepump VKA4.xls',sheet,xlRange);
+h_VKA4_measured=xlsread('Input_dispatch_model\varmepump VKA4.xls',sheet,xlRange);
 h_VKA4_measured(isnan(h_VKA4_measured))=0;
 el_VKA4_measured=h_VKA4_measured/3;
 
