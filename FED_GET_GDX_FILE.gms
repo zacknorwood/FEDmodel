@@ -94,7 +94,7 @@ $GDXIN MtoG.gdx
 $LOAD Bus_IDs
 $GDXIN
 alias(Bus_IDs,j);
-set BusToB_ID(Bus_IDs,i_AH_el)  Mapping between buses and buildings /15.O3060133, 5.O3060132, 21.O0007001, 11.(O0011001,O0013001,O0007005),
+set BusToB_ID(Bus_IDs,B_ID)  Mapping between buses and buildings /15.O3060133, 5.O3060132, 21.O0007001, 11.(O0011001,O0013001,O0007005),
                                                  20.(O0007008,O0007888), 9.(O0007017,O0007006), 34.(O0007022,O0007025,O0007028), 32.(O0007024,O0007018,Studentbostader),
                                                  40.(O0007012,O0007021,O0007014), 30.O0007040, 24.(O0007019,Karhus_CFAB,Karhus_studenter), 26.(O0007023,O0007026), 28.(O0007027,O0007043)/
 ;
@@ -121,18 +121,18 @@ $LOAD BID
 $GDXIN
 
 SET
-    PV_BID_roof_Inv(BID)   Buildings where solar PV invetment is made - roof
-    PV_BID_facade_Inv(BID) Buildings where solar PV invetment is made - facade
+    PV_B_ID_roof_Inv(B_ID)   Buildings where solar PV invetment is made - roof
+    PV_B_ID_facade_Inv(B_ID) Buildings where solar PV invetment is made - facade
 ;
 $GDXIN MtoG.gdx
-$LOAD PV_BID_roof_Inv
-$LOAD PV_BID_facade_Inv
+$LOAD PV_B_ID_roof_Inv
+$LOAD PV_B_ID_facade_Inv
 $GDXIN
-alias(PV_BID_roof_Inv,r);
-alias(PV_BID_facade_Inv,f);
+alias(PV_B_ID_roof_Inv,r);
+alias(PV_B_ID_facade_Inv,f);
 
-Parameter PV_roof_cap_Inv(PV_BID_roof_Inv) Invested PV capacity-roof
-          PV_facade_cap_Inv(PV_BID_facade_Inv) Invested PV capacity-facade
+Parameter PV_roof_cap_Inv(B_ID) Invested PV capacity-roof
+          PV_facade_cap_Inv(B_ID) Invested PV capacity-facade
           PV_inverter_PF_Inv            Invested PV roof inverters power factor
 ;
 $GDXIN MtoG.gdx
@@ -161,10 +161,10 @@ $LOAD HoM
 $GDXIN
 
 PARAMETERS
-            G_facade(h,BID)       irradiance on building facades
-            area_facade_max(BID)  irradiance on building facades
-            G_roof(h,BID)         irradiance on building facades
-            area_roof_max(BID)    irradiance on building facades
+            G_facade(h,B_ID)       irradiance on building facades
+            area_facade_max(B_ID)  irradiance on building facades
+            G_roof(h,B_ID)         irradiance on building facades
+            area_roof_max(B_ID)    irradiance on building facades
 ;
 $GDXIN Input_dispatch_model\IRRADIANCE_DATA.gdx
 $LOAD G_facade
@@ -174,17 +174,24 @@ $LOAD area_roof_max
 $GDXIN
 ********************************************************************************
 
-*---Heat generated from Boiler 1 and the flue gas condencer in the base case----
+*-------------------Measured data in the base case------------------------------
 PARAMETERS
             qB1(h)         Heat out from boiler 1 (Panna1)
             qF1(h)         Heat out from FGC (Panna1)
-*            h_P1(h)           Total heat from Panna1
+            el_VKA1_0(h)   el used by VKA1 in the base case
+            el_VKA4_0(h)   el used by VKA4 in the base case
+            el_AAC_0(h)    el used by the AAC in the base case
+            h_AbsC_0(h)    heat used by the AbsC in the base case
 ;
 $GDXIN MtoG.gdx
 $LOAD qB1
 $LOAD qF1
-*$LOAD h_P1
+$LOAD el_VKA1_0
+$LOAD el_VKA4_0
+$LOAD el_AAC_0
+$LOAD h_ABsC_0
 $GDXIN
+
 *-----------Forcasted Demand data from MATLAB-----------------------------------
 PARAMETERS
            el_demand(h,B_ID)    ELECTRICITY DEMAND IN THE FED BUILDINGS
@@ -255,12 +262,14 @@ $GDXIN
 
 *---------Simulation option settings--------------------------------------------
 PARAMETERS
+            min_totCost_0      Option to run the base case scenario by minimizing tot cost
             min_totCost        Option to minimize total cost
             min_totPE          OPtion to minimize tottal PE use
             min_totCO2         OPtion to minimize total CO2 emission
             synth_baseline     Option for synthetic baseline
 ;
 $GDXIN MtoG.gdx
+$LOAD min_totCost_0
 $LOAD min_totCost
 $LOAD min_totPE
 $LOAD min_totCO2
@@ -322,15 +331,11 @@ $GDXIN
 PARAMETERS
          opt_fx_inv   option to fix investments
          opt_fx_inv_RMMC      options to fix the RMMC investment
-         opt_fx_inv_AbsCInv   options to fix investment in new AbsChiller
          opt_fx_inv_AbsCInv_cap capacity of the new AbsChiller
          opt_fx_inv_P2        options to fix the P2 investment
          opt_fx_inv_TURB      options to fix the TURB investment
-         opt_fx_inv_HP        options to fix investment in new HP
          opt_fx_inv_HP_cap    Capacity of the fixed new HP
-         opt_fx_inv_RMInv     options to fix investment in new RM
          opt_fx_inv_RMInv_cap Capacity of the fixed new RM
-         opt_fx_inv_TES       options to fix investment in new TES
          opt_fx_inv_TES_cap   capacity of the new TES
          opt_fx_inv_BES       options to fix investment in new BES
          opt_fx_inv_BES_cap   capacity of the new BES
@@ -343,15 +348,11 @@ PARAMETERS
 $GDXIN MtoG.gdx
 $LOAD opt_fx_inv
 $LOAD opt_fx_inv_RMMC
-$LOAD opt_fx_inv_AbsCInv
 $LOAD opt_fx_inv_AbsCInv_cap
 $LOAD opt_fx_inv_P2
 $LOAD opt_fx_inv_TURB
-$LOAD opt_fx_inv_HP
 $LOAD opt_fx_inv_HP_cap
-$LOAD opt_fx_inv_RMInv
 $LOAD opt_fx_inv_RMInv_cap
-$LOAD opt_fx_inv_TES
 $LOAD opt_fx_inv_TES_cap
 $LOAD opt_fx_inv_BES
 $LOAD opt_fx_inv_BES_cap
@@ -372,6 +373,11 @@ Parameters
       Pana1_prev_disp
       Panna1
       FGC
+      import
+      export
+      VKA1_prev_disp
+      VKA4_prev_disp
+      AAC_prev_disp
 ;
 $GDXIN MtoG.gdx
 $lOAD opt_fx_inv_BES_init
@@ -381,7 +387,12 @@ $lOAD opt_fx_inv_BTES_S_init
 $lOAD opt_fx_inv_BTES_D_init
 $load Pana1_prev_disp
 $load Panna1
+$load import
+$load export
 $load FGC
+$load VKA1_prev_disp
+$load VKA4_prev_disp
+$load AAC_prev_disp
 $GDXIN
 *the combination is used to comment out sections codes inside
 *$Ontext

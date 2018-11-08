@@ -40,8 +40,8 @@ h_demand_nonAH_sum  total demand for non AH buildings
 ;
 
 invCost_HP = HP_cap.l*cost_inv_opt('HP');
-invCost_PV = sum(BID, PV_cap_roof.l(BID)*cost_inv_opt('PV')) + sum(BID, PV_cap_facade.l(BID)*cost_inv_opt('PV')) ;
-invCost_BEV = sum(j,BES_cap.l(j)*cost_inv_opt('BES'));
+invCost_PV = sum(B_ID, PV_cap_roof.l(B_ID)*cost_inv_opt('PV')) + sum(B_ID, PV_cap_facade.l(B_ID)*cost_inv_opt('PV')) ;
+invCost_BEV = sum(i,BES_cap.l(i)*cost_inv_opt('BES'));
 invCost_TES = (TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
 invCost_BITES = cost_inv_opt('BTES')*sum(i,B_BITES.l(i));
 invCost_BAC = cost_inv_opt('BAC')*sum(i,B_BAC.l(i));
@@ -54,7 +54,7 @@ h_demand_nonAH_sum(h) = sum(i_nonAH_h, h_demand_nonAH(h,i_nonAH_h));
 *total_cap_PV_roof=sum(BID, PV_cap_roof.l(BID));
 *total_cap_PV_facade=sum(BID, PV_cap_facade.l(BID));
 
-**********************Total of operation cost of AH system *********************
+**********************Total operation cost of AH system *********************
 
 **********************FED operation of the AHsystem*****************************
 **********Calculated operation cost of the FED system****************
@@ -72,9 +72,9 @@ Parameters
 
 fix_cost_existing_AH = sum(sup_unit,fix_cost(sup_unit)*cap_sup_unit(sup_unit));
 ************BIDs associated to AH buildings need to be filtered here************
-fix_cost_new_AH = (sum(BID, PV_cap_roof.l(BID) + PV_cap_facade.l(BID)))*fix_cost('PV')
+fix_cost_new_AH = (sum(B_ID, PV_cap_roof.l(B_ID) + PV_cap_facade.l(B_ID)))*fix_cost('PV')
                   + HP_cap.l*fix_cost('HP')
-                  + sum(j,BES_cap.l(j)*fix_cost('BES'))
+                  + sum(i,BES_cap.l(i)*fix_cost('BES'))
                   + TES_cap.l*fix_cost('TES')
                   + RMInv_cap.l*fix_cost('RMInv')
                   + fix_cost('BTES')*sum(i,B_BITES.l(i))
@@ -103,7 +103,7 @@ var_cost_existing_AH(h) =      e_imp_AH.l(h)*utot_cost('exG',h)
 var_cost_new_AH(h)   =     e_PV.l(h)*utot_cost('PV',h)
                            + h_HP.l(h)*utot_cost('HP',h)
                            + c_RMInv.l(h)*utot_cost('RMInv',h)
-                           + sum(j,BES_dis.l(h,j)*utot_cost('BES',h))
+                           + sum(i,BES_dis.l(h,i)*utot_cost('BES',h))
                            + TES_dis.l(h)*utot_cost('TES',h)
                            + sum(i,BTES_Sch.l(h,i)*utot_cost('BTES',h))
                            + h_P2.l(h)*utot_cost('P2',h)
@@ -114,6 +114,35 @@ tot_var_cost_AH(h)= var_cost_existing_AH(h)+var_cost_new_AH(h);
 tot_fixed_cost=fix_cost_existing_AH + fix_cost_new_AH;
 *tot_operation_cost_AH=tot_var_cost_AH + tot_fixed_cost;
 
+************AH PE use and CO2 emission*************************************
+Parameters
+          AH_PE(h)     AH PE use
+          MA_AH_PE(h)  AH margional PE use
+          AH_CO2(h)    AH average CO2 emission
+          MA_AH_CO2(h) AH margional CO2 emission
+;
+
+*-----------------AH average and margional PE use-------------------------------
+AH_PE(h)= ( e_imp_AH.l(h)-e_exp_AH.l(h))*PEF_exG(h)
+            + e_existPV.l(h)*PEF_PV + e_PV.l(h)*PEF_PV
+            + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*PEF_DH(h) + ((h_Pana1.l(h)+h_RGK1.l(h))/P1_eff)*PEF_P1
+                     + fuel_P2.l(h)*PEF_P2;
+
+MA_AH_PE(h)= (e_imp_AH.l(h)-e_exp_AH.l(h))*MA_PEF_exG(h)
+              + e_existPV.l(h)*PEF_PV + e_PV.l(h)*PEF_PV
+              + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*MA_PEF_DH(h) + ((h_Pana1.l(h)+h_RGK1.l(h))/P1_eff)*PEF_P1
+              + fuel_P2.l(h)*PEF_P2;
+
+*---------------AH average and margional CO2 emission---------------------------
+AH_CO2(h) = (e_imp_AH.l(h)-e_exp_AH.l(h))*CO2F_exG(h)
+             + e_existPV.l(h)*CO2F_PV + e_PV.l(h)*CO2F_PV
+             + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*CO2F_DH(h) + ((h_Pana1.l(h)+h_RGK1.l(h))/P1_eff)*CO2F_P1
+             + fuel_P2.l(h) * CO2F_P2;
+
+MA_AH_CO2(h) = (e_imp_AH.l(h)-e_exp_AH.l(h))*MA_CO2F_exG(h)
+                + e_existPV.l(h)*CO2F_PV + e_PV.l(h)*CO2F_PV
+                + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*MA_CO2F_DH(h) + ((h_Pana1.l(h)+h_RGK1.l(h))/P1_eff)*CO2F_P1
+                + fuel_P2.l(h) * CO2F_P2;
 
 ********************Output data from GAMS to MATLAB*********************
 *execute_unload %matout%;
@@ -145,7 +174,7 @@ B_Heating_cost(h,i)= abs(eq_hbalance3.M(h))*h_demand(h,i);
 B_Electricity_cost(h,i_AH_el)=abs(eq_ebalance3.M(h))*el_demand(h,i_AH_el);
 B_Cooling_cost(h,i_AH_c)=abs(eq_cbalance.M(h))*c_demand_AH(h,i_AH_c);
 max_exG_prev=sum(m, max_exG.l(m));
-execute_unload 'GtoM' min_totCost, min_totPE, min_totCO2,
+execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       el_demand, el_demand_nonAH, h_demand, c_demand, c_demand_AH,
                       e_imp_AH, e_exp_AH, e_imp_nonAH,AH_el_imp_tot, AH_el_exp_tot,
                       h_imp_AH, h_exp_AH, h_imp_nonAH, AH_h_imp_tot, AH_h_exp_tot,
@@ -170,6 +199,7 @@ execute_unload 'GtoM' min_totCost, min_totPE, min_totCO2,
                       PT_exG, PT_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
+                      AH_PE, MA_AH_PE, AH_CO2, MA_AH_CO2,
                       DH_export_season, P1P2_dispatchable, inv_lim,
                       c_RMInv, e_RMInv, RMInv_cap, invCost_RMInv,BFCh_en,BFCh_ch,
                       BES_reac,BFCh_reac,BFCh_dis,e_existPV_reac,e_existPV_act,e_TURB_reac,e_PV_reac_roof,e_PV_act_roof,e_TURB_reac,

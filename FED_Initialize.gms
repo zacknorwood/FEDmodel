@@ -195,40 +195,40 @@ parameter
 ;
 
 parameter
-      Gekv_roof(h,BID) Equivalent irradiance parameter for solar PV on roof in kW per m^2
-      Gekv_facade(h,BID) Equivalent irradiance parameter for solar PV on facade in kW per m^2
-      Tmod_roof(h,BID) Module temperature roof in Celsius
-      Tmod_facade(h,BID) Module temperature facade in Celsius
-      Tekv_roof(h,BID) Equivalent temperature parameter for solar PV on roof
-      Tekv_facade(h,BID) Equivalent temperature parameter for solar PV on facade
-      PV_power_roof(h,BID) Power per watt peak roof (dimensionless parameter)
-      PV_power_facade(h,BID) Power per watt peak facade (dimensionless parameter)
+      Gekv_roof(h,B_ID) Equivalent irradiance parameter for solar PV on roof in kW per m^2
+      Gekv_facade(h,B_ID) Equivalent irradiance parameter for solar PV on facade in kW per m^2
+      Tmod_roof(h,B_ID) Module temperature roof in Celsius
+      Tmod_facade(h,B_ID) Module temperature facade in Celsius
+      Tekv_roof(h,B_ID) Equivalent temperature parameter for solar PV on roof
+      Tekv_facade(h,B_ID) Equivalent temperature parameter for solar PV on facade
+      PV_power_roof(h,B_ID) Power per watt peak roof (dimensionless parameter)
+      PV_power_facade(h,B_ID) Power per watt peak facade (dimensionless parameter)
 
 ;
-      Gekv_roof(h,BID)=abs(G_roof(h,BID))/Gstc;
-      Gekv_facade(h,BID)=abs(G_facade(h,BID))/Gstc;
+      Gekv_roof(h,B_ID)=abs(G_roof(h,B_ID))/Gstc;
+      Gekv_facade(h,B_ID)=abs(G_facade(h,B_ID))/Gstc;
 
-      Tmod_roof(h,BID)=tout(h)+coef_temp_PV*G_roof(h,BID);
-      Tmod_facade(h,BID)=tout(h)+coef_temp_PV*G_facade(h,BID);
+      Tmod_roof(h,B_ID)=tout(h)+coef_temp_PV*G_roof(h,B_ID);
+      Tmod_facade(h,B_ID)=tout(h)+coef_temp_PV*G_facade(h,B_ID);
 
-      Tekv_roof(h,BID)=Tmod_roof(h,BID) - Tstc;
-      Tekv_facade(h,BID)=Tmod_facade(h,BID) - Tstc;
+      Tekv_roof(h,B_ID)=Tmod_roof(h,B_ID) - Tstc;
+      Tekv_facade(h,B_ID)=Tmod_facade(h,B_ID) - Tstc;
 
-      PV_power_roof(h,BID) $ ((Gekv_roof(h,BID) ne 0)) =   Gekv_roof(h,BID)*
-                                                        (1 + coef_Si('1')*log10(Gekv_roof(h,BID))
-                                                        + coef_Si('2')*sqr(log10(Gekv_roof(h,BID)))
-                                                        + coef_Si('3')*Tekv_roof(h,BID)
-                                                        + coef_Si('4')*Tekv_roof(h,BID)*log10(Gekv_roof(h,BID))
-                                                        + coef_Si('5')*Tekv_roof(h,BID)*sqr(log10(Gekv_roof(h,BID)))
-                                                        + coef_Si('6')*sqr(Tekv_roof(h,BID)));
+      PV_power_roof(h,B_ID) $ ((Gekv_roof(h,B_ID) ne 0)) =   Gekv_roof(h,B_ID)*
+                                                        (1 + coef_Si('1')*log10(Gekv_roof(h,B_ID))
+                                                        + coef_Si('2')*sqr(log10(Gekv_roof(h,B_ID)))
+                                                        + coef_Si('3')*Tekv_roof(h,B_ID)
+                                                        + coef_Si('4')*Tekv_roof(h,B_ID)*log10(Gekv_roof(h,B_ID))
+                                                        + coef_Si('5')*Tekv_roof(h,B_ID)*sqr(log10(Gekv_roof(h,B_ID)))
+                                                        + coef_Si('6')*sqr(Tekv_roof(h,B_ID)));
 
-     PV_power_facade(h,BID) $ (Gekv_facade(h,BID) ne 0) = Gekv_facade(h,BID)*
-                                                         (1 + coef_Si('1')*log10(Gekv_facade(h,BID))
-                                                          + coef_Si('2')*sqr(log10(Gekv_facade(h,BID)))
-                                                          + coef_Si('3')*Tekv_facade(h,BID)
-                                                          + coef_Si('4')*Tekv_facade(h,BID)*log10(Gekv_facade(h,BID))
-                                                          + coef_Si('5')*Tekv_facade(h,BID)*sqr(log10(Gekv_facade(h,BID)))
-                                                          + coef_Si('6')*sqr(Tekv_facade(h,BID)));
+     PV_power_facade(h,B_ID) $ (Gekv_facade(h,B_ID) ne 0) = Gekv_facade(h,B_ID)*
+                                                         (1 + coef_Si('1')*log10(Gekv_facade(h,B_ID))
+                                                          + coef_Si('2')*sqr(log10(Gekv_facade(h,B_ID)))
+                                                          + coef_Si('3')*Tekv_facade(h,B_ID)
+                                                          + coef_Si('4')*Tekv_facade(h,B_ID)*log10(Gekv_facade(h,B_ID))
+                                                          + coef_Si('5')*Tekv_facade(h,B_ID)*sqr(log10(Gekv_facade(h,B_ID)))
+                                                          + coef_Si('6')*sqr(Tekv_facade(h,B_ID)));
 
 *--------------HP constants and parameters (an investment options)-------------
 *[COP and eff values need to be checked]
@@ -345,13 +345,18 @@ price('DH',h)=h_price(h)$(opt_marg_factors eq 0)+MA_Cost_DH(h)$(opt_marg_factors
 
 el_sell_price(h) =el_price(h) - unit_prof_sell - net_tariff  +  el_cirtificate(h) + ursprungsgaranti;
 *the data is obtained from Energimyndigheten 2015 wood chips for District Heating Uses
-fuel_cost('CHP',h)=0.186;
+fuel_cost('CHP',h)= 0.353;
+*0.186;
 * Divided by efficiency to get actual fuel use when multiplying with heat output
-fuel_cost('P1',h)=0.186/P1_eff;
-fuel_cost('RGK1',h)=0.186/RGK1_eff;
+*woodchip cost of 0.353 kr/kWhr is obtained from AH
+fuel_cost('P1',h)=0.353;
+*0.186/P1_eff;
+fuel_cost('RGK1',h)=0.353;
+*0.186/RGK1_eff;
 *fuel_cost('P1',h)=0.186*fuel_P1(h)/q_P1(h);
 * Divided by efficiency to get actual fuel use when multiplying with heat output
-fuel_cost('P2',h)=0.186/P2_eff;
+fuel_cost('P2',h)=0.353;
+*0.186/P2_eff;
 var_cost(sup_unit,h)=0;
 fix_cost(sup_unit)=0;
 

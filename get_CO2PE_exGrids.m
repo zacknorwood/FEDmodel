@@ -7,7 +7,7 @@
 len=24*365*2;
 sheet = 1;
 xlRange = 'C2:L17520';
-el_exGrid=xlsread('Input_data_FED_SIMULATOR\SE.xlsx',sheet,xlRange);
+el_exGrid=xlsread('Input_dispatch_model\SE.xlsx',sheet,xlRange);
 
 %CO2 and PE factors of the externla electricty generation system
 %For [B12 (HYDRO)	B14 (NUCLEAR)	B19 (WIND)	B20 (OTHER)]
@@ -34,8 +34,8 @@ el_exGPEF(isnan(el_exGPEF))=0;
 
 sheet = 2;
 xlRange = 'C5:V17524';
-%heat_DH=xlsread('Input_data_FED_SIMULATOR\External_Generation.xlsx',sheet,xlRange);
-heat_DH=xlsread('Input_data_FED_SIMULATOR\Produktionsdata fjärrvärme uppdelad 2016-2017_KY.xlsx',sheet,xlRange);
+%heat_DH=xlsread('Input_dispatch_model\External_Generation.xlsx',sheet,xlRange);
+heat_DH=xlsread('Input_dispatch_model\Produktionsdata fjärrvärme uppdelad 2016-2017_KY.xlsx',sheet,xlRange);
 heat_DH(isnan(heat_DH))=0;
 
 %CO2 and PE factors for DH
