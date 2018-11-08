@@ -501,8 +501,8 @@ this_month=sim_start_m;
 sim_start=HoS(2016,sim_start_m,sim_start_d,sim_start_h);    %1994; %24th of March 2016
 sim_stop=HoS(2016,sim_start_m,sim_start_d,sim_start_h);     %10192; %28th of February 2017
 
-forcast_horizon=8200;
-t_len_m=8200;
+forcast_horizon=1440;
+t_len_m=1440;
 Time(1).point='fixed inputs';
 Time(1).value=toc;
 for t=sim_start:sim_stop
@@ -768,7 +768,7 @@ Results(t).dispatch = fstore_results(h_sim,B_ID,BTES_properties,Buses_IDs);
 Time(3).point='Gams running and storing';
 Time(3).value=toc;
 end
-return
+
  %% Post processing results 
  
  %use the 'plot_results.m' script to plot desired results
