@@ -2,7 +2,7 @@ function DC_transfer_limits = fget_dc_transfer_limits(DC_Nodes, times)
 
 % Allow temperatures to exceed specified supply and return temperatures by
 % a certain 'slack_temperature'
-slack_temperature = 0;
+slack_temperature = 1;
 
 %summer season begins and ends, inclusive
 % May starts in hour 2905
@@ -25,7 +25,8 @@ for node = 1:length(DC_Nodes.name)
     maximum_flow_rate = DC_Nodes.maximum_flow(node);
     for hour = 1:length(times.uels)
         % Transfer limit [kWh/h] = m3/s * kg/m3 * kJ/kgK * K
-        if hour >= summer_begins && hour <= summer_ends
+        hour_c = times.uels{hour};
+        if hour_c >= summer_begins && hour_c <= summer_ends
             delta_T_DC = summer_delta_T_DC;
         else
             delta_T_DC = winter_delta_T_DC;

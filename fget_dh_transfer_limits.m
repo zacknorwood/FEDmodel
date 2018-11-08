@@ -5,7 +5,7 @@ if nargin() == 3
 end
 % Allow temperatures to exceed specified supply and return temperatures by
 % a certain 'slack_temperature'
-slack_temperature = 3;
+slack_temperature = 0;
 
 %summer season begins and ends, inclusive
 % May starts in hour 2905
@@ -56,7 +56,8 @@ for node = 1:length(DH_Nodes.name)
     maximum_flow_rate = DH_Nodes.maximum_flow(node);
     for hour = 1:length(times.uels)
         % Get current temperature diff
-        if hour >= summer_begins && hour <= summer_ends
+        hour_c = times.uels{hour};
+        if hour_c >= summer_begins && hour_c <= summer_ends
             delta_T_current = summer_mode_delta_T;
         else
             % Ignored output '~' is the minimum difference between the
