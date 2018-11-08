@@ -91,7 +91,7 @@ h0_AbsC=c0_AbsC/COP_AbsC;
 sheet=2;
 xlRange = 'B4:B17523';
 e0_VKA1=zeros(len,1);
-e0_VKA1_temp=xlsread('Input_dispatch_model\värmepump VKA1.xls',sheet,xlRange); %electricity demand in the FED system, 2016 kWh
+e0_VKA1_temp=xlsread('Input_dispatch_model\varmepump VKA1.xls',sheet,xlRange); %electricity demand in the FED system, 2016 kWh
 e0_VKA1(1:length(e0_VKA1_temp),1)=e0_VKA1_temp;
 e0_VKA1(isnan(e0_VKA1))=0;
      
@@ -99,7 +99,7 @@ e0_VKA1(isnan(e0_VKA1))=0;
 sheet=2;
 xlRange = 'B4:B17523';
 e0_VKA4=zeros(len,1);
-e0_VKA4_temp=xlsread('Input_dispatch_model\värmepump VKA4.xls',sheet,xlRange); %electricity demand in the FED system, 2016 kWh
+e0_VKA4_temp=xlsread('Input_dispatch_model\varmepump VKA4.xls',sheet,xlRange); %electricity demand in the FED system, 2016 kWh
 e0_VKA4(1:length(e0_VKA4_temp),1)=e0_VKA4_temp;
 e0_VKA4(isnan(e0_VKA4))=0;
 %% Calculate the CO2 and PE of FED
