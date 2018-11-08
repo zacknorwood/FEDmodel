@@ -154,7 +154,7 @@ equation
 
            eq_ebalance3  supply demand balance equation from AH
            eq_ebalance4  electrical import equation to nonAH
-*           eq_dcpowerflow1  active power balance equation
+           eq_dcpowerflow1  active power balance equation
            eq_dcpowerflow2  reactive power balance equation
            eq_dcpowerflow3  line limits equations
            eq_dcpowerflow4  line limits equations
@@ -306,8 +306,8 @@ eq_ACC1(h)..
 eq_ACC2(h) $ (min_totCost_0 eq 0)..
              c_AAC(h) =l= AAC_cap;
 
-eq_ACC3(h)$(tout(h)>AAC_TempLim and min_totCost_0 eq 0)..
-             c_AAC(h)=l= 0;
+eq_ACC3(h)$(tout(h) gt AAC_TempLim and min_totCost_0 eq 0)..
+             c_AAC(h)=e= 0;
 
 eq_ACC4(h)$(ord(h) gt 1 and synth_baseline eq 1)..
         c_AAC(h-1)- c_AAC(h)=g=-10000;
@@ -562,7 +562,7 @@ eq_DC_node_flows(h, DC_Node_ID)..
                  + (CWB_ch(h)/CWB_chr_eff - CWB_dis_eff*CWB_dis(h))$(sameas(DC_Node_ID, 'Maskin'))
 
 ;
-$offtext
+
 * - (C_VKA4(h) + c_HP(h) + c_AbsCInv(h)  + c_AbsC(h)  are at KC and thus
 
 **************************Demand Supply constraints*****************************
@@ -583,7 +583,7 @@ eq_hbalance3(h)..
 
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
-         sum(i_AH_c,c_demand_AH(h,i_AH_c))=e=C_DC(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
+         sum(i_AH_c,c_demand_AH(h,i_AH_c))=l=C_DC(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_AAC(h) + c_HP(h) + c_RMInv(h)
                                 + c_AbsCInv(h)
                                 + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
@@ -600,12 +600,12 @@ eq_ebalance4(h)..
 
 *------------Electrical Network constraints------------*
 
-*eq_dcpowerflow1(h,Bus_IDs)..((e_imp_AH(h) - e_exp_AH(h))/Sb)$(ord(Bus_IDs)=13)-((el_VKA1(h) + el_VKA4(h))/Sb)$(ord(Bus_IDs)=20)
-*            + sum(BID,e_existPV_act(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(r,e_PV_act_roof(h,r)$BusToBID(Bus_IDs,r))/Sb+sum(f,(PV_facade_cap_Inv(f)*PV_power_facade(h,f))$BusToBID(Bus_IDs,f))/Sb+
-*            ((BES_dis(h,Bus_IDs)*BES_dis_eff - BES_ch(h,Bus_IDs)/BES_ch_eff)/Sb)+(e_TURB(h)/Sb)$(ord(Bus_IDs)=16)+
-*            ((BFCh_dis(h,Bus_IDs)*BFCh_dis_eff - BFCh_ch(h,Bus_IDs)/BFCh_ch_eff)/Sb)-sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb-((el_RM(h)+e_RMMC(h)+e_AAC(h)+e_HP(h)+e_RMInv(h))/Sb)$(ord(Bus_IDs)=10)
-*=e=sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),gij(Bus_IDs,j)*(V(h,Bus_IDs)-V(h,j)))-
-*sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),bij(Bus_IDs,j)*(delta(h,Bus_IDs)-delta(h,j)));
+eq_dcpowerflow1(h,Bus_IDs)..((e_imp_AH(h) - e_exp_AH(h))/Sb)$(ord(Bus_IDs)=13)-((el_VKA1(h) + el_VKA4(h))/Sb)$(ord(Bus_IDs)=20)
+            + sum(BID,e_existPV_act(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(r,e_PV_act_roof(h,r)$BusToBID(Bus_IDs,r))/Sb+sum(f,(PV_facade_cap_Inv(f)*PV_power_facade(h,f))$BusToBID(Bus_IDs,f))/Sb+
+            ((BES_dis(h,Bus_IDs)*BES_dis_eff - BES_ch(h,Bus_IDs)/BES_ch_eff)/Sb)+(e_TURB(h)/Sb)$(ord(Bus_IDs)=16)+
+            ((BFCh_dis(h,Bus_IDs)*BFCh_dis_eff - BFCh_ch(h,Bus_IDs)/BFCh_ch_eff)/Sb)-sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb-((el_RM(h)+e_RMMC(h)+e_AAC(h)+e_HP(h)+e_RMInv(h))/Sb)$(ord(Bus_IDs)=10)
+=e=sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),gij(Bus_IDs,j)*(V(h,Bus_IDs)-V(h,j)))-
+sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),bij(Bus_IDs,j)*(delta(h,Bus_IDs)-delta(h,j)));
 
 
 eq_dcpowerflow2(h,Bus_IDs)..(re_imp_AH(h)/Sb)$(ord(Bus_IDs)=13)-0.2031*sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb+(e_TURB_reac(h)/Sb)$(ord(Bus_IDs)=16)+
@@ -681,7 +681,7 @@ eq_PTexG(m)..
                PT_exG(m) =e= max_exG(m)*PT_cost('exG');
 
 eq_mean_DH(d)..
-              mean_DH(d) =g=   sum(h,(h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d));
+              mean_DH(d) =g=   sum(h,(h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d))/24;
 
 eq_PT_DH(d)..
               PT_DH      =g=   mean_DH(d)*PT_cost('DH');
