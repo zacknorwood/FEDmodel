@@ -418,7 +418,7 @@ eq_BAC(i)..
          B_BAC(i) =l= B_BITES(i);
 
 eq_BAC_savings(h,i)..
-         h_BAC_savings(h,i) =l= BAC_savings_period(h)*B_BAC(i)*BAC_savings_factor*h_demand(h,i);
+         h_BAC_savings(h,i) =l= BAC_savings_factor(h)*B_BAC(i)*h_demand(h,i);
 
 *-----------------Battery constraints-------------------------------------------
 eq_BES1(h,i) $ (ord(h) eq 1)..

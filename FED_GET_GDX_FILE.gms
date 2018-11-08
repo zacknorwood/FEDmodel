@@ -247,9 +247,11 @@ $GDXIN
 *-----------BAC saving period from MATLAB---------------------------------------
 PARAMETERS
             BAC_savings_period(h)         Period in which BAC-energy savings are active
+            BAC_savings_factor(h)         Savings factor for BAC
 ;
 $GDXIN MtoG.gdx
 $LOAD BAC_savings_period
+$LOAD BAC_savings_factor
 $GDXIN
 
 *-----------DH export season from MATLAB----------------------------------------

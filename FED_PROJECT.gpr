@@ -1761,12 +1761,6 @@ Order=1,2,3
 Decim=7
 PlaneRownr=-1
 
-[RP:FED_SIMULATOR_MAIN]
-1=
-
-[RP:FED_GET_GDX_FILE]
-1=
-
 [RP:FED_EQUATIONS]
 1=
 2=GDXVIEWER.EXE
@@ -1778,14 +1772,19 @@ PlaneRownr=-1
 [RP:FED_INITIALIZE]
 1=
 
+[RP:FED_SIMULATOR_MAIN]
+1=
+
+[RP:FED_GET_GDX_FILE]
+1=
+
 [MRUFILES]
-1=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_SIMULATOR_MAIN.lst
-2=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\temp_slack.gdx
-3=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_SIMULATOR_MAIN.log
-4=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_Equations.lst
-5=D:\FED Project\FED_SIMULATOR\FEDmodel\180410_Test_BIM_power_losses_calculation.lst
-6=D:\FED Project\CTH_OPF_Kelly\180410_Test_BIM_power_losses_calculation.gms
-7=D:\FED Project\FEDmodel-master\FEDmodel-master\GOT_declare.gms
+1=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\temp_slack.gdx
+2=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_SIMULATOR_MAIN.log
+3=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_Equations.lst
+4=D:\FED Project\FED_SIMULATOR\FEDmodel\180410_Test_BIM_power_losses_calculation.lst
+5=D:\FED Project\CTH_OPF_Kelly\180410_Test_BIM_power_losses_calculation.gms
+6=D:\FED Project\FEDmodel-master\FEDmodel-master\GOT_declare.gms
 
 [OPENWINDOW_1]
 FILE0=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_Variables.gms
@@ -1802,10 +1801,10 @@ FILE1=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_GET_GDX_FILE.gms
 FILE2=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_GET_GDX_FILE.lst
 FILE3=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_Initialize.gms
 FILE4=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_SIMULATOR_MAIN.gms
-FILE5=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_Variables.gms
-FILE6=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\GtoM.gdx
+FILE5=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_SIMULATOR_MAIN.lst
+FILE6=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_Variables.gms
 FILE7=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\MtoG.gdx
-FILE8=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_SIMULATOR_MAIN.gms
+FILE8=C:\Users\AlexanderKa\Desktop\Github\FEDmodel\FED_Variables.gms
 MAXIM=0
 TOP=1
 LEFT=-3
