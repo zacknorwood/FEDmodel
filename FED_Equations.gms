@@ -547,7 +547,7 @@ eq_DC_node_flows(h, DC_Node_ID)..
 ;
 
 * - (C_VKA4(h) + c_HP(h) + c_AbsCInv(h)  + c_AbsC(h)  are at KC and thus
-
+$offtext
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
 eq_hbalance1(h)..
