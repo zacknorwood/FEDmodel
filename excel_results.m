@@ -258,7 +258,7 @@ for i=sim_start:sim_stop
     end
              
               
-  %-------------------CO2/PE---------------------------
+  %------------------- FED CO2/PE---------------------------
     if (not(isempty(Results(i).dispatch.FED_PE)) && Results(i).dispatch.FED_PE(1,1)==1)
         FED_PE(count)=Results(i).dispatch.FED_PE(1,2);
     else
@@ -282,7 +282,33 @@ for i=sim_start:sim_stop
     else
         MA_FED_CO2(count)=0;
     end
-                            
+    
+    %------------------- AH CO2/PE---------------------------
+    if (not(isempty(Results(i).dispatch.AH_PE)) && Results(i).dispatch.AH_PE(1,1)==1)
+        AH_PE(count)=Results(i).dispatch.AH_PE(1,2);
+    else
+        AH_PE(count)=0;
+    end
+               
+    if (not(isempty(Results(i).dispatch.MA_AH_PE)) && Results(i).dispatch.MA_AH_PE(1,1)==1)
+        MA_AH_PE(count)=Results(i).dispatch.MA_AH_PE(1,2);
+    else
+        MA_AH_PE(count)=0;
+    end
+                                             
+    if (not(isempty(Results(i).dispatch.AH_CO2)) && Results(i).dispatch.AH_CO2(1,1)==1)
+        AH_CO2(count)=Results(i).dispatch.AH_CO2(1,2);
+    else
+        AH_CO2(count)=0;
+    end
+               
+    if (not(isempty(Results(i).dispatch.MA_AH_CO2)) && Results(i).dispatch.MA_AH_CO2(1,1)==1)
+        MA_AH_CO2(count)=Results(i).dispatch.MA_AH_CO2(1,2);
+    else
+        MA_AH_CO2(count)=0;
+    end
+    
+    Model_status(count)=Results(i).dispatch.model_status;
 end
 
 %Print dispatch outcome and historical dispatch (last line of each section
@@ -473,7 +499,7 @@ end
     xlswrite('results',B_Cooling_cost,'B_Cooling_cost',strcat('A2:AJ',num2str(count+2)));
     xlswrite('results',{'B_Cooling_cost'},'B_Cooling_cost','A1:A1');
     
-%--------------CO2 and PE factors-------------------
+%--------------FED CO2 and PE factors-------------------
     xlswrite('results',FED_PE','CO2_PE',strcat('A2:A',num2str(count+2)));
     xlswrite('results',{'FED PE'},'CO2_PE','A1:A1');
     
@@ -484,10 +510,22 @@ end
     xlswrite('results',{'FED CO2'},'CO2_PE','C1:C1');
        
     xlswrite('results',MA_FED_CO2','CO2_PE',strcat('D2:D',num2str(count+2)));
-    xlswrite('results',{'Marginal FED CO2'},'CO2_PE','D1:D1');  
+    xlswrite('results',{'Marginal FED CO2'},'CO2_PE','D1:D1'); 
     
+    %--------------AH CO2 and PE factors-------------------
+    xlswrite('results',AH_PE','CO2_PE',strcat('F2:F',num2str(count+2)));
+    xlswrite('results',{'AH PE'},'CO2_PE','F1:F1');
     
-%Print running time and simulation infos
+    xlswrite('results',MA_AH_PE','CO2_PE',strcat('G2:G',num2str(count+2)));
+    xlswrite('results',{'Marginal AH PE'},'CO2_PE','G1:G1');
+    
+    xlswrite('results',AH_CO2','CO2_PE',strcat('H2:H',num2str(count+2)));
+    xlswrite('results',{'AH CO2'},'CO2_PE','H1:H1');
+       
+    xlswrite('results',MA_AH_CO2','CO2_PE',strcat('I2:I',num2str(count+2)));
+    xlswrite('results',{'Marginal AH CO2'},'CO2_PE','I1:I1');     
+    
+    %Print running time and simulation infos
     xlswrite('results',{Time.point}','Sim infos','B3:B6');
     xlswrite('results',{Time.value}','Sim infos','D3:D6');
     xlswrite('results',{'Running time'},'Sim infos','C2:C2');
@@ -496,4 +534,8 @@ end
     xlswrite('results',text,'Sim infos','C8:C8');
     [num,text,raw,]=xlsread('Input_dispatch_model\measured_demand.xlsx',1,strcat('A',num2str(sim_stop),':A',num2str(sim_stop)));
     xlswrite('results',text,'Sim infos','C9:C9');
+    
+    %Model statys    
+    xlswrite('results',Model_status','Sim infos',strcat('F2:F',num2str(count+2)));
+    xlswrite('results',{'Model status'},'Sim infos','F1:F1');    
 end
