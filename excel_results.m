@@ -338,13 +338,13 @@ end
     xlswrite('results',VKA1_h',strcat('I3:I',num2str(count+2)));
     xlswrite('results',{'VKA1_H'},'I1:J1');
     xlswrite('results',{'Dispatch'},'I2:I2');
-    xlswrite('results',xlsread('Input_dispatch_model\värmepump VKA1.xls',1,strcat('C',num2str(sim_start-1990),':C',num2str(sim_stop-1990))),strcat('J3:J',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\varmepump VKA1.xls',1,strcat('C',num2str(sim_start-1990),':C',num2str(sim_stop-1990))),strcat('J3:J',num2str(count+2)));
 
 
     xlswrite('results',VKA4_h',strcat('K3:K',num2str(count+2)));
     xlswrite('results',{'VKA4_H'},'K1:L1');
     xlswrite('results',{'Dispatch'},'K2:K2');
-    xlswrite('results',xlsread('Input_dispatch_model\värmepump VKA4.xls',1,strcat('C',num2str(sim_start-1438),':C',num2str(sim_stop-1438))),strcat('L3:L',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\varmepump VKA4.xls',1,strcat('C',num2str(sim_start-1438),':C',num2str(sim_stop-1438))),strcat('L3:L',num2str(count+2)));
 
     xlswrite('results',import_h',strcat('M3:M',num2str(count+2)));
     xlswrite('results',{'Import H'},'M1:N1');
@@ -372,12 +372,12 @@ end
     xlswrite('results',VKA1_c',strcat('W3:W',num2str(count+2)));
     xlswrite('results',{'VKA1_C'},'W1:X1');
     xlswrite('results',{'Dispatch'},'W2:W2');
-    xlswrite('results',xlsread('Input_dispatch_model\värmepump VKA1.xls',1,strcat('H',num2str(sim_start-1990),':H',num2str(sim_stop-1990))),strcat('X3:X',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\varmepump VKA1.xls',1,strcat('H',num2str(sim_start-1990),':H',num2str(sim_stop-1990))),strcat('X3:X',num2str(count+2)));
 
     xlswrite('results',VKA4_c',strcat('Y3:Y',num2str(count+2)));
     xlswrite('results',{'VKA4_C'},'Y1:Z1');
     xlswrite('results',{'Dispatch'},'Y2:Y2');
-    xlswrite('results',xlsread('Input_dispatch_model\värmepump VKA4.xls',1,strcat('H',num2str(sim_start-1438),':H',num2str(sim_stop-1438))),strcat('Z3:Z',num2str(count+2)));
+    xlswrite('results',xlsread('Input_dispatch_model\varmepump VKA4.xls',1,strcat('H',num2str(sim_start-1438),':H',num2str(sim_stop-1438))),strcat('Z3:Z',num2str(count+2)));
 
     xlswrite('results',aac_c',strcat('AA3:AA',num2str(count+2)));
     xlswrite('results',{'AAC_C'},'AA1:AB1');
