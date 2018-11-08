@@ -485,7 +485,7 @@ temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',o
 sim_start_y=2016;
 sim_start_m=3;
 sim_start_d=24;
-sim_start_h=1;
+sim_start_h=2;
 
 %Sim stop time
 sim_stop_y=2017;
@@ -612,6 +612,9 @@ for t=sim_start:sim_stop
     BAC_savings_period.val = BAC_sav_period_temp;
     BAC_savings_period.uels=h_sim.uels;
     
+    %Calculation of BAC savings factors
+    BAC_savings_factor = fget_bac_savings_factor(h_sim);
+    
     %District heating network node transfer limits
     DH_Nodes_Transfer_Limits=fget_dh_transfer_limits(DH_Nodes, h_sim, tout);
     
@@ -726,7 +729,6 @@ for t=sim_start:sim_stop
     opt_fx_inv_BTES_D_init=Initial(1);
     temp_opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',opt_fx_inv_BTES_D_init);
     
-
     %% RUN GAMS model
 %temp_opt_fx_inv_AbsCInv,temp_opt_fx_inv_HP, temp_opt_fx_inv_RMInv, temp_opt_fx_inv_TES, 
 wgdx('MtoG.gdx', temp_opt_fx_inv, temp_opt_fx_inv_RMMC,...
@@ -741,7 +743,7 @@ wgdx('MtoG.gdx', temp_opt_fx_inv, temp_opt_fx_inv_RMMC,...
      e_demand,h_demand,c_demand,qB1,qF1,...
      el_VKA1_0, el_VKA4_0,el_AAC_0,h_AbsC_0,...
      el_price,el_cirtificate,h_price,tout,...     
-     BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period,...
+     BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period, BAC_savings_factor,...
      PV_BID_roof_Inv,PV_roof_cap_Inv,PV_BID_facade_Inv,PV_facade_cap_Inv,...
      temp_optn0,temp_optn1, temp_optn2, temp_optn3, temp_synth_baseline, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap,...
      temp_opt_fx_inv_BES_maxP,temp_opt_fx_inv_BFCh_maxP,PV_inverter_PF_Inv,temp_opt_fx_inv_BTES_D_init,temp_opt_fx_inv_BTES_S_init,...
