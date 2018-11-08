@@ -167,21 +167,20 @@ variable
 binary variable
          B_BITES(i)       Decision variable weither to invest BITES control sys-
 ;
-
+*0 is used in case there is no investment
+B_BITES.fx(i) $ (opt_fx_inv eq 1)=0;
+B_BITES.fx(BITES_Inv) $ (opt_fx_inv eq 1)=1;
 *----------------Building Advanced Control (BAC) related------------------------
 positive variable
          h_BAC_savings(h,i) hourly heat consumption savings per building attributable to BAC investment
 ;
-*A condition need to be set here
-*0 is used in case there is no investment
-B_BITES.fx(i)=0;
+
 binary variable
          B_BAC(i)   Binary investment decision variable
 ;
 *0 is used in case there is no investment
-B_BAC.fx(i)=0;
-*A condition need to be set here
-*B_BAC.fx(BAC_Inv)=0;
+B_BAC.fx(i) $ (opt_fx_inv eq 1) =0;
+B_BAC.fx(BAC_Inv) $ (opt_fx_inv eq 1) =0;
 
 *----------------Solar PV PV relate variables-----------------------------------
 positive variable
@@ -191,8 +190,8 @@ positive variable
          e_PV_reac_roof(h,BID)      PVs reactive power
          e_PV_act_roof(h,BID)      PVs active power
 ;
-PV_cap_roof.fx(BID)=0;
-PV_cap_facade.fx(BID)=0;
+PV_cap_roof.fx(BID) $ (opt_fx_inv eq 1)=0;
+PV_cap_facade.fx(BID) $ (opt_fx_inv eq 1)=0;
 PV_cap_roof.fx(PV_BID_roof_Inv) $ (opt_fx_inv eq 1) = PV_roof_cap_Inv(PV_BID_roof_Inv);
 PV_cap_facade.fx(PV_BID_facade_Inv) $ (opt_fx_inv eq 1) = PV_facade_cap_Inv(PV_BID_facade_Inv);
 *------------------Battery related----------------------------------------------
@@ -253,7 +252,8 @@ h_exp_AH.up(h)=DH_max_cap;
 variable
          C_DC(h)             cooling from district cooling system
 ;
-C_DC.fx(h) $(min_totCost_0 = 0)= 0;
+C_DC.fx(h) $(min_totCost_0 eq 0)= c_DC_slack(h);
+*C_DC.fx(h) $(min_totCost_0 eq 1)= c_DC_slack(h);
 
 *-------------------------PE and CO2 related -----------------------------------
 variable
