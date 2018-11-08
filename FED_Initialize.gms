@@ -280,9 +280,9 @@ BTES_kSloss(i)= BTES_model('kloss_Sday',i);
 BTES_kDloss(i)= BTES_model('kloss_D',i);
 
 *--------------BAC parameters---------------------------------------------------
-scalar
-         BAC_savings_factor      Savings from BAC /0.2/
-;
+*scalar
+*         BAC_savings_factor      Savings from BAC /0.2/
+*;
 
 *--------------Battery storage characteristics----------------------------------
 scalar
