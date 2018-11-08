@@ -178,5 +178,8 @@ data.PT_DH=gdx2mat(gdxData,'PT_DH');
 data.B_Heating_cost=gdx2mat(gdxData,'B_Heating_cost',{h_sim.uels,B_ID.uels});
 data.B_Electricity_cost=gdx2mat(gdxData,'B_Electricity_cost',{h_sim.uels,B_ID.uels});
 data.B_Cooling_cost=gdx2mat(gdxData,'B_Cooling_cost',{h_sim.uels,B_ID.uels});
+
+%Model status
+data.model_status=gdx2mat(gdxData,'model_status');
 end
 

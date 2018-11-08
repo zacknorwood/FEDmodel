@@ -82,7 +82,7 @@ fix_cost_new_AH = (sum(B_ID, PV_cap_roof.l(B_ID) + PV_cap_facade.l(B_ID)))*fix_c
                   + B_TURB.l * fix_cost('TURB')
                   + AbsCInv_cap.l*fix_cost('AbsCInv');
 
-sim_PT_exG = sum((h,m),PT_exG.l(m)*HoM(h,m));
+sim_PT_exG = sum(m,PT_exG.l(m));
 
 var_cost_existing_AH(h) =      e_imp_AH.l(h)*utot_cost('exG',h)
                                -e_exp_AH.l(h)*el_sell_price(h)
@@ -193,10 +193,10 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       h_HP, e_HP, c_HP, HP_cap, invCost_HP,
                       TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES, TES_dis_eff, TES_chr_eff,
                       BTES_Sch, BTES_Sdis, BTES_Sen, BTES_Den, BTES_Sloss, BTES_Dloss, link_BS_BD,  BTES_dis_eff, BTES_chr_eff, B_BITES, invCost_BITES, BTES_model,
-                      h_BAC_savings, B_BAC, invCost_BAC, BAC_savings_period,
+                      h_BAC_savings, B_BAC, invCost_BAC, BAC_savings_period, BAC_savings_factor,
                       area_facade_max, area_roof_max, exist_PV_cap_roof, exist_PV_cap_facade, e_existPV, e_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
                       BES_en, BES_ch, BES_dis, BES_cap, invCost_BEV, BES_dis_eff, BES_ch_eff,
-                      PT_exG, PT_DH, invCost,
+                      PT_exG, max_exG, PT_DH, mean_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
                       AH_PE, MA_AH_PE, AH_CO2, MA_AH_CO2,
