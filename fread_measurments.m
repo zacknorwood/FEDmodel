@@ -96,7 +96,7 @@ tout_measured=xlsread('Input_dispatch_model\measured_tout.xlsx',sheet,xlRange);
 tout_measured(isnan(tout_measured))=0;
 
 %Measured solar irradiance**************TO BE FIXED
-irradiance_measured_roof=xlsread('Input_dispatch_model\Energy_Panel.xls',2,'A2:G8761');
-irradiance_measured_facades=xlsread('Input_dispatch_model\Energy_Panel.xls',3,'A2:A8761');
+irradiance_measured_roof=xlsread('Input_dispatch_model\Energy_Panel.xls',2,'A2:G17521');
+irradiance_measured_facades=xlsread('Input_dispatch_model\Energy_Panel.xls',3,'A2:A17521');
 end
 
