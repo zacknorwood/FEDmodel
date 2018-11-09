@@ -56,8 +56,7 @@ for node = 1:length(DH_Nodes.name)
     maximum_flow_rate = DH_Nodes.maximum_flow(node);
     for hour = 1:length(times.uels)
         % Get current temperature diff
-        hour_c = times.uels{hour};
-        if hour_c >= summer_begins && hour_c <= summer_ends
+        if hour >= summer_begins && hour <= summer_ends
             delta_T_current = summer_mode_delta_T;
         else
             % Ignored output '~' is the minimum difference between the
