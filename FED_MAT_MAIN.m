@@ -111,6 +111,7 @@ BID.uels=num2cell(BID_temp);
 LOAD_EXCEL_DATA=1;
 while LOAD_EXCEL_DATA==1
     %Read static properties of the model
+
 [P1P2_disp, DH_exp_season, BAC_sav_period, pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
 
 %Read forecasted values and variable input data
@@ -119,7 +120,7 @@ while LOAD_EXCEL_DATA==1
  el_VKA1_measured,el_VKA4_measured,el_AAC_measured, h_AbsC_measured,...
  e_price_measured,...
  el_cirtificate_m,h_price_measured,tout_measured,...
- irradiance_measured_facades,irradiance_measured_roof] = fread_measurments(2, 17000);
+ irradiance_measured_facades,irradiance_measured_roof, DC_slack] = fread_measurments(2, 17000);
 
 %This must be modified
 temp=load('import_export_forecasting');
@@ -239,10 +240,10 @@ PV_B_ID_roof_Inv.name='PV_B_ID_roof_Inv';
 PV_B_ID_roof_Inv.uels=PV_B_ID_roof_Inv_temp;
 
 %Capacity of roof PVs (Existing)
-PV_roof_cap_temp1=[50 42];   %OBS:According to document 'Projektmï¿½te nr 22 samordning  WP4-WP8 samt WP5'
+PV_roof_cap_temp1=[50 42];   %OBS:According to document 'ProjektmÃ¶te nr 22 samordning  WP4-WP8 samt WP5'
 
 %Capacity of roof PVs (investments)
-PV_roof_cap_temp2=[248 288 82 32 95];   %OBS:According to document 'Projektmï¿½te nr 22 samordning  WP4-WP8 samt WP5'
+PV_roof_cap_temp2=[248 288 82 32 95];   %OBS:According to document 'ProjektmÃ¶te nr 22 samordning  WP4-WP8 samt WP5'
 PV_roof_cap_temp=horzcat(PV_roof_cap_temp1,PV_roof_cap_temp2); %OBS: Merge all roof PVs
 PV_roof_cap_Inv=struct('name','PV_roof_cap_Inv','type','parameter','form','full');
 PV_roof_cap_Inv.uels=PV_B_ID_roof_Inv.uels;
@@ -328,9 +329,9 @@ while Re_calculate_CO2PEF==0
 end
 
 %Import marginal CO2 and PE factors, marginal DH cost
-DH_cost_ma=xlsread('Input_dispatch_model\Produktionsdata fjärrvärme marginal.xlsx',2,'W5:W17900');
-DH_CO2F_ma=xlsread('Input_dispatch_model\Produktionsdata fjärrvärme marginal.xlsx',2,'X5:X17900');
-DH_PEF_ma=xlsread('Input_dispatch_model\Produktionsdata fjärrvärme marginal.xlsx',2,'Y5:Y17900');
+DH_cost_ma=xlsread('Input_dispatch_model\Produktionsdata fjarrvarme marginal.xlsx',2,'W5:W17900');
+DH_CO2F_ma=xlsread('Input_dispatch_model\Produktionsdata fjarrvarme marginal.xlsx',2,'X5:X17900');
+DH_PEF_ma=xlsread('Input_dispatch_model\Produktionsdata fjarrvarme marginal.xlsx',2,'Y5:Y17900');
 EL_CO2F_ma=sum(csvread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[230  820   490   24     12  45 700   11  24  24],2);
 EL_PEF_ma=sum(csvread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[2.99  2.45  1.93  1.01   3.29  1.25 2.47 1.03 1.01  1.01],2);
 
@@ -415,6 +416,9 @@ PEF_DH = struct('name','PEF_DH','type','parameter','form','full');
 MA_PEF_DH = struct('name','MA_PEF_DH','type','parameter','form','full');
 MA_Cost_DH = struct('name','MA_Cost_DH','type','parameter','form','full');
 
+%%District cooling slack bus data
+c_DC_slack = struct('name','c_DC_slack','type','parameter','form','full');
+
 %% District heating network transfer limits - initialize nodes and flow limits
 DH_Node_Fysik.name = 'Fysik';
 DH_Node_Fysik.uels = {'O0007001', 'O3060132', 'ITGYMNASIET', 'O0007006', 'O3060133', 'O0011001', 'O0007005', 'O0013001'};
@@ -473,7 +477,7 @@ option1=1;    %minimize total cost
 option2=0;    %minimize tottal PE use
 option3=0;    %minimize total CO2 emission
 
-if (option0 == 1)
+if (option0 == 1)   
     option1=1;    
     option2=0;    
     option3=0;
@@ -486,12 +490,29 @@ temp_optn2 = struct('name','min_totPE','type','parameter','form','full','val',op
 temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',option3);
 
 %SIMULATION START AND STOP TIME
+%Sim start time
+sim_start_y=2016;
+sim_start_m=3;
+sim_start_d=24;
+sim_start_h=2;
 
-sim_start=1994; %1994; %24th of March 2016
-sim_stop=1994; %10192; %28th of February 2017
+%Sim stop time
+sim_stop_y=2017;
+sim_stop_m=2;
+sim_stop_d=28;
+sim_stop_h=24;
 
-forcast_horizon=10;
-t_len_m=10;
+%Get month and hours of simulation
+[HoS, MoS]=fget_time_vector(sim_start_y,sim_stop_y);
+
+this_month=sim_start_m;
+
+sim_start=HoS(2016,sim_start_m,sim_start_d,sim_start_h);    %1994; %24th of March 2016
+sim_stop=HoS(2016,sim_start_m,sim_start_d,sim_start_h);     %10192; %28th of February 2017
+
+forcast_horizon=1440;
+t_len_m=1440;
+
 Time(1).point='fixed inputs';
 Time(1).value=toc;
 for t=sim_start:sim_stop
@@ -530,7 +551,9 @@ for t=sim_start:sim_stop
     %Sample code using ANN to forecast Edit heat demand
     heat_Edit_forecast=zeros(1,10);
     for i=1:t_len_m
+
 %    heat_Edit_forecast(i)=sim(net_Edit,vertcat(flip(temperature((t_init_m-25+i):(t_init_m-2+i))'),flip(workday_index(15719:15742)'),flip(month_index(15719:15742)'),flip(Timeofday_index(15719:15742)')));
+
     end
     heat_Edit.val = heat_Edit_forecast;
     heat_Edit.uels={h_sim.uels,'O0007024'};
@@ -603,7 +626,7 @@ for t=sim_start:sim_stop
     
     %Calculation of BAC savings factors
     BAC_savings_factor = fget_bac_savings_factor(h_sim);
-
+    
     %District heating network node transfer limits
     DH_Nodes_Transfer_Limits=fget_dh_transfer_limits(DH_Nodes, h_sim, tout);
     
@@ -669,12 +692,17 @@ for t=sim_start:sim_stop
     Panna1.val = Panna1_forecast((t_init_m-26):(t_len_m+t_init_m-27),:);
     Panna1.uels=h_sim.uels; 
     FGC.val = FGC_forecast((t_init_m-26):(t_len_m+t_init_m-27),:);
-    FGC.uels=h_sim.uels; 
+    FGC.uels=h_sim.uels;
+    
+    %District cooling slack bus data
+    c_DC_slack.val=DC_slack((t_init_m-1):(t_len_m+t_init_m-2),:);    
+    c_DC_slack.uels=h_sim.uels;
 
     %Initial SoC of different storage systems (1=BTES_D, 2=BTES_S, 3=TES,
     %4=BFCh, 5=BES) and previous dispatch
-    if (isinteger((t-sim_start)/720) || (t==sim_start))
-         max_exG_prev=0;
+    if (this_month < MoS(t)  || (this_month==sim_start_m))
+        this_month=MoS(t);
+        max_exG_prev=0;
     else
         [x, max_exG_prev]=readGtoM(t);
     end
@@ -713,7 +741,6 @@ for t=sim_start:sim_stop
     opt_fx_inv_BTES_D_init=Initial(1);
     temp_opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',opt_fx_inv_BTES_D_init);
     
-
     %% RUN GAMS model
 %temp_opt_fx_inv_AbsCInv,temp_opt_fx_inv_HP, temp_opt_fx_inv_RMInv, temp_opt_fx_inv_TES, 
 wgdx('MtoG.gdx', temp_opt_fx_inv, temp_opt_fx_inv_RMMC,...
@@ -727,15 +754,16 @@ wgdx('MtoG.gdx', temp_opt_fx_inv, temp_opt_fx_inv_RMMC,...
      B_ID,B_ID_AH_el,B_ID_nonAH_el,B_ID_AH_h,B_ID_nonAH_h,B_ID_AH_c,B_ID_nonAH_c,B_ID_nonBITES,BID,...
      e_demand,h_demand,c_demand,qB1,qF1,...
      el_VKA1_0, el_VKA4_0,el_AAC_0,h_AbsC_0,...
-     el_price,el_cirtificate,h_price,tout,Gekv_facade,Gekv_roof,...     
-     BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period,BAC_savings_factor,...
+     el_price,el_cirtificate,h_price,tout,...     
+     BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period, BAC_savings_factor,...
      PV_B_ID_roof_Inv,PV_roof_cap_Inv,PV_BID_facade_Inv,PV_facade_cap_Inv,...
      temp_optn0,temp_optn1, temp_optn2, temp_optn3, temp_synth_baseline, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap,...
      temp_opt_fx_inv_BES_maxP,temp_opt_fx_inv_BFCh_maxP,PV_inverter_PF_Inv,temp_opt_fx_inv_BTES_D_init,temp_opt_fx_inv_BTES_S_init,...
      temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init,import,export,Panna1,FGC,temp_Pana1_prev_disp,...
      MA_PEF_exG,MA_CO2F_exG,temp_max_exG_prev,MA_Cost_DH,temp_VKA1_prev_disp,temp_VKA4_prev_disp,temp_AAC_prev_disp,...
      DH_Node_ID, DH_Nodes_Transfer_Limits,...
-     DC_Node_ID, DC_Nodes_Transfer_Limits);
+     DC_Node_ID, DC_Nodes_Transfer_Limits, c_DC_slack);
+
  
 %wgdx('MtoG_pv.gdx',G_facade,area_roof_max,area_facade_max);
 Time(2).point='Wgdx and Inputs';
@@ -743,8 +771,8 @@ Time(2).value=toc;
 tic
  RUN_GAMS_MODEL = 1;
  while RUN_GAMS_MODEL==1
-     %system 'gams FED_SIMULATOR_MAIN lo=3';
-     system 'C:\GAMS\win64\24.8\gams FED_SIMULATOR_MAIN lo=3';
+     system 'gams FED_SIMULATOR_MAIN lo=3';
+     %system 'C:\GAMS\win64\24.9\gams FED_SIMULATOR_MAIN lo=3';
      break;
  end
  
@@ -754,7 +782,7 @@ Results(t).dispatch = fstore_results(h_sim,B_ID,BTES_properties,Buses_IDs);
 Time(3).point='Gams running and storing';
 Time(3).value=toc;
 end
-return
+
  %% Post processing results 
  
  %use the 'plot_results.m' script to plot desired results

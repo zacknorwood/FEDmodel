@@ -68,7 +68,12 @@ set DCNodeToB_ID(DC_Node_ID, B_ID)  Mapping between district cooling nodes and b
                                                                                           EDIT.(O0007012,O0007024,O0007018,O0007021),
                                                                                           Fysik.(O0007001, O0007006, O3060133, O0011001, O0007005),
                                                                                           Kemi.(O3060132,O0013001)/
-
+PARAMETERS
+           c_DC_slack(h) DC_slack bus data
+;
+$GDXIN MtoG.gdx
+$LOAD c_DC_slack
+$GDXIN
 *--------------Building catagories based on how energy is supplied--------------
 set i_AH_el(i) buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok
     i_nonAH_el(i) buildings considered in the FED system not connected to the AH(Akadamiskahus) el netwrok
