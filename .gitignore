@@ -65,4 +65,8 @@ FED_GET_GDX_FILE.~~g
 FED_SIMULATOR_GUI.m
 FED_SIMULATOR_MAIN.~~g
 FED_PROJECT.gpr
+<<<<<<< HEAD
 scenred.opt
+=======
+*.docx
+>>>>>>> ef9656a2fa78733ba56e55dcc6d26c979a6fb50b

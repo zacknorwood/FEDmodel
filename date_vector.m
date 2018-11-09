@@ -7,9 +7,9 @@ for l=1:1:6
     for m=1:1:7
         if x(l,m)> 0
             for h=1:1:24
-           HoD(i,1)=i;
-           HoD(i,2)=d;           
-           i=i+1;
+                HoD(i,1)=i;
+                HoD(i,2)=d;       
+                i=i+1;
             end
            d=d+1;
         end

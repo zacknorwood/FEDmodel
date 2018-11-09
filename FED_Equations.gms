@@ -52,6 +52,7 @@ equation
 
            eq_CWB_en_init        Cold Water Basin initial charge state
            eq_CWB_en             Cold Water Basin charge equation
+           eq_CWB_discharge      Cold Water Basin discharges only to M building
 
            eq1_AbsCInv  Production equation-AbsChiller investment
            eq2_AbsCInv  Investment capacity-AbsChiller investment
@@ -292,6 +293,9 @@ eq_CWB_en_init(h)$(ord(h) eq 1)..
 eq_CWB_en(h)$(ord(h) gt 1)..
          CWB_en(h) =e= CWB_en(h-1)+CWB_ch(h)-CWB_dis(h);
 
+eq_CWB_discharge(h)..
+         CWB_dis(h) =l= c_demand(h,'O0007028');
+
 
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
 eq_ACC1(h)..
@@ -299,8 +303,8 @@ eq_ACC1(h)..
 eq_ACC2(h) $ (min_totCost_0 eq 0)..
              c_AAC(h) =l= AAC_cap;
 
-eq_ACC3(h)$(tout(h)>AAC_TempLim and min_totCost_0 eq 0)..
-             c_AAC(h)=l= 0;
+eq_ACC3(h)$(tout(h) gt AAC_TempLim and min_totCost_0 eq 0)..
+             c_AAC(h)=e= 0;
 
 eq_ACC4(h)$(ord(h) gt 1 and synth_baseline eq 1)..
         c_AAC(h-1)- c_AAC(h)=g=-10000;
@@ -414,7 +418,8 @@ eq_BAC(i)..
          B_BAC(i) =l= B_BITES(i);
 
 eq_BAC_savings(h,i)..
-         h_BAC_savings(h,i) =l= BAC_savings_period(h)*B_BAC(i)*BAC_savings_factor*h_demand(h,i);
+*         h_BAC_savings(h,i) =l= BAC_savings_period(h)*B_BAC(i)*BAC_savings_factor*h_demand(h,i);
+          h_BAC_savings(h,i) =l= BAC_savings_factor(h)*B_BAC(i)*h_demand(h,i);
 
 *-----------------Battery constraints-------------------------------------------
 eq_BES1(h,i) $ (ord(h) eq 1)..
@@ -544,9 +549,9 @@ eq_DC_node_flows(h, DC_Node_ID)..
                  + (CWB_ch(h)/CWB_chr_eff - CWB_dis_eff*CWB_dis(h))$(sameas(DC_Node_ID, 'Maskin'))
 
 ;
-$offtext
-* - (C_VKA4(h) + c_HP(h) + c_AbsCInv(h)  + c_AbsC(h)  are at KC and thus
 
+* - (C_VKA4(h) + c_HP(h) + c_AbsCInv(h)  + c_AbsC(h)  are at KC and thus
+$offtext
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
 eq_hbalance1(h)..
@@ -565,7 +570,7 @@ eq_hbalance3(h)..
 
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
-         sum(i_AH_c,c_demand_AH(h,i_AH_c))=e=C_DC(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
+         sum(i_AH_c,c_demand_AH(h,i_AH_c))=l=C_DC(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_AAC(h) + c_HP(h) + c_RMInv(h)
                                 + c_AbsCInv(h)
                                 + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
@@ -663,7 +668,7 @@ eq_PTexG(m)..
                PT_exG(m) =e= max_exG(m)*PT_cost('exG');
 
 eq_mean_DH(d)..
-              mean_DH(d) =g=   sum(h,(h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d));
+              mean_DH(d) =g=   sum(h,(h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d))/24;
 
 eq_PT_DH(d)..
               PT_DH      =g=   mean_DH(d)*PT_cost('DH');
