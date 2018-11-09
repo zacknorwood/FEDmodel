@@ -63,7 +63,7 @@ $GDXIN MtoG.gdx
 $LOAD DC_node_transfer_limits
 $GDXIN
 
-set DCNodeToB_ID(DC_Node_ID, B_ID)  Mapping between district cooling nodes and buildings /VoV.(O0007019,O0007023,O0007026,O0007027),
+set DCNodeToB_ID(DC_Node_ID, B_ID)  Mapping between district cooling nodes and buildings /VoV.(O0007019,O0007023,O0007026,O0007027, Karhus_CFAB, Karhus_studenter),
                                                                                           Maskin.(O0007028,O0007888,O0007022,O0007025),
                                                                                           EDIT.(O0007012,O0007024,O0007018,O0007021),
                                                                                           Fysik.(O0007001, O0007006, O3060133, O0011001, O0007005),

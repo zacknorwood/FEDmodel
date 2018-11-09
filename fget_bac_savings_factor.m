@@ -10,7 +10,7 @@ savings_after = 6576;
 % in dropbox folder WP4.1\Building thermal storage
 BAC_daytime_savings = 0.200;
 BAC_nighttime_savings = 0.065;
- BAC_savings_factor =  struct('name', 'BAC_savings_factor', 'type', 'parameter', 'form', 'full');
+BAC_savings_factor =  struct('name', 'BAC_savings_factor', 'type', 'parameter', 'form', 'full');
 BAC_savings_factor.val = zeros(length(times.uels), 1);
  for hour = 1:length(times.uels)
    if hour >= savings_after || hour < savings_before
@@ -26,4 +26,3 @@ BAC_savings_factor.val = zeros(length(times.uels), 1);
        BAC_savings_factor.val(hour) = 0;
    end   
 end
-

@@ -205,7 +205,7 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       BES_reac,BFCh_reac,BFCh_dis,e_existPV_reac,e_existPV_act,e_TURB_reac,e_PV_reac_roof,e_PV_act_roof,e_TURB_reac,
                       model_status,B_Heating_cost,B_Electricity_cost,B_Cooling_cost,max_exG_prev,
                       tot_var_cost_AH, sim_PT_exG,PT_DH, tot_fixed_cost, fix_cost_existing_AH, fix_cost_new_AH, var_cost_existing_AH, var_cost_new_AH,
-                      DH_node_flows, DC_node_flows,
+                      DH_node_flows, DC_node_flows, CWB_en, CWB_dis, CWB_ch,
                       model_status;
 
 execute_unload 'h' h;
