@@ -186,12 +186,12 @@ BES_B_ID_inv.uels=BES_B_ID_temp;
 
 opt_fx_inv_BES=1;
 temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',opt_fx_inv_BES);
-opt_fx_inv_BES_cap=[0.1]; %must be set to 200
+opt_fx_inv_BES_cap=[200]; %must be set to 200
 temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full');
 temp_opt_fx_inv_BES_cap.val=opt_fx_inv_BES_cap;
 temp_opt_fx_inv_BES_cap.uels=BES_B_ID_inv.uels;
 
-opt_fx_inv_BES_maxP=[0.1];  %must be set to 100
+opt_fx_inv_BES_maxP=[100];  %must be set to 100
 temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full');
 temp_opt_fx_inv_BES_maxP.val=opt_fx_inv_BES_maxP;
 temp_opt_fx_inv_BES_maxP.uels=BES_B_ID_inv.uels;
@@ -203,12 +203,12 @@ BFCh_B_ID_inv.uels=BFCh_B_ID_temp;
 
 opt_fx_inv_BFCh=0;
 temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
-opt_fx_inv_BFCh_cap=[0.1]; %must be set to 100
+opt_fx_inv_BFCh_cap=[100]; %must be set to 100
 temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full');
 temp_opt_fx_inv_BFCh_cap.val=opt_fx_inv_BFCh_cap;
 temp_opt_fx_inv_BFCh_cap.uels=BFCh_B_ID_inv.uels;
 
-opt_fx_inv_BFCh_maxP=[0.1]; %must be set to 50
+opt_fx_inv_BFCh_maxP=[50]; %must be set to 50
 temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full');
 temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
 temp_opt_fx_inv_BFCh_maxP.uels=BFCh_B_ID_inv.uels;
@@ -231,39 +231,39 @@ area_facade_max.uels=BID.uels;
 area_facade_max.val=pv_area_facades;
 
 %Placement of roof PVs (Existing)
-PV_B_ID_roof_Inv_temp1={'O0007026','O0007023'};
+PV_B_ID_roof_Inv_temp1=[48 49];
 
 %Placement of roof PVs (Investments)
-PV_B_ID_roof_Inv_temp2={'O3060132','O0007027','O0007024','O0007017','O0007028'}; %OBS:
+PV_B_ID_roof_Inv_temp2=[53 23 27 29 54 45 32 75 9 55] ;  %OBS:Reffers to BIDS
 PV_B_ID_roof_Inv_temp=horzcat(PV_B_ID_roof_Inv_temp1,PV_B_ID_roof_Inv_temp2);%OBS: Merge all roof PVs
 PV_B_ID_roof_Inv.name='PV_B_ID_roof_Inv';                                                           
-PV_B_ID_roof_Inv.uels=PV_B_ID_roof_Inv_temp;
+PV_B_ID_roof_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
 
 %Capacity of roof PVs (Existing)
 PV_roof_cap_temp1=[50 42];   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5'
 
 %Capacity of roof PVs (investments)
-PV_roof_cap_temp2=[248 288 82 32 95];   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5'
+PV_roof_cap_temp2=[33 116 115 35 102 32 64 57 57 113];   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
 PV_roof_cap_temp=horzcat(PV_roof_cap_temp1,PV_roof_cap_temp2); %OBS: Merge all roof PVs
 PV_roof_cap_Inv=struct('name','PV_roof_cap_Inv','type','parameter','form','full');
 PV_roof_cap_Inv.uels=PV_B_ID_roof_Inv.uels;
 PV_roof_cap_Inv.val=PV_roof_cap_temp;
 
 %Placement of facade PVs (Existing)
-PV_B_ID_facade_Inv_temp={'O0007008'}; %OBS: This PV is existed one!
+PV_B_ID_facade_Inv_temp=[28]; %OBS: This PV is existed one!
 PV_B_ID_facade_Inv.name='PV_B_ID_facade_Inv';
-PV_B_ID_facade_Inv.uels=PV_B_ID_facade_Inv_temp;
+PV_B_ID_facade_Inv.uels=num2cell(PV_B_ID_facade_Inv_temp);
 
 %Capacity of facade PVs
-PV_cap_facade_cap_temp=[16];
+PV_cap_facade_cap_temp=[15];        
 PV_facade_cap_Inv=struct('name','PV_facade_cap_Inv','type','parameter','form','full');
 PV_facade_cap_Inv.uels=PV_B_ID_facade_Inv.uels;
 PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
 
-%Operated power factor of PV inverters
-PV_PF_inverter_PF_temp=[0.92 0.92 0.92 0.92 0.92 0.92 0.92];
+%Operated power factor of PV inverters 
+PV_PF_inverter_PF_temp=[0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92];
 PV_inverter_PF_Inv=struct('name','PV_inverter_PF_Inv','type','parameter','form','full');
-PV_inverter_PF_Inv.uels=PV_B_ID_roof_Inv.uels;
+PV_inverter_PF_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
 PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp;
 
 %% FIXED MODEL INPUT DATA - INPUT PE and CO2 FACTORS and Dispatch of local generating units
@@ -532,12 +532,12 @@ for t=sim_start:sim_stop
     %Forcasted solar PV irradiance Roof
     irradiance_roof_forcast=irradiance_measured_roof((t_init_m-1):(t_len_m+t_init_m-2),:);
     Gekv_roof.val = irradiance_roof_forcast;
-    Gekv_roof.uels={h_sim.uels,{'O3060132','O0007027','O0007026','O0007024','O0007017','O0007028','O0007023'}};
+    Gekv_roof.uels={h_sim.uels,PV_B_ID_roof_Inv.uels};
     
     %Forcasted solar PV irradiance Roof 
     irradiance_facades_forcast=irradiance_measured_facades((t_init_m-1):(t_len_m+t_init_m-2),:);
     Gekv_facade.val = irradiance_facades_forcast;
-    Gekv_facade.uels={h_sim.uels,{'O0007008'}};
+    Gekv_facade.uels={h_sim.uels,PV_B_ID_facade_Inv.uels};
     
     %Forcasted el demand
     e_demand_forcast=e_demand_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
@@ -765,7 +765,7 @@ wgdx('MtoG.gdx', temp_opt_fx_inv, temp_opt_fx_inv_RMMC,...
      DC_Node_ID, DC_Nodes_Transfer_Limits, c_DC_slack);
 
  
-%wgdx('MtoG_pv.gdx',G_facade,area_roof_max,area_facade_max);
+%wgdx('MtoG_pv.gdx',area_roof_max,area_facade_max);
 Time(2).point='Wgdx and Inputs';
 Time(2).value=toc;
 tic

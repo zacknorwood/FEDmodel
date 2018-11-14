@@ -40,7 +40,7 @@ h_demand_nonAH_sum  total demand for non AH buildings
 ;
 
 invCost_HP = HP_cap.l*cost_inv_opt('HP');
-invCost_PV = sum(B_ID, PV_cap_roof.l(B_ID)*cost_inv_opt('PV')) + sum(B_ID, PV_cap_facade.l(B_ID)*cost_inv_opt('PV')) ;
+invCost_PV = sum(BID, PV_cap_roof.l(BID)*cost_inv_opt('PV')) + sum(BID, PV_cap_facade.l(BID)*cost_inv_opt('PV')) ;
 invCost_BEV = sum(i,BES_cap.l(i)*cost_inv_opt('BES'));
 invCost_TES = (TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
 invCost_BITES = cost_inv_opt('BTES')*sum(i,B_BITES.l(i));
@@ -72,7 +72,7 @@ Parameters
 
 fix_cost_existing_AH = sum(sup_unit,fix_cost(sup_unit)*cap_sup_unit(sup_unit));
 ************BIDs associated to AH buildings need to be filtered here************
-fix_cost_new_AH = (sum(B_ID, PV_cap_roof.l(B_ID) + PV_cap_facade.l(B_ID)))*fix_cost('PV')
+fix_cost_new_AH = (sum(BID, PV_cap_roof.l(BID) + PV_cap_facade.l(BID)))*fix_cost('PV')
                   + HP_cap.l*fix_cost('HP')
                   + sum(i,BES_cap.l(i)*fix_cost('BES'))
                   + TES_cap.l*fix_cost('TES')

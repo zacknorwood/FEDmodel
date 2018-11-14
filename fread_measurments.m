@@ -103,8 +103,8 @@ xlRange = dc_slack_range;
 DC_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',sheet,xlRange);
 DC_slack(isnan(DC_slack))=0;
 
-irradiance_measured_roof=xlsread('Input_dispatch_model\Energy_Panel.xls',2,'A2:G8761');
-irradiance_measured_facades=xlsread('Input_dispatch_model\Energy_Panel.xls',3,'A2:A8761');
+irradiance_measured_roof=xlsread('Input_dispatch_model\Irradiance_Arrays 20181112.xlsx',1,'A2:L8760');
+irradiance_measured_facades=xlsread('Input_dispatch_model\Irradiance_Arrays 20181112.xlsx',1,'M2:M8760');
 
 end
 

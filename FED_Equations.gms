@@ -477,20 +477,20 @@ eq_BFCh_reac8(h,i)..0.58*BFCh_reac(h,i)+BFCh_ch(h,i)+BFCh_dis(h,i)=g=-1.15*opt_f
 *+ coef(5).*Tekv(index).*log(Gekv(index)).^2
 *+ coef(6).*Tekv(index).^2);
 eq_PV(h)..
-             e_PV(h) =e= eta_Inverter * (sum(PV_B_ID_roof_Inv, PV_roof_cap_Inv(PV_B_ID_roof_Inv) * PV_power_roof(h,PV_B_ID_roof_Inv))
-                                              + sum(PV_B_ID_facade_Inv, PV_facade_cap_Inv(PV_B_ID_facade_Inv) * PV_power_facade(h,PV_B_ID_facade_Inv)));
+             e_PV(h) =e= eta_Inverter * (sum(BID, PV_roof_cap_Inv(BID) * PV_power_roof(h,BID))
+                                              + sum(BID, PV_facade_cap_Inv(BID) * PV_power_facade(h,BID)));
 *eq_PV_cap_roof(B_ID)..
 *             PV_cap_roof(B_ID) =l= area_roof_max(B_ID)*PV_cap_density;
 
 *eq_PV_cap_facade(B_ID)..
 *             PV_cap_facade(B_ID) =l= area_facade_max(B_ID)*PV_cap_density;
-eq_PV_active_roof(h,B_ID)..
-             e_PV_act_roof(h,B_ID)=e=eta_Inverter*PV_roof_cap_Inv(B_ID) * PV_power_roof(h,B_ID);
+eq_PV_active_roof(h,BID)..
+             e_PV_act_roof(h,BID)=e=eta_Inverter*PV_roof_cap_Inv(BID) * PV_power_roof(h,BID);
 
-eq_PV_reactive1(h,B_ID)..e_PV_reac_roof(h,B_ID)=l=tan(arccos(PV_inverter_PF_Inv(B_ID)))*e_PV_act_roof(h,B_ID);
-eq_PV_reactive2(h,B_ID)..e_PV_reac_roof(h,B_ID)=g=-tan(arccos(PV_inverter_PF_Inv(B_ID)))*e_PV_act_roof(h,B_ID);
-eq_PV_reactive3(h,B_ID)..-0.58*e_PV_reac_roof(h,B_ID)+e_PV_act_roof(h,B_ID)=l=1.15*PV_roof_cap_Inv(B_ID);
-eq_PV_reactive4(h,B_ID)..0.58*e_PV_reac_roof(h,B_ID)+e_PV_act_roof(h,B_ID)=l=1.15*PV_roof_cap_Inv(B_ID);
+eq_PV_reactive1(h,BID)..e_PV_reac_roof(h,BID)=l=tan(arccos(PV_inverter_PF_Inv(BID)))*e_PV_act_roof(h,BID);
+eq_PV_reactive2(h,BID)..e_PV_reac_roof(h,BID)=g=-tan(arccos(PV_inverter_PF_Inv(BID)))*e_PV_act_roof(h,BID);
+eq_PV_reactive3(h,BID)..-0.58*e_PV_reac_roof(h,BID)+e_PV_act_roof(h,BID)=l=1.15*PV_roof_cap_Inv(BID);
+eq_PV_reactive4(h,BID)..0.58*e_PV_reac_roof(h,BID)+e_PV_act_roof(h,BID)=l=1.15*PV_roof_cap_Inv(BID);
 *-----------------Refrigeration machine investment equations--------------------
 eq_RMInv1(h)..
              c_RMInv(h) =e= RMInv_COP*e_RMInv(h);
@@ -588,7 +588,7 @@ eq_ebalance4(h)..
 *------------Electrical Network constraints------------*
 
 eq_dcpowerflow1(h,Bus_IDs)..((e_imp_AH(h) - e_exp_AH(h))/Sb)$(ord(Bus_IDs)=13)-((el_VKA1(h) + el_VKA4(h))/Sb)$(ord(Bus_IDs)=20)
-            + sum(B_ID,e_PV_act_roof(h,B_ID)$BusToB_ID(Bus_IDs,B_ID))/Sb+sum(B_ID,(PV_facade_cap_Inv(B_ID)*PV_power_facade(h,B_ID))$BusToB_ID(Bus_IDs,B_ID))/Sb
+           + sum(BID,e_PV_act_roof(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(BID,(PV_facade_cap_Inv(BID)*PV_power_facade(h,BID))$BusToBID(Bus_IDs,BID))/Sb/1.07
             +sum(B_ID,((BES_dis(h,B_ID)*BES_dis_eff - BES_ch(h,B_ID)/BES_ch_eff)/Sb)$BusToB_ID(Bus_IDs,B_ID))+(e_TURB(h)/Sb)$(ord(Bus_IDs)=16)
             +sum(B_ID,((BFCh_dis(h,B_ID)*BFCh_dis_eff - BFCh_ch(h,B_ID)/BFCh_ch_eff)/Sb)$BusToB_ID(Bus_IDs,B_ID))-sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb-((el_RM(h)+e_RMMC(h)+e_AAC(h)+e_HP(h)+e_RMInv(h))/Sb)$(ord(Bus_IDs)=10)
 =e=sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),gij(Bus_IDs,j)*(V(h,Bus_IDs)-V(h,j)))-
@@ -596,7 +596,7 @@ sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),bij(Bus_IDs
 
 
 eq_dcpowerflow2(h,Bus_IDs)..(re_imp_AH(h)/Sb)$(ord(Bus_IDs)=13)-0.2031*sum(i_AH_el,el_demand(h,i_AH_el)$BusToB_ID(Bus_IDs,i_AH_el))/Sb+(e_TURB_reac(h)/Sb)$(ord(Bus_IDs)=16)
-                             +sum(B_ID,(BES_reac(h,B_ID)/Sb)$BusToB_ID(Bus_IDs,B_ID))+sum(B_ID,(BFCh_reac(h,B_ID)/Sb)$BusToB_ID(Bus_IDs,B_ID))+sum(B_ID,e_PV_reac_roof(h,B_ID)$BusToB_ID(Bus_IDs,B_ID))/Sb
+                             +sum(B_ID,(BES_reac(h,B_ID)/Sb)$BusToB_ID(Bus_IDs,B_ID))+sum(B_ID,(BFCh_reac(h,B_ID)/Sb)$BusToB_ID(Bus_IDs,B_ID))+sum(BID,e_PV_reac_roof(h,BID)$BusToBID(Bus_IDs,BID))/Sb
 =e=-(bii(Bus_IDs)+sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),gij(Bus_IDs,j)*(delta(h,Bus_IDs)-delta(h,j)))-
 sum(j$((ord(Bus_IDs) ne ord(j)) and (currentlimits(Bus_IDs,j) ne 0)),bij(Bus_IDs,j)*(V(h,Bus_IDs)-V(h,j))));
 
@@ -684,7 +684,7 @@ eq3_fix_cost_DH(h)..w(h)+1000000*(1-y_temp(h))=g=41.666;
 eq4_fix_cost_DH(h)..h_imp_AH(h)-(1-y_temp(h))*10000000=l=0;
 
 eq_fix_cost_new..
-         fix_cost_new =e=  (sum(B_ID, PV_cap_roof(B_ID) + PV_cap_facade(B_ID)))*fix_cost('PV')
+         fix_cost_new =e=  (sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*fix_cost('PV')
                            + HP_cap*fix_cost('HP')
                            + sum(i,BES_cap(i)*fix_cost('BES'))
                            + TES_cap*fix_cost('TES')
@@ -724,7 +724,7 @@ eq_Ainv_cost..
           Ainv_cost =e=
                 + HP_cap*cost_inv_opt('HP')/lifT_inv_opt('HP')
                 + RMInv_cap*cost_inv_opt('RMInv')/lifT_inv_opt('RMInv')
-                + (sum(B_ID, PV_cap_roof(B_ID) + PV_cap_facade(B_ID)))*cost_inv_opt('PV')/lifT_inv_opt('PV')
+                + (sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*cost_inv_opt('PV')/lifT_inv_opt('PV')
                 + sum(i,BES_cap(i)*cost_inv_opt('BES')/lifT_inv_opt('BES'))
                 + (TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/lifT_inv_opt('TES')
                 + cost_inv_opt('BTES')*sum(i,B_BITES(i))/lifT_inv_opt('BTES')
@@ -740,7 +740,7 @@ eq_totCost..
 eq_invCost..
          invCost =e= HP_cap*cost_inv_opt('HP')
                      + RMInv_cap*cost_inv_opt('RMInv')
-                     + (sum(B_ID, PV_cap_roof(B_ID) + PV_cap_facade(B_ID)))*cost_inv_opt('PV')
+                     + (sum(BID, PV_cap_roof(BID) + PV_cap_facade(BID)))*cost_inv_opt('PV')
                      + sum(i,BES_cap(i)*cost_inv_opt('BES'))
                      + ((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
                      + cost_inv_opt('BTES')*sum(i,B_BITES(i))
