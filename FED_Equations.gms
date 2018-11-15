@@ -660,7 +660,7 @@ eq_CO2_TOT_ma..
          MA_FED_CO2_tot =e= sum(h, MA_FED_CO2(h));
 **************** Power tariffs *******************
 eq_max_exG1(h,m)..
-               max_exG(m) =g= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*HoM(h,m);
+               max_exG(m) =g= (e_imp_AH(h)-e_exp_AH(h) + 0*e_imp_nonAH(h))*HoM(h,m);
 
 eq_max_exG2(h,m)..
                max_exG(m) =g= max_exG_prev*HoM(h,m);
@@ -671,7 +671,7 @@ eq_PTexG1(m)..
                max_PT_exG =g= PT_exG(m);
 
 eq_mean_DH(d)..
-              mean_DH(d) =g=   sum(h,(h_imp_AH(h)- h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d))/24;
+              mean_DH(d) =g=   sum(h,(h_imp_AH(h)- h_exp_AH(h) + 0*h_imp_nonAH(h))*HoD(h,d))/24;
 
 eq_PT_DH(d)..
               PT_DH      =g=   mean_DH(d)*PT_cost('DH');
@@ -699,7 +699,7 @@ eq_fix_cost_new..
 eq_var_cost_existing..
          var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)+sum(m,PT_exG(m)*HoM(h,m)))
                                -sum(h,e_exp_AH(h)*el_sell_price(h))
-                               + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h)) + PT_DH
+                               + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h)) + 0*PT_DH
                                - sum(h,sum(m,(h_exp_AH(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12))))
                                + sum(h,h_Pana1(h)*utot_cost('P1',h))
                                + sum(h,H_VKA1(h)*utot_cost('HP',h))
