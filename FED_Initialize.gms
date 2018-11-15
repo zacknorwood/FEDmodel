@@ -233,9 +233,10 @@ parameter
 *--------------HP constants and parameters (an investment options)-------------
 *[COP and eff values need to be checked]
 scalar
-* Heat pump efficiencies from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
-         HP_H_COP       Coefficent of performance for heat of the Heat Pump (HP)/3.15/
-         HP_C_COP       Coefficent of performance for cooling of the Heat Pump (HP)/2.5/
+* HP_H_COP=3,1 and HP_C_COP=2,19 are from AH based on new investment
+* HP_H_COP=3,15 and HP_C_COP=2,5 Heat pump efficiencies from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
+         HP_H_COP       Coefficent of performance for heat of the Heat Pump (HP)/3.10/
+         HP_C_COP       Coefficent of performance for cooling of the Heat Pump (HP)/2.19/
 ;
 
 *--------------TES constants and parameters-------------------------------------
