@@ -214,13 +214,13 @@ temp_opt_fx_inv_BFCh_maxP.uels=BFCh_B_ID_inv.uels;
 BITES_Inv_fx=0;    %0 is used when there is no investment, 1 if there is investment
 temp_BITES_Inv_fx = struct('name','BITES_Inv_fx','type','parameter','form','full','val',BITES_Inv_fx);
 BITES_Inv.name='BITES_Inv';
-BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001','O3060132','O3060133'};
+BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001','O3060133'};
  
 %Option for BAC investment
 BAC_Inv_fx=0;     %0 is used when there is no investment, 1 if there is investment
 temp_BAC_Inv_fx = struct('name','BAC_Inv_fx','type','parameter','form','full','val',BAC_Inv_fx);
 BAC_Inv.name='BAC_Inv';
-BAC_Inv.uels={'O0007017','O0007012','O0007006','O0007023','O0007026', 'O0007027','O3060132','O3060133'};
+BAC_Inv.uels={'O0007017','O0007012','O0007006','O0007023','O0007026', 'O0007027','O3060133'};
 
 %Option for solar PV investment
 area_roof_max = struct('name','area_roof_max','type','parameter');
