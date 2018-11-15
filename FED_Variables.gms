@@ -195,13 +195,13 @@ B_BAC.fx(BAC_Inv) $ (opt_fx_inv eq 1) =BAC_Inv_fx;
 positive variable
          e_PV(h)            electricity produced by PV
 
-         PV_cap_roof(i)   capacity of solar modules on roof
-         PV_cap_facade(i) capacity of solar modules on facade
-         e_PV_reac_roof(h,B_ID)      PVs reactive power
-         e_PV_act_roof(h,B_ID)      PVs active power
+         PV_cap_roof(BID)   capacity of solar modules on roof
+         PV_cap_facade(BID) capacity of solar modules on facade
+         e_PV_reac_roof(h,BID)      PVs reactive power
+         e_PV_act_roof(h,BID)      PVs active power
 ;
-PV_cap_roof.fx(i) $ (opt_fx_inv eq 1)=0;
-PV_cap_facade.fx(i) $ (opt_fx_inv eq 1)=0;
+PV_cap_roof.fx(BID) $ (opt_fx_inv eq 1)=0;
+PV_cap_facade.fx(BID) $ (opt_fx_inv eq 1)=0;
 PV_cap_roof.fx(PV_B_ID_roof_Inv) $ (opt_fx_inv eq 1) = PV_roof_cap_Inv(PV_B_ID_roof_Inv);
 PV_cap_facade.fx(PV_B_ID_facade_Inv) $ (opt_fx_inv eq 1) = PV_facade_cap_Inv(PV_B_ID_facade_Inv);
 
@@ -235,7 +235,7 @@ positive variable
 ;
 e_imp_AH.up(h)=exG_max_cap;
 e_exp_AH.up(h)=exG_max_cap;
-
+V.up(h,Bus_IDs)=1.1;
 variable
         re_imp_AH(h)        Imported reactive to the AH system
         delta(h,Bus_IDs)    Voltage angles of EL Grid
