@@ -66,3 +66,6 @@ for i=1:length(heat_DH)
     temp(15)=temp_heat_DH(i,15)*el_exGPEF(i);    %HP of the DH uses el from exG
     DH_PEF(i)=sum(temp)./sum(temp_heat_DH(i,:));
 end
+
+
+

@@ -151,7 +151,7 @@ scalar
 scalar
       P2_eff                 Efficiency of P2 /0.9/
 *Capacity must be set to 6000 when refurbishment is done
-      P2_cap                 Capacity of P2 /0/
+      P2_cap                 Capacity of P2 /6000/
       P2_max                 Maximum output from P2 /6000/
       P2_min                 Minimum output from P2 /1000/
       P2_reseach_prod        Heat output during research /1500/
