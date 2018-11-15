@@ -18,13 +18,17 @@ Alias (B_ID, i) ;
 *-----------Simulation time, Bites and BAC investments--------------------------
 set h              SIMULATION TIME
     BITES_Inv(i)   used for fixed BITES inv option
+    BITES_Inv_fx   Parameter to indicate investment in BITES
     BAC_Inv(i)     used for fixed BAC inv option
+    BAC_Inv_fx     Parameter used to indicate investment in BAC
     BTES_properties  Building Inertia TES properties
 ;
 $GDXIN MtoG.gdx
 $LOAD h
 $LOAD BITES_Inv
+$LOAD BITES_Inv_fx
 $LOAD BAC_Inv
+$LOAD BAC_Inv_fx
 $LOAD BTES_properties
 $GDXIN
 
@@ -69,10 +73,14 @@ set DCNodeToB_ID(DC_Node_ID, B_ID)  Mapping between district cooling nodes and b
                                                                                           Fysik.(O0007001, O0007006, O3060133, O0011001, O0007005),
                                                                                           Kemi.(O3060132,O0013001)/
 PARAMETERS
-           c_DC_slack(h) DC_slack bus data
+           c_DC_slack(h)     DC_slack bus data
+           h_DH_slack(h)     Slack bus for the DH
+           el_exG_slack(h)   Slack bus for the external grid
 ;
 $GDXIN MtoG.gdx
 $LOAD c_DC_slack
+$LOAD h_DH_slack
+$LOAD el_exG_slack
 $GDXIN
 *--------------Building catagories based on how energy is supplied--------------
 set i_AH_el(i) buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok
@@ -153,7 +161,7 @@ set BusToBID(Bus_IDs,BID)   Mapping between buses and BIDs
 *----------------PREPARE THE FULL INPUT DATA------------------------------------
 SET
     m   Number of month                   /1*24/
-    d   Number of days                    /1*730/
+    d   Number of days                    /1*731/
 ;
 
 *----------------load date vectors for power tariffs----------------------------
@@ -212,7 +220,7 @@ $LOAD h_demand
 $LOAD c_demand
 $GDXIN
 *Must be deleted
-el_demand(h,i_nonAH_el)=0;
+*el_demand(h,i_nonAH_el)=0;
 *-----------Forcasted energy prices from MATLAB---------------------------------
 PARAMETERS
            el_price(h)       ELECTRICTY PRICE IN THE EXTERNAL GRID
@@ -408,5 +416,9 @@ B_Heating_cost(h,i)             heating cost of buildings
 B_Electricity_cost(h,i_AH_el)   electricity cost of building
 B_Cooling_cost(h,i_AH_c)       cooling cost of buildings
 ;
+
+*Calculate slack parameters
+
+
 *$Offtext
 

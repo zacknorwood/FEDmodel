@@ -82,7 +82,7 @@ fix_cost_new_AH = (sum(BID, PV_cap_roof.l(BID) + PV_cap_facade.l(BID)))*fix_cost
                   + B_TURB.l * fix_cost('TURB')
                   + AbsCInv_cap.l*fix_cost('AbsCInv');
 
-sim_PT_exG = sum(m,PT_exG.l(m));
+sim_PT_exG = max_PT_exG.l;
 
 var_cost_existing_AH(h) =      e_imp_AH.l(h)*utot_cost('exG',h)
                                -e_exp_AH.l(h)*el_sell_price(h)

@@ -83,10 +83,10 @@ equation
 
            eq_BTES_Sch   charging rate of shallow part the building
            eq_BTES_Sdis  discharging rate of shallow part the building
-           eq_BTES_Sen0  initial energy content of shallow part of the building
+*          eq_BTES_Sen0  initial energy content of shallow part of the building
            eq_BTES_Sen1  initial energy content of shallow part of the building
            eq_BTES_Sen2  energy content of shallow part of the building at hour h
-           eq_BTES_Den0  initial energy content of deep part of the building
+*           eq_BTES_Den0  initial energy content of deep part of the building
            eq_BTES_Den1  initial energy content of deep part of the building
            eq_BTES_Den2  energy content of deep part of the building at hour h
            eq_BS_BD      energy flow between the shallow and deep part of the building
@@ -171,6 +171,7 @@ equation
            eq_max_exG1 maximum monthly peak demand
            eq_max_exG2 maximum monthly peak demand
            eq_PTexG   monthly power tariff
+           eq_PTexG1
 
            eq_mean_DH daily mean power DH
            eq_PT_DH   power tariff DH
@@ -372,7 +373,7 @@ eq_TESen0(h,i)$(ord(h) eq 1)..
              TES_en(h) =e= TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
 
 eq_TESen1(h,i)$(ord(h) eq 1)..
-             TES_en(h) =e= opt_fx_inv_TES_init;
+             TES_en(h) =e= TES_inv *opt_fx_inv_TES_init;
 *sw_TES*TES_cap*TES_density;
 
 eq_TESen2(h)$(ord(h) gt 1)..
@@ -389,13 +390,13 @@ eq_TESinv(h)..
 *             TES_cap =G= sw_TES*TES_inv * 100;
 
 *------------------BTES equations (Building srorage)----------------------------
-eq_BTES_Sen0(h,i) $ (ord(h) eq 1)..
-         BTES_Sen(h,i) =e= (BTES_kSloss(i)*BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
-                           + BTES_Sch(h,i)*BTES_Sch_eff - link_BS_BD(h,i));
+*eq_BTES_Sen0(h,i) $ (ord(h) eq 1)..
+*         BTES_Sen(h,i) =e= (BTES_kSloss(i)*BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
+*                           + BTES_Sch(h,i)*BTES_Sch_eff - link_BS_BD(h,i));
 eq_BTES_Sen1(h,i) $ (ord(h) eq 1)..
          BTES_Sen(h,i) =e= opt_fx_inv_BTES_S_init$(ord(i) eq 1);
 * sw_BTES*BTES_Sen_int(i);
-eq_BTES_Sch(h,i) ..
+eq_BTES_Sch(h,i)..
          BTES_Sch(h,i) =l= B_BITES(i)*BTES_Sch_max(h,i);
 eq_BTES_Sdis(h,i)..
          BTES_Sdis(h,i) =l= B_BITES(i)*BTES_Sdis_max(h,i);
@@ -405,8 +406,8 @@ eq_BTES_Sen2(h,i) $ (ord(h) gt 1)..
 eq_BTES_Den1(h,i) $ (ord(h) eq 1)..
          BTES_Den(h,i) =e= opt_fx_inv_BTES_D_init$(ord(i) eq 1);
 * sw_BTES*BTES_Den_int(i);
-eq_BTES_Den0(h,i) $ (ord(h) eq 1)..
-         BTES_Den(h,i) =e= (BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));
+*eq_BTES_Den0(h,i) $ (ord(h) eq 1)..
+*         BTES_Den(h,i) =e= (BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));
 eq_BTES_Den2(h,i) $ (ord(h) gt 1)..
          BTES_Den(h,i) =e= (BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));
 eq_BS_BD(h,i) $ (BTES_model('BTES_Scap',i) ne 0)..
@@ -557,7 +558,7 @@ $offtext
 eq_hbalance1(h)..
              h_exp_AH(h) =l= h_Pana1(h);
 eq_hbalance2(h)..
-             sum(i,h_demand(h,i)) =e=h_imp_AH(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
+             sum(i,h_demand(h,i)) =l=h_imp_AH(h) + h_DH_slack(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
                                      + H_VKA4(h) + H_P2T(h) + 0.75*h_TURB(h) + h_RMMC(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
@@ -570,7 +571,7 @@ eq_hbalance3(h)..
 
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
-         sum(i_AH_c,c_demand_AH(h,i_AH_c))=l=C_DC(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
+         sum(i_AH_c,c_demand_AH(h,i_AH_c))=l=C_DC(h) + c_DC_slack(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_AAC(h) + c_HP(h) + c_RMInv(h)
                                 + c_AbsCInv(h)
                                 + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
@@ -578,7 +579,7 @@ eq_cbalance(h)..
 *--------------Demand supply balance for electricity ---------------------------
 
 eq_ebalance3(h)..
-        sum(i_AH_el,el_demand(h,i_AH_el)) =l= e_imp_AH(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - e_RMMC(h) - e_AAC(h)
+        sum(i,el_demand(h,i)) =l= e_imp_AH(h) + e_imp_nonAH(h) + el_exG_slack(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - e_RMMC(h) - e_AAC(h)
                                  + e_PV(h) - e_HP(h) - e_RMInv(h)
                                  + sum(i,(BES_dis(h,i)*BES_dis_eff - BES_ch(h,i)/BES_ch_eff)+(BFCh_dis(h,i)*BFCh_dis_eff - BFCh_ch(h,i)/BFCh_ch_eff))
                                  + e_TURB(h);
@@ -666,9 +667,11 @@ eq_max_exG2(h,m)..
 
 eq_PTexG(m)..
                PT_exG(m) =e= max_exG(m)*PT_cost('exG');
+eq_PTexG1(m)..
+               max_PT_exG =g= PT_exG(m);
 
 eq_mean_DH(d)..
-              mean_DH(d) =g=   sum(h,(h_imp_AH(h)-h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d))/24;
+              mean_DH(d) =g=   sum(h,(h_imp_AH(h)- h_exp_AH(h) + h_imp_nonAH(h))*HoD(h,d))/24;
 
 eq_PT_DH(d)..
               PT_DH      =g=   mean_DH(d)*PT_cost('DH');

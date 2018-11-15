@@ -97,6 +97,8 @@ positive variable
          h_RMMC(h)          cooling power available from refrigerators
          c_RMMC(h)          cooling power available from refrigerators
 ;
+e_RMMC.fx(h) $ (min_totCost_0 = 1)=0;
+
 binary variable
          RMMC_inv           decision variable for MC2 connection investment
 ;
@@ -155,7 +157,7 @@ positive variable
 binary variable
          TES_inv          Decision variable for Accumulator investment
 ;
-TES_inv.fx $ (opt_fx_inv_TES_cap gt -1) = 1;
+TES_inv.fx $ (opt_fx_inv_TES_cap gt -1) = 0 $ (opt_fx_inv_TES_cap eq 0) + 1 $ (opt_fx_inv_TES_cap gt 0);
 TES_cap.fx $ (opt_fx_inv_TES_cap gt -1) = opt_fx_inv_TES_cap;
 *------------------BITES (Building energy storage) related----------------------
 positive variable
@@ -174,9 +176,9 @@ variable
 binary variable
          B_BITES(i)       Decision variable weither to invest BITES control sys-
 ;
-*0 is used in case there is no investment
+*0 is used in case there is no investment ,
 B_BITES.fx(i) $ (opt_fx_inv eq 1)=0;
-B_BITES.fx(BITES_Inv) $ (opt_fx_inv eq 1)=1;
+B_BITES.fx(BITES_Inv) $ (opt_fx_inv eq 1)=BITES_Inv_fx;
 *----------------Building Advanced Control (BAC) related------------------------
 positive variable
          h_BAC_savings(h,i) hourly heat consumption savings per building attributable to BAC investment
@@ -187,7 +189,7 @@ binary variable
 ;
 *0 is used in case there is no investment
 B_BAC.fx(i) $ (opt_fx_inv eq 1) =0;
-B_BAC.fx(BAC_Inv) $ (opt_fx_inv eq 1) =0;
+B_BAC.fx(BAC_Inv) $ (opt_fx_inv eq 1) =BAC_Inv_fx;
 
 *----------------Solar PV PV relate variables-----------------------------------
 positive variable
@@ -261,7 +263,7 @@ h_exp_AH.up(h)=DH_max_cap;
 variable
          C_DC(h)             cooling from district cooling system
 ;
-C_DC.fx(h) $(min_totCost_0 eq 0)= c_DC_slack(h);
+C_DC.fx(h) $(min_totCost_0 eq 0)= 0;
 *C_DC.fx(h) $(min_totCost_0 eq 1)= c_DC_slack(h);
 
 *-------------------------PE and CO2 related -----------------------------------
@@ -281,6 +283,7 @@ variable
 positive variables
          max_exG(m)         hourly peak demand per month
          PT_exG(m)          Monthly peak demand charge
+         max_PT_exG        Used to get the maximum of the peak tariif for RTH
          mean_DH(d)         daily mean demand DH
          PT_DH              peak demand charge DH
 ;

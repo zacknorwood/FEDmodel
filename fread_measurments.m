@@ -3,7 +3,7 @@ function [e_demand_measured, h_demand_measured,c_demand_measured,...
           el_VKA1_measured,el_VKA4_measured,el_AAC_measured, h_AbsC_measured,...
           e_price_measured,...
           el_cirtificate,h_price_measured,tout_measured,...
-          irradiance_measured_facades,irradiance_measured_roof, DC_slack] = fread_measurments(t_init, t_len)
+          irradiance_measured_roof,irradiance_measured_facades, DC_slack, el_slack,DH_slack] = fread_measurments(t_init, t_len)
 %This function is used to read mesurment between the indicated indices
 
 demand_range=strcat('B',int2str(t_init),':AJ',int2str(t_len+t_init-1));
@@ -11,6 +11,8 @@ gen_range=strcat('B',int2str(2+t_init),':B',int2str(2+t_len+t_init-1));
 price_ramge=strcat('B',int2str(t_init),':B',int2str(t_len+t_init-1));
 tout_ramge=strcat('B',int2str(t_init),':B',int2str(t_len+t_init-1));%'B2:B100';
 irradiance_range=strcat('B',int2str(t_init),':BU',int2str(t_len+t_init-1));
+el_slack_range=strcat('F',int2str(2+t_init),':F',int2str(2+t_len+t_init-1));
+h_slack_range=strcat('O',int2str(2+t_init),':O',int2str(2+t_len+t_init-1));
 dc_slack_range=strcat('N',int2str(2+t_init),':N',int2str(2+t_len+t_init-1));
 
 %Measured electricity demand in kW
@@ -97,7 +99,19 @@ tout_measured=xlsread('Input_dispatch_model\measured_tout.xlsx',sheet,xlRange);
 tout_measured(isnan(tout_measured))=0;
 
 
+%el exgG slack bus data
+sheet=1;
+xlRange = el_slack_range;
+el_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',sheet,xlRange);
+el_slack(isnan(el_slack))=0;
+
 %District heating slack bus data
+sheet=2;
+xlRange = h_slack_range;
+DH_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',sheet,xlRange);
+DH_slack(isnan(DH_slack))=0;
+
+%District cooling slack bus data
 sheet=3;
 xlRange = dc_slack_range;
 DC_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',sheet,xlRange);

@@ -8,7 +8,7 @@ close all; %close all figures
 %Building IDs
 profile on
 tic
-
+ 
 %Building IDs used to identify buildings in the FED system
 B_ID.name='B_ID';
 % B_ID.uels={'O3060132=Kemi', 'O3060101=Vassa1', 'O3060102_3=Vassa2-3', 'Vassa4-15=O3060104_15', 'O0007043=Phus','O0007017=Bibliotek',...
@@ -24,8 +24,8 @@ B_ID.uels={'O3060132', 'O3060101', 'O3060102_3', 'O3060104_15', 'O0007043','O000
            'O0007022', 'O0007025', 'O0007012', 'O0007021', 'O0007028','O0007001',...
            'O3060133', 'O0007024', 'O0007005', 'O0013001','O0011001',...
            'O0007018', 'O3060137', 'Karhuset', 'O3060138','O0007023', 'O0007026', 'O0007027',...
-           'Karhus_studenter', 'Chabo','ITGYMNASIET'}; 
-
+           'Karhus_studenter', 'Chabo'}; 
+%,'ITGYMNASIET'
 %Subset of the buildings in the FED system connected to AH's(Akadamiska Hus) electrical distribution system       
 B_ID_AH_el.name='i_AH_el';
 B_ID_AH_el.uels={'O3060132', 'O0007043', 'O0007017',...
@@ -120,7 +120,8 @@ while LOAD_EXCEL_DATA==1
  el_VKA1_measured,el_VKA4_measured,el_AAC_measured, h_AbsC_measured,...
  e_price_measured,...
  el_cirtificate_m,h_price_measured,tout_measured,...
- irradiance_measured_facades,irradiance_measured_roof, DC_slack] = fread_measurments(2, 17600);
+ irradiance_measured_facades,irradiance_measured_roof, DC_slack, el_slack, DH_slack] = fread_measurments(2, 17000);
+
 
 %This must be modified
 temp=load('import_export_forecasting');
@@ -143,10 +144,6 @@ load('Input_dispatch_model\Heating_ANN');
 
 %% FIXED MODEL INPUT DATA - FXED INVESTMENT OPTIONS
 
-%Option to choose between marginal and average factors
-opt_marg_factors=0;
-temp_opt_marg_factors = struct('name','opt_marg_factors','type','parameter','form','full','val',opt_marg_factors);
-
 %Option to set if any investments are to be fixed
 opt_fx_inv=1;
 temp_opt_fx_inv = struct('name','opt_fx_inv','type','parameter','form','full','val',opt_fx_inv);
@@ -168,7 +165,7 @@ opt_fx_inv_TURB=0;  %0=no investment, 1=fixed investment, -1=variable of optimiz
 temp_opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',opt_fx_inv_TURB);
 
 %Option for new HP investment
-opt_fx_inv_HP_cap=0;  %>=0 =fixed invetment, -1=variable of optimization
+opt_fx_inv_HP_cap=0;  %>=0 =fixed invetment, -1=variable of optimization; 630 kw is heating capacity of the HP invested in
 temp_opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',opt_fx_inv_HP_cap);
 
 %Option for new RM investment
@@ -201,7 +198,7 @@ BFCh_B_ID_temp={'O0007028'}; %OBS: Reffers to Bus 5
 BFCh_B_ID_inv.name='BFCh_BID_inv';
 BFCh_B_ID_inv.uels=BFCh_B_ID_temp;
 
-opt_fx_inv_BFCh=0;
+opt_fx_inv_BFCh=1;
 temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
 opt_fx_inv_BFCh_cap=[100]; %must be set to 100
 temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full');
@@ -214,12 +211,17 @@ temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
 temp_opt_fx_inv_BFCh_maxP.uels=BFCh_B_ID_inv.uels;
 
 %Option for BTES investment
+BITES_Inv_fx=0;    %0 is used when there is no investment, 1 if there is investment
+temp_BITES_Inv_fx = struct('name','BITES_Inv_fx','type','parameter','form','full','val',BITES_Inv_fx);
 BITES_Inv.name='BITES_Inv';
-BITES_Inv.uels={'O0007017','O0007006','O0007012','O0007023', 'O0007026', 'O0007027'};
-
+BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001'};
+ 
 %Option for BAC investment
+BAC_Inv_fx=0;     %0 is used when there is no investment, 1 if there is investment
+temp_BAC_Inv_fx = struct('name','BAC_Inv_fx','type','parameter','form','full','val',BAC_Inv_fx);
 BAC_Inv.name='BAC_Inv';
-BAC_Inv.uels={'O0007017','O0007006','O0007012','O0007023', 'O0007026', 'O0007027'};
+BAC_Inv.uels={'O0007017','O0007012','O0007006','O0007023','O0007026', 'O0007027'};
+%,'O3060132','O3060133', 
 
 %Option for solar PV investment
 area_roof_max = struct('name','area_roof_max','type','parameter');
@@ -329,12 +331,25 @@ while Re_calculate_CO2PEF==0
 end
 
 %Import marginal CO2 and PE factors, marginal DH cost
-DH_cost_ma=xlsread('Input_dispatch_model\Produktionsdata fjarrvarme marginal.xlsx',2,'W5:W17900');
-DH_CO2F_ma=xlsread('Input_dispatch_model\Produktionsdata fjarrvarme marginal.xlsx',2,'X5:X17900');
-DH_PEF_ma=xlsread('Input_dispatch_model\Produktionsdata fjarrvarme marginal.xlsx',2,'Y5:Y17900');
-EL_CO2F_ma=sum(csvread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[230  820   490   24     12  45 700   11  24  24],2);
-EL_PEF_ma=sum(csvread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.csv',1,1).*[2.99  2.45  1.93  1.01   3.29  1.25 2.47 1.03 1.01  1.01],2);
+nel_factor=xlsread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.xlsx',2,'B2:K17524');
+nel_factor(isnan(nel_factor))=0;
+EL_CO2F_ma=sum(nel_factor.*[230  820   490   24     12  45 700   11  24  24],2);
+EL_PEF_ma=sum(nel_factor.*[2.99  2.45  1.93  1.01   3.29  1.25 2.47 1.03 1.01  1.01],2);
 
+%Get Marginal cost DH
+DH_cost_ma=xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'X31:X17524')/1000;
+
+%Get Marginal CO2F and PEF of DH 
+COP_RYA_VP=3.4;
+DH_CO2F_ma=xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'Y31:Y17524');
+DH_PEF_ma=xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'Z31:Z17524');
+for tt=1:length(DH_CO2F_ma)
+    if isnan(DH_CO2F_ma(tt))
+        DH_CO2F_ma(tt)=EL_CO2F_ma(tt)/COP_RYA_VP;
+        DH_PEF_ma(tt)=EL_PEF_ma(tt)/COP_RYA_VP;
+    end
+end
+%Get Marginal CO2F DH
 %% FIXED MODEL INPUT DATA - FED INVESTMENT LIMIT
 
 FED_inv = 68570065;%68570065; %76761000;  %this is projected FED investment cost in SEK
@@ -416,6 +431,12 @@ PEF_DH = struct('name','PEF_DH','type','parameter','form','full');
 MA_PEF_DH = struct('name','MA_PEF_DH','type','parameter','form','full');
 MA_Cost_DH = struct('name','MA_Cost_DH','type','parameter','form','full');
 
+%%el exG slack bus data
+el_exG_slack = struct('name','el_exG_slack','type','parameter','form','full');
+
+%%District heating slack bus data
+h_DH_slack = struct('name','h_DH_slack','type','parameter','form','full');
+
 %%District cooling slack bus data
 c_DC_slack = struct('name','c_DC_slack','type','parameter','form','full');
 
@@ -469,7 +490,12 @@ Panna1 = struct('name','Panna1','type','parameter','form','full');
 FGC = struct('name','FGC','type','parameter','form','full');
 
 %% SIMULATION OPTIONS
-synth_baseline=0; %Option for synthetic baseline 
+synth_baseline=0; %Option for synthetic baseline
+
+%Option to choose between marginal and average factors
+opt_marg_factors=1;
+temp_opt_marg_factors = struct('name','opt_marg_factors','type','parameter','form','full','val',opt_marg_factors);
+
 
 % optimization option
 option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
@@ -494,12 +520,12 @@ temp_optn3 = struct('name','min_totCO2','type','parameter','form','full','val',o
 sim_start_y=2016;
 sim_start_m=3;
 sim_start_d=24;
-sim_start_h=2;
+sim_start_h=1;
 
 %Sim stop time
 sim_stop_y=2017;
 sim_stop_m=2;
-sim_stop_d=28;
+sim_stop_d=27;
 sim_stop_h=24;
 
 %Get month and hours of simulation
@@ -507,11 +533,11 @@ sim_stop_h=24;
 
 this_month=sim_start_m;
 
-sim_start=HoS(2016,sim_start_m,sim_start_d,sim_start_h);    %1994; %24th of March 2016
-sim_stop=HoS(2016,sim_start_m,sim_start_d,sim_start_h);     %10192; %28th of February 2017
+sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);    %1994; %24th of March 2016
+sim_stop=HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);     %10192; %28th of February 2017
 
-forcast_horizon=1440;
-t_len_m=1440;
+forcast_horizon=10;
+t_len_m=10;
 
 Time(1).point='fixed inputs';
 Time(1).value=toc;
@@ -519,8 +545,7 @@ for t=sim_start:sim_stop
     %% Variable input data to the dispatch model
     %Read measured data
     tic
-    t_init_m=t;  %OBS: t_init_m  should be greater than t_len_m  
-    
+    t_init_m=t;  %OBS: t_init_m  should be greater than t_len_m    
     
     forcast_start=t;
     forcast_end=forcast_start+forcast_horizon-1;    
@@ -694,6 +719,14 @@ for t=sim_start:sim_stop
     FGC.val = FGC_forecast((t_init_m-26):(t_len_m+t_init_m-27),:);
     FGC.uels=h_sim.uels;
     
+    %el exG slack bus data
+    el_exG_slack.val=el_slack((t_init_m-1):(t_len_m+t_init_m-2),:);    
+    el_exG_slack.uels=h_sim.uels;
+    
+    %District heating slack bus data
+    h_DH_slack.val=DH_slack((t_init_m-1):(t_len_m+t_init_m-2),:);    
+    h_DH_slack.uels=h_sim.uels;
+    
     %District cooling slack bus data
     c_DC_slack.val=DC_slack((t_init_m-1):(t_len_m+t_init_m-2),:);    
     c_DC_slack.uels=h_sim.uels;
@@ -762,7 +795,7 @@ wgdx('MtoG.gdx', temp_opt_fx_inv, temp_opt_fx_inv_RMMC,...
      temp_opt_fx_inv_TES_init,temp_opt_fx_inv_BFCh_init,temp_opt_fx_inv_BES_init,import,export,Panna1,FGC,temp_Pana1_prev_disp,...
      MA_PEF_exG,MA_CO2F_exG,temp_max_exG_prev,MA_Cost_DH,temp_VKA1_prev_disp,temp_VKA4_prev_disp,temp_AAC_prev_disp,...
      DH_Node_ID, DH_Nodes_Transfer_Limits,...
-     DC_Node_ID, DC_Nodes_Transfer_Limits, c_DC_slack);
+     DC_Node_ID, DC_Nodes_Transfer_Limits, el_exG_slack,h_DH_slack,c_DC_slack,temp_BITES_Inv_fx,temp_BAC_Inv_fx);
 
  
 %wgdx('MtoG_pv.gdx',area_roof_max,area_facade_max);
