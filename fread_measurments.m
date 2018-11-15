@@ -3,7 +3,7 @@ function [e_demand_measured, h_demand_measured,c_demand_measured,...
           el_VKA1_measured,el_VKA4_measured,el_AAC_measured, h_AbsC_measured,...
           e_price_measured,...
           el_cirtificate,h_price_measured,tout_measured,...
-          irradiance_measured_roof,irradiance_measured_facades, DC_slack, el_slack,DH_slack] = fread_measurments(t_init, t_len)
+          irradiance_measured_facades,irradiance_measured_roof, DC_slack, el_slack,DH_slack] = fread_measurments(t_init, t_len)
 %This function is used to read mesurment between the indicated indices
 
 demand_range=strcat('B',int2str(t_init),':AJ',int2str(t_len+t_init-1));
@@ -117,8 +117,8 @@ xlRange = dc_slack_range;
 DC_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',sheet,xlRange);
 DC_slack(isnan(DC_slack))=0;
 
-irradiance_measured_roof=xlsread('Input_dispatch_model\Irradiance_Arrays 20181112.xlsx',1,'A2:L8760');
-irradiance_measured_facades=xlsread('Input_dispatch_model\Irradiance_Arrays 20181112.xlsx',1,'M2:M8760');
+irradiance_measured_roof=xlsread('Input_dispatch_model\Irradiance_Arrays 20181112.xlsx',1,'A2:L817500');
+irradiance_measured_facades=xlsread('Input_dispatch_model\Irradiance_Arrays 20181112.xlsx',1,'M2:M17500');
 
 end
 
