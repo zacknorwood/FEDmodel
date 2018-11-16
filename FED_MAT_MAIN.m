@@ -124,13 +124,12 @@ while LOAD_EXCEL_DATA==1
 
 
 %This must be modified
-temp=load('import_export_forecasting');
 forecast_import=(temp.forecast_import')*1000;
 forecast_export=(temp.forecast_export')*1000;
 
-Panna1_forecast=load('Panna1_forecast');
 Panna1_forecast=abs((Panna1_forecast.Panna1_forecast')*1000);
 FGC_forecast=load('FGC_forecast');
+FGC_forecast=load('Input_dispatch_model\FGC_forecast');
 FGC_forecast=abs((FGC_forecast.FGC_forecasting'));
 
 % This must be deleted
@@ -211,7 +210,6 @@ temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
 temp_opt_fx_inv_BFCh_maxP.uels=BFCh_B_ID_inv.uels;
 
 %Option for BTES investment
-BITES_Inv_fx=0;    %0 is used when there is no investment, 1 if there is investment
 temp_BITES_Inv_fx = struct('name','BITES_Inv_fx','type','parameter','form','full','val',BITES_Inv_fx);
 BITES_Inv.name='BITES_Inv';
 BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001','O3060133'};
@@ -288,7 +286,6 @@ temp_CO2F_P2 = struct('name','CO2F_P2','type','parameter','val',CO2F_P2);
 PEF_P2=1.33;
 temp_PEF_P2 = struct('name','PEF_P2','type','parameter','val',PEF_P2);
 
-CO2F_spillvarme=0;       %98
 PEF_spillvarme=0.03;     %0.03
 
 COP_AbsC=0.5;
@@ -496,7 +493,6 @@ opt_marg_factors=0;
 temp_opt_marg_factors = struct('name','opt_marg_factors','type','parameter','form','full','val',opt_marg_factors);
 
 % optimization option
-option0=1;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
 option1=1;    %minimize total cost
 option2=0;    %minimize tottal PE use
 option3=0;    %minimize total CO2 emission
@@ -534,8 +530,6 @@ this_month=sim_start_m;
 sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);    %1994; %24th of March 2016
 sim_stop=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);     %10192; %28th of February 2017
 
-forcast_horizon=8100;
-t_len_m=8100;
 
 Time(1).point='fixed inputs';
 Time(1).value=toc;
