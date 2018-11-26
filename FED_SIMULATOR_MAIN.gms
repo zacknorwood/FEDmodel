@@ -114,12 +114,75 @@ tot_var_cost_AH(h)= var_cost_existing_AH(h)+var_cost_new_AH(h);
 tot_fixed_cost=fix_cost_existing_AH + fix_cost_new_AH;
 *tot_operation_cost_AH=tot_var_cost_AH + tot_fixed_cost;
 
+
+**********************************************************
+parameter
+vc_e_imp
+vc_e_exp
+vc_h_imp
+vc_h_exp
+vc_h_P1
+vc_h_VKA1
+vc_h_VKA4
+vc_c_absC
+vc_c_RM
+vc_c_RMMC
+vc_c_AAC
+vc_e_PV
+vc_c_absC
+vc_e_PV
+vc_h_HP
+vc_c_RM
+vc_e_BES
+vc_h_TES
+vc_h_BTES
+vc_h_P2
+vc_e_TURB
+vc_tot;
+
+
+vc_e_imp = sum(h,e_imp_AH.l(h)*utot_cost('exG',h));
+vc_e_exp = sum(h,e_exp_AH.l(h)*el_sell_price(h));
+vc_h_imp = sum(h,(h_imp_AH.l(h))*utot_cost('DH',h));
+vc_h_exp = sum(h,sum(m,(h_exp_AH.l(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12))));
+vc_h_P1 = sum(h,h_Pana1.l(h)*utot_cost('P1',h));
+vc_h_VKA1= sum(h,H_VKA1.l(h)*utot_cost('HP',h));
+vc_h_VKA4= sum(h,H_VKA4.l(h)*utot_cost('HP',h));
+vc_c_absC= sum(h,c_AbsC.l(h)*utot_cost('AbsC',h));
+vc_c_RM  = sum(h,c_RM.l(h)*utot_cost('RM',h));
+vc_c_RMMC= sum(h,c_RMMC.l(h)*utot_cost('RM',h));
+vc_c_AAC = sum(h,c_AAC.l(h)*utot_cost('AAC',h));
+vc_e_PV  = sum(h,e_existPV.l(h)*utot_cost('PV',h));
+vc_c_absC = sum(h,sum(m,(h_AbsC.l(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10)))
+          + sum(m,(h_AbsC.l(h)*0.7*HoM(h,m))$((ord(m) =11)))
+          + sum(m,(h_AbsC.l(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))));
+
+********** NEW INVESTMENT
+
+vc_e_PV  = sum(h,e_PV.l(h)*utot_cost('PV',h));
+vc_h_HP  = sum(h,h_HP.l(h)*utot_cost('HP',h));
+vc_c_RM  = sum(h,c_RMInv.l(h)*utot_cost('RMInv',h));
+vc_e_BES = sum(h,sum(i,BES_dis.l(h,i)*utot_cost('BES',h)));
+vc_h_TES = sum(h,TES_dis.l(h)*utot_cost('TES',h));
+vc_h_BTES= sum(h,sum(i,BTES_Sch.l(h,i)*utot_cost('BTES',h)));
+vc_h_P2  = sum(h,h_P2.l(h)*utot_cost('P2',h));
+vc_e_TURB= sum(h,e_TURB.l(h)*utot_cost('TURB',h));
+*vc_e_PV                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
+vc_tot = sum(h, tot_var_cost_AH(h));
+
+
 ************AH PE use and CO2 emission*************************************
 Parameters
           AH_PE(h)     AH PE use
           MA_AH_PE(h)  AH margional PE use
           AH_CO2(h)    AH average CO2 emission
           MA_AH_CO2(h) AH margional CO2 emission
+MA_AH_PE_tot   AH total PE marginal
+AH_PE_tot      AH total PE average
+MA_AH_CO2_tot  AH total CO2 marginal
+AH_CO2_tot     AH total CO2 average
+MA_AH_CO2_peak AH peak CO2 marginal
+AH_CO2_peak    AH peak CO2 average
 ;
 
 *-----------------AH average and margional PE use-------------------------------
@@ -133,6 +196,10 @@ MA_AH_PE(h)= (e_imp_AH.l(h)-e_exp_AH.l(h))*MA_PEF_exG(h)
               + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*MA_PEF_DH(h) + ((h_Pana1.l(h)+h_RGK1.l(h))/P1_eff)*PEF_P1
               + fuel_P2.l(h)*PEF_P2;
 
+AH_PE_tot=sum(h,AH_PE(h));
+MA_AH_PE_tot= sum(h,MA_AH_PE(h));
+
+
 *---------------AH average and margional CO2 emission---------------------------
 AH_CO2(h) = (e_imp_AH.l(h)-e_exp_AH.l(h))*CO2F_exG(h)
              + e_existPV.l(h)*CO2F_PV + e_PV.l(h)*CO2F_PV
@@ -143,7 +210,10 @@ MA_AH_CO2(h) = (e_imp_AH.l(h)-e_exp_AH.l(h))*MA_CO2F_exG(h)
                 + e_existPV.l(h)*CO2F_PV + e_PV.l(h)*CO2F_PV
                 + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*MA_CO2F_DH(h) + ((h_Pana1.l(h)+h_RGK1.l(h))/P1_eff)*CO2F_P1
                 + fuel_P2.l(h) * CO2F_P2;
-
+MA_AH_CO2_tot = sum(h, MA_AH_CO2(h));
+AH_CO2_tot    = sum(h, AH_CO2(h));
+MA_AH_CO2_peak= smax(h, MA_AH_CO2(h));
+AH_CO2_peak   = smax(h, AH_CO2(h));
 ********************Output data from GAMS to MATLAB*********************
 *execute_unload %matout%;
 parameter
@@ -179,6 +249,7 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       e_imp_AH, e_exp_AH, e_imp_nonAH,AH_el_imp_tot, AH_el_exp_tot,
                       h_imp_AH, h_exp_AH, h_imp_nonAH, AH_h_imp_tot, AH_h_exp_tot,
                       C_DC,
+                      h_DH_slack_var,
                       h_demand_nonAH, h_demand, h_demand_nonAH_sum
                       el_sell_price, el_price, h_price, tout, cool_demand,heat_demand,elec_demand
                       BTES_model,
@@ -206,7 +277,25 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       model_status,B_Heating_cost,B_Electricity_cost,B_Cooling_cost,max_exG_prev,
                       tot_var_cost_AH, sim_PT_exG,PT_DH, tot_fixed_cost, fix_cost_existing_AH, fix_cost_new_AH, var_cost_existing_AH, var_cost_new_AH,
                       DH_node_flows, DC_node_flows, CWB_en, CWB_dis, CWB_ch,
+
                       model_status;
+
+
+execute_unload 'WP6' model_status, Ainv_cost, vc_e_imp,vc_e_exp,vc_h_imp,vc_h_exp,vc_h_P1,vc_h_VKA1,vc_h_VKA4,vc_c_absC,vc_c_RM,vc_c_RMMC,vc_c_AAC,vc_e_PV,vc_c_absC,vc_e_PV,
+vc_h_HP,vc_c_RM,vc_e_BES,vc_h_TES,vc_h_BTES,vc_h_P2,vc_e_TURB, vc_tot, tot_var_cost_AH
+
+MA_AH_CO2,AH_CO2, MA_AH_CO2_tot, AH_CO2_tot, MA_AH_CO2_peak, AH_CO2_peak, MA_AH_PE_tot, AH_PE_tot
+
+h_Pana1, h_RGK1, h_VKA1, h_VKA4, H_P2T, h_TURB, h_RMMC, h_DH_slack, h_DH_slack_var, h_exp_AH, h_imp_AH, h_imp_AH_hist
+*h_AbsCInv
+C_DC, c_DC_slack, C_VKA1, C_VKA4,  c_AbsC, c_RM, c_RMMC, c_AAC, c_HP,
+*c_RMInv, c_AbsCInv
+*(CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
+e_imp_AH, e_imp_nonAH, el_exG_slack, e_exp_AH, el_VKA1, el_VKA4, el_RM, e_RMMC, e_AAC, e_PV, e_HP, e_RMInv, e_turb
+*sum(i,(BES_dis(h,i)*BES_dis_eff - BES_ch(h,i)/BES_ch_eff)+(BFCh_dis(h,i)*BFCh_dis_eff - BFCh_ch(h,i)/BFCh_ch_eff))
+cool_demand, heat_demand, elec_demand
+;
+execute '=gdx2xls WP6.gdx';
 
 execute_unload 'h' h;
 execute_unload 'BID' BID;
