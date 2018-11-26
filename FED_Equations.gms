@@ -326,7 +326,9 @@ eq_RMMC1(h)..
          h_RMMC(h) =e= RMCC_H_COP * e_RMMC(h);
 eq_RMMC2(h)..
          c_RMMC(h) =e= RMCC_C_COP * e_RMMC(h);
-eq_RMMC3(h) $ (opt_fx_inv_RMMC ne 0)..
+* Needs to be limited even when we do not have RMMC, DS
+*eq_RMMC3(h) $ (opt_fx_inv_RMMC ne 0)..
+eq_RMMC3(h)..
          c_RMMC(h) =l= RMMC_inv * RMMC_cap;
 
 *----------------Absorption Chiller Investment----------------------------------
@@ -556,9 +558,11 @@ $offtext
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
 eq_hbalance1(h)..
-             h_exp_AH(h) =l= h_Pana1(h);
+             h_exp_AH(h) =l= h_Pana1(h)+h_DH_slack_var(h);
+* Change to equal to test the slack variable
 eq_hbalance2(h)..
-             sum(i,h_demand(h,i)) =l=h_imp_AH(h) + h_DH_slack(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
+*             sum(i,h_demand(h,i)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
+             sum(i,h_demand(h,i)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
                                      + H_VKA4(h) + H_P2T(h) + 0.75*h_TURB(h) + h_RMMC(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
@@ -701,6 +705,7 @@ eq_var_cost_existing..
                                -sum(h,e_exp_AH(h)*el_sell_price(h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h)) + 0*PT_DH
                                - sum(h,sum(m,(h_exp_AH(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12))))
+*                               - sum(m,(h_exp_AH(h)*DH_export_season(h)*0.3*HoM(h,m)*0.001)$((ord(m) <= 11) or (ord(m) >=4))))
                                + sum(h,h_Pana1(h)*utot_cost('P1',h))
                                + sum(h,H_VKA1(h)*utot_cost('HP',h))
                                + sum(h,H_VKA4(h)*utot_cost('HP',h))
@@ -711,7 +716,8 @@ eq_var_cost_existing..
                                + sum(h,e_existPV(h)*utot_cost('PV',h))
                                + sum(h,sum(m,(h_AbsC(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10))))
                                + sum(h,sum(m,(h_AbsC(h)*0.7*HoM(h,m))$((ord(m) =11))))
-                               + sum(h,sum(m,(h_AbsC(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))));
+                               + sum(h,sum(m,(h_AbsC(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))))
+                               +sum(h,h_DH_slack_var(h))*1000000000000;
 
 eq_var_cost_new..
          var_cost_new =e=  sum(h,e_PV(h)*utot_cost('PV',h))
