@@ -13,6 +13,10 @@ DH_node_slack.up(h, DH_Node_ID)=50;
 DC_node_slack.lo(h, DC_Node_ID)=0;
 DC_node_slack.up(h, DC_Node_ID)=0;
 
+positive variable
+       h_DH_slack_var(h)
+       ;
+
 *******************Dispaching existing units************************************
 *------------------VKA1 Heatpump related----------------------------------------
 positive variable
@@ -176,6 +180,7 @@ variable
 binary variable
          B_BITES(i)       Decision variable weither to invest BITES control sys-
 ;
+
 *0 is used in case there is no investment ,
 B_BITES.fx(i) $ (opt_fx_inv eq 1)=0;
 *----------------Building Advanced Control (BAC) related------------------------
@@ -252,8 +257,11 @@ binary variable
 y_temp(h);
 * Set maximum import and export to the grid.
 h_imp_AH.up(h)=  DH_max_cap;
+*h_imp_AH.fx(h)$(min_totCost_0 eq 1)= h_imp_AH_hist(h);
 
 h_exp_AH.up(h)=DH_max_cap;
+h_exp_AH.fx(h)$(min_totCost_0 eq 1)= h_exp_AH_hist(h);
+
 *h_DH.lo(h)=-DH_max_cap;
 *h_DH.up(h)=DH_max_cap;
 
