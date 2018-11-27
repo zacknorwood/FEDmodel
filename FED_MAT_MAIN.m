@@ -522,185 +522,185 @@ end
 
 for i=8
 %%    run different scenarios
-%     if i==1
-% Case='BAU_ma';
-% opt_marg_factors=1;
-% option0=1;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-% option1=1;    %minimize total cost
-% option2=0;    %minimize tottal PE use
-% option3=0;    %minimize total CO2 emission
-% end
-% if i==2
-% Case='BAU_seas';
-% opt_marg_factors=0;
-% option0=1;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-% option1=1;    %minimize total cost
-% option2=0;    %minimize tottal PE use
-% option3=0;    %minimize total CO2 emission
-% end
-% if i==3
-% Case='no_inv_ma';
-% opt_marg_factors=1;
-% option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-% option1=1;    %minimize total cost
-% option2=0;    %minimize tottal PE use
-% option3=0;    %minimize total CO2 emission
-% end
-% if i==4
-% Case='no_inv_seas';
-% opt_marg_factors=0;
-% option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-% option1=1;    %minimize total cost
-% option2=0;    %minimize tottal PE use
-% option3=0;    %minimize total CO2 emission
-% end
-% if i==5
-% Case='no_inv_ma_minCO2';
-% opt_marg_factors=1;
-% option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-% option1=0;    %minimize total cost
-% option2=0;    %minimize tottal PE use
-% option3=1;    %minimize total CO2 emission
-% end
-% if i==6
-% Case='no_inv_seas_minCO2';
-% opt_marg_factors=0;
-% option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-% option1=0;    %minimize total cost
-% option2=0;    %minimize tottal PE use
-% option3=1;    %minimize total CO2 emission
-% end
-% if i==7
-% Case='BITES_inv_ma';    
-% opt_marg_factors=1;
-% option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-% option1=1;    %minimize total cost
-% option2=0;    %minimize tottal PE use
-% option3=0;    %minimize total CO2 emission
-% 
-% BITES_Inv_fx=1;    %0 is used when there is no investment, 1 if there is investment
-% temp_BITES_Inv_fx = struct('name','BITES_Inv_fx','type','parameter','form','full','val',BITES_Inv_fx);
-% BITES_Inv.name='BITES_Inv';
-% BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001','O3060133'};
-%  
-% end
-% 
-% if i==8
+    if i==1
+Case='BAU_ma';
+opt_marg_factors=1;
+option0=1;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+option1=1;    %minimize total cost
+option2=0;    %minimize tottal PE use
+option3=0;    %minimize total CO2 emission
+end
+if i==2
+Case='BAU_seas';
+opt_marg_factors=0;
+option0=1;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+option1=1;    %minimize total cost
+option2=0;    %minimize tottal PE use
+option3=0;    %minimize total CO2 emission
+end
+if i==3
+Case='no_inv_ma';
+opt_marg_factors=1;
+option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+option1=1;    %minimize total cost
+option2=0;    %minimize tottal PE use
+option3=0;    %minimize total CO2 emission
+end
+if i==4
+Case='no_inv_seas';
+opt_marg_factors=0;
+option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+option1=1;    %minimize total cost
+option2=0;    %minimize tottal PE use
+option3=0;    %minimize total CO2 emission
+end
+if i==5
+Case='no_inv_ma_minCO2';
+opt_marg_factors=1;
+option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+option1=0;    %minimize total cost
+option2=0;    %minimize tottal PE use
+option3=1;    %minimize total CO2 emission
+end
+if i==6
+Case='no_inv_seas_minCO2';
+opt_marg_factors=0;
+option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+option1=0;    %minimize total cost
+option2=0;    %minimize tottal PE use
+option3=1;    %minimize total CO2 emission
+end
+if i==7
+Case='BITES_inv_ma';    
+opt_marg_factors=1;
+option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+option1=1;    %minimize total cost
+option2=0;    %minimize tottal PE use
+option3=0;    %minimize total CO2 emission
+
+BITES_Inv_fx=1;    %0 is used when there is no investment, 1 if there is investment
+temp_BITES_Inv_fx = struct('name','BITES_Inv_fx','type','parameter','form','full','val',BITES_Inv_fx);
+BITES_Inv.name='BITES_Inv';
+BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001','O3060133'};
+ 
+end
+
+if i==8
      Case='opt_inv_ma';
-%     opt_marg_factors=1;
-%     option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-%     option1=1;    %minimize total cost
-%     option2=0;    %minimize tottal PE use
-%     option3=0;    %minimize total CO2 emission
-%     
-%     %Option for P2 investment
-%     opt_fx_inv_P2=1;  %0=no investment, 1=fixed investment, -1=variable of optimization
-%     temp_opt_fx_inv_P2 = struct('name','opt_fx_inv_P2','type','parameter','form','full','val',opt_fx_inv_P2);
-%     
-%     %Option for Turbine investment
-%     opt_fx_inv_TURB=1;  %0=no investment, 1=fixed investment, -1=variable of optimization
-%     temp_opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',opt_fx_inv_TURB);
-%     
-%     %Option for new HP investment
-%     opt_fx_inv_HP_cap=630;  %>=0 =fixed invetment, -1=variable of optimization; 630 kw is heating capacity of the HP invested in
-%     temp_opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',opt_fx_inv_HP_cap);
-%     
-%     %Option for BES investment
-%     BES_B_ID_temp={'O0007027'}; %OBS: Reffers to bus 28
-%     BES_B_ID_inv.name='BES_B_ID_inv';
-%     BES_B_ID_inv.uels=BES_B_ID_temp;
-%     
-%     opt_fx_inv_BES=1;
-%     temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',opt_fx_inv_BES);
-%     opt_fx_inv_BES_cap=[200]; % 200 in FED investments
-%     temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full');
-%     temp_opt_fx_inv_BES_cap.val=opt_fx_inv_BES_cap;
-%     temp_opt_fx_inv_BES_cap.uels=BES_B_ID_inv.uels;
-%     
-%     opt_fx_inv_BES_maxP=[100];  %must be set to 100
-%     temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full');
-%     temp_opt_fx_inv_BES_maxP.val=opt_fx_inv_BES_maxP;
-%     temp_opt_fx_inv_BES_maxP.uels=BES_B_ID_inv.uels;
-%     
-%     %Option for BFCh investment
-%     BFCh_B_ID_temp={'O0007028'}; %OBS: Reffers to Bus 5
-%     BFCh_B_ID_inv.name='BFCh_BID_inv';
-%     BFCh_B_ID_inv.uels=BFCh_B_ID_temp;
-%     
-%     opt_fx_inv_BFCh=1;
-%     temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
-%     opt_fx_inv_BFCh_cap=[100]; %must be set to 100
-%     temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full');
-%     temp_opt_fx_inv_BFCh_cap.val=opt_fx_inv_BFCh_cap;
-%     temp_opt_fx_inv_BFCh_cap.uels=BFCh_B_ID_inv.uels;
-%     
-%     opt_fx_inv_BFCh_maxP=[50]; %must be set to 50
-%     temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full');
-%     temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
-%     temp_opt_fx_inv_BFCh_maxP.uels=BFCh_B_ID_inv.uels;
-%     
-%     %Option for BTES investment
-%     BITES_Inv_fx=1;    %0 is used when there is no investment, 1 if there is investment
-%     temp_BITES_Inv_fx = struct('name','BITES_Inv_fx','type','parameter','form','full','val',BITES_Inv_fx);
-%     BITES_Inv.name='BITES_Inv';
-%     BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001','O3060133'};
-%     
-%     %Option for BAC investment
-%     BAC_Inv_fx=1;     %0 is used when there is no investment, 1 if there is investment
-%     temp_BAC_Inv_fx = struct('name','BAC_Inv_fx','type','parameter','form','full','val',BAC_Inv_fx);
-%     BAC_Inv.name='BAC_Inv';
-%     BAC_Inv.uels={'O0007017','O0007012','O0007006','O0007023','O0007026', 'O0007027','O3060133'};
-%     
-%     %Option for solar PV investment
-%     % This is if we want to have an PV selection option
-%     %PV_inv_fx=0;     %0 is used when there is no investment, 1 if there is investment
-%     %temp_PV_Inv_fx = struct('name','PV_Inv_fx','type','parameter','form','full','val',PV_Inv_fx);
-%    area_roof_max = struct('name','area_roof_max','type','parameter');
-%    area_roof_max.uels=BID.uels;
-%    area_roof_max.val=pv_area_roof;
-%     
-%    area_facade_max = struct('name','area_facade_max','type','parameter');
-%    area_facade_max.uels=BID.uels;
-%    area_facade_max.val=pv_area_facades;
-%     
-%     %Placement of roof PVs (Existing)
-%     PV_B_ID_roof_Inv_temp1=[48 49];
-%     
-%     %Placement of roof PVs (Investments)
-%     PV_B_ID_roof_Inv_temp2=[53 23 27 29 54 45 32 75 9 55] ;  %OBS:Reffers to BIDS
-%     PV_B_ID_roof_Inv_temp=horzcat(PV_B_ID_roof_Inv_temp1,PV_B_ID_roof_Inv_temp2);%OBS: Merge all roof PVs
-%     PV_B_ID_roof_Inv.name='PV_B_ID_roof_Inv';
-%     PV_B_ID_roof_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
-%     
-%     %Capacity of roof PVs (Existing)
-%     PV_roof_cap_temp1=[50 42];   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5'
-%     
-%     %Capacity of roof PVs (investments)
-%     %PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-%     PV_roof_cap_temp2=[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-%     PV_roof_cap_temp=horzcat(PV_roof_cap_temp1,PV_roof_cap_temp2); %OBS: Merge all roof PVs
-%     PV_roof_cap_Inv=struct('name','PV_roof_cap_Inv','type','parameter','form','full');
-%     PV_roof_cap_Inv.uels=PV_B_ID_roof_Inv.uels;
-%     PV_roof_cap_Inv.val=PV_roof_cap_temp;
-%    
-%     %Placement of facade PVs (Existing)
-%     PV_B_ID_facade_Inv_temp=[28]; %OBS: This PV is existed one!
-%     PV_B_ID_facade_Inv.name='PV_B_ID_facade_Inv';
-%     PV_B_ID_facade_Inv.uels=num2cell(PV_B_ID_facade_Inv_temp);
-%     
-%     %Capacity of facade PVs
-%     PV_cap_facade_cap_temp=[15];
-%     PV_facade_cap_Inv=struct('name','PV_facade_cap_Inv','type','parameter','form','full');
-%     PV_facade_cap_Inv.uels=PV_B_ID_facade_Inv.uels;
-%     PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
-%     
-%     %Operated power factor of PV inverters
-%     PV_PF_inverter_PF_temp=[0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92];
-%     PV_inverter_PF_Inv=struct('name','PV_inverter_PF_Inv','type','parameter','form','full');
-%     PV_inverter_PF_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
-%     PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp;
-%     
- %end
+    opt_marg_factors=1;
+    option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+    option1=1;    %minimize total cost
+    option2=0;    %minimize tottal PE use
+    option3=0;    %minimize total CO2 emission
+    
+    %Option for P2 investment
+    opt_fx_inv_P2=1;  %0=no investment, 1=fixed investment, -1=variable of optimization
+    temp_opt_fx_inv_P2 = struct('name','opt_fx_inv_P2','type','parameter','form','full','val',opt_fx_inv_P2);
+    
+    %Option for Turbine investment
+    opt_fx_inv_TURB=1;  %0=no investment, 1=fixed investment, -1=variable of optimization
+    temp_opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',opt_fx_inv_TURB);
+    
+    %Option for new HP investment
+    opt_fx_inv_HP_cap=630;  %>=0 =fixed invetment, -1=variable of optimization; 630 kw is heating capacity of the HP invested in
+    temp_opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',opt_fx_inv_HP_cap);
+    
+    %Option for BES investment
+    BES_B_ID_temp={'O0007027'}; %OBS: Reffers to bus 28
+    BES_B_ID_inv.name='BES_B_ID_inv';
+    BES_B_ID_inv.uels=BES_B_ID_temp;
+    
+    opt_fx_inv_BES=1;
+    temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',opt_fx_inv_BES);
+    opt_fx_inv_BES_cap=[200]; % 200 in FED investments
+    temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full');
+    temp_opt_fx_inv_BES_cap.val=opt_fx_inv_BES_cap;
+    temp_opt_fx_inv_BES_cap.uels=BES_B_ID_inv.uels;
+    
+    opt_fx_inv_BES_maxP=[100];  %must be set to 100
+    temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full');
+    temp_opt_fx_inv_BES_maxP.val=opt_fx_inv_BES_maxP;
+    temp_opt_fx_inv_BES_maxP.uels=BES_B_ID_inv.uels;
+    
+    %Option for BFCh investment
+    BFCh_B_ID_temp={'O0007028'}; %OBS: Reffers to Bus 5
+    BFCh_B_ID_inv.name='BFCh_BID_inv';
+    BFCh_B_ID_inv.uels=BFCh_B_ID_temp;
+    
+    opt_fx_inv_BFCh=1;
+    temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
+    opt_fx_inv_BFCh_cap=[100]; %must be set to 100
+    temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full');
+    temp_opt_fx_inv_BFCh_cap.val=opt_fx_inv_BFCh_cap;
+    temp_opt_fx_inv_BFCh_cap.uels=BFCh_B_ID_inv.uels;
+    
+    opt_fx_inv_BFCh_maxP=[50]; %must be set to 50
+    temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full');
+    temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
+    temp_opt_fx_inv_BFCh_maxP.uels=BFCh_B_ID_inv.uels;
+    
+    %Option for BTES investment
+    BITES_Inv_fx=1;    %0 is used when there is no investment, 1 if there is investment
+    temp_BITES_Inv_fx = struct('name','BITES_Inv_fx','type','parameter','form','full','val',BITES_Inv_fx);
+    BITES_Inv.name='BITES_Inv';
+    BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001','O3060133'};
+    
+    %Option for BAC investment
+    BAC_Inv_fx=1;     %0 is used when there is no investment, 1 if there is investment
+    temp_BAC_Inv_fx = struct('name','BAC_Inv_fx','type','parameter','form','full','val',BAC_Inv_fx);
+    BAC_Inv.name='BAC_Inv';
+    BAC_Inv.uels={'O0007017','O0007012','O0007006','O0007023','O0007026', 'O0007027','O3060133'};
+    
+    %Option for solar PV investment
+    % This is if we want to have an PV selection option
+    %PV_inv_fx=0;     %0 is used when there is no investment, 1 if there is investment
+    %temp_PV_Inv_fx = struct('name','PV_Inv_fx','type','parameter','form','full','val',PV_Inv_fx);
+   area_roof_max = struct('name','area_roof_max','type','parameter');
+   area_roof_max.uels=BID.uels;
+   area_roof_max.val=pv_area_roof;
+    
+   area_facade_max = struct('name','area_facade_max','type','parameter');
+   area_facade_max.uels=BID.uels;
+   area_facade_max.val=pv_area_facades;
+    
+    %Placement of roof PVs (Existing)
+    PV_B_ID_roof_Inv_temp1=[48 49];
+    
+    %Placement of roof PVs (Investments)
+    PV_B_ID_roof_Inv_temp2=[53 23 27 29 54 45 32 75 9 55] ;  %OBS:Reffers to BIDS
+    PV_B_ID_roof_Inv_temp=horzcat(PV_B_ID_roof_Inv_temp1,PV_B_ID_roof_Inv_temp2);%OBS: Merge all roof PVs
+    PV_B_ID_roof_Inv.name='PV_B_ID_roof_Inv';
+    PV_B_ID_roof_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
+    
+    %Capacity of roof PVs (Existing)
+    PV_roof_cap_temp1=[50 42];   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5'
+    
+    %Capacity of roof PVs (investments)
+    %PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
+    PV_roof_cap_temp2=[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
+    PV_roof_cap_temp=horzcat(PV_roof_cap_temp1,PV_roof_cap_temp2); %OBS: Merge all roof PVs
+    PV_roof_cap_Inv=struct('name','PV_roof_cap_Inv','type','parameter','form','full');
+    PV_roof_cap_Inv.uels=PV_B_ID_roof_Inv.uels;
+    PV_roof_cap_Inv.val=PV_roof_cap_temp;
+   
+    %Placement of facade PVs (Existing)
+    PV_B_ID_facade_Inv_temp=[28]; %OBS: This PV is existed one!
+    PV_B_ID_facade_Inv.name='PV_B_ID_facade_Inv';
+    PV_B_ID_facade_Inv.uels=num2cell(PV_B_ID_facade_Inv_temp);
+    
+    %Capacity of facade PVs
+    PV_cap_facade_cap_temp=[15];
+    PV_facade_cap_Inv=struct('name','PV_facade_cap_Inv','type','parameter','form','full');
+    PV_facade_cap_Inv.uels=PV_B_ID_facade_Inv.uels;
+    PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
+    
+    %Operated power factor of PV inverters
+    PV_PF_inverter_PF_temp=[0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92];
+    PV_inverter_PF_Inv=struct('name','PV_inverter_PF_Inv','type','parameter','form','full');
+    PV_inverter_PF_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
+    PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp;
+    
+ end
 %%
 temp_opt_marg_factors = struct('name','opt_marg_factors','type','parameter','form','full','val',opt_marg_factors);
 
