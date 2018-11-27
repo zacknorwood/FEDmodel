@@ -44,6 +44,8 @@ heat_DH(isnan(heat_DH))=0;
 %PEF_DH=[1.41 1.41 1.41 1.09 1.09 0.76 1.31 1.31 1.31 1.09 0 0 1.39 1.39 2.38 0.78 0 0.78 0.03 0.03];
 
 %CO2F and PEF of spillvärme set to zero
+%CO2F_spillvarme=0;
+%PEF_spillvarme=0;
 CO2F_DH=[72 72 72 248 248 6.7 347 347 347 248 0 0 23 23 344.7 177 0 177 98 CO2F_spillvarme];
 PEF_DH=[1.41 1.41 1.41 1.09 1.09 0.76 1.31 1.31 1.31 1.09 0 0 1.39 1.39 2.38 0.78 0 0.78 0.03 PEF_spillvarme];
 

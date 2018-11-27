@@ -76,11 +76,15 @@ PARAMETERS
            c_DC_slack(h)     DC_slack bus data
            h_DH_slack(h)     Slack bus for the DH
            el_exG_slack(h)   Slack bus for the external grid
+           h_exp_AH_hist(h)  Historical exported heat AH
+           h_imp_AH_hist(h)  Historical imported heat AH
 ;
 $GDXIN MtoG.gdx
 $LOAD c_DC_slack
 $LOAD h_DH_slack
 $LOAD el_exG_slack
+$LOAD h_exp_AH_hist
+$LOAD h_imp_AH_hist
 $GDXIN
 *--------------Building catagories based on how energy is supplied--------------
 set i_AH_el(i) buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok
