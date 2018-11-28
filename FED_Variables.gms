@@ -183,6 +183,7 @@ binary variable
 
 *0 is used in case there is no investment ,
 B_BITES.fx(i) $ (opt_fx_inv eq 1)=0;
+B_BITES.fx(BITES_Inv) $ (opt_fx_inv eq 1)=BITES_Inv_fx;
 *----------------Building Advanced Control (BAC) related------------------------
 positive variable
          h_BAC_savings(h,i) hourly heat consumption savings per building attributable to BAC investment
@@ -193,7 +194,7 @@ binary variable
 ;
 *0 is used in case there is no investment
 B_BAC.fx(i) $ (opt_fx_inv eq 1) =0;
-
+B_BAC.fx(BAC_Inv) $ (opt_fx_inv eq 1) =BAC_Inv_fx;
 *----------------Solar PV PV relate variables-----------------------------------
 positive variable
          e_PV(h)            electricity produced by PV
