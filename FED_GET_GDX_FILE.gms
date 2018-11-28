@@ -18,11 +18,14 @@ Alias (B_ID, i) ;
 *-----------Simulation time, Bites and BAC investments--------------------------
 set h              SIMULATION TIME
     BITES_Inv(i)   used for fixed BITES inv option
-    BITES_Inv_fx   Parameter to indicate investment in BITES
     BAC_Inv(i)     used for fixed BAC inv option
-    BAC_Inv_fx     Parameter used to indicate investment in BAC
     BTES_properties  Building Inertia TES properties
 ;
+parameter
+    BITES_Inv_fx   Parameter to indicate investment in BITES
+    BAC_Inv_fx     Parameter used to indicate investment in BAC
+;
+
 $GDXIN MtoG.gdx
 $LOAD h
 $LOAD BITES_Inv
