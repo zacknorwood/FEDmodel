@@ -69,5 +69,26 @@ for i=1:length(heat_DH)
     DH_PEF(i)=sum(temp)./sum(temp_heat_DH(i,:));
 end
 
+%% Marginal CO2 and PE factors of the external grid
+%Import marginal CO2 and PE factors, marginal DH cost
+nel_factor=xlsread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.xlsx',2,'B2:K17524');
+nel_factor(isnan(nel_factor))=0;
+EL_CO2F_ma=sum(nel_factor.*[230  820   490   24     12  45 700   11  24  24],2);
+EL_PEF_ma=sum(nel_factor.*[2.99  2.45  1.93  1.01   3.29  1.25 2.47 1.03 1.01  1.01],2);
+
+%Get Marginal cost DH
+DH_cost_ma=xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'X31:X17524')/1000;
+
+%Get Marginal CO2F and PEF of DH 
+COP_RYA_VP=3.4;
+DH_CO2F_ma=xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'Y31:Y17524');
+DH_PEF_ma=xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'Z31:Z17524');
+for tt=1:length(DH_CO2F_ma)
+    if isnan(DH_CO2F_ma(tt))
+        DH_CO2F_ma(tt)=EL_CO2F_ma(tt)/COP_RYA_VP;
+        DH_PEF_ma(tt)=EL_PEF_ma(tt)/COP_RYA_VP;
+    end
+end
+
 
 
