@@ -297,7 +297,6 @@ eq_CWB_en(h)$(ord(h) gt 1)..
 eq_CWB_discharge(h)..
          CWB_dis(h) =l= c_demand(h,'O0007028');
 
-
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
 eq_ACC1(h)..
              c_AAC(h) =e= AAC_COP*e_AAC(h);
@@ -703,7 +702,8 @@ eq_fix_cost_new..
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
 eq_var_cost_existing..
-         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)+sum(m,PT_exG(m)*HoM(h,m)))
+*Peak power tariffs for both electricty? and heating are supposed to be included in prices?
+         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h) + 0*sum(m,PT_exG(m)*HoM(h,m)))
                                -sum(h,e_exp_AH(h)*el_sell_price(h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h)) + 0*PT_DH
                                - sum(h,sum(m,(h_exp_AH(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12))))
