@@ -40,7 +40,7 @@ h_demand_nonAH_sum  total demand for non AH buildings
 ;
 
 invCost_HP = HP_cap.l*cost_inv_opt('HP');
-invCost_PV = sum(BID, PV_cap_roof.l(BID)*cost_inv_opt('PV')) + sum(BID, PV_cap_facade.l(BID)*cost_inv_opt('PV')) ;
+invCost_PV = sum(BID, PV_cap_roof.l(BID)*cost_inv_opt('PV')) + sum(BID, PV_cap_facade.l(BID)*cost_inv_opt('PV'));
 invCost_BEV = sum(i,BES_cap.l(i)*cost_inv_opt('BES'));
 invCost_TES = (TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
 invCost_BITES = cost_inv_opt('BTES')*sum(i,B_BITES.l(i));
@@ -295,6 +295,9 @@ e_imp_AH, e_imp_nonAH, el_exG_slack, e_exp_AH, el_VKA1, el_VKA4, el_RM, e_RMMC, 
 *sum(i,(BES_dis(h,i)*BES_dis_eff - BES_ch(h,i)/BES_ch_eff)+(BFCh_dis(h,i)*BFCh_dis_eff - BFCh_ch(h,i)/BFCh_ch_eff))
 cool_demand, heat_demand, elec_demand
 ;
+
+execute '=gdx2xls MtoG.gdx';
+execute '=gdx2xls GtoM.gdx';
 execute '=gdx2xls WP6.gdx';
 
 execute_unload 'h' h;
