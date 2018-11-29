@@ -17,7 +17,7 @@ positive variable
        h_DH_slack_var(h)
        ;
 
-*******************Dispaching existing units************************************
+*******************Existing units***********************************************
 *------------------VKA1 Heatpump related----------------------------------------
 positive variable
          H_VKA1(h)         heating power available from VKA1
@@ -146,7 +146,7 @@ positive variable
          h_HP(h)           heating power available in HP
          c_HP(h)           cooling power available from HP
          e_HP(h)           electricity needed by the HP
-         HP_cap            capacity of HP
+         HP_cap            capacity of HP-cooling?
 ;
 HP_cap.fx $ (opt_fx_inv_HP_cap gt -1) = opt_fx_inv_HP_cap;
 
@@ -197,12 +197,11 @@ B_BAC.fx(i) $ (opt_fx_inv eq 1) =0;
 B_BAC.fx(BAC_Inv) $ (opt_fx_inv eq 1) =BAC_Inv_fx;
 *----------------Solar PV PV relate variables-----------------------------------
 positive variable
-         e_PV(h)            electricity produced by PV
-
-         PV_cap_roof(BID)   capacity of solar modules on roof
-         PV_cap_facade(BID) capacity of solar modules on facade
-         e_PV_reac_roof(h,BID)      PVs reactive power
-         e_PV_act_roof(h,BID)      PVs active power
+         e_PV(h)                electricity produced by PV
+         PV_cap_roof(BID)       capacity of solar modules on roof
+         PV_cap_facade(BID)     capacity of solar modules on facade
+         e_PV_reac_roof(h,BID)  PVs reactive power
+         e_PV_act_roof(h,BID)   PVs active power
 ;
 PV_cap_roof.fx(BID) $ (opt_fx_inv eq 1)=0;
 PV_cap_facade.fx(BID) $ (opt_fx_inv eq 1)=0;
@@ -243,19 +242,16 @@ V.up(h,Bus_IDs)=1.1;
 variable
         re_imp_AH(h)        Imported reactive to the AH system
         delta(h,Bus_IDs)    Voltage angles of EL Grid
-        BES_reac(h,i)         BES reactive power
-        BFCh_reac(h,i)        BFCh reactive power
+        BES_reac(h,i)       BES reactive power
+        BFCh_reac(h,i)      BFCh reactive power
 ;
 *------------------Grid DH related----------------------------------------------
 positive variable
          h_exp_AH(h)        Exported heat from the AH system
          h_imp_AH(h)        Imported heat to the AH system
          h_imp_nonAH(h)     Imported heat to the AH system
-         w(h)                  Fixed cost for using DH network (4000SEK if import otherwise 1000)
+         w(h)               Fixed cost for using DH network (4000SEK if import otherwise 1000)
 ;
-
-binary variable
-y_temp(h);
 * Set maximum import and export to the grid.
 h_imp_AH.up(h)=  DH_max_cap;
 *h_imp_AH.fx(h)$(min_totCost_0 eq 1)= h_imp_AH_hist(h);
@@ -266,12 +262,15 @@ h_exp_AH.fx(h)$(min_totCost_0 eq 1)= h_exp_AH_hist(h);
 *h_DH.lo(h)=-DH_max_cap;
 *h_DH.up(h)=DH_max_cap;
 
+binary variable
+y_temp(h);
+
 *------------------Grid DC related----------------------------------------------
 variable
          C_DC(h)             cooling from district cooling system
 ;
 C_DC.fx(h) $(min_totCost_0 eq 0)= 0;
-*C_DC.fx(h) $(min_totCost_0 eq 1)= c_DC_slack(h);
+C_DC.fx(h) $(min_totCost_0 eq 1)= c_DC_slack(h);
 
 *-------------------------PE and CO2 related -----------------------------------
 variable
