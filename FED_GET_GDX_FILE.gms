@@ -2,27 +2,25 @@
 *-----------------------GENERATE or GET GDX FILES-------------------------------
 *-------------------------------------------------------------------------------
 
-*THIS ROUTINE IS USED TO GET INPUT DATA USED IN THE MAIN MODEL IN GDX FORMAT
-
-*-If there is change in any of the input data (see the parameter list below), run 'FED_GENERATE_GDX_FILE' to update 'FED_INPUT_DATA'
-*----------------Load input parameters of the model-----------------------------
+*THIS ROUTINE IS USED TO READ INPUT DATA FROM MtoG USED IN THE MAIN MODEL IN GDX FORMAT
 
 *----------Building IDs---------------------------------------------------------
-set B_ID           Building ID
+set B_ID           Building ID used to define load points
 ;
 
 $GDXIN MtoG.gdx
 $LOAD B_ID
 $GDXIN
 Alias (B_ID, i) ;
-*-----------Simulation time, Bites and BAC investments--------------------------
-set h              SIMULATION TIME
-    BITES_Inv(i)   used for fixed BITES inv option
-    BAC_Inv(i)     used for fixed BAC inv option
+
+*-----------Simulation time, BITES and BAC investments and parameters-----------
+set h                SIMULATION TIME
+    BITES_Inv(i)     used for fixed BITES inv option
+    BAC_Inv(i)       used for fixed BAC inv option
     BTES_properties  Building Inertia TES properties
 ;
 parameter
-    BITES_Inv_fx   Parameter to indicate investment in BITES
+    BITES_Inv_fx   Parameter used to indicate investment in BITES
     BAC_Inv_fx     Parameter used to indicate investment in BAC
 ;
 
@@ -35,7 +33,7 @@ $LOAD BAC_Inv_fx
 $LOAD BTES_properties
 $GDXIN
 
-*-----------DH heating nodes----------------------------------------------------
+*-----------DH heating nodes and mapping of the nodes with buildings------------
 set DH_Node_ID     District heating network node names
 ;
 $GDXIN MtoG.gdx
@@ -56,7 +54,7 @@ set DHNodeToB_ID(DH_Node_ID, B_ID)  Mapping between district heating nodes and b
                                                                                           VoV.(Karhus_CFAB,Karhus_studenter,O0007019,O0007023,O0007026,O0007027),
                                                                                           Eklanda.O0007040/
 *ITGYMNASIET belongs to Fysik node
-*-----------DC heating nodes----------------------------------------------------
+*-----------DC heating nodes and mapping of nodes with buildings----------------
 set DC_Node_ID    District cooling network node names
 ;
 $GDXIN MtoG.gdx
@@ -74,7 +72,10 @@ set DCNodeToB_ID(DC_Node_ID, B_ID)  Mapping between district cooling nodes and b
                                                                                           Maskin.(O0007028,O0007888,O0007022,O0007025),
                                                                                           EDIT.(O0007012,O0007024,O0007018,O0007021),
                                                                                           Fysik.(O0007001, O0007006, O3060133, O0011001, O0007005),
+
                                                                                           Kemi.(O3060132,O0013001)/
+;
+*-------slack data and historical import and export data------------------------
 PARAMETERS
            c_DC_slack(h)     DC_slack bus data
            h_DH_slack(h)     Slack bus for the DH
@@ -89,14 +90,15 @@ $LOAD el_exG_slack
 $LOAD h_exp_AH_hist
 $LOAD h_imp_AH_hist
 $GDXIN
+
 *--------------Building catagories based on how energy is supplied--------------
-set i_AH_el(i) buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok
+set i_AH_el(i)    buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok
     i_nonAH_el(i) buildings considered in the FED system not connected to the AH(Akadamiskahus) el netwrok
-    i_AH_h(i) buildings considered in the FED system connected to the AH(Akadamiskahus) heat netwrok
-    i_nonAH_h(i) buildings considered in the FED system not connected to the AH(Akadamiskahus) heat netwrok
-    i_AH_c(i) buildings considered in the FED system connected to the AH(Akadamiskahus) cooling netwrok
-    i_nonAH_c(i) buildings considered in the FED system not connected to the AH(Akadamiskahus) cooling netwrok
-    i_nonBITES(i)         Buildings not applicable for BITES
+    i_AH_h(i)     buildings considered in the FED system connected to the AH(Akadamiskahus) heat netwrok
+    i_nonAH_h(i)  buildings considered in the FED system not connected to the AH(Akadamiskahus) heat netwrok
+    i_AH_c(i)     buildings considered in the FED system connected to the AH(Akadamiskahus) cooling netwrok
+    i_nonAH_c(i)  buildings considered in the FED system not connected to the AH(Akadamiskahus) cooling netwrok
+    i_nonBITES(i) Buildings not applicable for BITES
 ;
 $GDXIN MtoG.gdx
 $LOAD i_AH_el
@@ -107,24 +109,25 @@ $LOAD i_AH_c
 $LOAD i_nonAH_c
 $LOAD i_nonBITES
 $GDXIN
-*---------------Buses IDs of electrical network, Admittance matrix & current limits----------------------*
+*----Buses IDs of electrical network, Admittance matrix & current limits-------*
 set Bus_IDs;
 
 $GDXIN MtoG.gdx
 $LOAD Bus_IDs
 $GDXIN
 alias(Bus_IDs,j);
-set BusToB_ID(Bus_IDs,B_ID)  Mapping between buses and buildings /15.O3060133, 5.O3060132, 21.O0007001, 11.(O0011001,O0013001,O0007005),
-                                                 20.(O0007008,O0007888), 9.(O0007017,O0007006), 34.(O0007022,O0007025,O0007028), 32.(O0007024,O0007018,Studentbostader),
-                                                 40.(O0007012,O0007021,O0007014), 30.O0007040, 24.(O0007019,Karhus_CFAB,Karhus_studenter), 26.(O0007023,O0007026), 28.(O0007027,O0007043)/
+set BusToB_ID(Bus_IDs,B_ID)  Mapping between buses and buildings
+                             /15.O3060133, 5.O3060132, 21.O0007001, 11.(O0011001,O0013001,O0007005),
+                              20.(O0007008,O0007888), 9.(O0007017,O0007006), 34.(O0007022,O0007025,O0007028), 32.(O0007024,O0007018,Studentbostader),
+                              40.(O0007012,O0007021,O0007014), 30.O0007040, 24.(O0007019,Karhus_CFAB,Karhus_studenter), 26.(O0007023,O0007026), 28.(O0007027,O0007043)/
 ;
 parameter Sb Base power (KW) /1000/;
 parameter Ib Base current (A) /54.98/;
 Parameter bij(Bus_IDs,j)
 Parameter gij(Bus_IDs,j)
 Parameter bii(Bus_IDs)
-Parameter Y(Bus_IDs,j)  elements magnitudes of admittance matrix
-Parameter Theta(Bus_IDs,j)   elements angles of admittance matrix
+Parameter Y(Bus_IDs,j)             elements magnitudes of admittance matrix
+Parameter Theta(Bus_IDs,j)         elements angles of admittance matrix
 Parameter currentlimits(Bus_IDs,j) current limits
 $GDXIN Input_dispatch_model\AdmittanceMatrix.gdx
 $load gij
@@ -132,6 +135,7 @@ $load bij
 $load bii
 $LOAD currentlimits
 $GDXIN
+
 *----------------Solar PV data--------------------------------------------------
 SET
     BID        Building IDs used for PV calculations
@@ -162,9 +166,10 @@ $load PV_inverter_PF_Inv
 $GDXIN
 
 set BusToBID(Bus_IDs,BID)   Mapping between buses and BIDs
-/15.(6,44), 5.(54,55,53,4), 21.(52,43,47), 11.(40,50,51), 20.28, 9.(12,46,45), 34.(56,32,37,33,35),
- 32.(29,9,19,20,22,8), 40.(18,60,1,36), 30.(68,70,69,62,65), 24.(57,25,24,11), 26.(10,48,49), 28.(23,27,75)/
+                            /15.(6,44), 5.(54,55,53,4), 21.(52,43,47), 11.(40,50,51), 20.28, 9.(12,46,45), 34.(56,32,37,33,35),
+                             32.(29,9,19,20,22,8), 40.(18,60,1,36), 30.(68,70,69,62,65), 24.(57,25,24,11), 26.(10,48,49), 28.(23,27,75)/
 ;
+
 *----------------PREPARE THE FULL INPUT DATA------------------------------------
 SET
     m   Number of month                   /1*24/
@@ -351,21 +356,21 @@ $GDXIN
 
 *--------------Choice of investment options to consider-------------------------
 PARAMETERS
-         opt_fx_inv   option to fix investments
-         opt_fx_inv_RMMC      options to fix the RMMC investment
+         opt_fx_inv             option to fix investments
+         opt_fx_inv_RMMC        options to fix the RMMC investment
          opt_fx_inv_AbsCInv_cap capacity of the new AbsChiller
-         opt_fx_inv_P2        options to fix the P2 investment
-         opt_fx_inv_TURB      options to fix the TURB investment
-         opt_fx_inv_HP_cap    Capacity of the fixed new HP
-         opt_fx_inv_RMInv_cap Capacity of the fixed new RM
-         opt_fx_inv_TES_cap   capacity of the new TES
-         opt_fx_inv_BES       options to fix investment in new BES
-         opt_fx_inv_BES_cap   capacity of the new BES
+         opt_fx_inv_P2          options to fix the P2 investment
+         opt_fx_inv_TURB        options to fix the TURB investment
+         opt_fx_inv_HP_cap      Capacity of the fixed new HP
+         opt_fx_inv_RMInv_cap   Capacity of the fixed new RM
+         opt_fx_inv_TES_cap     capacity of the new TES
+         opt_fx_inv_BES         options to fix investment in new BES
+         opt_fx_inv_BES_cap     capacity of the new BES
          opt_fx_inv_BES_maxP    power factor limit of the new BES
-         opt_fx_inv_BFCh       options to fix investment in new BFCh
-         opt_fx_inv_BFCh_cap   capacity of the new BFCh
-         opt_fx_inv_BFCh_maxP    power factor limit of the new BFCh
-         opt_marg_factors        option to choose between marginal and average factors
+         opt_fx_inv_BFCh        options to fix investment in new BFCh
+         opt_fx_inv_BFCh_cap    capacity of the new BFCh
+         opt_fx_inv_BFCh_maxP   power factor limit of the new BFCh
+         opt_marg_factors       option to choose between marginal and average factors
 ;
 $GDXIN MtoG.gdx
 $LOAD opt_fx_inv
@@ -387,19 +392,19 @@ $GDXIN
 
 *-------Initial SoC of Storage systems------*
 Parameters
-      opt_fx_inv_BES_init   BES Init. SoC
-      opt_fx_inv_BFCh_init  BFCh Init. SoC
+      opt_fx_inv_BES_init    BES Init. SoC
+      opt_fx_inv_BFCh_init   BFCh Init. SoC
       opt_fx_inv_TES_init    TES Init. SoC
-      opt_fx_inv_BTES_S_init  BTES_S Init. SoC
-      opt_fx_inv_BTES_D_init  BTES_D Init. SoC
-      Pana1_prev_disp
-      Panna1
-      FGC
-      import
-      export
-      VKA1_prev_disp
-      VKA4_prev_disp
-      AAC_prev_disp
+      opt_fx_inv_BTES_S_init BTES_S Init. SoC
+      opt_fx_inv_BTES_D_init BTES_D Init. SoC
+      Pana1_prev_disp        Panna1 previous dispatch
+      Panna1                 Panna1 forcast?
+      FGC                    FGC forcast?
+      import                 Import forcast?
+      export                 Export forcast?
+      VKA1_prev_disp         Previous dispatch of VKA1
+      VKA4_prev_disp         Previous dispatch of VKA4
+      AAC_prev_disp          Previous dispatch of AAC
 ;
 $GDXIN MtoG.gdx
 $lOAD opt_fx_inv_BES_init
@@ -421,11 +426,8 @@ $GDXIN
 parameters
 B_Heating_cost(h,i)             heating cost of buildings
 B_Electricity_cost(h,i_AH_el)   electricity cost of building
-B_Cooling_cost(h,i_AH_c)       cooling cost of buildings
+B_Cooling_cost(h,i_AH_c)        cooling cost of buildings
 ;
-
-*Calculate slack parameters
-
 
 *$Offtext
 
