@@ -1,18 +1,13 @@
 %% Initialize the simulator
-clc;       %clear texts in command window
+
+profile on  %to monitor time used to run different parts of model code
+tic
+
+clc;        %clear texts in command window
 %clear;     %clear data in workspace
-close all; %close all figures
-
-LOAD_EXCEL_DATA=0;
-Re_calculate_CO2PEF=0;  % calculate new values
-RUN_GAMS_MODEL = 1;
-
+close all;  %close all figures
 %% Assigning buildings ID to the buildings in the FED system
 
-%Building IDs
-profile on
-tic
- 
 %Building IDs used to identify buildings in the FED system
 B_ID.name='B_ID';
 % B_ID.uels={'O3060132=Kemi', 'O3060101=Vassa1', 'O3060102_3=Vassa2-3', 'Vassa4-15=O3060104_15', 'O0007043=Phus','O0007017=Bibliotek',...
@@ -111,45 +106,148 @@ BID_temp(71)=75;
 BID_temp(72)=76;
 BID.uels=num2cell(BID_temp);
 
-%% ********FIXED MODEL INPUT DATA and variable input data************
+%% District heating network transfer limits - initialize nodes and flow limits
+DH_Node_Fysik.name = 'Fysik';
+DH_Node_Fysik.uels = {'O0007001', 'O3060132', 'ITGYMNASIET', 'O0007006', 'O3060133', 'O0011001', 'O0007005', 'O0013001'};
+DH_Node_Bibliotek.name = 'Bibliotek';
+DH_Node_Bibliotek.uels = {'O0007017'};
+DH_Node_Maskin.name = 'Maskin';
+DH_Node_Maskin.uels = {'O0007028', 'O0007888'};
+DH_Node_EDIT.name = 'EDIT';
+DH_Node_EDIT.uels = {'O0007012', 'O0007024', 'O0007018', 'O0007022', 'O0007025', 'O0007021', 'SSPA', 'Studentbostader'};
+DH_Node_VoV.name = 'VoV';
+DH_Node_VoV.uels = {'Karhus_CFAB','Karhus_studenter', 'O0007019', 'O0007023', 'O0007026', 'O0007027'};
+DH_Node_Eklanda.name = 'Eklanda';
+DH_Node_Eklanda.uels = {'O0007040'};
 
+DH_Nodes.name = {DH_Node_Fysik.name, DH_Node_Bibliotek.name, DH_Node_Maskin.name, DH_Node_EDIT.name, DH_Node_VoV.name, DH_Node_Eklanda.name};
+DH_Nodes.maximum_flow = [31, 2, Inf, 13, 55, Inf] .* 1/1000 ; % l/s * m3/l = m3/s which is assumed input by fget_dh_transfer_limits below
+
+DH_Node_ID.name = 'DH_Node_ID';
+DH_Node_ID.uels = {DH_Node_Fysik.name, DH_Node_Bibliotek.name, DH_Node_Maskin.name, DH_Node_EDIT.name, DH_Node_VoV.name, DH_Node_Eklanda.name};
+
+%% District cooling network transfer limits - initialize nodes and flow limits
+DC_Node_VoV.name = 'VoV';
+DC_Node_VoV.uels = {};
+DC_Node_Maskin.name = 'Maskin';
+DC_Node_Maskin.uels = {};
+DC_Node_EDIT.name = 'EDIT';
+DC_Node_EDIT.uels = {};
+DC_Node_Fysik.name = 'Fysik';
+DC_Node_Fysik.uels = {};
+DC_Node_Kemi.name = 'Kemi';
+DC_Node_Kemi.uels = {};
+
+DC_Nodes.name = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_Node_Fysik.name, DC_Node_Kemi.name};
+DC_Nodes.maximum_flow = [26, 44, 32, 34, 32] .* 1/1000; % % l/s * m3/l = m3/s which is assumed input by fget_dc_transfer_limits below
+
+DC_Node_ID.name = 'DC_Node_ID';
+DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_Node_Fysik.name, DC_Node_Kemi.name};
+
+%Forcasted solar PV irradiance -roof
+Gekv_roof = struct('name','G_roof','type','parameter','form','full');
+
+%Forcasted solar PV irradiance -facade
+Gekv_facade = struct('name','G_facade','type','parameter','form','full');
+
+import = struct('name','import','type','parameter','form','full');
+export = struct('name','export','type','parameter','form','full');
+Panna1 = struct('name','Panna1','type','parameter','form','full');
+FGC = struct('name','FGC','type','parameter','form','full');
+
+%% Loading data and re-calculating CO2 and PE factors
+
+LOAD_EXCEL_DATA=1;      %set this to 1 if the reloading excel data is needed, set it to 0 otherwise 
+Re_calculate_CO2PEF=1;  %set this to 1 if the recalculating CO2 and PE factors is needed, set it to 0 otherwise
+RUN_GAMS_MODEL = 1;     %set it to 1 if you want cal the GAMS model from MATLAB, set it to 0 otherwise
+
+%% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 while LOAD_EXCEL_DATA==1
     %Read static properties of the model
-
-[P1P2_disp, DH_exp_season, BAC_sav_period, pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
-
-%Read forecasted values and variable input data
-[e_demand_measured, h_demand_measured,c_demand_measured,...
- h_B1_measured,h_F1_measured,...
- el_VKA1_measured,el_VKA4_measured,el_AAC_measured, h_AbsC_measured,...
- e_price_measured,...
- el_cirtificate_m,h_price_measured,tout_measured,...
- irradiance_measured_facades,irradiance_measured_roof, DC_slack, el_slack, DH_slack, h_exp_AH_measured, h_imp_AH_measured] = fread_measurments(2, 17000);
-
-
-%This must be modified
-temp=load('Input_dispatch_model\import_export_forecasting');
-forecast_import=(temp.forecast_import')*1000;
-forecast_export=(temp.forecast_export')*1000;
-
-Panna1_forecast=load('Input_dispatch_model\Panna1_forecast');
-Panna1_forecast=abs((Panna1_forecast.Panna1_forecast')*1000);
-
-FGC_forecast=load('Input_dispatch_model\FGC_forecast');
-FGC_forecast=abs((FGC_forecast.FGC_forecasting'));
-
-% This must be deleted
-%export1=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,'D5:D11100')*1000;
-%import1=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,'C5:C11100')*1000;
+    [P1P2_disp, DH_exp_season, BAC_sav_period, pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
+    
+    %Read variable/measured input data
+    [e_demand_measured, h_demand_measured,c_demand_measured,...
+        h_B1_measured,h_F1_measured,...
+        el_VKA1_measured,el_VKA4_measured,el_AAC_measured, h_AbsC_measured,...
+        e_price_measured,...
+        el_cirtificate_m,h_price_measured,tout_measured,...
+        irradiance_measured_facades,irradiance_measured_roof,...
+        DC_slack, el_slack, DH_slack, h_exp_AH_measured, h_imp_AH_measured] = fread_measurments(2, 17000);
+    
+    %This must be modified
+    temp=load('Input_dispatch_model\import_export_forecasting');
+    forecast_import=(temp.forecast_import')*1000;
+    forecast_export=(temp.forecast_export')*1000;
+    
+    Panna1_forecast=load('Input_dispatch_model\Panna1_forecast');
+    Panna1_forecast=abs((Panna1_forecast.Panna1_forecast')*1000);    
+    FGC_forecast=load('Input_dispatch_model\FGC_forecast');
+    FGC_forecast=abs((FGC_forecast.FGC_forecasting'));
+    
+    %Import ANN data
+    load('Input_dispatch_model\Heating_ANN');
     break;
 end
 
-%Import ANN data
-load('Input_dispatch_model\Heating_ANN');
+%% INPUT PE and CO2 FACTORS
 
-%% FIXED MODEL INPUT DATA - FXED INVESTMENT OPTIONS
+%CO2 and PE facrors of local generation unists
+CO2F_PV=22; %45 CO2 factor of solar PV
+temp_CO2F_PV = struct('name','CO2F_PV','type','parameter','val',CO2F_PV);
+PEF_PV=0.25; %PE factor of solar PV
+temp_PEF_PV = struct('name','PEF_PV','type','parameter','val',PEF_PV);
 
-%Option to set if any investments are to be fixed
+CO2F_P1=12;  %CO2 factor of boiler 1, depends on the type of fuel used by the boiler
+temp_CO2F_P1 = struct('name','CO2F_P1','type','parameter','val',CO2F_P1);
+PEF_P1=1.33; %PE factor of boiler 1, depends on the type of fuel used by the boiler
+temp_PEF_P1 = struct('name','PEF_P1','type','parameter','val',PEF_P1);
+
+CO2F_P2=12;  %CO2 factor of boiler 2, depends on the type of fuel used by the boiler
+temp_CO2F_P2 = struct('name','CO2F_P2','type','parameter','val',CO2F_P2);
+PEF_P2=1.33; %PE factor of boiler 1, depends on the type of fuel used by the boiler
+temp_PEF_P2 = struct('name','PEF_P2','type','parameter','val',PEF_P2);
+
+PEF_spillvarme=0.03;     %CO2 factor of industrial waste heat
+CO2F_spillvarme=98;      %PE factor of industrial waste heat
+
+COP_AbsC=0.5;            %COP of the AbsChiller
+COP_AAC=10;              %COP of the ambient air cooler
+
+COP_HP_DH=305/90.1;  %Based on Alexanders data, COP of the HP in DH
+P1_eff=0.9;          %assumed efficiency of Panna1
+P1_eff_temp = struct('name','P1_eff','type','parameter','form','full','val',P1_eff);
+
+pCO2ref=5;    %Choose the percentage the reference CO2 to determine reference CO2 that defined the peal hours
+              %[this value can be changed depending on how the CO2 peak is defined]             
+
+while Re_calculate_CO2PEF==1
+    get_CO2PE_exGrids;   %this routine calculates the CO2 and PE factors of the external grid also    
+%     %used for investmet optimization         
+%     FED_CO20=load('Sim_Results\Sim_Results_base\Data\FED_CO2');
+%     FED_CO20=FED_CO20.FED_CO2;
+%     FED_PE0=load('Sim_Results\Sim_Results_base\Data\FED_PE');
+%     FED_PE0=FED_PE0.FED_PE;
+    break;
+end
+
+%load saved values
+while Re_calculate_CO2PEF==0
+     %used for investmet optimization
+%     FED_CO20=load('Sim_Results\Sim_Results_base\Data\FED_CO2');
+%     FED_CO20=FED_CO20.FED_CO2;
+%     FED_PE0=load('Sim_Results\Sim_Results_base\Data\FED_PE');
+%     FED_PE0=FED_PE0.FED_PE;
+    break;
+end
+                                
+%% Initialize FED INVESTMENT OPTIONS
+
+%FED investment limit
+FED_inv = 68570065; %68570065; %76761000;  %this is projected FED investment cost in SEK
+FED_Inv_lim = struct('name','inv_lim','type','parameter','val',FED_inv);
+
+%Option to set if investments in BITES, BAC, PV and BES are to be fixed
 opt_fx_inv=1;
 temp_opt_fx_inv = struct('name','opt_fx_inv','type','parameter','form','full','val',opt_fx_inv);
 
@@ -188,12 +286,12 @@ BES_B_ID_inv.uels=BES_B_ID_temp;
 
 opt_fx_inv_BES=1;
 temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',opt_fx_inv_BES);
-opt_fx_inv_BES_cap=[200]; %must be set to 200
+opt_fx_inv_BES_cap=[0]; %must be set to 200
 temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full');
 temp_opt_fx_inv_BES_cap.val=opt_fx_inv_BES_cap;
 temp_opt_fx_inv_BES_cap.uels=BES_B_ID_inv.uels;
 
-opt_fx_inv_BES_maxP=[100];  %must be set to 100
+opt_fx_inv_BES_maxP=[0];  %must be set to 100
 temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full');
 temp_opt_fx_inv_BES_maxP.val=opt_fx_inv_BES_maxP;
 temp_opt_fx_inv_BES_maxP.uels=BES_B_ID_inv.uels;
@@ -205,12 +303,12 @@ BFCh_B_ID_inv.uels=BFCh_B_ID_temp;
 
 opt_fx_inv_BFCh=1;
 temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
-opt_fx_inv_BFCh_cap=[100]; %must be set to 100
+opt_fx_inv_BFCh_cap=[0]; %must be set to 100
 temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full');
 temp_opt_fx_inv_BFCh_cap.val=opt_fx_inv_BFCh_cap;
 temp_opt_fx_inv_BFCh_cap.uels=BFCh_B_ID_inv.uels;
 
-opt_fx_inv_BFCh_maxP=[50]; %must be set to 50
+opt_fx_inv_BFCh_maxP=[0]; %must be set to 50
 temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full');
 temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
 temp_opt_fx_inv_BFCh_maxP.uels=BFCh_B_ID_inv.uels;
@@ -274,95 +372,9 @@ PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
 PV_PF_inverter_PF_temp=[0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92];
 PV_inverter_PF_Inv=struct('name','PV_inverter_PF_Inv','type','parameter','form','full');
 PV_inverter_PF_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
-PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp;
+PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp;                
 
-%% FIXED MODEL INPUT DATA - INPUT PE and CO2 FACTORS and Dispatch of local generating units
-
-
-
-%CO2 and PE facrors of local generation unists
-CO2F_PV=22; %45
-temp_CO2F_PV = struct('name','CO2F_PV','type','parameter','val',CO2F_PV);
-PEF_PV=0.25;
-temp_PEF_PV = struct('name','PEF_PV','type','parameter','val',PEF_PV);
-
-CO2F_P1=12;
-temp_CO2F_P1 = struct('name','CO2F_P1','type','parameter','val',CO2F_P1);
-PEF_P1=1.33;
-temp_PEF_P1 = struct('name','PEF_P1','type','parameter','val',PEF_P1);
-
-CO2F_P2=12;
-temp_CO2F_P2 = struct('name','CO2F_P2','type','parameter','val',CO2F_P2);
-PEF_P2=1.33;
-temp_PEF_P2 = struct('name','PEF_P2','type','parameter','val',PEF_P2);
-
-PEF_spillvarme=0.03;     %0.03
-CO2F_spillvarme=98;
-
-COP_AbsC=0.5;
-COP_AAC=10;
-
-COP_HP_DH=305/90.1;  %Based on Alexanders data, COP of the HP in DH
-P1_eff=0.9;          %assumed efficiency of Panna1
-P1_eff_temp = struct('name','P1_eff','type','parameter','form','full','val',P1_eff);
-
-pCO2ref=5;    %Choose the percentage the reference CO2 to determine reference CO2 that defined the peal hours
-              %[this value can be changed depending on how the CO2 peak is defined]             
-
-while Re_calculate_CO2PEF==1
-    get_CO2PE_FED;   %this routine calculates the CO2 and PE factors of the external grid also    
-    save('el_exGCO2F','el_exGCO2F');
-    save('el_exGPEF','el_exGPEF');
-    save('DH_CO2F','DH_CO2F');
-    save('DH_PEF','DH_PEF');
-        
-    FED_CO20=load('Sim_Results\Sim_Results_base\Data\FED_CO2');
-    FED_CO20=FED_CO20.FED_CO2;
-    FED_PE0=load('Sim_Results\Sim_Results_base\Data\FED_PE');
-    FED_PE0=FED_PE0.FED_PE;
-    break;
-end
-
-%load saved values
-while Re_calculate_CO2PEF==0
-    FED_CO20=load('Sim_Results\Sim_Results_base\Data\FED_CO2');
-    FED_CO20=FED_CO20.FED_CO2;
-    FED_PE0=load('Sim_Results\Sim_Results_base\Data\FED_PE');
-    FED_PE0=FED_PE0.FED_PE;
-
-    load el_exGCO2F;
-    load el_exGPEF;
-    load DH_CO2F;
-    load DH_PEF;
-    break;
-end
-
-%Import marginal CO2 and PE factors, marginal DH cost
-nel_factor=xlsread('Input_dispatch_model\electricityMap - Marginal mix - SE - 2016-03-01 - 2017-02-28.xlsx',2,'B2:K17524');
-nel_factor(isnan(nel_factor))=0;
-EL_CO2F_ma=sum(nel_factor.*[230  820   490   24     12  45 700   11  24  24],2);
-EL_PEF_ma=sum(nel_factor.*[2.99  2.45  1.93  1.01   3.29  1.25 2.47 1.03 1.01  1.01],2);
-
-%Get Marginal cost DH
-DH_cost_ma=xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'X31:X17524')/1000;
-
-%Get Marginal CO2F and PEF of DH 
-COP_RYA_VP=3.4;
-DH_CO2F_ma=xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'Y31:Y17524');
-DH_PEF_ma=xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'Z31:Z17524');
-for tt=1:length(DH_CO2F_ma)
-    if isnan(DH_CO2F_ma(tt))
-        DH_CO2F_ma(tt)=EL_CO2F_ma(tt)/COP_RYA_VP;
-        DH_PEF_ma(tt)=EL_PEF_ma(tt)/COP_RYA_VP;
-    end
-end
-%Get Marginal CO2F DH
-%% FIXED MODEL INPUT DATA - FED INVESTMENT LIMIT
-
-FED_inv = 68570065;%68570065; %76761000;  %this is projected FED investment cost in SEK
-FED_Inv_lim = struct('name','inv_lim','type','parameter','val',FED_inv);
-                
-%% Variable inputs to the dispatch model                
+%% Define Variable inputs to the dispatch model
 
 h_sim.name='h';
 %Define the forcast function here, here forcast is assumed to be the same
@@ -383,7 +395,6 @@ qB1 = struct('name','qB1','type','parameter','form','full');
 %Historical heat import/export
 h_imp_AH_hist = struct('name','h_imp_AH_hist','type','parameter','form','full');
 h_exp_AH_hist = struct('name','h_exp_AH_hist','type','parameter','form','full');
-
 
 %Heat generaion from the Flue gas condencer in the base case
 qF1 = struct('name','qF1','type','parameter','form','full');
@@ -433,6 +444,7 @@ BAC_savings_period = struct('name','BAC_savings_period','type','parameter','form
 FED_CO2_max = struct('name','CO2_max','type','parameter');
 FED_CO2_peakref = struct('name','CO2_peak_ref','type','parameter');
 FED_PE_totref = struct('name','PE_tot_ref','type','parameter');
+
 CO2F_exG = struct('name','CO2F_exG','type','parameter','form','full');
 PEF_exG = struct('name','PEF_exG','type','parameter','form','full');
 MA_CO2F_exG = struct('name','MA_CO2F_exG','type','parameter','form','full');
@@ -452,60 +464,11 @@ h_DH_slack = struct('name','h_DH_slack','type','parameter','form','full');
 %%District cooling slack bus data
 c_DC_slack = struct('name','c_DC_slack','type','parameter','form','full');
 
-%% District heating network transfer limits - initialize nodes and flow limits
-DH_Node_Fysik.name = 'Fysik';
-DH_Node_Fysik.uels = {'O0007001', 'O3060132', 'ITGYMNASIET', 'O0007006', 'O3060133', 'O0011001', 'O0007005', 'O0013001'};
-DH_Node_Bibliotek.name = 'Bibliotek';
-DH_Node_Bibliotek.uels = {'O0007017'};
-DH_Node_Maskin.name = 'Maskin';
-DH_Node_Maskin.uels = {'O0007028', 'O0007888'};
-DH_Node_EDIT.name = 'EDIT';
-DH_Node_EDIT.uels = {'O0007012', 'O0007024', 'O0007018', 'O0007022', 'O0007025', 'O0007021', 'SSPA', 'Studentbostader'};
-DH_Node_VoV.name = 'VoV';
-DH_Node_VoV.uels = {'Karhus_CFAB','Karhus_studenter', 'O0007019', 'O0007023', 'O0007026', 'O0007027'};
-DH_Node_Eklanda.name = 'Eklanda';
-DH_Node_Eklanda.uels = {'O0007040'};
-
-DH_Nodes.name = {DH_Node_Fysik.name, DH_Node_Bibliotek.name, DH_Node_Maskin.name, DH_Node_EDIT.name, DH_Node_VoV.name, DH_Node_Eklanda.name};
-DH_Nodes.maximum_flow = [31, 2, Inf, 13, 55, Inf] .* 1/1000 ; % l/s * m3/l = m3/s which is assumed input by fget_dh_transfer_limits below
-
-DH_Node_ID.name = 'DH_Node_ID';
-DH_Node_ID.uels = {DH_Node_Fysik.name, DH_Node_Bibliotek.name, DH_Node_Maskin.name, DH_Node_EDIT.name, DH_Node_VoV.name, DH_Node_Eklanda.name};
-
-%% District cooling network transfer limits - initialize nodes and flow limits
-DC_Node_VoV.name = 'VoV';
-DC_Node_VoV.uels = {};
-DC_Node_Maskin.name = 'Maskin';
-DC_Node_Maskin.uels = {};
-DC_Node_EDIT.name = 'EDIT';
-DC_Node_EDIT.uels = {};
-DC_Node_Fysik.name = 'Fysik';
-DC_Node_Fysik.uels = {};
-DC_Node_Kemi.name = 'Kemi';
-DC_Node_Kemi.uels = {};
-
-DC_Nodes.name = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_Node_Fysik.name, DC_Node_Kemi.name};
-DC_Nodes.maximum_flow = [26, 44, 32, 34, 32] .* 1/1000; % % l/s * m3/l = m3/s which is assumed input by fget_dc_transfer_limits below
-
-DC_Node_ID.name = 'DC_Node_ID';
-DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_Node_Fysik.name, DC_Node_Kemi.name};
-
-%Forcasted solar PV irradiance -roof
-Gekv_roof = struct('name','G_roof','type','parameter','form','full');
-
-%Forcasted solar PV irradiance -facade
-Gekv_facade = struct('name','G_facade','type','parameter','form','full');
-
-import = struct('name','import','type','parameter','form','full');
-export = struct('name','export','type','parameter','form','full');
-Panna1 = struct('name','Panna1','type','parameter','form','full');
-FGC = struct('name','FGC','type','parameter','form','full');
-
 %% SIMULATION OPTIONS
 synth_baseline=0; %Option for synthetic baseline
 
-%Option to choose between marginal and average factors
-opt_marg_factors=1;
+%Option to choose between marginal and average heat price
+opt_marg_factors=1; %if 0, average emissionand seasonal price is used; if 1 marginal price and emission is used
 temp_opt_marg_factors = struct('name','opt_marg_factors','type','parameter','form','full','val',opt_marg_factors);
 
 % optimization option
@@ -520,190 +483,200 @@ if (option0 == 1)
     option3=0;
 end
 
-for i=8
-%%    run different scenarios
+for i=3:3
+    %% Run BAU case with marginl heat price, minimizing total cost
     if i==1
-Case='BAU_ma';
-opt_marg_factors=1;
-option0=1;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-option1=1;    %minimize total cost
-option2=0;    %minimize tottal PE use
-option3=0;    %minimize total CO2 emission
-end
-if i==2
-Case='BAU_seas';
-opt_marg_factors=0;
-option0=1;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-option1=1;    %minimize total cost
-option2=0;    %minimize tottal PE use
-option3=0;    %minimize total CO2 emission
-end
-if i==3
-Case='no_inv_ma';
-opt_marg_factors=1;
-option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-option1=1;    %minimize total cost
-option2=0;    %minimize tottal PE use
-option3=0;    %minimize total CO2 emission
-end
-if i==4
-Case='no_inv_seas';
-opt_marg_factors=0;
-option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-option1=1;    %minimize total cost
-option2=0;    %minimize tottal PE use
-option3=0;    %minimize total CO2 emission
-end
-if i==5
-Case='no_inv_ma_minCO2';
-opt_marg_factors=1;
-option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-option1=0;    %minimize total cost
-option2=0;    %minimize tottal PE use
-option3=1;    %minimize total CO2 emission
-end
-if i==6
-Case='no_inv_seas_minCO2';
-opt_marg_factors=0;
-option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-option1=0;    %minimize total cost
-option2=0;    %minimize tottal PE use
-option3=1;    %minimize total CO2 emission
-end
-if i==7
-Case='BITES_inv_ma';    
-opt_marg_factors=1;
-option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-option1=1;    %minimize total cost
-option2=0;    %minimize tottal PE use
-option3=0;    %minimize total CO2 emission
-
-BITES_Inv_fx=1;    %0 is used when there is no investment, 1 if there is investment
-temp_BITES_Inv_fx = struct('name','BITES_Inv_fx','type','parameter','form','full','val',BITES_Inv_fx);
-BITES_Inv.name='BITES_Inv';
-BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001','O3060133'};
- 
-end
-
-if i==8
-     Case='opt_inv_ma';
-    opt_marg_factors=1;
-    option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-    option1=1;    %minimize total cost
-    option2=0;    %minimize tottal PE use
-    option3=0;    %minimize total CO2 emission
+        Case='BAU_ma';
+        opt_marg_factors=1;
+        option0=1;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+        option1=1;    %minimize total cost
+        option2=0;    %minimize tottal PE use
+        option3=0;    %minimize total CO2 emission
+    end
     
-    %Option for P2 investment
-    opt_fx_inv_P2=1;  %0=no investment, 1=fixed investment, -1=variable of optimization
-    temp_opt_fx_inv_P2 = struct('name','opt_fx_inv_P2','type','parameter','form','full','val',opt_fx_inv_P2);
+    %% Run BAU case with seasonal heat price, minimizing total cost
+    if i==2
+        Case='BAU_seas';
+        opt_marg_factors=0;
+        option0=1;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+        option1=1;    %minimize total cost
+        option2=0;    %minimize tottal PE use
+        option3=0;    %minimize total CO2 emission
+    end
     
-    %Option for Turbine investment
-    opt_fx_inv_TURB=1;  %0=no investment, 1=fixed investment, -1=variable of optimization
-    temp_opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',opt_fx_inv_TURB);
+    %% Run case optimum dispatch with no investment and marginal heat price, minimizing total cost
+    if i==3
+        Case='no_inv_ma';
+        opt_marg_factors=1;
+        option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+        option1=1;    %minimize total cost
+        option2=0;    %minimize tottal PE use
+        option3=0;    %minimize total CO2 emission
+    end
     
-    %Option for new HP investment
-    opt_fx_inv_HP_cap=630;  %>=0 =fixed invetment, -1=variable of optimization; 630 kw is heating capacity of the HP invested in
-    temp_opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',opt_fx_inv_HP_cap);
+    %% Run case optimum dispatch with no investment and seasonal heat price, minimizing total cost 
+    if i==4
+        Case='no_inv_seas';
+        opt_marg_factors=0;
+        option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+        option1=1;    %minimize total cost
+        option2=0;    %minimize tottal PE use
+        option3=0;    %minimize total CO2 emission
+    end
     
-    %Option for BES investment
-    BES_B_ID_temp={'O0007027'}; %OBS: Reffers to bus 28
-    BES_B_ID_inv.name='BES_B_ID_inv';
-    BES_B_ID_inv.uels=BES_B_ID_temp;
+    %% Run case optimum dispatch with no investment and marginal heat price, minimizing total CO2 emission 
+    if i==5
+        Case='no_inv_ma_minCO2';
+        opt_marg_factors=1;
+        option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+        option1=0;    %minimize total cost
+        option2=0;    %minimize tottal PE use
+        option3=1;    %minimize total CO2 emission
+    end
     
-    opt_fx_inv_BES=1;
-    temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',opt_fx_inv_BES);
-    opt_fx_inv_BES_cap=[200]; % 200 in FED investments
-    temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full');
-    temp_opt_fx_inv_BES_cap.val=opt_fx_inv_BES_cap;
-    temp_opt_fx_inv_BES_cap.uels=BES_B_ID_inv.uels;
+    %% Run case optimum dispatch with no investment and seasonal heat price, minimizing total CO2 emission
+    if i==6
+        Case='no_inv_seas_minCO2';
+        opt_marg_factors=0;
+        option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+        option1=0;    %minimize total cost
+        option2=0;    %minimize tottal PE use
+        option3=1;    %minimize total CO2 emission
+    end
     
-    opt_fx_inv_BES_maxP=[100];  %must be set to 100
-    temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full');
-    temp_opt_fx_inv_BES_maxP.val=opt_fx_inv_BES_maxP;
-    temp_opt_fx_inv_BES_maxP.uels=BES_B_ID_inv.uels;
+    %% Run case optimum dispatch with investment in BITES and marginal heat price, minimizing total cost
+    if i==7
+        Case='BITES_inv_ma';
+        opt_marg_factors=1;
+        option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+        option1=1;    %minimize total cost
+        option2=0;    %minimize tottal PE use
+        option3=0;    %minimize total CO2 emission
+        
+        BITES_Inv_fx=1;    %0 is used when there is no investment, 1 if there is investment
+        temp_BITES_Inv_fx = struct('name','BITES_Inv_fx','type','parameter','form','full','val',BITES_Inv_fx);
+        BITES_Inv.name='BITES_Inv';
+        BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001','O3060133'};
+    end
     
-    %Option for BFCh investment
-    BFCh_B_ID_temp={'O0007028'}; %OBS: Reffers to Bus 5
-    BFCh_B_ID_inv.name='BFCh_BID_inv';
-    BFCh_B_ID_inv.uels=BFCh_B_ID_temp;
+    %% Run case optimum dispatch with FED investment and marginal heat price, minimizing total cost
+    if i==8
+        Case='opt_inv_ma';
+        opt_marg_factors=1;
+        option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+        option1=1;    %minimize total cost
+        option2=0;    %minimize tottal PE use
+        option3=0;    %minimize total CO2 emission
+        
+        %Option for P2 investment
+        opt_fx_inv_P2=1;  %0=no investment, 1=fixed investment, -1=variable of optimization
+        temp_opt_fx_inv_P2 = struct('name','opt_fx_inv_P2','type','parameter','form','full','val',opt_fx_inv_P2);
+        %Option for Turbine investment
+        opt_fx_inv_TURB=1;  %0=no investment, 1=fixed investment, -1=variable of optimization
+        temp_opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',opt_fx_inv_TURB);
+        
+        %Option for new HP investment
+        opt_fx_inv_HP_cap=630;  %>=0 =fixed invetment, -1=variable of optimization; 630 kw is heating capacity of the HP invested in
+        temp_opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',opt_fx_inv_HP_cap);
+        
+        %Option for BES investment
+        BES_B_ID_temp={'O0007027'}; %OBS: Reffers to bus 28
+        BES_B_ID_inv.name='BES_B_ID_inv';
+        BES_B_ID_inv.uels=BES_B_ID_temp;
+        
+        opt_fx_inv_BES=1;
+        temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',opt_fx_inv_BES);
+        opt_fx_inv_BES_cap=[200]; % 200 in FED investments
+        temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full');
+        temp_opt_fx_inv_BES_cap.val=opt_fx_inv_BES_cap;
+        temp_opt_fx_inv_BES_cap.uels=BES_B_ID_inv.uels;
+        
+        opt_fx_inv_BES_maxP=[100];  %must be set to 100
+        temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full');
+        temp_opt_fx_inv_BES_maxP.val=opt_fx_inv_BES_maxP;
+        temp_opt_fx_inv_BES_maxP.uels=BES_B_ID_inv.uels;
+        
+        %Option for BFCh investment
+        BFCh_B_ID_temp={'O0007028'}; %OBS: Reffers to Bus 5
+        BFCh_B_ID_inv.name='BFCh_BID_inv';
+        BFCh_B_ID_inv.uels=BFCh_B_ID_temp;
+        
+        opt_fx_inv_BFCh=1;
+        temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
+        opt_fx_inv_BFCh_cap=[100]; %must be set to 100
+        temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full');
+        temp_opt_fx_inv_BFCh_cap.val=opt_fx_inv_BFCh_cap;
+        temp_opt_fx_inv_BFCh_cap.uels=BFCh_B_ID_inv.uels;
+        
+        opt_fx_inv_BFCh_maxP=[50]; %must be set to 50
+        temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full');
+        temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
+        temp_opt_fx_inv_BFCh_maxP.uels=BFCh_B_ID_inv.uels;
+        
+        %Option for BTES investment
+        BITES_Inv_fx=1;    %0 is used when there is no investment, 1 if there is investment
+        temp_BITES_Inv_fx = struct('name','BITES_Inv_fx','type','parameter','form','full','val',BITES_Inv_fx);
+        BITES_Inv.name='BITES_Inv';
+        BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001','O3060133'};
     
-    opt_fx_inv_BFCh=1;
-    temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
-    opt_fx_inv_BFCh_cap=[100]; %must be set to 100
-    temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full');
-    temp_opt_fx_inv_BFCh_cap.val=opt_fx_inv_BFCh_cap;
-    temp_opt_fx_inv_BFCh_cap.uels=BFCh_B_ID_inv.uels;
+        %Option for BAC investment
+        BAC_Inv_fx=1;     %0 is used when there is no investment, 1 if there is investment
+        temp_BAC_Inv_fx = struct('name','BAC_Inv_fx','type','parameter','form','full','val',BAC_Inv_fx);
+        BAC_Inv.name='BAC_Inv';
+        BAC_Inv.uels={'O0007017','O0007012','O0007006','O0007023','O0007026', 'O0007027','O3060133'};
+        
+        %Option for solar PV investment
+        % This is if we want to have an PV selection option
+        %PV_inv_fx=0;     %0 is used when there is no investment, 1 if there is investment
+        %temp_PV_Inv_fx = struct('name','PV_Inv_fx','type','parameter','form','full','val',PV_Inv_fx);
+        area_roof_max = struct('name','area_roof_max','type','parameter');
+        area_roof_max.uels=BID.uels;
+        area_roof_max.val=pv_area_roof;
+        
+        area_facade_max = struct('name','area_facade_max','type','parameter');
+        area_facade_max.uels=BID.uels;
+        area_facade_max.val=pv_area_facades;
+        
+        %Placement of roof PVs (Existing)
+        PV_B_ID_roof_Inv_temp1=[48 49];
+        
+        %Placement of roof PVs (Investments)
+        PV_B_ID_roof_Inv_temp2=[53 23 27 29 54 45 32 75 9 55] ;  %OBS:Reffers to BIDS
+        PV_B_ID_roof_Inv_temp=horzcat(PV_B_ID_roof_Inv_temp1,PV_B_ID_roof_Inv_temp2);%OBS: Merge all roof PVs
+        PV_B_ID_roof_Inv.name='PV_B_ID_roof_Inv';
+        PV_B_ID_roof_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
+        
+        %Capacity of roof PVs (Existing)
+        PV_roof_cap_temp1=[50 42];   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5'
+        
+        %Capacity of roof PVs (investments)
+        %PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
+        PV_roof_cap_temp2=[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
+        PV_roof_cap_temp=horzcat(PV_roof_cap_temp1,PV_roof_cap_temp2); %OBS: Merge all roof PVs
+        PV_roof_cap_Inv=struct('name','PV_roof_cap_Inv','type','parameter','form','full');
+        PV_roof_cap_Inv.uels=PV_B_ID_roof_Inv.uels;
+        PV_roof_cap_Inv.val=PV_roof_cap_temp;
+        
+        %Placement of facade PVs (Existing)
+        PV_B_ID_facade_Inv_temp=[28]; %OBS: This PV is existed one!
+        PV_B_ID_facade_Inv.name='PV_B_ID_facade_Inv';
+        PV_B_ID_facade_Inv.uels=num2cell(PV_B_ID_facade_Inv_temp);
+        
+        %Capacity of facade PVs
+        PV_cap_facade_cap_temp=[15];
+        PV_facade_cap_Inv=struct('name','PV_facade_cap_Inv','type','parameter','form','full');
+        PV_facade_cap_Inv.uels=PV_B_ID_facade_Inv.uels;
+        PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
+        
+        %Operated power factor of PV inverters
+        PV_PF_inverter_PF_temp=[0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92];
+        PV_inverter_PF_Inv=struct('name','PV_inverter_PF_Inv','type','parameter','form','full');
+        PV_inverter_PF_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
+        PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp;
+    end
     
-    opt_fx_inv_BFCh_maxP=[50]; %must be set to 50
-    temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full');
-    temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
-    temp_opt_fx_inv_BFCh_maxP.uels=BFCh_B_ID_inv.uels;
-    
-    %Option for BTES investment
-    BITES_Inv_fx=1;    %0 is used when there is no investment, 1 if there is investment
-    temp_BITES_Inv_fx = struct('name','BITES_Inv_fx','type','parameter','form','full','val',BITES_Inv_fx);
-    BITES_Inv.name='BITES_Inv';
-    BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001','O3060133'};
-    
-    %Option for BAC investment
-    BAC_Inv_fx=1;     %0 is used when there is no investment, 1 if there is investment
-    temp_BAC_Inv_fx = struct('name','BAC_Inv_fx','type','parameter','form','full','val',BAC_Inv_fx);
-    BAC_Inv.name='BAC_Inv';
-    BAC_Inv.uels={'O0007017','O0007012','O0007006','O0007023','O0007026', 'O0007027','O3060133'};
-    
-    %Option for solar PV investment
-    % This is if we want to have an PV selection option
-    %PV_inv_fx=0;     %0 is used when there is no investment, 1 if there is investment
-    %temp_PV_Inv_fx = struct('name','PV_Inv_fx','type','parameter','form','full','val',PV_Inv_fx);
-   area_roof_max = struct('name','area_roof_max','type','parameter');
-   area_roof_max.uels=BID.uels;
-   area_roof_max.val=pv_area_roof;
-    
-   area_facade_max = struct('name','area_facade_max','type','parameter');
-   area_facade_max.uels=BID.uels;
-   area_facade_max.val=pv_area_facades;
-    
-    %Placement of roof PVs (Existing)
-    PV_B_ID_roof_Inv_temp1=[48 49];
-    
-    %Placement of roof PVs (Investments)
-    PV_B_ID_roof_Inv_temp2=[53 23 27 29 54 45 32 75 9 55] ;  %OBS:Reffers to BIDS
-    PV_B_ID_roof_Inv_temp=horzcat(PV_B_ID_roof_Inv_temp1,PV_B_ID_roof_Inv_temp2);%OBS: Merge all roof PVs
-    PV_B_ID_roof_Inv.name='PV_B_ID_roof_Inv';
-    PV_B_ID_roof_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
-    
-    %Capacity of roof PVs (Existing)
-    PV_roof_cap_temp1=[50 42];   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5'
-    
-    %Capacity of roof PVs (investments)
-    %PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-    PV_roof_cap_temp2=[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'Projektmöte nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-    PV_roof_cap_temp=horzcat(PV_roof_cap_temp1,PV_roof_cap_temp2); %OBS: Merge all roof PVs
-    PV_roof_cap_Inv=struct('name','PV_roof_cap_Inv','type','parameter','form','full');
-    PV_roof_cap_Inv.uels=PV_B_ID_roof_Inv.uels;
-    PV_roof_cap_Inv.val=PV_roof_cap_temp;
-   
-    %Placement of facade PVs (Existing)
-    PV_B_ID_facade_Inv_temp=[28]; %OBS: This PV is existed one!
-    PV_B_ID_facade_Inv.name='PV_B_ID_facade_Inv';
-    PV_B_ID_facade_Inv.uels=num2cell(PV_B_ID_facade_Inv_temp);
-    
-    %Capacity of facade PVs
-    PV_cap_facade_cap_temp=[15];
-    PV_facade_cap_Inv=struct('name','PV_facade_cap_Inv','type','parameter','form','full');
-    PV_facade_cap_Inv.uels=PV_B_ID_facade_Inv.uels;
-    PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
-    
-    %Operated power factor of PV inverters
-    PV_PF_inverter_PF_temp=[0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92];
-    PV_inverter_PF_Inv=struct('name','PV_inverter_PF_Inv','type','parameter','form','full');
-    PV_inverter_PF_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
-    PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp;
-    
- end
 %%
 temp_opt_marg_factors = struct('name','opt_marg_factors','type','parameter','form','full','val',opt_marg_factors);
-
 temp_synth_baseline = struct('name','synth_baseline','type','parameter','form','full','val',synth_baseline);
 temp_optn0 = struct('name','min_totCost_0','type','parameter','form','full','val',option0);
 temp_optn1 = struct('name','min_totCost','type','parameter','form','full','val',option1);
@@ -731,8 +704,8 @@ this_month=sim_start_m;
 sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);    %1994; %24th of March 2016
 sim_stop=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);     %10192; %28th of February 2017
 
-forcast_horizon=8100;     %8100
-t_len_m=8100;
+forcast_horizon=10;     %8100
+t_len_m=10;
 
 Time(1).point='fixed inputs';
 Time(1).value=toc;
@@ -768,13 +741,14 @@ for t=sim_start:sim_stop
     h_demand_forcast=h_demand_measured((t_init_m-1):(t_len_m+t_init_m-2),:);
     h_demand.val = h_demand_forcast;
     h_demand.uels={h_sim.uels,B_ID.uels};
+    
     %Sample code using ANN to forecast Edit heat demand
     heat_Edit_forecast=zeros(1,10);
-    for i=1:t_len_m
-
-%    heat_Edit_forecast(i)=sim(net_Edit,vertcat(flip(temperature((t_init_m-25+i):(t_init_m-2+i))'),flip(workday_index(15719:15742)'),flip(month_index(15719:15742)'),flip(Timeofday_index(15719:15742)')));
-
-    end
+%     for i=1:t_len_m
+% 
+% %    heat_Edit_forecast(i)=sim(net_Edit,vertcat(flip(temperature((t_init_m-25+i):(t_init_m-2+i))'),flip(workday_index(15719:15742)'),flip(month_index(15719:15742)'),flip(Timeofday_index(15719:15742)')));
+% 
+%     end
     heat_Edit.val = heat_Edit_forecast;
     heat_Edit.uels={h_sim.uels,'O0007024'};
     
@@ -883,6 +857,7 @@ for t=sim_start:sim_stop
     el_exGCO2F1=el_exGCO2F((t_init_m-1):(t_len_m+t_init_m-2),:);
     CO2F_exG.val = el_exGCO2F1;
     CO2F_exG.uels=h_sim.uels;
+    
     el_exGCO2F1=EL_CO2F_ma((t_init_m-1441):(t_len_m+t_init_m-1-1441),:);
     MA_CO2F_exG.val = el_exGCO2F1;
     MA_CO2F_exG.uels=h_sim.uels;
@@ -891,6 +866,7 @@ for t=sim_start:sim_stop
     el_exGPEF1=el_exGPEF((t_init_m-1):(t_len_m+t_init_m-2),:);
     PEF_exG.val = el_exGPEF1;
     PEF_exG.uels=h_sim.uels;
+    
     el_exGPEF1=EL_PEF_ma((t_init_m-1441):(t_len_m+t_init_m-1-1441),:);
     MA_PEF_exG.val = el_exGPEF1;
     MA_PEF_exG.uels=h_sim.uels;
@@ -898,11 +874,13 @@ for t=sim_start:sim_stop
     %CO2 factors of the external DH grid (AVERAGE AND MARGINAL) & marginal
     %DH cost
     DH_cost=DH_cost_ma((t_init_m-1):(t_len_m+t_init_m-2),:);
-    MA_Cost_DH.val = DH_cost;
+    MA_Cost_DH.val = DH_cost;    
     MA_Cost_DH.uels=h_sim.uels;
+    
     DH_CO2F1=DH_CO2F((t_init_m-1):(t_len_m+t_init_m-2),:);
     CO2F_DH.val = DH_CO2F1;
     CO2F_DH.uels=h_sim.uels;
+    
     DH_CO2F1=DH_CO2F_ma((t_init_m-1):(t_len_m+t_init_m-2),:);
     MA_CO2F_DH.val = DH_CO2F1;
     MA_CO2F_DH.uels=h_sim.uels;
@@ -911,16 +889,20 @@ for t=sim_start:sim_stop
     DH_PEF1=DH_PEF((t_init_m-1):(t_len_m+t_init_m-2),:);
     PEF_DH.val = DH_PEF1;
     PEF_DH.uels=h_sim.uels;
+    
     DH_PEF1=DH_PEF_ma((t_init_m-1):(t_len_m+t_init_m-2),:);
     MA_PEF_DH.val = DH_PEF1;
     MA_PEF_DH.uels=h_sim.uels;
     
     import.val = forecast_import((t_init_m-26):(t_len_m+t_init_m-27),:);
-    import.uels=h_sim.uels; 
+    import.uels=h_sim.uels;
+    
     export.val = forecast_export((t_init_m-26):(t_len_m+t_init_m-27),:);
-    export.uels=h_sim.uels; 
+    export.uels=h_sim.uels;
+    
     Panna1.val = Panna1_forecast((t_init_m-26):(t_len_m+t_init_m-27),:);
-    Panna1.uels=h_sim.uels; 
+    Panna1.uels=h_sim.uels;
+    
     FGC.val = FGC_forecast((t_init_m-26):(t_len_m+t_init_m-27),:);
     FGC.uels=h_sim.uels;
     
@@ -979,8 +961,7 @@ for t=sim_start:sim_stop
     opt_fx_inv_BTES_D_init=Initial(1);
     temp_opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',opt_fx_inv_BTES_D_init);
     
-    %% RUN GAMS model
-%temp_opt_fx_inv_AbsCInv,temp_opt_fx_inv_HP, temp_opt_fx_inv_RMInv, temp_opt_fx_inv_TES, 
+    %% Preparing input GDX file (MtoG) and RUN GAMS model
 wgdx('MtoG.gdx', temp_opt_fx_inv, temp_opt_fx_inv_RMMC,...
      temp_opt_fx_inv_AbsCInv_cap,...
      temp_opt_fx_inv_P2,temp_opt_fx_inv_TURB,temp_opt_fx_inv_HP_cap,...
@@ -1001,13 +982,10 @@ wgdx('MtoG.gdx', temp_opt_fx_inv, temp_opt_fx_inv_RMMC,...
      MA_PEF_exG,MA_CO2F_exG,temp_max_exG_prev,MA_Cost_DH,temp_VKA1_prev_disp,temp_VKA4_prev_disp,temp_AAC_prev_disp,...
      DH_Node_ID, DH_Nodes_Transfer_Limits,...
      DC_Node_ID, DC_Nodes_Transfer_Limits, el_exG_slack,h_DH_slack,c_DC_slack,h_exp_AH_hist, h_imp_AH_hist,temp_BITES_Inv_fx,temp_BAC_Inv_fx);
-%
  
-%wgdx('MtoG_pv.gdx',area_roof_max,area_facade_max);
 Time(2).point='Wgdx and Inputs';
 Time(2).value=toc;
 tic
-
  
  while RUN_GAMS_MODEL==1
     system 'gams FED_SIMULATOR_MAIN lo=3';
@@ -1023,12 +1001,15 @@ Time(3).value=toc;
 end
 
 %save(['results\Results_' Case '.mat'], 'Results')
-copyfile('MtoG.gdx', ['MtoG' Case '.gdx'])
-copyfile('GtoM.gdx', ['GtoM' Case '.gdx'])
+copyfile('MtoG.gdx', ['MtoG_' Case '.gdx'])
+copyfile('GtoM.gdx', ['GtoM_' Case '.gdx'])
+
+copyfile('MtoG.xlsx', ['MtoG_' Case '.xlsx'])
+copyfile('GtoM.xlsx', ['GtoM_' Case '.xlsx'])
+
 copyfile('WP6.gdx', ['WP6_' Case '.gdx'])
 copyfile('WP6.xlsx', ['WP6_' Case '.xlsx'])
 end
-
 %    system 'gams export_data lo=3';
 
  %% Post processing results 

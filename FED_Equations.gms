@@ -148,18 +148,18 @@ equation
 
            eq_ebalance3  supply demand balance equation from AH
            eq_ebalance4  electrical import equation to nonAH
-           eq_dcpowerflow1  active power balance equation
-           eq_dcpowerflow2  reactive power balance equation
-           eq_dcpowerflow3  line limits equations
-           eq_dcpowerflow4  line limits equations
-           eq_dcpowerflow5  line limits equations
-           eq_dcpowerflow6  line limits equations
-           eq_dcpowerflow7  line limits equations
-           eq_dcpowerflow8  line limits equations
-           eq_dcpowerflow9  line limits equations
-           eq_dcpowerflow10  line limits equations
-           eq_dcpowerflow11  slack angle constraint
-           eq_dcpowerflow12  slack voltage constraint
+*           eq_dcpowerflow1  active power balance equation
+*           eq_dcpowerflow2  reactive power balance equation
+*           eq_dcpowerflow3  line limits equations
+*           eq_dcpowerflow4  line limits equations
+*           eq_dcpowerflow5  line limits equations
+*           eq_dcpowerflow6  line limits equations
+*           eq_dcpowerflow7  line limits equations
+*           eq_dcpowerflow8  line limits equations
+*           eq_dcpowerflow9  line limits equations
+*           eq_dcpowerflow10  line limits equations
+*           eq_dcpowerflow11  slack angle constraint
+*           eq_dcpowerflow12  slack voltage constraint
 
            eq_PE         Hourly average PE use in the FED system
            eq_PE_ma      Hourly marginal PE use in the FED system
@@ -296,7 +296,6 @@ eq_CWB_en(h)$(ord(h) gt 1)..
 
 eq_CWB_discharge(h)..
          CWB_dis(h) =l= c_demand(h,'O0007028');
-
 
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
 eq_ACC1(h)..
@@ -560,7 +559,7 @@ $offtext
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
 eq_hbalance1(h)..
-             h_exp_AH(h) =l= h_Pana1(h)+h_DH_slack_var(h);
+             h_exp_AH(h) =l= h_Pana1(h) + h_DH_slack_var(h);
 * Change to equal to test the slack variable
 eq_hbalance2(h)..
 *             sum(i,h_demand(h,i)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
@@ -585,15 +584,15 @@ eq_cbalance(h)..
 *--------------Demand supply balance for electricity ---------------------------
 
 eq_ebalance3(h)..
-        sum(i,el_demand(h,i)) =l= e_imp_AH(h) + e_imp_nonAH(h) + el_exG_slack(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - e_RMMC(h) - e_AAC(h)
+        sum(i_AH_el,el_demand(h,i_AH_el)) =l= e_imp_AH(h) + el_exG_slack(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - e_RMMC(h) - e_AAC(h)
                                  + e_PV(h) - e_HP(h) - e_RMInv(h)
-                                 + sum(i,(BES_dis(h,i)*BES_dis_eff - BES_ch(h,i)/BES_ch_eff)+(BFCh_dis(h,i)*BFCh_dis_eff - BFCh_ch(h,i)/BFCh_ch_eff))
+                                 + sum(i_AH_el,(BES_dis(h,i_AH_el)*BES_dis_eff - BES_ch(h,i_AH_el)/BES_ch_eff)+(BFCh_dis(h,i_AH_el)*BFCh_dis_eff - BFCh_ch(h,i_AH_el)/BFCh_ch_eff))
                                  + e_TURB(h);
 eq_ebalance4(h)..
         sum(i_nonAH_el,el_demand(h,i_nonAH_el)) =l= e_imp_nonAH(h);
 
 *------------Electrical Network constraints------------*
-
+$ontext
 eq_dcpowerflow1(h,Bus_IDs)..((e_imp_AH(h) - e_exp_AH(h))/Sb)$(ord(Bus_IDs)=13)-((el_VKA1(h) + el_VKA4(h))/Sb)$(ord(Bus_IDs)=20)
            + sum(BID,e_PV_act_roof(h,BID)$BusToBID(Bus_IDs,BID))/Sb+sum(BID,(PV_facade_cap_Inv(BID)*PV_power_facade(h,BID))$BusToBID(Bus_IDs,BID))/Sb/1.07
             +sum(B_ID,((BES_dis(h,B_ID)*BES_dis_eff - BES_ch(h,B_ID)/BES_ch_eff)/Sb)$BusToB_ID(Bus_IDs,B_ID))+(e_TURB(h)/Sb)$(ord(Bus_IDs)=16)
@@ -620,7 +619,7 @@ eq_dcpowerflow10(h,Bus_IDs,j)$(currentlimits(Bus_IDs,j) ne 0)..-gij(Bus_IDs,j)*(
 
 eq_dcpowerflow11(h)..delta(h,"13")=e=0;
 eq_dcpowerflow12(h)..V(h,"13")=e=1;
-
+$offtext
 *-----------------Comments on El Network implementation------------------------*
 $ontext
 1)el_RM(h),e_RMMC(h),e_AAC(h), e_HP(h),e_RMInv(h) are set to KC
@@ -703,7 +702,8 @@ eq_fix_cost_new..
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
 eq_var_cost_existing..
-         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)+sum(m,PT_exG(m)*HoM(h,m)))
+*Peak power tariffs for both electricty? and heating are supposed to be included in prices?
+         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h) + 0*sum(m,PT_exG(m)*HoM(h,m)))
                                -sum(h,e_exp_AH(h)*el_sell_price(h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h)) + 0*PT_DH
                                - sum(h,sum(m,(h_exp_AH(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12))))
