@@ -166,7 +166,7 @@ while LOAD_EXCEL_DATA==1
     %Read static properties of the model
     [P1P2_disp, DH_exp_season, BAC_sav_period, pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
     
-    %Read forecasted values and variable input data
+    %Read variable/measured input data
     [e_demand_measured, h_demand_measured,c_demand_measured,...
         h_B1_measured,h_F1_measured,...
         el_VKA1_measured,el_VKA4_measured,el_AAC_measured, h_AbsC_measured,...
@@ -223,11 +223,7 @@ pCO2ref=5;    %Choose the percentage the reference CO2 to determine reference CO
 
 while Re_calculate_CO2PEF==1
     get_CO2PE_exGrids;   %this routine calculates the CO2 and PE factors of the external grid also    
-%     save('el_exGCO2F','el_exGCO2F');
-%     save('el_exGPEF','el_exGPEF');
-%     save('DH_CO2F','DH_CO2F');
-%     save('DH_PEF','DH_PEF');
-%         
+%     %used for investmet optimization         
 %     FED_CO20=load('Sim_Results\Sim_Results_base\Data\FED_CO2');
 %     FED_CO20=FED_CO20.FED_CO2;
 %     FED_PE0=load('Sim_Results\Sim_Results_base\Data\FED_PE');
@@ -237,15 +233,11 @@ end
 
 %load saved values
 while Re_calculate_CO2PEF==0
+     %used for investmet optimization
 %     FED_CO20=load('Sim_Results\Sim_Results_base\Data\FED_CO2');
 %     FED_CO20=FED_CO20.FED_CO2;
 %     FED_PE0=load('Sim_Results\Sim_Results_base\Data\FED_PE');
 %     FED_PE0=FED_PE0.FED_PE;
-% 
-%     load el_exGCO2F;
-%     load el_exGPEF;
-%     load DH_CO2F;
-%     load DH_PEF;
     break;
 end
                                 
@@ -476,7 +468,7 @@ c_DC_slack = struct('name','c_DC_slack','type','parameter','form','full');
 synth_baseline=0; %Option for synthetic baseline
 
 %Option to choose between marginal and average heat price
-opt_marg_factors=1; %if 0, seasonal heat price is used; if 1 marginal heat price is used
+opt_marg_factors=1; %if 0, average emissionand seasonal price is used; if 1 marginal price and emission is used
 temp_opt_marg_factors = struct('name','opt_marg_factors','type','parameter','form','full','val',opt_marg_factors);
 
 % optimization option
@@ -712,8 +704,8 @@ this_month=sim_start_m;
 sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);    %1994; %24th of March 2016
 sim_stop=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);     %10192; %28th of February 2017
 
-forcast_horizon=100;     %8100
-t_len_m=100;
+forcast_horizon=10;     %8100
+t_len_m=10;
 
 Time(1).point='fixed inputs';
 Time(1).value=toc;
