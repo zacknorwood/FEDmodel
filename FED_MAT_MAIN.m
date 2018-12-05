@@ -188,12 +188,12 @@ BES_B_ID_inv.uels=BES_B_ID_temp;
 
 opt_fx_inv_BES=1;
 temp_opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',opt_fx_inv_BES);
-opt_fx_inv_BES_cap=[200]; %must be set to 200
+opt_fx_inv_BES_cap=[0]; %must be set to 200
 temp_opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full');
 temp_opt_fx_inv_BES_cap.val=opt_fx_inv_BES_cap;
 temp_opt_fx_inv_BES_cap.uels=BES_B_ID_inv.uels;
 
-opt_fx_inv_BES_maxP=[100];  %must be set to 100
+opt_fx_inv_BES_maxP=[0];  %must be set to 100
 temp_opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full');
 temp_opt_fx_inv_BES_maxP.val=opt_fx_inv_BES_maxP;
 temp_opt_fx_inv_BES_maxP.uels=BES_B_ID_inv.uels;
@@ -205,12 +205,12 @@ BFCh_B_ID_inv.uels=BFCh_B_ID_temp;
 
 opt_fx_inv_BFCh=1;
 temp_opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',opt_fx_inv_BFCh);
-opt_fx_inv_BFCh_cap=[100]; %must be set to 100
+opt_fx_inv_BFCh_cap=[0]; %must be set to 100
 temp_opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full');
 temp_opt_fx_inv_BFCh_cap.val=opt_fx_inv_BFCh_cap;
 temp_opt_fx_inv_BFCh_cap.uels=BFCh_B_ID_inv.uels;
 
-opt_fx_inv_BFCh_maxP=[50]; %must be set to 50
+opt_fx_inv_BFCh_maxP=[0]; %must be set to 50
 temp_opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full');
 temp_opt_fx_inv_BFCh_maxP.val=opt_fx_inv_BFCh_maxP;
 temp_opt_fx_inv_BFCh_maxP.uels=BFCh_B_ID_inv.uels;
@@ -520,7 +520,7 @@ if (option0 == 1)
     option3=0;
 end
 
-for i=8
+for i=1:8
 %%    run different scenarios
     if i==1
 Case='BAU_ma';
