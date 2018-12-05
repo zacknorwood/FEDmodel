@@ -282,7 +282,7 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
 
 
 execute_unload 'WP6' model_status, Ainv_cost, vc_e_imp,vc_e_exp,vc_h_imp,vc_h_exp,vc_h_P1,vc_h_VKA1,vc_h_VKA4,vc_c_absC,vc_c_RM,vc_c_RMMC,vc_c_AAC,vc_e_PV,vc_c_absC,vc_e_PV,
-vc_h_HP,vc_c_RM,vc_e_BES,vc_h_TES,vc_h_BTES,vc_h_P2,vc_e_TURB, vc_tot, tot_var_cost_AH
+vc_h_HP,vc_c_RM,vc_e_BES,vc_h_TES,vc_h_BTES,vc_h_P2,vc_e_TURB, vc_tot, tot_var_cost_AH, el_slack_var
 
 MA_AH_CO2,AH_CO2, MA_AH_CO2_tot, AH_CO2_tot, MA_AH_CO2_peak, AH_CO2_peak, MA_AH_PE_tot, AH_PE_tot
 
