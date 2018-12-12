@@ -101,14 +101,15 @@ Buses_IDs.uels={'1','2','3','4','5','6','7','8',...
               '15','16','17','18','19','20','21','22','23','24',...
                '25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41'};
 
-%% *****IDs for solar irradiance data *****TO BE MOdified*****
+%% *****IDs for solar irradiance data *****TO BE Modified*****
 %OBS: These IDs, which represent where the solar PVs are located, need to be mapped to Building IDs and/or the electrical
-%nodes in the local el distribution system
+%nodes in the local el distribution system. Currently they are numbered
+%based on the file solceller lista på anläggningar.xlsx as well as the 3d shading model
 
 BID.name='BID';
-BID_temp=1:70;
-BID_temp(71)=75;
-BID_temp(72)=76;
+BID_temp=1:99;
+%BID_temp(71)=75;
+%BID_temp(72)=76;
 BID.uels=num2cell(BID_temp);
 
 %% District heating network transfer limits - initialize nodes and flow limits
@@ -343,41 +344,42 @@ area_facade_max.uels=BID.uels;
 area_facade_max.val=pv_area_facades;
 
 %Placement of roof PVs (Existing)
-PV_B_ID_roof_Inv_temp1=[48 49];
+PV_B_ID_roof_Inv_temp1=[2 11]; %Refers to ID in solceller lista på anläggningar.xlsx as well as the 3d shading model
 
 %Placement of roof PVs (Investments)
-PV_B_ID_roof_Inv_temp2=[53 23 27 29 54 45 32 75 9 55] ;  %OBS:Reffers to BIDS
+PV_B_ID_roof_Inv_temp2=[0 1 3 4 5 6 7 8 9 10] ;  %Refers to ID in solceller lista på anläggningar.xlsx as well as the 3d shading model
 PV_B_ID_roof_Inv_temp=horzcat(PV_B_ID_roof_Inv_temp1,PV_B_ID_roof_Inv_temp2);%OBS: Merge all roof PVs
-PV_B_ID_roof_Inv.name='PV_B_ID_roof_Inv';                                                           
+PV_B_ID_roof_Inv.name='PV_B_ID_roof_Inv';
 PV_B_ID_roof_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
 
 %Capacity of roof PVs (Existing)
-PV_roof_cap_temp1=[50 42];   %OBS:According to document 'ProjektmÃ¶te nr 22 samordning  WP4-WP8 samt WP5'
+%PV_roof_cap_temp1=[50 42];   %OBS:According to document 'ProjektmÃƒÂ¶te nr 22 samordning  WP4-WP8 samt WP5'
+PV_roof_cap_temp1=[48 40]; % According to solceller lista på anläggningar.xlsx (updated from AH and CF 2018-12)
 
 %Capacity of roof PVs (investments)
-PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-%PV_roof_cap_temp2=[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
+%PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃƒÂ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
+PV_roof_cap_temp2=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]; % According to solceller lista på anläggningar.xlsx (updated from AH and CF 2018-12)
 PV_roof_cap_temp=horzcat(PV_roof_cap_temp1,PV_roof_cap_temp2); %OBS: Merge all roof PVs
 PV_roof_cap_Inv=struct('name','PV_roof_cap_Inv','type','parameter','form','full');
 PV_roof_cap_Inv.uels=PV_B_ID_roof_Inv.uels;
 PV_roof_cap_Inv.val=PV_roof_cap_temp;
 
 %Placement of facade PVs (Existing)
-PV_B_ID_facade_Inv_temp=[28]; %OBS: This PV is existed one!
+PV_B_ID_facade_Inv_temp=[99]; %OBS: This PV is existed one!
 PV_B_ID_facade_Inv.name='PV_B_ID_facade_Inv';
 PV_B_ID_facade_Inv.uels=num2cell(PV_B_ID_facade_Inv_temp);
 
 %Capacity of facade PVs
-PV_cap_facade_cap_temp=[15];        
+PV_cap_facade_cap_temp=[13.23];
 PV_facade_cap_Inv=struct('name','PV_facade_cap_Inv','type','parameter','form','full');
 PV_facade_cap_Inv.uels=PV_B_ID_facade_Inv.uels;
 PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';
 
-%Operated power factor of PV inverters 
+%Operated power factor of PV inverters
 PV_PF_inverter_PF_temp=[0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92 0.92];
 PV_inverter_PF_Inv=struct('name','PV_inverter_PF_Inv','type','parameter','form','full');
 PV_inverter_PF_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
-PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp;                
+PV_inverter_PF_Inv.val=PV_PF_inverter_PF_temp;
 
 %% Define Variable inputs to the dispatch model
 
@@ -641,32 +643,33 @@ if i==8 && WP6 ==1
    area_facade_max.val=pv_area_facades;
     
     %Placement of roof PVs (Existing)
-    PV_B_ID_roof_Inv_temp1=[48 49];
+    PV_B_ID_roof_Inv_temp1=[2 11]; %Refers to ID in solceller lista på anläggningar.xlsx as well as the 3d shading model
     
     %Placement of roof PVs (Investments)
-    PV_B_ID_roof_Inv_temp2=[53 23 27 29 54 45 32 75 9 55] ;  %OBS:Reffers to BIDS
+    PV_B_ID_roof_Inv_temp2=[0 1 3 4 5 6 7 8 9 10] ;  %Refers to ID in solceller lista på anläggningar.xlsx as well as the 3d shading model
     PV_B_ID_roof_Inv_temp=horzcat(PV_B_ID_roof_Inv_temp1,PV_B_ID_roof_Inv_temp2);%OBS: Merge all roof PVs
     PV_B_ID_roof_Inv.name='PV_B_ID_roof_Inv';
     PV_B_ID_roof_Inv.uels=num2cell(PV_B_ID_roof_Inv_temp);
     
     %Capacity of roof PVs (Existing)
-    PV_roof_cap_temp1=[50 42];   %OBS:According to document 'ProjektmÃƒÂ¶te nr 22 samordning  WP4-WP8 samt WP5'
+    %PV_roof_cap_temp1=[50 42];   %OBS:According to document 'ProjektmÃƒÂ¶te nr 22 samordning  WP4-WP8 samt WP5'
+    PV_roof_cap_temp1=[48 40]; % According to solceller lista på anläggningar.xlsx (updated from AH and CF 2018-12)
     
     %Capacity of roof PVs (investments)
     %PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃƒÂ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-    PV_roof_cap_temp2=[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃƒÂ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
+    PV_roof_cap_temp2=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]; % According to solceller lista på anläggningar.xlsx (updated from AH and CF 2018-12)
     PV_roof_cap_temp=horzcat(PV_roof_cap_temp1,PV_roof_cap_temp2); %OBS: Merge all roof PVs
     PV_roof_cap_Inv=struct('name','PV_roof_cap_Inv','type','parameter','form','full');
     PV_roof_cap_Inv.uels=PV_B_ID_roof_Inv.uels;
     PV_roof_cap_Inv.val=PV_roof_cap_temp;
    
     %Placement of facade PVs (Existing)
-    PV_B_ID_facade_Inv_temp=[28]; %OBS: This PV is existed one!
+    PV_B_ID_facade_Inv_temp=[99]; %OBS: This PV is existed one!
     PV_B_ID_facade_Inv.name='PV_B_ID_facade_Inv';
     PV_B_ID_facade_Inv.uels=num2cell(PV_B_ID_facade_Inv_temp);
     
     %Capacity of facade PVs
-    PV_cap_facade_cap_temp=[15];
+    PV_cap_facade_cap_temp=[13.23];
     PV_facade_cap_Inv=struct('name','PV_facade_cap_Inv','type','parameter','form','full');
     PV_facade_cap_Inv.uels=PV_B_ID_facade_Inv.uels;
     PV_facade_cap_Inv.val=PV_cap_facade_cap_temp';

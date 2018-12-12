@@ -162,7 +162,7 @@ vc_c_absC = sum(h,sum(m,(h_AbsC.l(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=
           + sum(m,(h_AbsC.l(h)*0.7*HoM(h,m))$((ord(m) =11)))
           + sum(m,(h_AbsC.l(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))));
 vc_e_PT=sum(h,sum(m,PT_exG.l(m)*HoM(h,m)));
-                         
+
 
 ********** NEW INVESTMENT
 
