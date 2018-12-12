@@ -6,6 +6,7 @@ close all; %close all figures
 LOAD_EXCEL_DATA=0;
 Re_calculate_CO2PEF=0;  % calculate new values
 RUN_GAMS_MODEL = 1;
+WP6=1; % Set to 1 if to run full year simulations with results for WP6
 
 %% Assigning buildings ID to the buildings in the FED system
 
@@ -520,9 +521,10 @@ if (option0 == 1)
     option3=0;
 end
 
-for i=1:8
-%%    run different scenarios
-    if i==1
+for i=3 % This for loop is to make multiple runs, e.g. for WP6 results,
+    %make sure that no investments are selected under FED INVESTMENT OPTIONS (line 150)
+    %%    run different scenarios
+if i==1 && WP6 ==1
 Case='BAU_ma';
 opt_marg_factors=1;
 option0=1;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
@@ -530,7 +532,7 @@ option1=1;    %minimize total cost
 option2=0;    %minimize tottal PE use
 option3=0;    %minimize total CO2 emission
 end
-if i==2
+if i==2 && WP6 ==1
 Case='BAU_seas';
 opt_marg_factors=0;
 option0=1;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
@@ -538,7 +540,7 @@ option1=1;    %minimize total cost
 option2=0;    %minimize tottal PE use
 option3=0;    %minimize total CO2 emission
 end
-if i==3
+if i==3 && WP6 ==1
 Case='no_inv_ma';
 opt_marg_factors=1;
 option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
@@ -546,7 +548,7 @@ option1=1;    %minimize total cost
 option2=0;    %minimize tottal PE use
 option3=0;    %minimize total CO2 emission
 end
-if i==4
+if i==4 && WP6 ==1
 Case='no_inv_seas';
 opt_marg_factors=0;
 option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
@@ -554,7 +556,7 @@ option1=1;    %minimize total cost
 option2=0;    %minimize tottal PE use
 option3=0;    %minimize total CO2 emission
 end
-if i==5
+if i==5 && WP6 ==1
 Case='no_inv_ma_minCO2';
 opt_marg_factors=1;
 option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
@@ -562,7 +564,7 @@ option1=0;    %minimize total cost
 option2=0;    %minimize tottal PE use
 option3=1;    %minimize total CO2 emission
 end
-if i==6
+if i==6 && WP6 ==1
 Case='no_inv_seas_minCO2';
 opt_marg_factors=0;
 option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
@@ -570,7 +572,7 @@ option1=0;    %minimize total cost
 option2=0;    %minimize tottal PE use
 option3=1;    %minimize total CO2 emission
 end
-if i==7
+if i==7 && WP6 ==1
 Case='BITES_inv_ma';    
 opt_marg_factors=1;
 option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
@@ -585,7 +587,7 @@ BITES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O000702
  
 end
 
-if i==8
+if i==8 && WP6 ==1
      Case='opt_inv_ma';
     opt_marg_factors=1;
     option0=0;    %option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
@@ -729,10 +731,18 @@ sim_stop_h=24;
 this_month=sim_start_m;
 
 sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);    %1994; %24th of March 2016
-sim_stop=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);     %10192; %28th of February 2017
+sim_stop=HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);     %10192; %28th of February 2017
 
+forcast_horizon=10;    
+t_len_m=10;
+
+
+if WP6 ==1
+sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);    %1994; %24th of March 2016
+sim_stop=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);     %10192; %28th of February 2017
 forcast_horizon=8100;     %8100
 t_len_m=8100;
+end
 
 Time(1).point='fixed inputs';
 Time(1).value=toc;
@@ -1016,17 +1026,19 @@ tic
  end
  
  %% Store the results from each iteration
- 
-%Results(t).dispatch = fstore_results(h_sim,B_ID,BTES_properties,Buses_IDs);
+if WP6==0
+Results(t).dispatch = fstore_results(h_sim,B_ID,BTES_properties,Buses_IDs);
+end
 Time(3).point='Gams running and storing';
 Time(3).value=toc;
 end
-
+if WP6==1
 %save(['results\Results_' Case '.mat'], 'Results')
-copyfile('MtoG.gdx', ['MtoG' Case '.gdx'])
-copyfile('GtoM.gdx', ['GtoM' Case '.gdx'])
-copyfile('WP6.gdx', ['WP6_' Case '.gdx'])
-copyfile('WP6.xlsx', ['WP6_' Case '.xlsx'])
+copyfile('MtoG.gdx', ['MtoG' Case '_full_year.gdx'])
+copyfile('GtoM.gdx', ['GtoM' Case '_full_year.gdx'])
+copyfile('WP6.gdx', ['WP6_' Case '_full_year.gdx'])
+copyfile('WP6.xlsx', ['WP6_' Case '_full_year.xlsx'])
+end
 end
 
 %    system 'gams export_data lo=3';
