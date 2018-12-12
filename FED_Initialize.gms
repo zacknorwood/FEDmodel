@@ -402,7 +402,8 @@ en_tax('exG',h)=e_tax;
 co2_cost(sup_unit,h)=0;
 *Power tariffs from Göteborg Energi
 PT_cost(sup_unit)=0;
-PT_cost('exG')=35.4;
+PT_cost('exG')=0;
+*According to GE 35.4;
 PT_cost('DH')=452;
 
 utot_cost(sup_unit,h)=price(sup_unit,h) + fuel_cost(sup_unit,h)
