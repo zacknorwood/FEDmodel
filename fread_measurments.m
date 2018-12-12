@@ -98,7 +98,6 @@ xlRange = tout_ramge;
 tout_measured=xlsread('Input_dispatch_model\measured_tout.xlsx',sheet,xlRange);
 tout_measured(isnan(tout_measured))=0;
 
-
 %el exgG slack bus data
 sheet=1;
 xlRange = el_slack_range;
@@ -117,11 +116,10 @@ xlRange = dc_slack_range;
 DC_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',sheet,xlRange);
 DC_slack(isnan(DC_slack))=0;
 
-irradiance_measured_roof=xlsread('Input_dispatch_model\Irradiance_Arrays 20181119.xlsx',1,'A2:L817500');
+irradiance_measured_roof=xlsread('Input_dispatch_model\Irradiance_Arrays 20181119.xlsx',1,'A2:L17500');
 irradiance_measured_facades=xlsread('Input_dispatch_model\Irradiance_Arrays 20181119.xlsx',1,'M2:M17500');
 
 %Historical import/export AH
-
 sheet=2;
 xlRange = strcat('C',int2str(3+t_init),':C',int2str(3+t_len+t_init-1));
 h_imp_AH_measured=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',sheet,xlRange)*1000;
@@ -129,7 +127,5 @@ h_imp_AH_measured=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',sheet,xlRa
 sheet=2;
 xlRange = strcat('D',int2str(3+t_init),':D',int2str(3+t_len+t_init-1));
 h_exp_AH_measured=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',sheet,xlRange)*1000;
-
-
 end
 

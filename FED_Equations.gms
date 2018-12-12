@@ -297,7 +297,6 @@ eq_CWB_en(h)$(ord(h) gt 1)..
 eq_CWB_discharge(h)..
          CWB_dis(h) =l= c_demand(h,'O0007028');
 
-
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
 eq_ACC1(h)..
              c_AAC(h) =e= AAC_COP*e_AAC(h);
@@ -560,7 +559,7 @@ $offtext
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
 eq_hbalance1(h)..
-             h_exp_AH(h) =l= h_Pana1(h)+h_DH_slack_var(h);
+             h_exp_AH(h) =l= h_Pana1(h) + h_DH_slack_var(h);
 * Change to equal to test the slack variable
 eq_hbalance2(h)..
 *             sum(i,h_demand(h,i)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
@@ -596,7 +595,7 @@ eq_cbalance(h)..
 eq_ebalance3(h)..
         sum(i,el_demand(h,i)) =l= e_imp_AH(h) + e_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - e_RMMC(h) - e_AAC(h)
                                  + e_PV(h) - e_HP(h) - e_RMInv(h)
-                                 + sum(i,(BES_dis(h,i)*BES_dis_eff - BES_ch(h,i)/BES_ch_eff)+(BFCh_dis(h,i)*BFCh_dis_eff - BFCh_ch(h,i)/BFCh_ch_eff))
+                                 + sum(i_AH_el,(BES_dis(h,i_AH_el)*BES_dis_eff - BES_ch(h,i_AH_el)/BES_ch_eff)+(BFCh_dis(h,i_AH_el)*BFCh_dis_eff - BFCh_ch(h,i_AH_el)/BFCh_ch_eff))
                                  + e_TURB(h);
 eq_ebalance4(h)..
         sum(i_nonAH_el,el_demand(h,i_nonAH_el)) =e= e_imp_nonAH(h);
@@ -629,7 +628,7 @@ eq_dcpowerflow10(h,Bus_IDs,j)$(currentlimits(Bus_IDs,j) ne 0)..-gij(Bus_IDs,j)*(
 
 eq_dcpowerflow11(h)..delta(h,"13")=e=0;
 eq_dcpowerflow12(h)..V(h,"13")=e=1;
-
+$offtext
 *-----------------Comments on El Network implementation------------------------*
 $ontext
 1)el_RM(h),e_RMMC(h),e_AAC(h), e_HP(h),e_RMInv(h) are set to KC
@@ -727,7 +726,8 @@ eq_fix_cost_new..
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
 eq_var_cost_existing..
-         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h)+sum(m,PT_exG(m)*HoM(h,m)))
+*Peak power tariffs for both electricty? and heating are supposed to be included in prices?
+         var_cost_existing =e= sum(h, (e_imp_AH(h) + e_imp_nonAH(h))*utot_cost('exG',h) + 0*sum(m,PT_exG(m)*HoM(h,m)))
                                -sum(h,e_exp_AH(h)*el_sell_price(h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h))*utot_cost('DH',h)) + 0*PT_DH
                                - sum(h,sum(m,(h_exp_AH(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12))))

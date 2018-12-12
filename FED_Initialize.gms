@@ -4,7 +4,7 @@
 *--------------IMPORT IMPUT DATA TO THE MODEL-----------------------------------
 $Include FED_GET_GDX_FILE
 
-*--------------SET PARAMETRS OF PRODUCTION UNITS--------------------------------
+*--------------SET PARAMETRS OF PRODUCTION active UNITS in the FED system-------
 set
          sup_unit   supply units /PV, HP, BES, TES, BTES, BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP, RMInv, RGK1/
          inv_opt    investment options /PV, HP, BES, TES, BTES,BAC, RMMC, P2, TURB, AbsCInv, RMInv/
@@ -119,8 +119,8 @@ scalar
 
 *--------------Refrigerator Machines, cooling source----------------------------
 scalar
-      RM_COP Coefficent of performance of AC /2/
-      RM_eff Coefficent of performance of AC /0.95/
+      RM_COP Coefficent of performance of RM /2/
+      RM_eff Coefficent of performance of RM /0.95/
 ;
 
 *--------------Cold water basin at maskin, cold storage-------------------------
@@ -163,7 +163,7 @@ scalar
       TURB_eff Efficiency of turbine /0.25/
 * Max turbine output from AH WP4.2 report
 *Must be set to 800 when refurbishment is done
-      TURB_cap Maximum power output of turbine /0/
+      TURB_cap Maximum power output of turbine /800/
 ;
 
 *--------------MC2 Refrigerator Machines, cooling source------------------------
@@ -175,6 +175,12 @@ scalar
       RMCC_H_COP Coefficient of performance for RM /3/
       RMCC_C_COP Coefficient of performance for RM /1.94/
       RMMC_cap Maximum cooling capacity for RM in kW/500/
+;
+
+*--------------Refrigeration machine investment---------------------------------
+* Source https://ec.europa.eu/energy/sites/ener/files/documents/Report%20WP2.pdf
+Parameter
+         RMInv_COP COP of refrigeration machine /4/
 ;
 
 *--------------PV data----------------------------------------------------------
@@ -295,12 +301,12 @@ scalar
 
 *--------------set building energy demands--------------------------------------
 Parameter
-         el_demand_AH(h,i_AH_el)       el demand in AH buildings as obtained from metry
-         el_demand_nonAH(h,i_nonAH_el) el demand in non-AH buildings as obtained from metry
-         h_demand_AH(h,i_AH_h)         heat demand in AH buildings as obtained from metry
-         h_demand_nonAH(h,i_nonAH_h)   heat demand in non-AH buildings as obtained from metry
-         c_demand_AH(h,i_AH_c)       cool demand in AH buildings as obtained from metry and many estimations
-         c_demand_nonAH(h,i_nonAH_c) cool demand in non-AH buildings as obtained from metry and many estimations
+         el_demand_AH(h,i_AH_el)       el demand of AH buildings
+         el_demand_nonAH(h,i_nonAH_el) el demand of non-AH buildings
+         h_demand_AH(h,i_AH_h)         heat demand of AH buildings
+         h_demand_nonAH(h,i_nonAH_h)   heat demand of non-AH
+         c_demand_AH(h,i_AH_c)         cool demand of AH buildings
+         c_demand_nonAH(h,i_nonAH_c)   cool demand of non-AH buildings
 ;
 
 el_demand_AH(h,i_AH_el)=el_demand(h,i_AH_el);
@@ -311,11 +317,6 @@ h_demand_nonAH(h,i_nonAH_h)=h_demand(h,i_nonAH_h);
 
 c_demand_AH(h,i_AH_c)=c_demand(h,i_AH_c);
 c_demand_nonAH(h,i_nonAH_c)=c_demand(h,i_nonAH_c);
-*--------------Refrigeration machine investment---------------------------------
-* Source https://ec.europa.eu/energy/sites/ener/files/documents/Report%20WP2.pdf
-Parameter
-         RMInv_COP COP of refrigeration machine /4/
-;
 
 *--------------unit total cost for all the generating units---------------------
 parameter
@@ -337,12 +338,11 @@ parameter
 *         USD_to_SEK_2015 Exchange rate USD to SED 2015 /8.43/
          EUR_to_SEK_2015 Exchange rate EUR to SEK in 2015 /9.36/
          kilo Factor of 1000 conversion to kW from MW for example /1000/
-
 ;
 
 * 0.0031 is grid tariff per kWh from Göteborg Energi home page; 0.011sek/kWh average profit for GE for large customers
 price('exG',h)=net_tariff + unit_avrg_prof_buy + el_price(h);
-price('DH',h)=h_price(h)$(opt_marg_factors eq 0)+MA_Cost_DH(h)$(opt_marg_factors eq 1);
+price('DH',h)=h_price(h)$(opt_marg_factors eq 0) + MA_Cost_DH(h)$(opt_marg_factors eq 1);
 
 el_sell_price(h) =el_price(h) - unit_prof_sell - net_tariff  +  el_cirtificate(h) + ursprungsgaranti;
 *the data is obtained from Energimyndigheten 2015 wood chips for District Heating Uses
