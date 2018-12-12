@@ -640,13 +640,21 @@ eq_PE(h)..
         FED_PE(h)=e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*PEF_exG(h)
                      + e_existPV(h)*PEF_PV + e_PV(h)*PEF_PV
                      + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*PEF_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*PEF_P1
-                     + fuel_P2(h)*PEF_P2;
+                     + fuel_P2(h)*PEF_P2
+                     + h_DH_slack_var(h)*1000000000
+                      + C_DC(h)*1000000000
+                      + el_slack_var(h)*1000000000;
+
 
 eq_PE_ma(h)..
         MA_FED_PE(h)=e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*MA_PEF_exG(h)
                      + e_existPV(h)*PEF_PV + e_PV(h)*PEF_PV
                      + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*MA_PEF_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*PEF_P1
-                     + fuel_P2(h)*PEF_P2;
+                     + fuel_P2(h)*PEF_P2
+                     + h_DH_slack_var(h)*1000000000
+                      + C_DC(h)*1000000000
+                      + el_slack_var(h)*1000000000;
+
 **********************Total PE use in the FED system****************************
 eq_totPE..
          tot_PE=e=sum(h,FED_PE(h));
@@ -659,13 +667,20 @@ eq_CO2(h)..
        FED_CO2(h) =e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*CO2F_exG(h)
                       + e_existPV(h)*CO2F_PV + e_PV(h)*CO2F_PV
                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*CO2F_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*CO2F_P1
-                      + fuel_P2(h) * CO2F_P2;
+                      + fuel_P2(h) * CO2F_P2
+                      + h_DH_slack_var(h)*1000000000
+                      + C_DC(h)*1000000000
+                      + el_slack_var(h)*1000000000;
 
 eq_CO2_ma(h)..
        MA_FED_CO2(h) =e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*MA_CO2F_exG(h)
                       + e_existPV(h)*CO2F_PV + e_PV(h)*CO2F_PV
                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*MA_CO2F_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*CO2F_P1
-                      + fuel_P2(h) * CO2F_P2;
+                      + fuel_P2(h) * CO2F_P2
+                      + h_DH_slack_var(h)*1000000000
+                      + C_DC(h)*1000000000
+                      + el_slack_var(h)*1000000000;
+
 
 ****************Total CO2 emission in the FED system****************************
 eq_CO2_TOT..
