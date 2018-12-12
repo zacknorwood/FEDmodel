@@ -7,30 +7,30 @@ equation
            eq_VKA11     heating generatin of VKA1
            eq_VKA12     cooling generation of VKA1
            eq_VKA13     maximum electricity usage by VKA1
-           eq_VKA14    ramp constraints for synth baseline
-           eq_VKA15    ramp constraints for synth baseline
-           eq_VKA16    ramp constraints for synth baseline
-           eq_VKA17    ramp constraints for synth baseline
+           eq_VKA14     ramp constraints for synth baseline
+           eq_VKA15     ramp constraints for synth baseline
+           eq_VKA16     ramp constraints for synth baseline
+           eq_VKA17     ramp constraints for synth baseline
 
            eq_VKA41     heating generation of VKA4
            eq_VKA42     cooling generation of VKA4
            eq_VKA43     maximum electricity usage by VKA4
-           eq_VKA44    ramp constraints for synth baseline
-           eq_VKA45    ramp constraints for synth baseline
-           eq_VKA46    ramp constraints for synth baseline
-           eq_VKA47    ramp constraints for synth baseline
+           eq_VKA44     ramp constraints for synth baseline
+           eq_VKA45     ramp constraints for synth baseline
+           eq_VKA46     ramp constraints for synth baseline
+           eq_VKA47     ramp constraints for synth baseline
 
-           eq1_h_Pana1            Eqauation related to Panna1 heat production
-           eq2_h_Pana1         ramp constraint set to 1MW
-           eq3_h_Pana1         ramp constraint set to 1MW
-           eq4_h_Pana1         ramp constraint set to 1MW
-           eq5_h_Pana1         ramp constraint set to 1MW
-           eq6_h_Pana1         fixed panna1 for synth baseline
+           eq1_h_Pana1           Eqauation related to Panna1 heat production
+           eq2_h_Pana1           ramp constraint set to 1MW
+           eq3_h_Pana1           ramp constraint set to 1MW
+           eq4_h_Pana1           ramp constraint set to 1MW
+           eq5_h_Pana1           ramp constraint set to 1MW
+           eq6_h_Pana1           fixed panna1 for synth baseline
            eq_h_Panna1_dispatch  Equation determining when Panna1 is dispatchable
 
-           eq_h_RGK11           Eqauation related to flue gas heat production
-           eq_h_RGK12          Fixed FGC for synthetic baseline
-           eq_h_RGK1_dispatch  Equation determining when flue gas is dispatchable
+           eq_h_RGK11            Eqauation related to flue gas heat production
+           eq_h_RGK12            Fixed FGC for synthetic baseline
+           eq_h_RGK1_dispatch    Equation determining when flue gas is dispatchable
 
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
@@ -112,7 +112,7 @@ equation
            eq_BFCh2       energy in the Battery Fast Charge at hour h
            eq_BFCh3       maximum energy in the Battery Fast Charge
            eq_BFCh_ch     maximum charging limit
-           eq_BFCh_dis    maximum discharign limit
+           eq_BFCh_dis    maximum discharging limit
            eq_BFCh_reac1  equation 1 for reactive power of BFCh
            eq_BFCh_reac2  equation 2 for reactive power of BFCh
            eq_BFCh_reac3  equation 3 for reactive power of BFCh
@@ -583,14 +583,23 @@ eq_cbalance(h)..
 
 *--------------Demand supply balance for electricity ---------------------------
 
+*eq_ebalance3(h)..
+*        sum(i_AH_el,el_demand(h,i_AH_el)) =l= e_imp_AH(h) + el_slack_var(h) + el_exG_slack(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - e_RMMC(h) - e_AAC(h)
+*                                 + e_PV(h) - e_HP(h) - e_RMInv(h)
+*                                 + sum(i_AH_el,(BES_dis(h,i_AH_el)*BES_dis_eff - BES_ch(h,i_AH_el)/BES_ch_eff)+(BFCh_dis(h,i_AH_el)*BFCh_dis_eff - BFCh_ch(h,i_AH_el)/BFCh_ch_eff))
+*                                 + e_TURB(h);
+*eq_ebalance4(h)..
+*        sum(i_nonAH_el,el_demand(h,i_nonAH_el)) =l= e_imp_nonAH(h);
+
+
 eq_ebalance3(h)..
-        sum(i_AH_el,el_demand(h,i_AH_el)) =l= e_imp_AH(h) + el_exG_slack(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - e_RMMC(h) - e_AAC(h)
+        sum(i,el_demand(h,i)) =l= e_imp_AH(h) + e_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - e_RMMC(h) - e_AAC(h)
                                  + e_PV(h) - e_HP(h) - e_RMInv(h)
                                  + sum(i_AH_el,(BES_dis(h,i_AH_el)*BES_dis_eff - BES_ch(h,i_AH_el)/BES_ch_eff)+(BFCh_dis(h,i_AH_el)*BFCh_dis_eff - BFCh_ch(h,i_AH_el)/BFCh_ch_eff))
                                  + e_TURB(h);
 eq_ebalance4(h)..
-        sum(i_nonAH_el,el_demand(h,i_nonAH_el)) =l= e_imp_nonAH(h);
-
+        sum(i_nonAH_el,el_demand(h,i_nonAH_el)) =e= e_imp_nonAH(h);
+*
 *------------Electrical Network constraints------------*
 $ontext
 eq_dcpowerflow1(h,Bus_IDs)..((e_imp_AH(h) - e_exp_AH(h))/Sb)$(ord(Bus_IDs)=13)-((el_VKA1(h) + el_VKA4(h))/Sb)$(ord(Bus_IDs)=20)
@@ -630,13 +639,21 @@ eq_PE(h)..
         FED_PE(h)=e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*PEF_exG(h)
                      + e_existPV(h)*PEF_PV + e_PV(h)*PEF_PV
                      + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*PEF_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*PEF_P1
-                     + fuel_P2(h)*PEF_P2;
+                     + fuel_P2(h)*PEF_P2
+                     + h_DH_slack_var(h)*1000000000
+                      + C_DC(h)*1000000000
+                      + el_slack_var(h)*1000000000;
+
 
 eq_PE_ma(h)..
         MA_FED_PE(h)=e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*MA_PEF_exG(h)
                      + e_existPV(h)*PEF_PV + e_PV(h)*PEF_PV
                      + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*MA_PEF_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*PEF_P1
-                     + fuel_P2(h)*PEF_P2;
+                     + fuel_P2(h)*PEF_P2
+                     + h_DH_slack_var(h)*1000000000
+                      + C_DC(h)*1000000000
+                      + el_slack_var(h)*1000000000;
+
 **********************Total PE use in the FED system****************************
 eq_totPE..
          tot_PE=e=sum(h,FED_PE(h));
@@ -649,13 +666,20 @@ eq_CO2(h)..
        FED_CO2(h) =e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*CO2F_exG(h)
                       + e_existPV(h)*CO2F_PV + e_PV(h)*CO2F_PV
                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*CO2F_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*CO2F_P1
-                      + fuel_P2(h) * CO2F_P2;
+                      + fuel_P2(h) * CO2F_P2
+                      + h_DH_slack_var(h)*1000000000
+                      + C_DC(h)*1000000000
+                      + el_slack_var(h)*1000000000;
 
 eq_CO2_ma(h)..
        MA_FED_CO2(h) =e= (e_imp_AH(h)-e_exp_AH(h) + e_imp_nonAH(h))*MA_CO2F_exG(h)
                       + e_existPV(h)*CO2F_PV + e_PV(h)*CO2F_PV
                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*MA_CO2F_DH(h) + ((h_Pana1(h)+h_RGK1(h))/P1_eff)*CO2F_P1
-                      + fuel_P2(h) * CO2F_P2;
+                      + fuel_P2(h) * CO2F_P2
+                      + h_DH_slack_var(h)*1000000000
+                      + C_DC(h)*1000000000
+                      + el_slack_var(h)*1000000000;
+
 
 ****************Total CO2 emission in the FED system****************************
 eq_CO2_TOT..
@@ -719,7 +743,10 @@ eq_var_cost_existing..
                                + sum(h,sum(m,(h_AbsC(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10))))
                                + sum(h,sum(m,(h_AbsC(h)*0.7*HoM(h,m))$((ord(m) =11))))
                                + sum(h,sum(m,(h_AbsC(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))))
-                               +sum(h,h_DH_slack_var(h))*1000000000000;
+                               +sum(h,h_DH_slack_var(h))*1000000000
+                               +sum(h,C_DC(h))*1000000000
+                               +sum(h,el_slack_var(h))*1000000000;
+                               
 
 eq_var_cost_new..
          var_cost_new =e=  sum(h,e_PV(h)*utot_cost('PV',h))

@@ -13,6 +13,7 @@ $LOAD B_ID
 $GDXIN
 Alias (B_ID, i) ;
 
+
 *-----------Simulation time, BITES and BAC investments and parameters-----------
 set h                SIMULATION TIME
     BITES_Inv(i)     used for fixed BITES inv option

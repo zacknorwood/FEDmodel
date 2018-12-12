@@ -131,8 +131,12 @@ vc_c_AAC
 vc_e_PV
 vc_c_absC
 vc_e_PV
+vc_e_new_PV
 vc_h_HP
+vc_h_ABSC
+vc_e_PT
 vc_c_RM
+vc_c_new_RM
 vc_e_BES
 vc_h_TES
 vc_h_BTES
@@ -148,6 +152,7 @@ vc_h_exp = sum(h,sum(m,(h_exp_AH.l(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m)
 vc_h_P1 = sum(h,h_Pana1.l(h)*utot_cost('P1',h));
 vc_h_VKA1= sum(h,H_VKA1.l(h)*utot_cost('HP',h));
 vc_h_VKA4= sum(h,H_VKA4.l(h)*utot_cost('HP',h));
+vc_h_ABSC= sum(h,sum(m,(h_AbsC.l(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10))) + sum(m,(h_AbsC.l(h)*0.7*HoM(h,m))$((ord(m) =11))) + sum(m,(h_AbsC.l(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))));
 vc_c_absC= sum(h,c_AbsC.l(h)*utot_cost('AbsC',h));
 vc_c_RM  = sum(h,c_RM.l(h)*utot_cost('RM',h));
 vc_c_RMMC= sum(h,c_RMMC.l(h)*utot_cost('RM',h));
@@ -156,12 +161,14 @@ vc_e_PV  = sum(h,e_existPV.l(h)*utot_cost('PV',h));
 vc_c_absC = sum(h,sum(m,(h_AbsC.l(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10)))
           + sum(m,(h_AbsC.l(h)*0.7*HoM(h,m))$((ord(m) =11)))
           + sum(m,(h_AbsC.l(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))));
+vc_e_PT=sum(h,sum(m,PT_exG.l(m)*HoM(h,m)));
+                         
 
 ********** NEW INVESTMENT
 
-vc_e_PV  = sum(h,e_PV.l(h)*utot_cost('PV',h));
+vc_e_new_PV  = sum(h,e_PV.l(h)*utot_cost('PV',h));
 vc_h_HP  = sum(h,h_HP.l(h)*utot_cost('HP',h));
-vc_c_RM  = sum(h,c_RMInv.l(h)*utot_cost('RMInv',h));
+vc_c_new_RM  = sum(h,c_RMInv.l(h)*utot_cost('RMInv',h));
 vc_e_BES = sum(h,sum(i,BES_dis.l(h,i)*utot_cost('BES',h)));
 vc_h_TES = sum(h,TES_dis.l(h)*utot_cost('TES',h));
 vc_h_BTES= sum(h,sum(i,BTES_Sch.l(h,i)*utot_cost('BTES',h)));
@@ -169,6 +176,7 @@ vc_h_P2  = sum(h,h_P2.l(h)*utot_cost('P2',h));
 vc_e_TURB= sum(h,e_TURB.l(h)*utot_cost('TURB',h));
 *vc_e_PV                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
 vc_tot = sum(h, tot_var_cost_AH(h));
+
 
 
 ************AH PE use and CO2 emission*************************************
@@ -282,22 +290,23 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
 
 
 execute_unload 'WP6' model_status, Ainv_cost, vc_e_imp,vc_e_exp,vc_h_imp,vc_h_exp,vc_h_P1,vc_h_VKA1,vc_h_VKA4,vc_c_absC,vc_c_RM,vc_c_RMMC,vc_c_AAC,vc_e_PV,vc_c_absC,vc_e_PV,
-vc_h_HP,vc_c_RM,vc_e_BES,vc_h_TES,vc_h_BTES,vc_h_P2,vc_e_TURB, vc_tot, tot_var_cost_AH
+                vc_h_HP , vc_c_RM, vc_e_BES,vc_h_TES,vc_e_new_PV, vc_c_new_RM, vc_h_BTES, vc_h_ABSC, vc_h_P2,vc_e_TURB, vc_e_PT, vc_tot, tot_var_cost_AH, el_slack_var
 
-MA_AH_CO2,AH_CO2, MA_AH_CO2_tot, AH_CO2_tot, MA_AH_CO2_peak, AH_CO2_peak, MA_AH_PE_tot, AH_PE_tot
+                MA_AH_CO2,AH_CO2, MA_AH_CO2_tot, AH_CO2_tot, MA_AH_CO2_peak, AH_CO2_peak, MA_AH_PE_tot, AH_PE_tot
 
-h_Pana1, h_RGK1, h_VKA1, h_VKA4, H_P2T, h_TURB, h_RMMC, h_DH_slack, h_DH_slack_var, h_exp_AH, h_imp_AH, h_imp_AH_hist
+                h_Pana1, h_RGK1, h_VKA1, h_VKA4, H_P2T, h_TURB, h_RMMC, h_DH_slack, h_DH_slack_var, h_exp_AH, h_imp_AH, h_imp_AH_hist
 *h_AbsCInv
-C_DC, c_DC_slack, C_VKA1, C_VKA4,  c_AbsC, c_RM, c_RMMC, c_AAC, c_HP,
+                C_DC, c_DC_slack, C_VKA1, C_VKA4,  c_AbsC, c_RM, c_RMMC, c_AAC, c_HP,
 *c_RMInv, c_AbsCInv
 *(CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
-e_imp_AH, e_imp_nonAH, el_exG_slack, e_exp_AH, el_VKA1, el_VKA4, el_RM, e_RMMC, e_AAC, e_PV, e_HP, e_RMInv, e_turb
+                e_imp_AH, e_imp_nonAH, el_exG_slack, e_exp_AH, el_VKA1, el_VKA4, el_RM, e_RMMC, e_AAC, e_PV, e_HP, e_RMInv, e_turb
 *sum(i,(BES_dis(h,i)*BES_dis_eff - BES_ch(h,i)/BES_ch_eff)+(BFCh_dis(h,i)*BFCh_dis_eff - BFCh_ch(h,i)/BFCh_ch_eff))
-cool_demand, heat_demand, elec_demand
+                cool_demand, heat_demand, elec_demand
 ;
 
-execute '=gdx2xls MtoG.gdx';
-execute '=gdx2xls GtoM.gdx';
+
+*execute '=gdx2xls MtoG.gdx';
+*execute '=gdx2xls GtoM.gdx';
 execute '=gdx2xls WP6.gdx';
 
 execute_unload 'h' h;

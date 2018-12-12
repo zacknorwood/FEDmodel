@@ -183,7 +183,8 @@ binary variable
 
 *0 is used in case there is no investment ,
 B_BITES.fx(i) $ (opt_fx_inv eq 1)=0;
-B_BITES.fx(BITES_Inv) $ (opt_fx_inv eq 1)=BITES_Inv_fx;
+B_BITES.fx(BITES_Inv) $ (opt_fx_inv eq 1 and BITES_Inv_fx eq 1)=1;
+
 *----------------Building Advanced Control (BAC) related------------------------
 positive variable
          h_BAC_savings(h,i) hourly heat consumption savings per building attributable to BAC investment
@@ -194,7 +195,7 @@ binary variable
 ;
 *0 is used in case there is no investment
 B_BAC.fx(i) $ (opt_fx_inv eq 1) =0;
-B_BAC.fx(BAC_Inv) $ (opt_fx_inv eq 1) =BAC_Inv_fx;
+B_BAC.fx(BAC_inv) $ (opt_fx_inv eq 1 and BAC_Inv_fx eq 1) =1;
 *----------------Solar PV PV relate variables-----------------------------------
 positive variable
          e_PV(h)                electricity produced by PV
@@ -234,6 +235,7 @@ positive variable
          e_exp_AH(h)        Exported electricty from the AH system
          e_imp_AH(h)        Imported electricty to the AH system
          e_imp_nonAH(h)     Imported electricty to the AH system
+         el_slack_var(h)    Slack electricty variable
          V(h,Bus_IDs)       Voltage magnitudes of EL Grid
 ;
 e_imp_AH.up(h)=exG_max_cap;
@@ -258,6 +260,7 @@ h_imp_AH.up(h)=  DH_max_cap;
 
 h_exp_AH.up(h)=DH_max_cap;
 h_exp_AH.fx(h)$(min_totCost_0 eq 1)= h_exp_AH_hist(h);
+h_imp_AH.lo(h)$(min_totCost_0 eq 1)= h_imp_AH_hist(h);
 
 *h_DH.lo(h)=-DH_max_cap;
 *h_DH.up(h)=DH_max_cap;
@@ -266,11 +269,12 @@ binary variable
 y_temp(h);
 
 *------------------Grid DC related----------------------------------------------
-variable
+positive variable
          C_DC(h)             cooling from district cooling system
 ;
-C_DC.fx(h) $(min_totCost_0 eq 0)= 0;
-C_DC.fx(h) $(min_totCost_0 eq 1)= c_DC_slack(h);
+*C_DC.fx(h) $(min_totCost_0 eq 0)= 0;
+*C_DC.fx(h) $(min_totCost_0 eq 1)= c_DC_slack(h);
+
 
 *-------------------------PE and CO2 related -----------------------------------
 variable
