@@ -105,6 +105,8 @@ scalar
 * Source for these numbers?
 scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
+         AbsC_el_COP Electrical Coefficient of Performance of AbsC /22/
+         AbsC_min_prod Minimum production while on of AbsC /290/
 
 *AbsC_eff Efficiency of AbsC /0.95/
 ;

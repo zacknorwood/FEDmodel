@@ -34,6 +34,7 @@ equation
 
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
+           eq_AbsC3     Absorption chiller electricity usage
 
            eq_RM1       Refrigerator equation
            eq_RM2       Refrigerator equation
@@ -278,9 +279,12 @@ eq_h_RGK1_dispatch(h)$(P1P2_dispatchable(h)=0 and min_totCost_0 eq 0)..
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 eq_AbsC1(h)..
              c_AbsC(h) =e= AbsC_COP*h_AbsC(h);
-*AbsC_eff;
+
 eq_AbsC2(h) $ (min_totCost_0 eq 0)..
              c_AbsC(h) =l= AbsC_cap;
+
+eq_AbsC3(h)..
+             el_AbsC(h) =e= c_AbsC(h) / AbsC_el_COP;
 
 *----------Refrigerator Machine equations (electricity => cooling)--------------
 eq_RM1(h)..
@@ -594,7 +598,7 @@ eq_cbalance(h)..
 
 eq_ebalance3(h)..
         sum(i,el_demand(h,i)) =l= e_imp_AH(h) + e_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - e_RMMC(h) - e_AAC(h)
-                                 + e_PV(h) - e_HP(h) - e_RMInv(h)
+                                 + e_PV(h) - e_HP(h) - e_RMInv(h) - el_AbsC(h)
                                  + sum(i_AH_el,(BES_dis(h,i_AH_el)*BES_dis_eff - BES_ch(h,i_AH_el)/BES_ch_eff)+(BFCh_dis(h,i_AH_el)*BFCh_dis_eff - BFCh_ch(h,i_AH_el)/BFCh_ch_eff))
                                  + e_TURB(h);
 eq_ebalance4(h)..
@@ -740,13 +744,11 @@ eq_var_cost_existing..
                                + sum(h,c_RMMC(h)*utot_cost('RM',h))
                                + sum(h,c_AAC(h)*utot_cost('AAC',h))
                                + sum(h,e_existPV(h)*utot_cost('PV',h))
-                               + sum(h,sum(m,(h_AbsC(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10))))
-                               + sum(h,sum(m,(h_AbsC(h)*0.7*HoM(h,m))$((ord(m) =11))))
-                               + sum(h,sum(m,(h_AbsC(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))))
+                               + sum(h, h_AbsC(h)*utot_cost('DH',h))
                                +sum(h,h_DH_slack_var(h))*1000000000
                                +sum(h,C_DC(h))*1000000000
                                +sum(h,el_slack_var(h))*1000000000;
-                               
+
 
 eq_var_cost_new..
          var_cost_new =e=  sum(h,e_PV(h)*utot_cost('PV',h))
