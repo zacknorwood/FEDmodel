@@ -156,7 +156,9 @@ scalar
       P2_cap                 Capacity of P2 /6000/
       P2_max                 Maximum output from P2 /6000/
       P2_min                 Minimum output from P2 /1000/
+      P2_hourly_ramprate     hourly maximum ramp rate /4000/
       P2_reseach_prod        Heat output during research /1500/
+      P2_power_to_heat_ratio power to heat ratio of P2 and turbine /0.2/
 ;
 
 *----------------Refurbished turbine for Panna 2  ------------------------------

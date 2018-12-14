@@ -60,6 +60,8 @@ equation
 
            eq1_P2                production equation for P2
            eq2_P2                investment equation for P2
+           eq3_P2                maximum ramp up constraint
+           eq4_P2                maximum ramp down constraint
            eq_h_Panna2_research  P2 production constraint during research
 
            eq1_TURB     production equation for turbine-gen
@@ -69,6 +71,7 @@ equation
            eq5_TURB     active-reactive power limits of turbine
            eq6_TURB     active-reactive power limits of turbin
            eq7_TURB     active-reactive power limits of turbin
+           eq8_TURB     enforcement of maximum power to heat ratio
 
            eq_HP1       heat production from HP
            eq_HP2       cooling production from HP
@@ -347,6 +350,12 @@ eq1_P2(h)..
 eq2_P2(h)..
          h_P2(h) =l= B_P2 * P2_cap;
 
+eq3_P2(h)$(P1P2_dispatchable(h)=0  and ord(h) gt 1)..
+         h_P2(h)-h_P2(h-1) =l= P2_hourly_ramprate;
+
+eq4_P2(h)$(P1P2_dispatchable(h)=0  and ord(h) gt 1)..
+         h_P2(h) - h_P2(h-1) =g= -P2_hourly_ramprate;
+
 eq_h_Panna2_research(h)$(P1P2_dispatchable(h)=0)..
          h_P2(h) =e= B_P2 * P2_reseach_prod;
 
@@ -364,6 +373,9 @@ eq4_TURB(h)..e_TURB_reac(h)=l=0.4843*e_TURB(h);
 eq5_TURB(h)..e_TURB_reac(h)=g=-0.4843*e_TURB(h);
 eq6_TURB(h)..-0.58*e_TURB_reac(h)+e_TURB(h)=l=1.15*TURB_cap;
 eq7_TURB(h)..+0.58*e_TURB_reac(h)+e_TURB(h)=l=1.15*TURB_cap;
+
+eq8_TURB(h)..
+         e_TURB(h) =l= h_P2(h) * P2_power_to_heat_ratio;
 
 *----------------HP equations --------------------------------------------------
 eq_HP1(h)..
