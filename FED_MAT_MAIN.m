@@ -491,7 +491,7 @@ if (option0 == 1)
 end
 
 
-for i=[1 2 3 4 7 8]%1:8 % This for loop is to make multiple runs, e.g. for WP6 results,
+for i=1:8 %[1 2 3 4 7 8]% This for loop is to make multiple runs, e.g. for WP6 results,
     %make sure that no investments are selected under FED INVESTMENT OPTIONS (line 150)
 %%    run different scenarios
 
