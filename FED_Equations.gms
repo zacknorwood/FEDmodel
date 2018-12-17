@@ -350,10 +350,10 @@ eq1_P2(h)..
 eq2_P2(h)..
          h_P2(h) =l= B_P2 * P2_cap;
 
-eq3_P2(h)$(P1P2_dispatchable(h)=0  and ord(h) gt 1)..
+eq3_P2(h)$(P1P2_dispatchable(h)=1 and P1P2_dispatchable(h-1)=1  and ord(h) gt 1)..
          h_P2(h)-h_P2(h-1) =l= P2_hourly_ramprate;
 
-eq4_P2(h)$(P1P2_dispatchable(h)=0  and ord(h) gt 1)..
+eq4_P2(h)$(P1P2_dispatchable(h)=1  and P1P2_dispatchable(h-1)=1 and ord(h) gt 1)..
          h_P2(h) - h_P2(h-1) =g= -P2_hourly_ramprate;
 
 eq_h_Panna2_research(h)$(P1P2_dispatchable(h)=0)..
