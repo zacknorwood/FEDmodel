@@ -1,4 +1,4 @@
-function [P1P2_disp,DH_exp_season, BAC_sav_period,area_roof,area_facades, BTES_param ] = fread_static_properties()
+function [P1P2_disp,DH_exp_season,DH_heating_season, BAC_sav_period,area_roof,area_facades, BTES_param ] = fread_static_properties()
 %This function reads static properties of model input parameters
 
 %P1P2 dispatchability, DH export period and BAC saving period need to be
@@ -13,7 +13,12 @@ P1P2_disp(isnan(P1P2_disp))=0;
 sheet=1;
 xlRange = 'C2:C17545';
 DH_exp_season=xlsread('Input_dispatch_model\DH_export_season.xlsx',sheet,xlRange);
-    
+
+%DH heating season
+sheet = 1;
+xlRange = 'C2:C17545';
+DH_heating_season=xlsread('Input_dispatch_model\DH_heating_season.xlsx',sheet,xlRange);
+
 %BAC_savings_period
 sheet=1;
 xlRange = 'C2:C17545';

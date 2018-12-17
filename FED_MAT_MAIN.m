@@ -170,7 +170,7 @@ FGC = struct('name','FGC','type','parameter','form','full');
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 while LOAD_EXCEL_DATA==1
     %Read static properties of the model
-    [P1P2_disp, DH_exp_season, BAC_sav_period, pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
+    [P1P2_disp, DH_exp_season,DH_heating_season_full, BAC_sav_period, pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
     
     %Read variable/measured input data
     [e_demand_measured, h_demand_measured,c_demand_measured,...
@@ -444,6 +444,9 @@ P1P2_dispatchable = struct('name','P1P2_dispatchable','type','parameter','form',
 
 %Heat export season
 DH_export_season = struct('name','DH_export_season','type','parameter','form','full');
+
+%Heat export season
+DH_heating_season = struct('name','DH_heating_season','type','parameter','form','full');
 
 %BAC saving period
 BAC_savings_period = struct('name','BAC_savings_period','type','parameter','form','full');
@@ -839,6 +842,11 @@ for t=sim_start:sim_stop
     DH_export_season.val = DH_exp_season_temp;
     DH_export_season.uels=h_sim.uels;
     
+    %DH heating season
+    DH_heating_season_temp=DH_heating_season_full((t_init_m-1):(t_len_m+t_init_m-2),:);
+    DH_heating_season.val = DH_heating_season_temp;
+    DH_heating_season.uels=h_sim.uels;
+    
     %BAC saving period
     BAC_sav_period_temp=BAC_sav_period((t_init_m-1):(t_len_m+t_init_m-2),:);
     BAC_savings_period.val = BAC_sav_period_temp;
@@ -989,7 +997,7 @@ wgdx('MtoG.gdx', temp_opt_fx_inv, temp_opt_fx_inv_RMMC,...
      B_ID,B_ID_AH_el,B_ID_nonAH_el,B_ID_AH_h,B_ID_nonAH_h,B_ID_AH_c,B_ID_nonAH_c,B_ID_nonBITES,BID,...
      e_demand,h_demand,c_demand,qB1,qF1,...
      el_VKA1_0, el_VKA4_0,el_AAC_0,h_AbsC_0,Gekv_roof,Gekv_facade,...     
-     BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period,...
+     BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,DH_heating_season,BAC_savings_period,...
      PV_B_ID_roof_Inv,PV_roof_cap_Inv,PV_B_ID_facade_Inv,PV_facade_cap_Inv,...
      el_price,el_cirtificate,h_price,tout,BAC_savings_factor,...
      temp_optn0,temp_optn1, temp_optn2, temp_optn3, temp_synth_baseline, FED_Inv_lim,Buses_IDs,temp_opt_fx_inv_BFCh, temp_opt_fx_inv_BFCh_cap,...
