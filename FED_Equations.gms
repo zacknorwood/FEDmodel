@@ -97,6 +97,7 @@ equation
            eq_BES1       intial energy in the Battery
            eq_BES2       energy in the Battery at hour h
            eq_BES3       maximum energy in the Battery
+           eq_BES4       Limit minimum SoC
            eq_BES_ch     maximum charging limit
            eq_BES_dis    maximum discharign limit
            eq_BES_reac1  equation 1 for reactive power of BES
@@ -111,6 +112,7 @@ equation
            eq_BFCh1       intial energy in the Battery Fast charge
            eq_BFCh2       energy in the Battery Fast Charge at hour h
            eq_BFCh3       maximum energy in the Battery Fast Charge
+           eq_BDch4       Limit minimum SoC
            eq_BFCh_ch     maximum charging limit
            eq_BFCh_dis    maximum discharging limit
            eq_BFCh_reac1  equation 1 for reactive power of BFCh
@@ -431,6 +433,8 @@ eq_BES2(h,i)$(ord(h) gt 1)..
              BES_en(h,i)=e=(BES_en(h-1,i)+BES_ch(h,i)-BES_dis(h,i));
 eq_BES3(h,i) ..
              BES_en(h,i)=l=BES_cap(i);
+eq_BES4(h,i) ..
+             BES_en(h,i)=g=BES_cap(i)*BES_min_SOC;
 eq_BES_ch(h,i) ..
 *Assuming 1C charging
              BES_ch(h,i)=l=(BES_cap(i)-BES_en(h,i));
@@ -454,6 +458,9 @@ eq_BFCh2(h,i)$(ord(h) gt 1)..
              BFCh_en(h,i)=e=(BFCh_en(h-1,i)+BFCh_ch(h,i)-BFCh_dis(h,i));
 eq_BFCh3(h,i) ..
              BFCh_en(h,i)=l=BFCh_cap(i);
+eq_BFCh4(h,i) ..
+             BFCh_en(h,i)=g=BFCh_cap(i)*BFCh_min_SOC;
+
 eq_BFCh_ch(h,i) ..
 *Assuming 1C charging
              BFCh_ch(h,i)=l=(BFCh_cap(i)-BFCh_en(h,i));
