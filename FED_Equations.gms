@@ -563,7 +563,7 @@ eq_hbalance1(h)..
 * Change to equal to test the slack variable
 eq_hbalance2(h)..
 *             sum(i,h_demand(h,i)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
-             sum(i,h_demand(h,i)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
+             sum(i,h_demand(h,i)) =l=h_imp_AH(h) - h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Pana1(h) + h_RGK1(h) + H_VKA1(h)
                                      + H_VKA4(h) + H_P2T(h) + 0.75*h_TURB(h) + h_RMMC(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
@@ -576,7 +576,7 @@ eq_hbalance3(h)..
 
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
-         sum(i_AH_c,c_demand_AH(h,i_AH_c))=l=C_DC(h) + c_DC_slack(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
+         sum(i_AH_c,c_demand_AH(h,i_AH_c))=l=C_DC(h) - c_DC_slack(h) + C_VKA1(h) + C_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_AAC(h) + c_HP(h) + c_RMInv(h)
                                 + c_AbsCInv(h)
                                 + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
@@ -593,7 +593,7 @@ eq_cbalance(h)..
 
 
 eq_ebalance3(h)..
-        sum(i,el_demand(h,i)) =l= e_imp_AH(h) + e_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - e_RMMC(h) - e_AAC(h)
+        sum(i,el_demand(h,i)) =l= e_imp_AH(h) + e_imp_nonAH(h)+ el_slack_var(h) - el_exG_slack(h) - e_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - e_RMMC(h) - e_AAC(h)
                                  + e_PV(h) - e_HP(h) - e_RMInv(h)
                                  + sum(i_AH_el,(BES_dis(h,i_AH_el)*BES_dis_eff - BES_ch(h,i_AH_el)/BES_ch_eff)+(BFCh_dis(h,i_AH_el)*BFCh_dis_eff - BFCh_ch(h,i_AH_el)/BFCh_ch_eff))
                                  + e_TURB(h);
@@ -746,7 +746,7 @@ eq_var_cost_existing..
                                +sum(h,h_DH_slack_var(h))*1000000000
                                +sum(h,C_DC(h))*1000000000
                                +sum(h,el_slack_var(h))*1000000000;
-                               
+
 
 eq_var_cost_new..
          var_cost_new =e=  sum(h,e_PV(h)*utot_cost('PV',h))
