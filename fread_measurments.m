@@ -11,9 +11,9 @@ gen_range=strcat('B',int2str(2+t_init),':B',int2str(2+t_len+t_init-1));
 price_ramge=strcat('B',int2str(t_init),':B',int2str(t_len+t_init-1));
 tout_ramge=strcat('B',int2str(t_init),':B',int2str(t_len+t_init-1));%'B2:B100';
 irradiance_range=strcat('B',int2str(t_init),':BU',int2str(t_len+t_init-1));
-el_slack_range=strcat('F',int2str(2+t_init),':F',int2str(2+t_len+t_init-1));
-h_slack_range=strcat('O',int2str(2+t_init),':O',int2str(2+t_len+t_init-1));
-dc_slack_range=strcat('N',int2str(2+t_init),':N',int2str(2+t_len+t_init-1));
+el_slack_range=strcat('F',int2str(t_init),':F',int2str(t_len+t_init-1));
+h_slack_range=strcat('P',int2str(t_init),':P',int2str(t_len+t_init-1));
+dc_slack_range=strcat('N',int2str(t_init),':N',int2str(t_len+t_init-1));
 
 %Measured electricity demand in kW
 sheet=1;
