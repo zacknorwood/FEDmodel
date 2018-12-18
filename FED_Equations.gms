@@ -112,7 +112,7 @@ equation
            eq_BFCh1       intial energy in the Battery Fast charge
            eq_BFCh2       energy in the Battery Fast Charge at hour h
            eq_BFCh3       maximum energy in the Battery Fast Charge
-           eq_BDch4       Limit minimum SoC
+           eq_BFch4       Limit minimum SoC
            eq_BFCh_ch     maximum charging limit
            eq_BFCh_dis    maximum discharging limit
            eq_BFCh_reac1  equation 1 for reactive power of BFCh
