@@ -105,6 +105,8 @@ scalar
 * Source for these numbers?
 scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
+         AbsC_el_COP Electrical Coefficient of Performance of AbsC /22/
+         AbsC_min_prod Minimum production while on of AbsC /290/
 
 *AbsC_eff Efficiency of AbsC /0.95/
 ;
@@ -154,7 +156,9 @@ scalar
       P2_cap                 Capacity of P2 /6000/
       P2_max                 Maximum output from P2 /6000/
       P2_min                 Minimum output from P2 /1000/
+      P2_hourly_ramprate     hourly maximum ramp rate /4000/
       P2_reseach_prod        Heat output during research /1500/
+      P2_power_to_heat_ratio power to heat ratio of P2 and turbine /0.2/
 ;
 
 *----------------Refurbished turbine for Panna 2  ------------------------------

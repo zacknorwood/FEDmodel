@@ -54,8 +54,13 @@ h_RGK1.fx(h)$(min_totCost_0 = 1)=qF1(h);
 positive variable
          h_AbsC(h)           heat demand for Absorbtion Chiller
          c_AbsC(h)           cooling power available in AbsC
+         el_AbsC(h)          electricity demand of Absorption chiller
          AbsC_cap            capacity of AbsC
 ;
+* Assumes that the cooling season is the inverse of the heating season
+* So when its not the heating season the absorption chillers are switched on
+* and thus have a minimum production.
+c_AbsC.lo(h)$(DH_heating_season(h)=0 and min_totCost_0 = 0) = AbsC_min_prod;
 AbsC_cap.fx = cap_sup_unit('AbsC');
 h_AbsC.fx(h)$(min_totCost_0 = 1)=h_AbsC_0(h);
 
