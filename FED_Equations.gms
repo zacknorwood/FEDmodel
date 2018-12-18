@@ -427,7 +427,7 @@ eq_BAC_savings(h,i)..
 
 *-----------------Battery constraints-------------------------------------------
 eq_BES1(h,i) $ (ord(h) eq 1)..
-             BES_en(h,i)=e= opt_fx_inv_BES_init;
+             BES_en(h,i)=e= BES_cap(i)*opt_fx_inv_BES_init;
 *sw_BES*BES_cap;
 eq_BES2(h,i)$(ord(h) gt 1)..
              BES_en(h,i)=e=(BES_en(h-1,i)+BES_ch(h,i)-BES_dis(h,i));
@@ -452,7 +452,7 @@ eq_BES_reac7(h,i)..0.58*BES_reac(h,i)-BES_ch(h,i)+BES_dis(h,i)=l=1.15*opt_fx_inv
 eq_BES_reac8(h,i)..0.58*BES_reac(h,i)-BES_ch(h,i)+BES_dis(h,i)=g=-1.15*opt_fx_inv_BES_maxP(i);
 *-----------------Battery Fast Charge constraints-------------------------------------------
 eq_BFCh1(h,i) $ (ord(h) eq 1)..
-             BFCh_en(h,i)=e= opt_fx_inv_BFCh_init;
+             BFCh_en(h,i)=e= BFCh_cap(i)*opt_fx_inv_BFCh_init;
 *sw_BES*BES_cap;
 eq_BFCh2(h,i)$(ord(h) gt 1)..
              BFCh_en(h,i)=e=(BFCh_en(h-1,i)+BFCh_ch(h,i)-BFCh_dis(h,i));
@@ -746,10 +746,12 @@ eq_var_cost_existing..
                                + sum(h,c_RM(h)*utot_cost('RM',h))
                                + sum(h,c_RMMC(h)*utot_cost('RM',h))
                                + sum(h,c_AAC(h)*utot_cost('AAC',h))
+                               + sum(h, h_AbsC(h)*utot_cost('DH',h))
                                + sum(h,e_existPV(h)*utot_cost('PV',h))
-                               + sum(h,sum(m,(h_AbsC(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10))))
-                               + sum(h,sum(m,(h_AbsC(h)*0.7*HoM(h,m))$((ord(m) =11))))
-                               + sum(h,sum(m,(h_AbsC(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))))
+*This is AH actual cost for cooling
+*                               + sum(h,sum(m,(h_AbsC(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10))))
+*                               + sum(h,sum(m,(h_AbsC(h)*0.7*HoM(h,m))$((ord(m) =11))))
+*                               + sum(h,sum(m,(h_AbsC(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))))
                                +sum(h,h_DH_slack_var(h))*1000000000
                                +sum(h,C_DC(h))*1000000000
                                +sum(h,el_slack_var(h))*1000000000;
