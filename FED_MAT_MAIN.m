@@ -494,7 +494,7 @@ if (option0 == 1)
 end
 
 
-for i=1:8 %[1 2 3 4 7 8]% This for loop is to make multiple runs, e.g. for WP6 results,
+for i=8 %[1 2 3 4 7 8]% This for loop is to make multiple runs, e.g. for WP6 results,
     %make sure that no investments are selected under FED INVESTMENT OPTIONS (line 150)
 %%    run different scenarios
 
@@ -952,6 +952,9 @@ for t=sim_start:sim_stop
     end
     if t==sim_start
         Initial(1:8)=0;
+        %INITIAL SoC for energy storage, Must agree with min_SOC
+        Initial(4)=0.20;
+        Initial(5)=0.20;
     else
     [Initial, x]=readGtoM(t);
     end
