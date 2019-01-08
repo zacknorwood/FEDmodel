@@ -177,6 +177,102 @@ vc_el_TURB= sum(h,el_TURB.l(h)*utot_cost('TURB',h));
 
 
 
+**************************************************************
+
+parameter
+v_e_imp
+v_e_exp
+v_h_imp
+v_h_exp
+v_h_P1
+v_h_VKA1
+v_h_VKA4
+v_c_absC
+v_c_RM
+v_c_RMMC
+v_c_AAC
+v_e_PV
+v_c_absC
+v_e_PV
+v_e_new_PV
+v_h_HP
+v_h_ABSC
+v_c_RM
+v_c_new_RM
+v_e_BES_ch
+v_e_BES_dis
+v_h_TES
+v_h_BTES_Sdis
+v_h_BTES_Sch
+v_h_P2
+v_e_TURB
+v_tot
+v_h_BAC_savings
+v_h_DH_slack
+v_h_DH_slack_var
+v_h_RGK1
+v_h_turb
+v_h_imp_nonAH
+v_c_slack
+v_e_slack
+;
+
+
+v_e_imp = sum(h, e_imp_AH.l(h)+0.00000000000001);
+v_e_exp = sum(h, e_exp_AH.l(h)+0.00000000000001);
+
+v_h_imp = sum(h, h_imp_AH.l(h)+0.00000000000001);
+v_h_exp = sum(h, h_exp_AH.l(h)+0.00000000000001);
+v_h_P1 = sum(h,  h_Pana1.l(h)+0.00000000000001);
+v_h_VKA1 = sum(h, H_VKA1.l(h)+0.00000000000001);
+v_h_VKA4 = sum(h, H_VKA4.l(h)+0.00000000000001);
+v_h_ABSC = sum(h, h_AbsC.l(h)+0.00000000000001);
+
+v_c_absC = sum(h, c_AbsC.l(h)+0.00000000000001);
+v_c_RM = sum(h, c_RM.l(h)+0.00000000000001);
+v_c_RMMC = sum(h, c_RMMC.l(h)+0.00000000000001);
+v_c_AAC = sum(h, c_AAC.l(h)+0.00000000000001);
+v_e_PV = sum(h, e_existPV.l(h)+0.00000000000001);
+v_c_absC = sum(h, h_AbsC.l(h)+0.00000000000001);
+
+
+********** NEW INVESTMENT
+
+v_e_new_PV = sum(h, e_PV.l(h)+0.00000000000001);
+v_h_HP = sum(h, h_HP.l(h)+0.00000000000001);
+v_c_new_RM = sum(h, c_RMInv.l(h));
+
+v_e_BES_dis = sum(h, sum(i,BES_dis.l(h,i))+0.00000000000001);
+v_e_BES_ch = sum(h, sum(i,BES_ch.l(h,i))+0.00000000000001);
+v_e_TURB = sum(h, e_TURB.l(h)+0.00000000000001);
+
+v_h_TES = sum(h, TES_dis.l(h)+0.00000000000001);
+*remember to consider efficiency    (sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
+v_h_BTES_Sdis = sum(h, sum(i,BTES_Sdis.l(h,i))+0.00000000000001);
+v_h_BTES_Sch = sum(h, sum(i,BTES_Sch.l(h,i))+0.00000000000001);
+v_h_P2 = sum(h, h_P2.l(h)+0.00000000000001);
+*make sure that we calculate this right later on. e.g. 75% heat is going back to the heat system
+v_h_turb = sum(h, h_turb.l(h)+0.00000000000001);
+v_h_HP = sum(h, h_HP.l(h)+0.00000000000001);
+v_h_imp_nonAH = sum(h, h_imp_nonAH.l(h)+0.00000000000001);
+v_h_RGK1 = sum(h,h_RGK1.l(h)+0.00000000000001);
+v_h_BAC_savings = sum(h,(sum(i,h_BAC_savings.l(h,i)))+0.00000000000001 );
+
+
+v_c_slack = sum(h, c_DC.l(h)+0.00000000000001);
+v_e_slack = sum(h, el_slack_var.l(h)+0.00000000000001);
+v_h_DH_slack = sum(h, h_DH_slack(h)+0.00000000000001);
+v_h_DH_slack_var = sum(h, h_DH_slack_var.l(h)+0.00000000000001);
+
+
+
+
+
+*vc_e_PV                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
+
+
+**************************************************
+
 ************AH PE use and CO2 emission*************************************
 Parameters
           AH_PE(h)     AH PE use
@@ -297,6 +393,40 @@ c_RMInv, c_AbsCInv
                 e_imp_AH, e_imp_nonAH, el_exG_slack, e_exp_AH, el_VKA1, el_VKA4, el_RM, e_RMMC, e_AAC, e_PV, e_HP, e_RMInv, e_turb
 sum(i,(BES_dis(h,i)*BES_dis_eff - BES_ch(h,i)/BES_ch_eff)+(BFCh_dis(h,i)*BFCh_dis_eff - BFCh_ch(h,i)/BFCh_ch_eff))
                 cool_demand, heat_demand, elec_demand
+v_e_imp
+v_e_exp
+v_h_imp
+v_h_exp
+v_h_P1
+v_h_VKA1
+v_h_VKA4
+v_c_absC
+v_c_RM
+v_c_RMMC
+v_c_AAC
+v_e_PV
+v_c_absC
+v_e_PV
+v_e_new_PV
+v_h_HP
+v_h_ABSC
+v_c_RM
+v_c_new_RM
+v_e_BES_ch
+v_e_BES_dis
+v_h_TES
+v_h_BTES_Sdis
+v_h_BTES_Sch
+v_h_P2
+v_e_TURB
+v_h_BAC_savings
+v_h_DH_slack
+v_h_DH_slack_var
+v_h_RGK1
+v_h_turb
+v_h_imp_nonAH
+v_c_slack
+v_e_slack
 ;
 
 

@@ -94,6 +94,8 @@ scalar
 * Source for these numbers?
 scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
+         AbsC_el_COP Electrical Coefficient of Performance of AbsC /22/
+         AbsC_min_prod Minimum production while on of AbsC /290/
 ;
 
 *--------------AAC(Ambient Air Cooler), cooling source--------------------------
@@ -135,7 +137,9 @@ scalar
       P2_cap                 Capacity of P2 /6000/
       P2_max                 Maximum output from P2 /6000/
       P2_min                 Minimum output from P2 /1000/
+      P2_hourly_ramprate     hourly maximum ramp rate /4000/
       P2_reseach_prod        Heat output during research /1500/
+      P2_power_to_heat_ratio power to heat ratio of P2 and turbine /0.2/
 ;
 
 *----------------Refurbished turbine for Boiler 2  ------------------------------
@@ -272,8 +276,10 @@ BTES_kDloss(BID)= BTES_model('kloss_D',BID);
 scalar
          BES_ch_eff    Charging efficiency /0.95/
          BES_dis_eff   Discharding efficiency /0.95/
+         BES_min_SOC   Minimum State of charge /0.20/
          BFCh_ch_eff    Charging efficiency /0.95/
          BFCh_dis_eff   Discharding efficiency /0.95/
+         BFCh_min_SOC   Minimum State of charge /0.20/
 ;
 
 *--------------set building energy demands--------------------------------------

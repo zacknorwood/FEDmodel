@@ -71,3 +71,6 @@ scenred.opt
 *.docx
 >>>>>>> ef9656a2fa78733ba56e55dcc6d26c979a6fb50b
 *.BACKUP
+results_plot1.m
+FED_PROJECT.gpr
+~$FED_Equations.gms

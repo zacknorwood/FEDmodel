@@ -34,6 +34,7 @@ equation
 
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
+           eq_AbsC3     Absorption chiller electricity usage
 
            eq_RM1       Refrigerator equation
            eq_RM2       Refrigerator equation
@@ -59,7 +60,10 @@ equation
 
            eq1_P2                production equation for P2
            eq2_P2                investment equation for P2
+           eq3_P2                maximum ramp up constraint
+           eq4_P2                maximum ramp down constraint
            eq_h_Boiler2_research  P2 production constraint during research
+
 
            eq1_TURB     production equation for turbine-gen
            eq2_TURB     energy consumption equation for turbine-gen
@@ -68,6 +72,7 @@ equation
            eq5_TURB     active-reactive power limits of turbine
            eq6_TURB     active-reactive power limits of turbin
            eq7_TURB     active-reactive power limits of turbin
+           eq8_TURB     enforcement of maximum power to heat ratio
 
            eq_HP1       heat production from HP
            eq_HP2       cooling production from HP
@@ -97,6 +102,7 @@ equation
            eq_BES1       intial energy in the Battery
            eq_BES2       energy in the Battery at hour h
            eq_BES3       maximum energy in the Battery
+           eq_BES4       Limit minimum SoC
            eq_BES_ch     maximum charging limit
            eq_BES_dis    maximum discharign limit
            eq_BES_reac1  equation 1 for reactive power of BES
@@ -111,6 +117,7 @@ equation
            eq_BFCh1       intial energy in the Battery Fast charge
            eq_BFCh2       energy in the Battery Fast Charge at hour h
            eq_BFCh3       maximum energy in the Battery Fast Charge
+           eq_BFch4       Limit minimum SoC
            eq_BFCh_ch     maximum charging limit
            eq_BFCh_dis    maximum discharging limit
            eq_BFCh_reac1  equation 1 for reactive power of BFCh
@@ -278,9 +285,12 @@ eq_h_RGK1_dispatch(h)$(P1P2_dispatchable(h)=0 and min_totCost_0 eq 0)..
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 eq_AbsC1(h)..
              c_AbsC(h) =e= AbsC_COP*h_AbsC(h);
-*AbsC_eff;
+
 eq_AbsC2(h) $ (min_totCost_0 eq 0)..
              c_AbsC(h) =l= AbsC_cap;
+
+eq_AbsC3(h)..
+             el_AbsC(h) =e= c_AbsC(h) / AbsC_el_COP;
 
 *----------Refrigerator Machine equations (electricity => cooling)--------------
 eq_RM1(h)..
@@ -343,6 +353,12 @@ eq1_P2(h)..
 eq2_P2(h)..
          h_P2(h) =l= B_P2 * P2_cap;
 
+eq3_P2(h)$(P1P2_dispatchable(h)=1 and P1P2_dispatchable(h-1)=1  and ord(h) gt 1)..
+         h_P2(h)-h_P2(h-1) =l= P2_hourly_ramprate;
+
+eq4_P2(h)$(P1P2_dispatchable(h)=1  and P1P2_dispatchable(h-1)=1 and ord(h) gt 1)..
+         h_P2(h) - h_P2(h-1) =g= -P2_hourly_ramprate;
+
 eq_h_Boiler2_research(h)$(P1P2_dispatchable(h)=0)..
          h_P2(h) =e= B_P2 * P2_reseach_prod;
 
@@ -360,6 +376,9 @@ eq4_TURB(h)..el_TURB_reac(h)=l=0.4843*el_TURB(h);
 eq5_TURB(h)..el_TURB_reac(h)=g=-0.4843*el_TURB(h);
 eq6_TURB(h)..-0.58*el_TURB_reac(h)+el_TURB(h)=l=1.15*TURB_cap;
 eq7_TURB(h)..+0.58*el_TURB_reac(h)+el_TURB(h)=l=1.15*TURB_cap;
+
+eq8_TURB(h)..
+         e_TURB(h) =l= h_P2(h) * P2_power_to_heat_ratio;
 
 *----------------HP equations --------------------------------------------------
 eq_HP1(h)..
@@ -425,13 +444,15 @@ eq_BAC_savings(h,BID)..
 
 *-----------------Battery constraints-------------------------------------------
 eq_BES1(h,BID) $ (ord(h) eq 1)..
-             BES_en(h,BID)=e= opt_fx_inv_BES_init;
-*sw_BES*BES_cap;
+             BES_en(h,BID)=e= BES_cap(BID)*opt_fx_inv_BES_init;
 eq_BES2(h,BID)$(ord(h) gt 1)..
              BES_en(h,BID)=e=(BES_en(h-1,BID)+BES_ch(h,BID)-BES_dis(h,BID));
 eq_BES3(h,BID) ..
              BES_en(h,BID)=l=BES_cap(BID);
+eq_BES4(h,BID) ..
+             BES_en(h,BID)=g=BES_cap(BID)*BES_min_SOC;
 eq_BES_ch(h,BID) ..
+
 *Assuming 1C charging
              BES_ch(h,BID)=l=(BES_cap(BID)-BES_en(h,BID));
 eq_BES_dis(h,BID)..
@@ -448,12 +469,13 @@ eq_BES_reac7(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=l=1.15*op
 eq_BES_reac8(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=g=-1.15*opt_fx_inv_BES_maxP(BID);
 *-----------------Battery Fast Charge constraints-------------------------------------------
 eq_BFCh1(h,BID) $ (ord(h) eq 1)..
-             BFCh_en(h,BID)=e= opt_fx_inv_BFCh_init;
-*sw_BES*BES_cap;
+             BFCh_en(h,BID)=e= BFCh_cap(BID)opt_fx_inv_BFCh_init;
 eq_BFCh2(h,BID)$(ord(h) gt 1)..
              BFCh_en(h,BID)=e=(BFCh_en(h-1,BID)+BFCh_ch(h,BID)-BFCh_dis(h,BID));
 eq_BFCh3(h,BID) ..
              BFCh_en(h,BID)=l=BFCh_cap(BID);
+eq_BFCh4(h,BID) ..
+             BFCh_en(h,BID)=g=BFCh_cap(BID)*BFCh_min_SOC;
 eq_BFCh_ch(h,BID) ..
 *Assuming 1C charging
              BFCh_ch(h,BID)=l=(BFCh_cap(BID)-BFCh_en(h,BID));
@@ -731,7 +753,6 @@ eq_var_cost_existing..
                                +sum(h,h_DH_slack_var(h)) * 1000000000
                                +sum(h,C_DC(h)) * 1000000000
                                +sum(h,el_slack_var(h)) * 1000000000;
-
 
 eq_var_cost_new..
          var_cost_new =e=  sum(h,el_PV(h)*utot_cost('PV',h))

@@ -280,6 +280,15 @@ $GDXIN MtoG.gdx
 $LOAD DH_export_season
 $GDXIN
 
+*-----------DH heating season from MATLAB---------------------------------------
+PARAMETERS
+            DH_heating_season(h)           Period in which DH exports are payed for
+;
+$GDXIN MtoG.gdx
+$LOAD DH_heating_season
+$GDXIN
+
+
 *---------Simulation option settings--------------------------------------------
 PARAMETERS
             min_totCost_0      Option to run the base case scenario by minimizing tot cost

@@ -150,7 +150,6 @@ Boiler1 = struct('name','Boiler1','type','parameter','form','full');
 FGC = struct('name','FGC','type','parameter','form','full');
 
 %% Loading data and re-calculating CO2 and PE factors
-
 LOAD_EXCEL_DATA=1;      %set this to 1 if the reloading excel data is needed, set it to 0 otherwise 
 RECALCULATE_CO2PEF=1;  %set this to 1 if the recalculating CO2 and PE factors is needed, set it to 0 otherwise
 RUN_GAMS_MODEL = 1;     %set it to 1 if you want cal the GAMS model from MATLAB, set it to 0 otherwise
@@ -158,7 +157,7 @@ RUN_GAMS_MODEL = 1;     %set it to 1 if you want cal the GAMS model from MATLAB,
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 if LOAD_EXCEL_DATA==1
     %Read static properties of the model
-    [P1P2_disp, DH_exp_season, BAC_sav_period, pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
+    [P1P2_disp, DH_exp_season,DH_heating_season_full, BAC_sav_period, pv_area_roof,pv_area_facades, BTES_param ] = fread_static_properties();
     
     %Read variable/measured input data
     [el_demand_measured, h_demand_measured,c_demand_measured,...
@@ -375,6 +374,9 @@ P1P2_dispatchable = struct('name','P1P2_dispatchable','type','parameter','form',
 %Heat export season
 DH_export_season = struct('name','DH_export_season','type','parameter','form','full');
 
+%Heat export season
+DH_heating_season = struct('name','DH_heating_season','type','parameter','form','full');
+
 %BAC saving period
 BAC_savings_period = struct('name','BAC_savings_period','type','parameter','form','full');
 
@@ -413,6 +415,13 @@ option0=0;    %option for base case simulation of the FED system where historica
 option1=1;    %minimize total cost
 option2=0;    %minimize total PE use
 option3=0;    %minimize total CO2 emission
+
+% For base case simulation, minimization of total cost is the only option. 
+if (option0 == 1)   
+    option1=1;    
+    option2=0;    
+    option3=0;
+end
 %%
 temp_synth_baseline = struct('name','synth_baseline','type','parameter','form','full','val',synth_baseline);
 temp_optn0 = struct('name','min_totCost_0','type','parameter','form','full','val',option0);
@@ -563,6 +572,11 @@ for t=sim_start:sim_stop
     DH_export_season.val = DH_exp_season_temp;
     DH_export_season.uels=h.uels;
     
+    %DH heating season
+    DH_heating_season_temp=DH_heating_season_full((t_init_m-1):(t_len_m+t_init_m-2),:);
+    DH_heating_season.val = DH_heating_season_temp;
+    DH_heating_season.uels=h_sim.uels;
+    
     %BAC saving period
     BAC_sav_period_temp=BAC_sav_period((t_init_m-1):(t_len_m+t_init_m-2),:);
     BAC_savings_period.val = BAC_sav_period_temp;
@@ -668,6 +682,9 @@ for t=sim_start:sim_stop
     end
     if t==sim_start
         Initial(1:8)=0;
+        %INITIAL SoC for energy storage, Must agree with min_SOC
+        Initial(4)=0.20;
+        Initial(5)=0.20;
     else
     [Initial, x]=readGtoM(t);
     end
@@ -704,6 +721,7 @@ wgdx('MtoG.gdx', opt_fx_inv, opt_fx_inv_RMMC,...
      BID,BID_AH_el,BID_nonAH_el,BID_AH_h,BID_nonAH_h,BID_AH_c,BID_nonAH_c,BID_nonBTES,...
      el_demand,h_demand,c_demand,qB1,qF1,...
      el_VKA1_0, el_VKA4_0,el_AAC_0,h_AbsC_0,Gekv_roof,Gekv_facade,...     
+
      BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,BAC_savings_period,...
      PVID,PVID_roof,PV_roof_cap,PVID_facade,PV_facade_cap,...
      el_price,el_certificate,h_price,tout,BAC_savings_factor,...
