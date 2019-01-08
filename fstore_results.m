@@ -23,9 +23,9 @@ data.cool_demand=gdx2mat(gdxData,'cool_demand',{h_sim.uels});
 data.c_demand_AH=gdx2mat(gdxData,'c_demand_AH',{h_sim.uels,B_ID.uels});
 
 %Electricity import and export
-data.e_imp_AH=gdx2mat(gdxData,'e_imp_AH',h_sim.uels);
-data.e_exp_AH=gdx2mat(gdxData,'e_exp_AH',h_sim.uels);
-data.e_imp_nonAH=gdx2mat(gdxData,'e_imp_nonAH',h_sim.uels);
+data.el_imp_AH=gdx2mat(gdxData,'el_imp_AH',h_sim.uels);
+data.el_exp_AH=gdx2mat(gdxData,'el_exp_AH',h_sim.uels);
+data.el_imp_nonAH=gdx2mat(gdxData,'el_imp_nonAH',h_sim.uels);
 data.AH_el_imp_tot=gdx2mat(gdxData,'AH_el_imp_tot');
 data.AH_el_exp_tot=gdx2mat(gdxData,'AH_el_exp_tot');
 
@@ -77,7 +77,7 @@ data.CO2F_DH=gdx2mat(gdxData,'CO2F_DH',h_sim.uels);
 data.PEF_DH=gdx2mat(gdxData,'PEF_DH',h_sim.uels);
 
 %Local production
-data.h_Pana1=gdx2mat(gdxData,'h_Pana1',h_sim.uels);
+data.h_Boiler1=gdx2mat(gdxData,'h_Boiler1',h_sim.uels);
 data.h_RGK1=gdx2mat(gdxData,'h_RGK1',h_sim.uels);
 data.qB1=gdx2mat(gdxData,'qB1',h_sim.uels);
 data.qF1=gdx2mat(gdxData,'qF1',h_sim.uels);
@@ -97,15 +97,15 @@ data.AbsCInv_cap=gdx2mat(gdxData,'AbsCInv_cap');
 data.invCost_AbsCInv=gdx2mat(gdxData,'invCost_AbsCInv');
 data.el_RM=gdx2mat(gdxData,'el_RM',h_sim.uels);
 data.c_RM=gdx2mat(gdxData,'c_RM',h_sim.uels);
-data.e_RMMC=gdx2mat(gdxData,'e_RMMC',h_sim.uels);
+data.el_RMMC=gdx2mat(gdxData,'el_RMMC',h_sim.uels);
 data.h_RMMC=gdx2mat(gdxData,'h_RMMC',h_sim.uels);
 data.c_RMMC=gdx2mat(gdxData,'c_RMMC',h_sim.uels);
 data.RMMC_inv=gdx2mat(gdxData,'RMMC_inv');
 data.invCost_RMMC=gdx2mat(gdxData,'invCost_RMMC');
-data.e_AAC=gdx2mat(gdxData,'e_AAC',h_sim.uels);
+data.el_AAC=gdx2mat(gdxData,'el_AAC',h_sim.uels);
 data.c_AAC=gdx2mat(gdxData,'c_AAC',h_sim.uels);
 data.h_HP=gdx2mat(gdxData,'h_HP',h_sim.uels);
-data.e_HP=gdx2mat(gdxData,'e_HP',h_sim.uels);
+data.el_HP=gdx2mat(gdxData,'el_HP',h_sim.uels);
 data.c_HP=gdx2mat(gdxData,'c_HP',h_sim.uels);
 data.HP_cap=gdx2mat(gdxData,'HP_cap');
 data.invCost_HP=gdx2mat(gdxData,'invCost_HP');
@@ -135,9 +135,9 @@ data.BTES_Sloss=gdx2mat(gdxData,'BTES_Sloss',{h_sim.uels,BTES_properties.uels});
 data.BTES_Dloss=gdx2mat(gdxData,'BTES_Dloss',{h_sim.uels,BTES_properties.uels});
 data.link_BS_BD=gdx2mat(gdxData,'link_BS_BD',{h_sim.uels,BTES_properties.uels});
 data.BTES_dis_eff=gdx2mat(gdxData,'BTES_dis_eff');
-data.B_BITES=gdx2mat(gdxData,'B_BITES',BTES_properties.uels);
-data.invCost_BITES=gdx2mat(gdxData,'invCost_BITES');
-data.invCost_BITES=gdx2mat(gdxData,'invCost_BITES');
+data.B_BTES=gdx2mat(gdxData,'B_BTES',BTES_properties.uels);
+data.invCost_BTES=gdx2mat(gdxData,'invCost_BTES');
+data.invCost_BTES=gdx2mat(gdxData,'invCost_BTES');
 %BTES model
 data.BTES_model=gdx2mat(gdxData,'BTES_model',{BTES_properties.uels,B_ID.uels});
 
@@ -155,7 +155,7 @@ data.h_P2=gdx2mat(gdxData,'h_P2',h_sim.uels);
 data.H_P2T=gdx2mat(gdxData,'H_P2T',h_sim.uels);
 data.B_TURB=gdx2mat(gdxData,'B_TURB');
 data.invCost_TURB=gdx2mat(gdxData,'invCost_TURB');
-data.e_TURB=gdx2mat(gdxData,'e_TURB',h_sim.uels);
+data.el_TURB=gdx2mat(gdxData,'el_TURB',h_sim.uels);
 data.h_TURB=gdx2mat(gdxData,'h_TURB',h_sim.uels);
 data.P2_eff=gdx2mat(gdxData,'P2_eff');
 data.TURB_eff=gdx2mat(gdxData,'TURB_eff');

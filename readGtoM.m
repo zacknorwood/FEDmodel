@@ -1,4 +1,4 @@
-function[InitialSoC,max_exG_prev]=readGtoM(currenthour);
+function[InitialSoC,max_exG_prev]=readGtoM(currenthour)
 %Read GtoM.gdx Assume placement of storage systems in one place otherwise
 %needs modification
 
@@ -22,17 +22,17 @@ function[InitialSoC,max_exG_prev]=readGtoM(currenthour);
  BTES_Den.form='full';
  BTES_Den.compress='true';
  
- h_Pana1.name='h_Pana1';
- h_Pana1.form='full';
- h_Pana1.compress='true';
+ h_Boiler1.name='h_Boiler1';
+ h_Boiler1.form='full';
+ h_Boiler1.compress='true';
  
- H_VKA1.name='H_VKA1';
- H_VKA1.form='full';
- H_VKA1.compress='true';
+ h_VKA1.name='h_VKA1';
+ h_VKA1.form='full';
+ h_VKA1.compress='true';
  
- H_VKA4.name='H_VKA4';
- H_VKA4.form='full';
- H_VKA4.compress='true';
+ h_VKA4.name='h_VKA4';
+ h_VKA4.form='full';
+ h_VKA4.compress='true';
  
   
  c_AAC.name='c_AAC';
@@ -48,14 +48,14 @@ function[InitialSoC,max_exG_prev]=readGtoM(currenthour);
  [TES]=rgdx('GtoM',TES_en);
  [BFCh]=rgdx('GtoM',BFCh_en);
  [BES]=rgdx('GtoM',BES_en);
-  [Pana]=rgdx('GtoM',h_Pana1);
-  [VKA1]=rgdx('GtoM',H_VKA1);
-  [VKA4]=rgdx('GtoM',H_VKA4);
+  [Boiler]=rgdx('GtoM',h_Boiler1);
+  [VKA1]=rgdx('GtoM',h_VKA1);
+  [VKA4]=rgdx('GtoM',h_VKA4);
   [AAC]=rgdx('GtoM',c_AAC);
   [max_exG_prev]=rgdx('GtoM',max_exG_prev1);
   max_exG_prev=max_exG_prev.val;
   
- initial(1:9)=[BTES_D,BTES_S,TES,BFCh,BES,Pana,VKA1,VKA4,AAC];
+ initial(1:9)=[BTES_D,BTES_S,TES,BFCh,BES,Boiler,VKA1,VKA4,AAC];
  for i=1:5
      temp=0;
      s=size(initial(i).uels{1,1},2);

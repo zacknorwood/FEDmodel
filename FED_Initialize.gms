@@ -1,7 +1,7 @@
 *******************************************************************************
 *---------------------------Initialize input parameters------------------------
 *******************************************************************************
-*--------------IMPORT IMPUT DATA TO THE MODEL-----------------------------------
+*--------------IMPORT INPUT DATA TO THE MODEL-----------------------------------
 $Include FED_GET_GDX_FILE
 
 *--------------SET PARAMETRS OF PRODUCTION active UNITS in the FED system-------
@@ -25,8 +25,6 @@ Parameter
 ;
 
 *************** different costs of the investment options
-* Investment costs from WP4_D4.2.1 prestudy report
-* PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 600, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
 * Investment costs source WP4_D4.2.1 prestudy report, except absorption chiller and HP from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
 * PV 7600000+3970000 SEK / 265+550 kW = 14 196, BES 1200000 SEK / 200 kWh = 6000, P2 46000000 / 6000000 = 7666, Turb 1800000 SEK / 800 kW = 2250
 * Exchange rate 2015: Eur to SEK = 9.36;
@@ -48,15 +46,6 @@ Parameter
                      /PV 30, BES 15, HP 25, TES 30, BTES 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25, RMInv 25/;
 
 ***************Existing units***************************************************
-*--------------Existing Solar PV  constants and parameters (existing unit)---------
-parameter
-         exist_PV_cap_roof(BID)   existing roof PV capacity
-         exist_PV_cap_facade(BID) existing facade PV capacity
-;
-exist_PV_cap_roof(BID) = 0;
-exist_PV_cap_facade(BID) = 0;
-* Source Beskrivning av de tekniska grundforutsattningarna for FED
-exist_PV_cap_roof('28') = 60;
 
 *--------------Existing Thermal boiler constants and parameters (P1)------------
 *This data is imported from MATLAB and stored in MtoG
@@ -105,8 +94,6 @@ scalar
 * Source for these numbers?
 scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
-
-*AbsC_eff Efficiency of AbsC /0.95/
 ;
 
 *--------------AAC(Ambient Air Cooler), cooling source--------------------------
@@ -140,29 +127,22 @@ scalar
 * source Uhttps://ec.europa.eu/energy/sites/ener/files/documents/Report%20WP2.pdf
 scalar
          AbsCInv_COP    Coefficient of performance for absorption cooling investment /0.5/
-*         AbsH_COP       Coeffiicent of performance for absorption heating investment /1.7/
-
-*        AbsCInv_fx     Fixed cost for investment in Abs chiller /64400/
-*         AbsCInv_MaxCap Maximum possible investment in kW cooling /100000/
-*         AbsCInv_fx     Fixed cost for investment in Abs chiller /1610000/
 ;
 
-*----------------Panna 2  ------------------------------------------------------
+*----------------Boiler 2  ------------------------------------------------------
 scalar
       P2_eff                 Efficiency of P2 /0.9/
-*Capacity must be set to 6000 when refurbishment is done
       P2_cap                 Capacity of P2 /6000/
       P2_max                 Maximum output from P2 /6000/
       P2_min                 Minimum output from P2 /1000/
       P2_reseach_prod        Heat output during research /1500/
 ;
 
-*----------------Refurbished turbine for Panna 2  ------------------------------
+*----------------Refurbished turbine for Boiler 2  ------------------------------
 scalar
 * turbine efficiency from Danish energy agency reports
       TURB_eff Efficiency of turbine /0.25/
 * Max turbine output from AH WP4.2 report
-*Must be set to 800 when refurbishment is done
       TURB_cap Maximum power output of turbine /800/
 ;
 
@@ -189,8 +169,6 @@ scalar
       Gstc Irradiance at standard temperature and conditions in kW per m^2 /1/
       PV_cap_density kW per m^2 for a mono-Si PV module e.g. Sunpower SPR-E20-327 dimensions 1.558*1.046 of 327Wp /0.20065/
       eta_Inverter efficiency of solar PV inverter and balance of system /0.96/
-*     eta_roof_data compensating for overestimated roof data /1/
-*     eta_facade_data compensating for underestimated facade data /1/
       coef_temp_PV coefficient coupling irradiance and PV temperature /0.035/
 ;
 
@@ -201,40 +179,40 @@ parameter
 ;
 
 parameter
-      Gekv_roof(h,BID) Equivalent irradiance parameter for solar PV on roof in kW per m^2
-      Gekv_facade(h,BID) Equivalent irradiance parameter for solar PV on facade in kW per m^2
-      Tmod_roof(h,BID) Module temperature roof in Celsius
-      Tmod_facade(h,BID) Module temperature facade in Celsius
-      Tekv_roof(h,BID) Equivalent temperature parameter for solar PV on roof
-      Tekv_facade(h,BID) Equivalent temperature parameter for solar PV on facade
-      PV_power_roof(h,BID) Power per watt peak roof (dimensionless parameter)
-      PV_power_facade(h,BID) Power per watt peak facade (dimensionless parameter)
+      Gekv_roof(h,PVID) Equivalent irradiance parameter for solar PV on roof in kW per m^2
+      Gekv_facade(h,PVID) Equivalent irradiance parameter for solar PV on facade in kW per m^2
+      Tmod_roof(h,PVID) Module temperature roof in Celsius
+      Tmod_facade(h,PVID) Module temperature facade in Celsius
+      Tekv_roof(h,PVID) Equivalent temperature parameter for solar PV on roof
+      Tekv_facade(h,PVID) Equivalent temperature parameter for solar PV on facade
+      PV_power_roof(h,PVID) Power per watt peak roof (dimensionless parameter)
+      PV_power_facade(h,PVID) Power per watt peak facade (dimensionless parameter)
 
 ;
-      Gekv_roof(h,BID)=abs(G_roof(h,BID))/Gstc;
-      Gekv_facade(h,BID)=abs(G_facade(h,BID))/Gstc;
+      Gekv_roof(h,PVID)=abs(G_roof(h,PVID))/Gstc;
+      Gekv_facade(h,PVID)=abs(G_facade(h,PVID))/Gstc;
 
-      Tmod_roof(h,BID)=tout(h)+coef_temp_PV*G_roof(h,BID);
-      Tmod_facade(h,BID)=tout(h)+coef_temp_PV*G_facade(h,BID);
+      Tmod_roof(h,PVID)=tout(h)+coef_temp_PV*G_roof(h,PVID);
+      Tmod_facade(h,PVID)=tout(h)+coef_temp_PV*G_facade(h,PVID);
 
-      Tekv_roof(h,BID)=Tmod_roof(h,BID) - Tstc;
-      Tekv_facade(h,BID)=Tmod_facade(h,BID) - Tstc;
+      Tekv_roof(h,PVID)=Tmod_roof(h,PVID) - Tstc;
+      Tekv_facade(h,PVID)=Tmod_facade(h,PVID) - Tstc;
 
-      PV_power_roof(h,BID) $ ((Gekv_roof(h,BID) ne 0)) =   Gekv_roof(h,BID)*
-                                                        (1 + coef_Si('1')*log10(Gekv_roof(h,BID))
-                                                        + coef_Si('2')*sqr(log10(Gekv_roof(h,BID)))
-                                                        + coef_Si('3')*Tekv_roof(h,BID)
-                                                        + coef_Si('4')*Tekv_roof(h,BID)*log10(Gekv_roof(h,BID))
-                                                        + coef_Si('5')*Tekv_roof(h,BID)*sqr(log10(Gekv_roof(h,BID)))
-                                                        + coef_Si('6')*sqr(Tekv_roof(h,BID)));
+      PV_power_roof(h,PVID) $ ((Gekv_roof(h,PVID) ne 0)) =   Gekv_roof(h,PVID)*
+                                                        (1 + coef_Si('1')*log10(Gekv_roof(h,PVID))
+                                                        + coef_Si('2')*sqr(log10(Gekv_roof(h,PVID)))
+                                                        + coef_Si('3')*Tekv_roof(h,PVID)
+                                                        + coef_Si('4')*Tekv_roof(h,PVID)*log10(Gekv_roof(h,PVID))
+                                                        + coef_Si('5')*Tekv_roof(h,PVID)*sqr(log10(Gekv_roof(h,PVID)))
+                                                        + coef_Si('6')*sqr(Tekv_roof(h,PVID)));
 
-     PV_power_facade(h,BID) $ (Gekv_facade(h,BID) ne 0) = Gekv_facade(h,BID)*
-                                                         (1 + coef_Si('1')*log10(Gekv_facade(h,BID))
-                                                          + coef_Si('2')*sqr(log10(Gekv_facade(h,BID)))
-                                                          + coef_Si('3')*Tekv_facade(h,BID)
-                                                          + coef_Si('4')*Tekv_facade(h,BID)*log10(Gekv_facade(h,BID))
-                                                          + coef_Si('5')*Tekv_facade(h,BID)*sqr(log10(Gekv_facade(h,BID)))
-                                                          + coef_Si('6')*sqr(Tekv_facade(h,BID)));
+     PV_power_facade(h,PVID) $ (Gekv_facade(h,PVID) ne 0) = Gekv_facade(h,PVID)*
+                                                         (1 + coef_Si('1')*log10(Gekv_facade(h,PVID))
+                                                          + coef_Si('2')*sqr(log10(Gekv_facade(h,PVID)))
+                                                          + coef_Si('3')*Tekv_facade(h,PVID)
+                                                          + coef_Si('4')*Tekv_facade(h,PVID)*log10(Gekv_facade(h,PVID))
+                                                          + coef_Si('5')*Tekv_facade(h,PVID)*sqr(log10(Gekv_facade(h,PVID)))
+                                                          + coef_Si('6')*sqr(Tekv_facade(h,PVID)));
 
 *--------------HP constants and parameters (an investment options)-------------
 *[COP and eff values need to be checked]
@@ -264,27 +242,26 @@ scalar
          BTES_dis_eff           BTES discharging efficiency/0.95/
 ;
 Parameters
-         BTES_Sen_int(i)      Initial energy stored in the shalow medium of the building
-         BTES_Den_int(i)      Initial energy stored in the deep medium of the building
+         BTES_Sen_int(BID)      Initial energy stored in the shalow medium of the building
+         BTES_Den_int(BID)      Initial energy stored in the deep medium of the building
          BTES_Sdis_eff        Discharge efficiency of the shallow medium
          BTES_Sch_eff         Charging efficiency of the shallow medium
-         BTES_Sch_max(h,i)    maximum charging limit
-         BTES_Sdis_max(h,i)   maximum discharging limit
-         BTES_kSloss(i)      loss coefficient-shallow
-         BTES_kDloss(i)      loss coefficient-deep
+         BTES_Sch_max(h,BID)    maximum charging limit
+         BTES_Sdis_max(h,BID)   maximum discharging limit
+         BTES_kSloss(BID)      loss coefficient-shallow
+         BTES_kDloss(BID)      loss coefficient-deep
 ;
-*BTES_Sen_int(i)=1000*BTES_model('BTES_Scap',i);
-*BTES_Den_int(i)=1000*BTES_model('BTES_Dcap',i);
+
 BTES_Sdis_eff=0.95;
 BTES_Sch_eff=0.95;
 
-BTES_Sch_max(h,i)=1000*Min(BTES_model('BTES_Sch_hc',i), BTES_model('BTES_Esig',i)*Max(Min(tout(h) - (-16),15 - (-16)),0));
-BTES_Sdis_max(h,i)=1000*Min(BTES_model('BTES_Sdis_hc',i), BTES_model('BTES_Esig',i)*Max(Min(15 - tout(h),15 - (-16)),0));
+BTES_Sch_max(h,BID)=1000*Min(BTES_model('BTES_Sch_hc',BID), BTES_model('BTES_Esig',BID)*Max(Min(tout(h) - (-16),15 - (-16)),0));
+BTES_Sdis_max(h,BID)=1000*Min(BTES_model('BTES_Sdis_hc',BID), BTES_model('BTES_Esig',BID)*Max(Min(15 - tout(h),15 - (-16)),0));
 
 *[BTES_kSloss needs to be modified since it has different values during day and night]
 *here, it is assumed that BTES_kSloss is the same and the value for the day is used, which means that the loss is over estimated
-BTES_kSloss(i)= BTES_model('kloss_Sday',i);
-BTES_kDloss(i)= BTES_model('kloss_D',i);
+BTES_kSloss(BID)= BTES_model('kloss_Sday',BID);
+BTES_kDloss(BID)= BTES_model('kloss_D',BID);
 
 *--------------BAC parameters---------------------------------------------------
 *scalar
@@ -301,22 +278,22 @@ scalar
 
 *--------------set building energy demands--------------------------------------
 Parameter
-         el_demand_AH(h,i_AH_el)       el demand of AH buildings
-         el_demand_nonAH(h,i_nonAH_el) el demand of non-AH buildings
-         h_demand_AH(h,i_AH_h)         heat demand of AH buildings
-         h_demand_nonAH(h,i_nonAH_h)   heat demand of non-AH
-         c_demand_AH(h,i_AH_c)         cool demand of AH buildings
-         c_demand_nonAH(h,i_nonAH_c)   cool demand of non-AH buildings
+         el_demand_AH(h,BID_AH_el)       el demand of AH buildings
+         el_demand_nonAH(h,BID_nonAH_el) el demand of non-AH buildings
+         h_demand_AH(h,BID_AH_h)         heat demand of AH buildings
+         h_demand_nonAH(h,BID_nonAH_h)   heat demand of non-AH
+         c_demand_AH(h,BID_AH_c)         cool demand of AH buildings
+         c_demand_nonAH(h,BID_nonAH_c)   cool demand of non-AH buildings
 ;
 
-el_demand_AH(h,i_AH_el)=el_demand(h,i_AH_el);
-el_demand_nonAH(h,i_nonAH_el)=el_demand(h,i_nonAH_el);
+el_demand_AH(h,BID_AH_el)=el_demand(h,BID_AH_el);
+el_demand_nonAH(h,BID_nonAH_el)=el_demand(h,BID_nonAH_el);
 
-h_demand_AH(h,i_AH_h)=h_demand(h,i_AH_h);
-h_demand_nonAH(h,i_nonAH_h)=h_demand(h,i_nonAH_h);
+h_demand_AH(h,BID_AH_h)=h_demand(h,BID_AH_h);
+h_demand_nonAH(h,BID_nonAH_h)=h_demand(h,BID_nonAH_h);
 
-c_demand_AH(h,i_AH_c)=c_demand(h,i_AH_c);
-c_demand_nonAH(h,i_nonAH_c)=c_demand(h,i_nonAH_c);
+c_demand_AH(h,BID_AH_c)=c_demand(h,BID_AH_c);
+c_demand_nonAH(h,BID_nonAH_c)=c_demand(h,BID_nonAH_c);
 
 *--------------unit total cost for all the generating units---------------------
 parameter
@@ -334,7 +311,7 @@ parameter
          unit_avrg_prof_buy      Average buy profit pr kWh  /0.011/
          unit_prof_sell          Sell profit pr kWh  /0.019/
          ursprungsgaranti       /0.01/
-         e_tax                   Energy tax    /0.325/
+         el_tax                   Electricity tax    /0.325/
 *         USD_to_SEK_2015 Exchange rate USD to SED 2015 /8.43/
          EUR_to_SEK_2015 Exchange rate EUR to SEK in 2015 /9.36/
          kilo Factor of 1000 conversion to kW from MW for example /1000/
@@ -344,20 +321,24 @@ parameter
 price('exG',h)=net_tariff + unit_avrg_prof_buy + el_price(h);
 price('DH',h)=h_price(h)$(opt_marg_factors eq 0) + MA_Cost_DH(h)$(opt_marg_factors eq 1);
 
-el_sell_price(h) =el_price(h) - unit_prof_sell - net_tariff  +  el_cirtificate(h) + ursprungsgaranti;
-*the data is obtained from Energimyndigheten 2015 wood chips for District Heating Uses
+el_sell_price(h) =el_price(h) - unit_prof_sell - net_tariff  +  el_certificate(h) + ursprungsgaranti;
+*the data 0.186 kr/kWh is obtained from Energimyndigheten 2015 wood chips for District Heating Uses
+*woodchip cost of 0.353 kr/kWh is obtained from AH
 fuel_cost('CHP',h)= 0.353;
-*0.186;
+
 * Divided by efficiency to get actual fuel use when multiplying with heat output
-*woodchip cost of 0.353 kr/kWhr is obtained from AH
 fuel_cost('P1',h)=0.353;
 *0.186/P1_eff;
+
 fuel_cost('RGK1',h)=0.353;
+
 *0.186/RGK1_eff;
 *fuel_cost('P1',h)=0.186*fuel_P1(h)/q_P1(h);
 * Divided by efficiency to get actual fuel use when multiplying with heat output
+
 fuel_cost('P2',h)=0.353;
 *0.186/P2_eff;
+
 var_cost(sup_unit,h)=0;
 fix_cost(sup_unit)=0;
 
@@ -397,7 +378,7 @@ fix_cost('RMInv')= fix_cost('HP');
 
 *From Göteborg Energi homepage, tax on a kWh electricity purchased in SEK
 en_tax(sup_unit,h)=0;
-en_tax('exG',h)=e_tax;
+en_tax('exG',h)=el_tax;
 
 co2_cost(sup_unit,h)=0;
 *Power tariffs from Göteborg Energi
@@ -416,10 +397,9 @@ scalar
          CO2_lim    Desired or limiting value of CO2
 ;
 
-*PE_lim=(1-0.3)*PE_tot_ref;
-*dCO2=CO2_max-CO2_peak_ref;
-*CO2_lim=CO2_peak_ref+0.2*dCO2;
 *--------------Limit on investment----------------------------------------------
 $Ontext
 
 $Offtext
+
+

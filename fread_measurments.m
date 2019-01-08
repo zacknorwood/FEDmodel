@@ -2,9 +2,9 @@ function [e_demand_measured, h_demand_measured,c_demand_measured,...
           h_B1_measured,h_F1_measured,...
           el_VKA1_measured,el_VKA4_measured,el_AAC_measured, h_AbsC_measured,...
           e_price_measured,...
-          el_cirtificate,h_price_measured,tout_measured,...
+          el_certificate,h_price_measured,tout_measured,...
           irradiance_measured_facades,irradiance_measured_roof, DC_slack, el_slack,DH_slack, h_exp_AH_measured, h_imp_AH_measured] = fread_measurments(t_init, t_len)
-%This function is used to read mesurment between the indicated indices
+%This function is used to read measurment between the indicated indices
 
 demand_range=strcat('B',int2str(t_init),':AJ',int2str(t_len+t_init-1));
 gen_range=strcat('B',int2str(2+t_init),':B',int2str(2+t_len+t_init-1)); 
@@ -36,13 +36,13 @@ c_demand_measured(isnan(c_demand_measured))=0;
 %Measured HEAT GENERATION FROM THERMAL BOILER (B1)
 sheet=3;
 xlRange = gen_range;
-h_B1_measured=xlsread('Input_dispatch_model\Panna1 2016-2017.xls',sheet,xlRange)*1000;
+h_B1_measured=xlsread('Input_dispatch_model\Boiler1 2016-2017.xls',sheet,xlRange)*1000;
 h_B1_measured(isnan(h_B1_measured))=0;
     
 %Measured HEAT GENERATION FROM FLUE GAS CONDENCER (F1)
 sheet=4;
 xlRange = gen_range;
-h_F1_measured=xlsread('Input_dispatch_model\Panna1 2016-2017.xls',sheet,xlRange)*1000;
+h_F1_measured=xlsread('Input_dispatch_model\Boiler1 2016-2017.xls',sheet,xlRange)*1000;
 h_F1_measured(isnan(h_F1_measured))=0;
 
 %Measured el input for VKA1
@@ -80,11 +80,11 @@ xlRange = price_ramge;
 e_price_measured=xlsread('Input_dispatch_model\measured_el_price.xlsx',sheet,xlRange);
 e_price_measured(isnan(e_price_measured))=0;
     
-%Measured el cirtificate in SEK/kWh
+%Measured el certificate in SEK/kWh
 sheet=2;
 xlRange = price_ramge;
-el_cirtificate=xlsread('Input_dispatch_model\el_cirtificate.xlsx',sheet,xlRange);
-el_cirtificate(isnan(el_cirtificate))=0;
+el_certificate=xlsread('Input_dispatch_model\el_certificate.xlsx',sheet,xlRange);
+el_certificate(isnan(el_certificate))=0;
     
 %Measured heat price in GE's system in SEK/kWh
 sheet=2;
