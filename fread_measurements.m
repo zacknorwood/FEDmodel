@@ -1,9 +1,9 @@
-function [e_demand_measured, h_demand_measured,c_demand_measured,...
+function [el_demand_measured, h_demand_measured,c_demand_measured,...
           h_B1_measured,h_F1_measured,...
           el_VKA1_measured,el_VKA4_measured,el_AAC_measured, h_AbsC_measured,...
-          e_price_measured,...
+          el_price_measured,...
           el_certificate,h_price_measured,tout_measured,...
-          irradiance_measured_facades,irradiance_measured_roof, DC_slack, el_slack,DH_slack, h_exp_AH_measured, h_imp_AH_measured] = fread_measurments(t_init, t_len)
+          irradiance_measured_facades,irradiance_measured_roof, DC_slack, el_slack,DH_slack, h_exp_AH_measured, h_imp_AH_measured] = fread_measurements(t_init, t_len)
 %This function is used to read measurment between the indicated indices
 
 demand_range=strcat('B',int2str(t_init),':AJ',int2str(t_len+t_init-1));
@@ -18,8 +18,8 @@ dc_slack_range=strcat('N',int2str(t_init),':N',int2str(t_len+t_init-1));
 %Measured electricity demand in kW
 sheet=1;
 xlRange = demand_range;
-e_demand_measured=xlsread('Input_dispatch_model\measured_demand.xlsx',sheet,xlRange);
-e_demand_measured(isnan(e_demand_measured))=0;
+el_demand_measured=xlsread('Input_dispatch_model\measured_demand.xlsx',sheet,xlRange);
+el_demand_measured(isnan(el_demand_measured))=0;
     
 %Measured heat demand in kW
 sheet=2;
@@ -77,8 +77,8 @@ h_AbsC_measured=c_AbsC_measured/0.5;
 %Measured el price in NordPool in SEK/kWh
 sheet=2;
 xlRange = price_ramge;
-e_price_measured=xlsread('Input_dispatch_model\measured_el_price.xlsx',sheet,xlRange);
-e_price_measured(isnan(e_price_measured))=0;
+el_price_measured=xlsread('Input_dispatch_model\measured_el_price.xlsx',sheet,xlRange);
+el_price_measured(isnan(el_price_measured))=0;
     
 %Measured el certificate in SEK/kWh
 sheet=2;

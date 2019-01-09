@@ -166,7 +166,7 @@ if LOAD_EXCEL_DATA==1
         el_price_measured,...
         el_certificate_m,h_price_measured,tout_measured,...
         irradiance_measured_facades,irradiance_measured_roof,...
-        DC_slack, el_slack, DH_slack, h_exp_AH_measured, h_imp_AH_measured] = fread_measurments(2, 17000);
+        DC_slack, el_slack, DH_slack, h_exp_AH_measured, h_imp_AH_measured] = fread_measurements(2, 17000);
     
     %This must be modified  Why? - ZN
     temp=load('Input_dispatch_model\import_export_forecasting');
@@ -186,7 +186,7 @@ end
 
 %CO2 and PE factors of local generation units
 %26 CO2 factor of solar PV
-CO2F_PV = struct('name','CO2F_PV','type','parameter','val',26);
+CO2F_PV = struct('name','CO2F_PV','type','parameter','val',22);
 %PE factor of solar PV
 PEF_PV = struct('name','PEF_PV','type','parameter','val',0.25);
 
@@ -575,7 +575,7 @@ for t=sim_start:sim_stop
     %DH heating season
     DH_heating_season_temp=DH_heating_season_full((t_init_m-1):(t_len_m+t_init_m-2),:);
     DH_heating_season.val = DH_heating_season_temp;
-    DH_heating_season.uels=h_sim.uels;
+    DH_heating_season.uels=h.uels;
     
     %BAC saving period
     BAC_sav_period_temp=BAC_sav_period((t_init_m-1):(t_len_m+t_init_m-2),:);
