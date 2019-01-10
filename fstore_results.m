@@ -1,4 +1,4 @@
-function [ data ] = fstore_results(h_sim,B_ID,BTES_properties,Buses_IDs)
+function [ data ] = fstore_results(h_sim,BID,BTES_properties,BusID)
 %Function that prepares simulation results for storage
 
 %Simulation results
@@ -10,17 +10,17 @@ data.min_totPE=gdx2mat(gdxData,'min_totPE');
 data.min_totCO2=gdx2mat(gdxData,'min_totCO2');
 
 %Extract electricity, heat and cooling demand in the FED system
-data.el_demand=gdx2mat(gdxData,'el_demand',{h_sim.uels,B_ID.uels});
+data.el_demand=gdx2mat(gdxData,'el_demand',{h_sim.uels,BID.uels});
 data.elec_demand=gdx2mat(gdxData,'elec_demand',{h_sim.uels});
-data.el_demand_nonAH=gdx2mat(gdxData,'el_demand_nonAH',{h_sim.uels,B_ID.uels});
+data.el_demand_nonAH=gdx2mat(gdxData,'el_demand_nonAH',{h_sim.uels,BID.uels});
 
-data.h_demand=gdx2mat(gdxData,'h_demand',{h_sim.uels,B_ID.uels});
+data.h_demand=gdx2mat(gdxData,'h_demand',{h_sim.uels,BID.uels});
 data.heat_demand=gdx2mat(gdxData,'heat_demand',{h_sim.uels});
-data.h_demand_nonAH=gdx2mat(gdxData,'h_demand_nonAH',{h_sim.uels,B_ID.uels});
+data.h_demand_nonAH=gdx2mat(gdxData,'h_demand_nonAH',{h_sim.uels,BID.uels});
 
-data.c_demand=gdx2mat(gdxData,'c_demand',{h_sim.uels,B_ID.uels});
+data.c_demand=gdx2mat(gdxData,'c_demand',{h_sim.uels,BID.uels});
 data.cool_demand=gdx2mat(gdxData,'cool_demand',{h_sim.uels});
-data.c_demand_AH=gdx2mat(gdxData,'c_demand_AH',{h_sim.uels,B_ID.uels});
+data.c_demand_AH=gdx2mat(gdxData,'c_demand_AH',{h_sim.uels,BID.uels});
 
 %Electricity import and export
 data.el_imp_AH=gdx2mat(gdxData,'el_imp_AH',h_sim.uels);
@@ -111,14 +111,14 @@ data.HP_cap=gdx2mat(gdxData,'HP_cap');
 data.invCost_HP=gdx2mat(gdxData,'invCost_HP');
 
 %storage
-data.BES_en=gdx2mat(gdxData,'BES_en',{h_sim.uels,Buses_IDs.uels});
-data.BES_ch=gdx2mat(gdxData,'BES_ch',{h_sim.uels,Buses_IDs.uels});
-data.BES_dis=gdx2mat(gdxData,'BES_dis',{h_sim.uels,Buses_IDs.uels});
-data.BES_reac=gdx2mat(gdxData,'BES_reac',{h_sim.uels,Buses_IDs.uels});
-data.BFCh_en=gdx2mat(gdxData,'BFCh_en',{h_sim.uels,Buses_IDs.uels});
-data.BFCh_ch=gdx2mat(gdxData,'BFCh_ch',{h_sim.uels,Buses_IDs.uels});
-data.BFCh_dis=gdx2mat(gdxData,'BFCh_dis',{h_sim.uels,Buses_IDs.uels});
-data.BFCh_reac=gdx2mat(gdxData,'BFCh_reac',{h_sim.uels,Buses_IDs.uels});
+data.BES_en=gdx2mat(gdxData,'BES_en',{h_sim.uels,BusID.uels});
+data.BES_ch=gdx2mat(gdxData,'BES_ch',{h_sim.uels,BusID.uels});
+data.BES_dis=gdx2mat(gdxData,'BES_dis',{h_sim.uels,BusID.uels});
+data.BES_reac=gdx2mat(gdxData,'BES_reac',{h_sim.uels,BusID.uels});
+data.BFCh_en=gdx2mat(gdxData,'BFCh_en',{h_sim.uels,BusID.uels});
+data.BFCh_ch=gdx2mat(gdxData,'BFCh_ch',{h_sim.uels,BusID.uels});
+data.BFCh_dis=gdx2mat(gdxData,'BFCh_dis',{h_sim.uels,BusID.uels});
+data.BFCh_reac=gdx2mat(gdxData,'BFCh_reac',{h_sim.uels,BusID.uels});
 data.TES_ch=gdx2mat(gdxData,'TES_ch',h_sim.uels);
 data.TES_dis=gdx2mat(gdxData,'TES_dis',h_sim.uels);
 data.TES_en=gdx2mat(gdxData,'TES_en',h_sim.uels);
@@ -127,10 +127,10 @@ data.TES_inv=gdx2mat(gdxData,'TES_inv');
 data.invCost_TES=gdx2mat(gdxData,'invCost_TES');
 data.TES_dis_eff=gdx2mat(gdxData,'TES_dis_eff');
 data.TES_chr_eff=gdx2mat(gdxData,'TES_chr_eff');
-data.BTES_Sch=gdx2mat(gdxData,'BTES_Sch',{h_sim.uels,B_ID.uels});
-data.BTES_Sdis=gdx2mat(gdxData,'BTES_Sdis',{h_sim.uels,B_ID.uels});
-data.BTES_Sen=gdx2mat(gdxData,'BTES_Sen',{h_sim.uels,B_ID.uels});
-data.BTES_Den=gdx2mat(gdxData,'BTES_Den',{h_sim.uels,B_ID.uels});
+data.BTES_Sch=gdx2mat(gdxData,'BTES_Sch',{h_sim.uels,BID.uels});
+data.BTES_Sdis=gdx2mat(gdxData,'BTES_Sdis',{h_sim.uels,BID.uels});
+data.BTES_Sen=gdx2mat(gdxData,'BTES_Sen',{h_sim.uels,BID.uels});
+data.BTES_Den=gdx2mat(gdxData,'BTES_Den',{h_sim.uels,BID.uels});
 data.BTES_Sloss=gdx2mat(gdxData,'BTES_Sloss',{h_sim.uels,BTES_properties.uels});
 data.BTES_Dloss=gdx2mat(gdxData,'BTES_Dloss',{h_sim.uels,BTES_properties.uels});
 data.link_BS_BD=gdx2mat(gdxData,'link_BS_BD',{h_sim.uels,BTES_properties.uels});
@@ -139,7 +139,7 @@ data.B_BTES=gdx2mat(gdxData,'B_BTES',BTES_properties.uels);
 data.invCost_BTES=gdx2mat(gdxData,'invCost_BTES');
 data.invCost_BTES=gdx2mat(gdxData,'invCost_BTES');
 %BTES model
-data.BTES_model=gdx2mat(gdxData,'BTES_model',{BTES_properties.uels,B_ID.uels});
+data.BTES_model=gdx2mat(gdxData,'BTES_model',{BTES_properties.uels,BID.uels});
 
 %BAC
 data.h_BAC_savings=gdx2mat(gdxData,'h_BAC_savings',{h_sim.uels,BTES_properties.uels});
@@ -175,9 +175,9 @@ data.tot_fixed_cost=gdx2mat(gdxData,'tot_fixed_cost');
 data.sim_PT_exG=gdx2mat(gdxData,'sim_PT_exG');
 data.PT_DH=gdx2mat(gdxData,'PT_DH');
 %data.tot_operation_cost_AH=gdx2mat(gdxData,'tot_operation_cost_AH');
-data.B_Heating_cost=gdx2mat(gdxData,'B_Heating_cost',{h_sim.uels,B_ID.uels});
-data.B_Electricity_cost=gdx2mat(gdxData,'B_Electricity_cost',{h_sim.uels,B_ID.uels});
-data.B_Cooling_cost=gdx2mat(gdxData,'B_Cooling_cost',{h_sim.uels,B_ID.uels});
+data.B_Heating_cost=gdx2mat(gdxData,'B_Heating_cost',{h_sim.uels,BID.uels});
+data.B_Electricity_cost=gdx2mat(gdxData,'B_Electricity_cost',{h_sim.uels,BID.uels});
+data.B_Cooling_cost=gdx2mat(gdxData,'B_Cooling_cost',{h_sim.uels,BID.uels});
 
 %Model status
 data.model_status=gdx2mat(gdxData,'model_status');
