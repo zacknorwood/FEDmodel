@@ -218,55 +218,50 @@ v_e_slack
 ;
 
 
-v_e_imp = sum(h, e_imp_AH.l(h)+0.00000000000001);
-v_e_exp = sum(h, e_exp_AH.l(h)+0.00000000000001);
+v_e_imp = sum(h, el_imp_AH.l(h)+0.00000000000001);
+v_e_exp = sum(h, el_exp_AH.l(h)+0.00000000000001);
 
 v_h_imp = sum(h, h_imp_AH.l(h)+0.00000000000001);
 v_h_exp = sum(h, h_exp_AH.l(h)+0.00000000000001);
-v_h_P1 = sum(h,  h_Pana1.l(h)+0.00000000000001);
-v_h_VKA1 = sum(h, H_VKA1.l(h)+0.00000000000001);
-v_h_VKA4 = sum(h, H_VKA4.l(h)+0.00000000000001);
+v_h_P1 = sum(h,  h_Boiler1.l(h)+0.00000000000001);
+v_h_VKA1 = sum(h, h_VKA1.l(h)+0.00000000000001);
+v_h_VKA4 = sum(h, h_VKA4.l(h)+0.00000000000001);
 v_h_ABSC = sum(h, h_AbsC.l(h)+0.00000000000001);
 
 v_c_absC = sum(h, c_AbsC.l(h)+0.00000000000001);
 v_c_RM = sum(h, c_RM.l(h)+0.00000000000001);
 v_c_RMMC = sum(h, c_RMMC.l(h)+0.00000000000001);
 v_c_AAC = sum(h, c_AAC.l(h)+0.00000000000001);
-v_e_PV = sum(h, e_existPV.l(h)+0.00000000000001);
 v_c_absC = sum(h, h_AbsC.l(h)+0.00000000000001);
 
 
 ********** NEW INVESTMENT
 
-v_e_new_PV = sum(h, e_PV.l(h)+0.00000000000001);
+v_e_new_PV = sum(h, el_PV.l(h)+0.00000000000001);
 v_h_HP = sum(h, h_HP.l(h)+0.00000000000001);
 v_c_new_RM = sum(h, c_RMInv.l(h));
 
-v_e_BES_dis = sum(h, sum(i,BES_dis.l(h,i))+0.00000000000001);
-v_e_BES_ch = sum(h, sum(i,BES_ch.l(h,i))+0.00000000000001);
-v_e_TURB = sum(h, e_TURB.l(h)+0.00000000000001);
+v_e_BES_dis = sum(h, sum(BID,BES_dis.l(h,BID))+0.00000000000001);
+v_e_BES_ch = sum(h, sum(BID,BES_ch.l(h,BID))+0.00000000000001);
+v_e_TURB = sum(h, el_TURB.l(h)+0.00000000000001);
 
 v_h_TES = sum(h, TES_dis.l(h)+0.00000000000001);
 *remember to consider efficiency    (sum(i,BTES_Sdis(h,i))*BTES_dis_eff - sum(i,BTES_Sch(h,i))/BTES_chr_eff)
-v_h_BTES_Sdis = sum(h, sum(i,BTES_Sdis.l(h,i))+0.00000000000001);
-v_h_BTES_Sch = sum(h, sum(i,BTES_Sch.l(h,i))+0.00000000000001);
+v_h_BTES_Sdis = sum(h, sum(BID,BTES_Sdis.l(h,BID))+0.00000000000001);
+v_h_BTES_Sch = sum(h, sum(BID,BTES_Sch.l(h,BID))+0.00000000000001);
 v_h_P2 = sum(h, h_P2.l(h)+0.00000000000001);
 *make sure that we calculate this right later on. e.g. 75% heat is going back to the heat system
 v_h_turb = sum(h, h_turb.l(h)+0.00000000000001);
 v_h_HP = sum(h, h_HP.l(h)+0.00000000000001);
 v_h_imp_nonAH = sum(h, h_imp_nonAH.l(h)+0.00000000000001);
 v_h_RGK1 = sum(h,h_RGK1.l(h)+0.00000000000001);
-v_h_BAC_savings = sum(h,(sum(i,h_BAC_savings.l(h,i)))+0.00000000000001 );
+v_h_BAC_savings = sum(h,(sum(BID,h_BAC_savings.l(h,BID)))+0.00000000000001 );
 
 
 v_c_slack = sum(h, c_DC.l(h)+0.00000000000001);
 v_e_slack = sum(h, el_slack_var.l(h)+0.00000000000001);
 v_h_DH_slack = sum(h, h_DH_slack(h)+0.00000000000001);
 v_h_DH_slack_var = sum(h, h_DH_slack_var.l(h)+0.00000000000001);
-
-
-
-
 
 *vc_e_PV                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
 

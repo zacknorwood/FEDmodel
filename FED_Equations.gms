@@ -376,9 +376,8 @@ eq4_TURB(h)..el_TURB_reac(h)=l=0.4843*el_TURB(h);
 eq5_TURB(h)..el_TURB_reac(h)=g=-0.4843*el_TURB(h);
 eq6_TURB(h)..-0.58*el_TURB_reac(h)+el_TURB(h)=l=1.15*TURB_cap;
 eq7_TURB(h)..+0.58*el_TURB_reac(h)+el_TURB(h)=l=1.15*TURB_cap;
-
 eq8_TURB(h)..
-         e_TURB(h) =l= h_P2(h) * P2_power_to_heat_ratio;
+         el_TURB(h) =l= h_P2(h) * P2_power_to_heat_ratio;
 
 *----------------HP equations --------------------------------------------------
 eq_HP1(h)..
@@ -452,7 +451,6 @@ eq_BES3(h,BID) ..
 eq_BES4(h,BID) ..
              BES_en(h,BID)=g=BES_cap(BID)*BES_min_SOC;
 eq_BES_ch(h,BID) ..
-
 *Assuming 1C charging
              BES_ch(h,BID)=l=(BES_cap(BID)-BES_en(h,BID));
 eq_BES_dis(h,BID)..
@@ -469,7 +467,7 @@ eq_BES_reac7(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=l=1.15*op
 eq_BES_reac8(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=g=-1.15*opt_fx_inv_BES_maxP(BID);
 *-----------------Battery Fast Charge constraints-------------------------------------------
 eq_BFCh1(h,BID) $ (ord(h) eq 1)..
-             BFCh_en(h,BID)=e= BFCh_cap(BID)opt_fx_inv_BFCh_init;
+             BFCh_en(h,BID)=e= BFCh_cap(BID)*opt_fx_inv_BFCh_init;
 eq_BFCh2(h,BID)$(ord(h) gt 1)..
              BFCh_en(h,BID)=e=(BFCh_en(h-1,BID)+BFCh_ch(h,BID)-BFCh_dis(h,BID));
 eq_BFCh3(h,BID) ..
