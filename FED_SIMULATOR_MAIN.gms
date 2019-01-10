@@ -223,9 +223,11 @@ v_e_exp = sum(h, el_exp_AH.l(h)+0.00000000000001);
 
 v_h_imp = sum(h, h_imp_AH.l(h)+0.00000000000001);
 v_h_exp = sum(h, h_exp_AH.l(h)+0.00000000000001);
+
 v_h_P1 = sum(h,  h_boiler1.l(h)+0.00000000000001);
 v_h_VKA1 = sum(h, H_VKA1.l(h)+0.00000000000001);
 v_h_VKA4 = sum(h, H_VKA4.l(h)+0.00000000000001);
+
 v_h_ABSC = sum(h, h_AbsC.l(h)+0.00000000000001);
 
 v_c_absC = sum(h, c_AbsC.l(h)+0.00000000000001);
@@ -233,6 +235,7 @@ v_c_RM = sum(h, c_RM.l(h)+0.00000000000001);
 v_c_RMMC = sum(h, c_RMMC.l(h)+0.00000000000001);
 v_c_AAC = sum(h, c_AAC.l(h)+0.00000000000001);
 *v_e_PV = sum(h, e_existPV.l(h)+0.00000000000001);
+
 v_c_absC = sum(h, h_AbsC.l(h)+0.00000000000001);
 
 
@@ -263,10 +266,6 @@ v_c_slack = sum(h, c_DC.l(h)+0.00000000000001);
 v_e_slack = sum(h, el_slack_var.l(h)+0.00000000000001);
 v_h_DH_slack = sum(h, h_DH_slack(h)+0.00000000000001);
 v_h_DH_slack_var = sum(h, h_DH_slack_var.l(h)+0.00000000000001);
-
-
-
-
 
 *vc_e_PV                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
 
