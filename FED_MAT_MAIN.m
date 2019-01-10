@@ -748,9 +748,6 @@ end
 Time(3).point='Gams running and storing';
 Time(3).value=toc;
 
-% end
-%    system 'gams export_data lo=3';
-
  %% Post processing results 
  
  %use the 'plot_results.m' script to plot desired results
