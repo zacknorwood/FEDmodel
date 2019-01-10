@@ -6,8 +6,8 @@ close all;  %close all figures
 
 %% Initialize the simulator
 
-LOAD_EXCEL_DATA=0;
-RECALCULATE_CO2PEF=0;  % calculate new values
+LOAD_EXCEL_DATA=1;
+RECALCULATE_CO2PEF=1;  % calculate new values
 RUN_GAMS_MODEL = 1;
 
 %% Assigning buildings ID to the buildings in the FED system
@@ -185,7 +185,7 @@ end
 %% INPUT PE and CO2 FACTORS
 
 %CO2 and PE factors of local generation units
-%26 CO2 factor of solar PV
+%22 CO2 factor of solar PV
 CO2F_PV = struct('name','CO2F_PV','type','parameter','val',22);
 %PE factor of solar PV
 PEF_PV = struct('name','PEF_PV','type','parameter','val',0.25);
