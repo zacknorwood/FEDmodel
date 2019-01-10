@@ -1,13 +1,13 @@
 profile on  %to monitor time used to run different parts of model code
 tic
 clc;        %clear texts in command window
-clear;      %clear data in workspace
+%clear;      %clear data in workspace
 close all;  %close all figures
 
 %% Initialize the simulator
 
-LOAD_EXCEL_DATA=1;
-RECALCULATE_CO2PEF=1;  % calculate new values
+LOAD_EXCEL_DATA=0;
+RECALCULATE_CO2PEF=0;  % calculate new values
 RUN_GAMS_MODEL = 1;
 
 %% Assigning buildings ID to the buildings in the FED system
@@ -439,7 +439,7 @@ sim_start_h=1;
 %Sim stop time
 sim_stop_y=2016;
 sim_stop_m=4;
-sim_stop_d=8;
+sim_stop_d=2;
 sim_stop_h=24;
 
 %Get month and hours of simulation
@@ -449,6 +449,7 @@ this_month=sim_start_m;
 
 sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);    
 sim_stop=HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);   
+
 
 forecast_horizon=10;    
 t_len_m=10;
@@ -687,6 +688,8 @@ for t=sim_start:sim_stop
         Initial(5)=0.20;
     else
     [Initial, x]=readGtoM(t);
+    Initial(4)=Initial(4)/opt_fx_inv_BFCh_cap.val;
+    Initial(5)=Initial(5)/opt_fx_inv_BES_cap.val;
     end
     Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',Initial(6));
     
