@@ -178,7 +178,7 @@ vc_el_TURB= sum(h,el_TURB.l(h)*utot_cost('TURB',h));
 
 
 **************************************************************
-
+$ontext
 parameter
 v_e_imp
 v_e_exp
@@ -218,12 +218,12 @@ v_e_slack
 ;
 
 
-v_e_imp = sum(h, e_imp_AH.l(h)+0.00000000000001);
-v_e_exp = sum(h, e_exp_AH.l(h)+0.00000000000001);
+v_e_imp = sum(h, el_imp_AH.l(h)+0.00000000000001);
+v_e_exp = sum(h, el_exp_AH.l(h)+0.00000000000001);
 
 v_h_imp = sum(h, h_imp_AH.l(h)+0.00000000000001);
 v_h_exp = sum(h, h_exp_AH.l(h)+0.00000000000001);
-v_h_P1 = sum(h,  h_Pana1.l(h)+0.00000000000001);
+v_h_P1 = sum(h,  h_Boiler1.l(h)+0.00000000000001);
 v_h_VKA1 = sum(h, H_VKA1.l(h)+0.00000000000001);
 v_h_VKA4 = sum(h, H_VKA4.l(h)+0.00000000000001);
 v_h_ABSC = sum(h, h_AbsC.l(h)+0.00000000000001);
@@ -270,7 +270,7 @@ v_h_DH_slack_var = sum(h, h_DH_slack_var.l(h)+0.00000000000001);
 
 *vc_e_PV                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
 
-
+$offtext
 **************************************************
 
 ************AH PE use and CO2 emission*************************************
