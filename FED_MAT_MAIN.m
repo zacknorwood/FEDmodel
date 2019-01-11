@@ -6,9 +6,9 @@ close all;  %close all figures
 
 %% Initialize the simulator
 
-LOAD_EXCEL_DATA=0;
-RECALCULATE_CO2PEF=0;  % calculate new values
-RUN_GAMS_MODEL = 1;
+LOAD_EXCEL_DATA=0;      %set this to 1 if the reloading excel data is needed, set it to 0 otherwise 
+RECALCULATE_CO2PEF=0;  %set this to 1 if the recalculating CO2 and PE factors is needed, set it to 0 otherwise
+RUN_GAMS_MODEL = 1;     %set it to 1 if you want cal the GAMS model from MATLAB, set it to 0 otherwise
 
 %% Assigning buildings ID to the buildings in the FED system
 
@@ -148,11 +148,6 @@ import = struct('name','import','type','parameter','form','full');
 export = struct('name','export','type','parameter','form','full');
 Boiler1 = struct('name','Boiler1','type','parameter','form','full');
 FGC = struct('name','FGC','type','parameter','form','full');
-
-%% Loading data and re-calculating CO2 and PE factors
-LOAD_EXCEL_DATA=1;      %set this to 1 if the reloading excel data is needed, set it to 0 otherwise 
-RECALCULATE_CO2PEF=1;  %set this to 1 if the recalculating CO2 and PE factors is needed, set it to 0 otherwise
-RUN_GAMS_MODEL = 1;     %set it to 1 if you want cal the GAMS model from MATLAB, set it to 0 otherwise
 
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 if LOAD_EXCEL_DATA==1
