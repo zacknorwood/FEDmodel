@@ -2,6 +2,7 @@
 *---------------------FED MAIN SIMULATOR----------------------------------------
 *-------------------------------------------------------------------------------
 
+$onUElList
 $Include FED_Initialize
 $Include FED_Variables
 $Include FED_Equations
@@ -37,7 +38,10 @@ invCost_RMInv       investment cost of RMInv
 total_cap_PV_roof   total capacity in kW
 total_cap_PV_facade total capacity in kW
 h_demand_nonAH_sum  total demand for non AH buildings
+order(h)         The value of ord(h)
 ;
+order(h)=ord(h);
+display order;
 
 invCost_HP = HP_cap.l*cost_inv_opt('HP');
 invCost_PV = sum(PVID, PV_cap_roof.l(PVID)*cost_inv_opt('PV')) + sum(PVID, PV_cap_facade.l(PVID)*cost_inv_opt('PV'));
