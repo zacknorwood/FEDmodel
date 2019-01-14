@@ -434,7 +434,7 @@ sim_start_h=1;
 %Sim stop time
 sim_stop_y=2016;
 sim_stop_m=4;
-sim_stop_d=2;
+sim_stop_d=1;
 sim_stop_h=24;
 
 %Get month and hours of simulation
@@ -677,12 +677,17 @@ for t=sim_start:sim_stop
         [x, max_exG_prev]=readGtoM(t);
     end
     if t==sim_start
+    [Initial, x, BTES_S_init, BTES_D_init]=readGtoM(t);
+    BTES_S_init.val=zeros(3,5);
+    %BTES_S_init=rmfield(BTES_S_init,'field');
+    BTES_D_init.val=zeros(3,5);
+    %BTES_D_init=rmfield(BTES_D_init,'field');
         Initial(1:8)=0;
         %INITIAL SoC for energy storage, Must agree with min_SOC
         Initial(4)=0.20;
         Initial(5)=0.20;
     else
-    [Initial, x]=readGtoM(t);
+    [Initial, x, BTES_S_init, BTES_D_init]=readGtoM(t);
     Initial(4)=Initial(4)/opt_fx_inv_BFCh_cap.val;
     Initial(5)=Initial(5)/opt_fx_inv_BES_cap.val;
     end
@@ -703,9 +708,20 @@ for t=sim_start:sim_stop
 
     opt_fx_inv_TES_init = struct('name','opt_fx_inv_TES_init','type','parameter','form','full','val',Initial(3));
 
-    opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',Initial(2));
- 
-    opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',Initial(1));
+    %opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',Initial(2));
+    
+    BTES_S_init=rmfield(BTES_S_init,'field');
+    opt_fx_inv_BTES_S_init = BTES_S_init;
+    opt_fx_inv_BTES_S_init.name='opt_fx_inv_BTES_S_init';
+    opt_fx_inv_BTES_S_init.type='parameter';
+     
+    %opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',Initial(1));
+    
+    BTES_D_init=rmfield(BTES_D_init,'field');
+    opt_fx_inv_BTES_D_init = BTES_D_init;
+    opt_fx_inv_BTES_D_init.name='opt_fx_inv_BTES_D_init';
+    opt_fx_inv_BTES_D_init.type='parameter';
+    
     
     %% Preparing input GDX file (MtoG) and RUN GAMS model
 wgdx('MtoG.gdx', opt_fx_inv, opt_fx_inv_RMMC,...

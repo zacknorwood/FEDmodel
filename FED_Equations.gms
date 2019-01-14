@@ -413,7 +413,7 @@ eq_TESinv(h)..
 *         BTES_Sen(h,i) =e= (BTES_kSloss(i)*BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
 *                           + BTES_Sch(h,i)*BTES_Sch_eff - link_BS_BD(h,i));
 eq_BTES_Sen1(h,BID) $ (ord(h) eq 1)..
-         BTES_Sen(h,BID) =e= opt_fx_inv_BTES_S_init$(ord(BID) eq 1);
+         BTES_Sen(h,BID) =e= opt_fx_inv_BTES_S_init(h,BID);
 * sw_BTES*BTES_Sen_int(i);
 eq_BTES_Sch(h,BID)..
          BTES_Sch(h,BID) =l= B_BTES(BID)*BTES_Sch_max(h,BID);
@@ -423,7 +423,7 @@ eq_BTES_Sen2(h,BID) $ (ord(h) gt 1)..
          BTES_Sen(h,BID) =e= (BTES_kSloss(BID)*BTES_Sen(h-1,BID) - BTES_Sdis(h,BID)/BTES_Sdis_eff
                            + BTES_Sch(h,BID)*BTES_Sch_eff - link_BS_BD(h,BID));
 eq_BTES_Den1(h,BID) $ (ord(h) eq 1)..
-         BTES_Den(h,BID) =e= opt_fx_inv_BTES_D_init$(ord(BID) eq 1);
+         BTES_Den(h,BID) =e= opt_fx_inv_BTES_D_init(h,BID);
 * sw_BTES*BTES_Den_int(BID);
 *eq_BTES_Den0(h,i) $ (ord(h) eq 1)..
 *         BTES_Den(h,i) =e= (BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));

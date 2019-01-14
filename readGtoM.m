@@ -1,4 +1,4 @@
-function[InitialSoC,max_exG_prev]=readGtoM(currenthour)
+function[InitialSoC,max_exG_prev,BTES_S,BTES_D]=readGtoM(currenthour)
 %Read GtoM.gdx Assume placement of storage systems in one place otherwise
 %needs modification
 
