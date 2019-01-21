@@ -6,8 +6,8 @@ close all;  %close all figures
 
 %% Initialize the simulator
 
-LOAD_EXCEL_DATA=0;      %set this to 1 if the reloading excel data is needed, set it to 0 otherwise 
-RECALCULATE_CO2PEF=0;  %set this to 1 if the recalculating CO2 and PE factors is needed, set it to 0 otherwise
+LOAD_EXCEL_DATA=1;      %set this to 1 if the reloading excel data is needed, set it to 0 otherwise 
+RECALCULATE_CO2PEF=1;  %set this to 1 if the recalculating CO2 and PE factors is needed, set it to 0 otherwise
 RUN_GAMS_MODEL = 1;     %set it to 1 if you want cal the GAMS model from MATLAB, set it to 0 otherwise
 
 %% Assigning buildings ID to the buildings in the FED system
@@ -677,11 +677,14 @@ for t=sim_start:sim_stop
         [x, max_exG_prev]=readGtoM(t);
     end
     if t==sim_start
-    [Initial, x, BTES_S_init, BTES_D_init]=readGtoM(t);
-    BTES_S_init.val=zeros(3,5);
-    %BTES_S_init=rmfield(BTES_S_init,'field');
-    BTES_D_init.val=zeros(3,5);
-    %BTES_D_init=rmfield(BTES_D_init,'field');
+        [Initial, x, BTES_S_init, BTES_D_init]=readGtoM(t);
+        BTES_uels = {h.uels, {'O0007027', 'O0007017', 'O0007012', 'O0007006', 'O0007023', 'O0007026', 'O0007028', 'O0007024'}};
+        BTES_S_init.val=zeros(10,8);
+        BTES_S_init.uels=BTES_uels;
+        %BTES_S_init=rmfield(BTES_S_init,'field');
+        BTES_D_init.val=zeros(3,5);
+        BTES_D_init.uels=BTES_uels;
+        %BTES_D_init=rmfield(BTES_D_init,'field');
         Initial(1:8)=0;
         %INITIAL SoC for energy storage, Must agree with min_SOC
         Initial(4)=0.20;
@@ -737,13 +740,14 @@ wgdx('MtoG.gdx', opt_fx_inv, opt_fx_inv_RMMC,...
      el_VKA1_0, el_VKA4_0,el_AAC_0,h_AbsC_0,Gekv_roof,Gekv_facade,...     
      BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,DH_heating_season,BAC_savings_period,...
      PVID,PVID_roof,PV_roof_cap,PVID_facade,PV_facade_cap,...
-     el_price,el_certificate,h_price,tout,BAC_savings_factor,...
+     el_price,el_certificate,h_price,tout,BAC_savings_factor,... 
      temp_optn0,temp_optn1, temp_optn2, temp_optn3, temp_synth_baseline, FED_Inv_lim,BusID,opt_fx_inv_BFCh, opt_fx_inv_BFCh_cap,...
-     opt_fx_inv_BES_maxP,opt_fx_inv_BFCh_maxP,opt_fx_inv_BTES_D_init,opt_fx_inv_BTES_S_init,...
-     opt_fx_inv_TES_init,opt_fx_inv_BFCh_init,opt_fx_inv_BES_init,import,export,Boiler1,FGC,Boiler1_prev_disp,...
+     opt_fx_inv_BES_maxP,opt_fx_inv_BFCh_maxP, opt_fx_inv_BTES_D_init, opt_fx_inv_BTES_S_init,...
+     opt_fx_inv_TES_init,opt_fx_inv_BFCh_init,opt_fx_inv_BES_init,import,export,Boiler1,FGC,Boiler1_prev_disp,... 
      MA_PEF_exG,MA_CO2F_exG,max_exG_prev,MA_Cost_DH,VKA1_prev_disp,VKA4_prev_disp,AAC_prev_disp,...
-     DH_Node_ID, DH_Nodes_Transfer_Limits,...
+     DH_Node_ID, DH_Nodes_Transfer_Limits,... 
      DC_Node_ID, DC_Nodes_Transfer_Limits, el_exG_slack,h_DH_slack,c_DC_slack,h_exp_AH_hist, h_imp_AH_hist,opt_fx_inv_BTES,opt_fx_inv_BAC);
+ 
  
 Time(2).point='Wgdx and Inputs';
 Time(2).value=toc;
