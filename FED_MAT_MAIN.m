@@ -678,11 +678,11 @@ for t=sim_start:sim_stop
     end
     if t==sim_start
         [Initial, x, BTES_S_init, BTES_D_init]=readGtoM(t);
-        BTES_uels = {h.uels, {'O0007027', 'O0007017', 'O0007012', 'O0007006', 'O0007023', 'O0007026', 'O0007028', 'O0007024'}};
-        BTES_S_init.val=zeros(10,8);
+        BTES_uels = {h.uels(1), {'O0007027', 'O0007017', 'O0007012', 'O0007006', 'O0007023', 'O0007026', 'O0007028', 'O0007024'}};
+        BTES_S_init.val=zeros(1,8);
         BTES_S_init.uels=BTES_uels;
         %BTES_S_init=rmfield(BTES_S_init,'field');
-        BTES_D_init.val=zeros(3,5);
+        BTES_D_init.val=zeros(1,8);
         BTES_D_init.uels=BTES_uels;
         %BTES_D_init=rmfield(BTES_D_init,'field');
         Initial(1:8)=0;

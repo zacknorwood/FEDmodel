@@ -43,8 +43,27 @@ function[InitialSoC,max_exG_prev,BTES_S,BTES_D]=readGtoM(currenthour)
  max_exG_prev1.form='full';
  max_exG_prev1.compress='true';
  
+ BTES_uels = {num2str(currenthour), {'O0007027', 'O0007017', 'O0007012', 'O0007006', 'O0007023', 'O0007026', 'O0007028', 'O0007024'}};
  [BTES_D]=rgdx('GtoM',BTES_Den);
+ try
+    BTES_D.uels{1} = BTES_D.uels{1}(1); % This ensures only the first hour is present in the uels 
+    BTES_D.val = BTES_D.val(1,:); % This ensures only the values corresponding to the first hour is present
+ catch
+     warning('Error processing BTES_D in readGtoM, probably empty struct. Creating struct with assumed 0 energy stored');
+     BTES_D_init.val=zeros(1,8);
+     BTES_D_init.uels=BTES_uels;
+ end
+ 
  [BTES_S]=rgdx('GtoM',BTES_Sen);
+ try
+    BTES_S.uels{1} = BTES_S.uels{1}(1); % This ensures only the first hour is present in the uels 
+    BTES_S.val = BTES_S.val(1,:); % This ensures only the values corresponding to the first hour is present
+ catch
+     warning('Error processing BTES_S in readGtoM, probably empty struct. Creating struct with assumed 0 energy stored');
+     BTES_S_init.val=zeros(1,8);
+     BTES_S_init.uels=BTES_uels;
+ end
+ 
  [TES]=rgdx('GtoM',TES_en);
  [BFCh]=rgdx('GtoM',BFCh_en);
  [BES]=rgdx('GtoM',BES_en);
