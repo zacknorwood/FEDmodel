@@ -690,9 +690,9 @@ for t=sim_start:sim_stop
         Initial(4)=0.20;
         Initial(5)=0.20;
     else
-    [Initial, x, BTES_S_init, BTES_D_init]=readGtoM(t);
-    Initial(4)=Initial(4)/opt_fx_inv_BFCh_cap.val;
-    Initial(5)=Initial(5)/opt_fx_inv_BES_cap.val;
+        [Initial, x, BTES_S_init, BTES_D_init]=readGtoM(t);
+        Initial(4)=Initial(4)/opt_fx_inv_BFCh_cap.val;
+        Initial(5)=Initial(5)/opt_fx_inv_BES_cap.val;
     end
     Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',Initial(6));
     
