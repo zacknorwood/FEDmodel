@@ -6,9 +6,9 @@ close all;  %close all figures
 
 %% Initialize the simulator
 
-LOAD_EXCEL_DATA=1;      %set this to 1 if the reloading excel data is needed, set it to 0 otherwise 
-RECALCULATE_CO2PEF=1;  %set this to 1 if the recalculating CO2 and PE factors is needed, set it to 0 otherwise
-RUN_GAMS_MODEL = 1;     %set it to 1 if you want cal the GAMS model from MATLAB, set it to 0 otherwise
+LOAD_EXCEL_DATA=1;
+RECALCULATE_CO2PEF=1;  % calculate new values
+RUN_GAMS_MODEL = 1;
 
 %% Assigning buildings ID to the buildings in the FED system
 
@@ -94,7 +94,7 @@ BusID.uels=num2cell(BusID_temp);
 %% *****IDs for solar irradiance data
 %OBS: These IDs, which represent where the solar PVs are located, could be modified so they are mapped to Building IDs and/or the electrical
 %nodes in the local el distribution system. Currently they are numbered
-%based on the file "solceller lista på anläggningar.xlsx" which is from the 3d shading model
+%based on the file "solceller lista pï¿½ anlï¿½ggningar.xlsx" which is from the 3d shading model
 
 PVID.name='PVID';
 PVID_temp=1:99;
@@ -180,7 +180,7 @@ end
 %% INPUT PE and CO2 FACTORS
 
 %CO2 and PE factors of local generation units
-%26 CO2 factor of solar PV
+%22 CO2 factor of solar PV
 CO2F_PV = struct('name','CO2F_PV','type','parameter','val',22);
 %PE factor of solar PV
 PEF_PV = struct('name','PEF_PV','type','parameter','val',0.25);
@@ -268,10 +268,10 @@ BAC_Inv.name='BAC_Inv';
 BAC_Inv.uels={'O0007017','O0007012','O0007006','O0007023','O0007026', 'O0007027','O3060133'};
 
 %Placement of roof PVs (Existing)
-PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista på anläggningar.xlsx" as well as the 3d shading model
+PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista pï¿½ anlï¿½ggningar.xlsx" as well as the 3d shading model
 
 %Placement of roof PVs (Investments)
-PVID_roof_investments=[0 1 3 4 5 6 7 8 9 10] ;  %Refers to ID in "solceller lista på anläggningar.xlsx" as well as the 3d shading model
+PVID_roof_investments=[0 1 3 4 5 6 7 8 9 10] ;  %Refers to ID in "solceller lista pï¿½ anlï¿½ggningar.xlsx" as well as the 3d shading model
 
 %Merge all roof PVIDs and create struct for GAMS
 PVID_roof.name='PVID_roof';
@@ -279,12 +279,12 @@ PVID_roof.uels=num2cell(horzcat(PVID_roof_existing,PVID_roof_investments));
 
 %Capacity of roof PVs (Existing)
 %PV_roof_cap_temp1=[50 42];   %OBS:According to document 'ProjektmÃƒÂ¶te nr 22 samordning  WP4-WP8 samt WP5'
-PV_roof_cap_existing=[48 40]; % According to "solceller lista på anläggningar.xlsx" (updated from AH and CF 2018-12)
+PV_roof_cap_existing=[48 40]; % According to "solceller lista pï¿½ anlï¿½ggningar.xlsx" (updated from AH and CF 2018-12)
 
 %Capacity of roof PVs (Investments)
 %Note that these need to be set to zero if running the base case without PV investments. 
 %PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃƒÂ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]; % According to solceller lista på anläggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
+PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]; % According to solceller lista pï¿½ anlï¿½ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
 %the project plan for FED according to AH hence that capacity being zero.
 
 %Merge all roof PV capacities and create struct for GAMS
@@ -762,9 +762,6 @@ Results(t).dispatch = fstore_results(h,BID,BTES_properties,BusID);
 end
 Time(3).point='Gams running and storing';
 Time(3).value=toc;
-
-% end
-%    system 'gams export_data lo=3';
 
  %% Post processing results 
  
