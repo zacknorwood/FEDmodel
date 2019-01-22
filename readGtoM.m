@@ -84,8 +84,12 @@ function[InitialSoC,max_exG_prev,BTES_S,BTES_D]=readGtoM(currenthour)
   [max_exG_prev]=rgdx('GtoM',max_exG_prev1);
   max_exG_prev=max_exG_prev.val;
  
- BTES_D_temp = TES
- BTES_S_temp = TES
+ % These two rows are to avoid errors with the for loop constructing
+ % 'initial'. The two values in BTES_D_temp and BTES_S_temp should NOT be
+ % used in the model. Instead BTES_S and BTES_D should be used for initial
+ % state of building storages
+ BTES_D_temp = TES;
+ BTES_S_temp = TES;
  
  initial(1:9)=[BTES_D_temp,BTES_S_temp,TES,BFCh,BES,Boiler,VKA1,VKA4,AAC];
  for i=1:5
