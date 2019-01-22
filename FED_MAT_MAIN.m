@@ -94,7 +94,7 @@ BusID.uels=num2cell(BusID_temp);
 %% *****IDs for solar irradiance data
 %OBS: These IDs, which represent where the solar PVs are located, could be modified so they are mapped to Building IDs and/or the electrical
 %nodes in the local el distribution system. Currently they are numbered
-%based on the file "solceller lista på anläggningar.xlsx" which is from the 3d shading model
+%based on the file "solceller lista pï¿½ anlï¿½ggningar.xlsx" which is from the 3d shading model
 
 PVID.name='PVID';
 PVID_temp=1:99;
@@ -148,11 +148,6 @@ import = struct('name','import','type','parameter','form','full');
 export = struct('name','export','type','parameter','form','full');
 Boiler1 = struct('name','Boiler1','type','parameter','form','full');
 FGC = struct('name','FGC','type','parameter','form','full');
-
-%% Loading data and re-calculating CO2 and PE factors
-LOAD_EXCEL_DATA=1;      %set this to 1 if the reloading excel data is needed, set it to 0 otherwise 
-RECALCULATE_CO2PEF=1;  %set this to 1 if the recalculating CO2 and PE factors is needed, set it to 0 otherwise
-RUN_GAMS_MODEL = 1;     %set it to 1 if you want cal the GAMS model from MATLAB, set it to 0 otherwise
 
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 if LOAD_EXCEL_DATA==1
@@ -273,10 +268,10 @@ BAC_Inv.name='BAC_Inv';
 BAC_Inv.uels={'O0007017','O0007012','O0007006','O0007023','O0007026', 'O0007027','O3060133'};
 
 %Placement of roof PVs (Existing)
-PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista på anläggningar.xlsx" as well as the 3d shading model
+PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista pï¿½ anlï¿½ggningar.xlsx" as well as the 3d shading model
 
 %Placement of roof PVs (Investments)
-PVID_roof_investments=[0 1 3 4 5 6 7 8 9 10] ;  %Refers to ID in "solceller lista på anläggningar.xlsx" as well as the 3d shading model
+PVID_roof_investments=[0 1 3 4 5 6 7 8 9 10] ;  %Refers to ID in "solceller lista pï¿½ anlï¿½ggningar.xlsx" as well as the 3d shading model
 
 %Merge all roof PVIDs and create struct for GAMS
 PVID_roof.name='PVID_roof';
@@ -284,12 +279,12 @@ PVID_roof.uels=num2cell(horzcat(PVID_roof_existing,PVID_roof_investments));
 
 %Capacity of roof PVs (Existing)
 %PV_roof_cap_temp1=[50 42];   %OBS:According to document 'ProjektmÃƒÂ¶te nr 22 samordning  WP4-WP8 samt WP5'
-PV_roof_cap_existing=[48 40]; % According to "solceller lista på anläggningar.xlsx" (updated from AH and CF 2018-12)
+PV_roof_cap_existing=[48 40]; % According to "solceller lista pï¿½ anlï¿½ggningar.xlsx" (updated from AH and CF 2018-12)
 
 %Capacity of roof PVs (Investments)
 %Note that these need to be set to zero if running the base case without PV investments. 
 %PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃƒÂ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]; % According to solceller lista på anläggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
+PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]; % According to solceller lista pï¿½ anlï¿½ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
 %the project plan for FED according to AH hence that capacity being zero.
 
 %Merge all roof PV capacities and create struct for GAMS
@@ -439,7 +434,7 @@ sim_start_h=1;
 %Sim stop time
 sim_stop_y=2016;
 sim_stop_m=4;
-sim_stop_d=2;
+sim_stop_d=1;
 sim_stop_h=24;
 
 %Get month and hours of simulation
@@ -682,14 +677,22 @@ for t=sim_start:sim_stop
         [x, max_exG_prev]=readGtoM(t);
     end
     if t==sim_start
+        [Initial, x, BTES_S_init, BTES_D_init]=readGtoM(t);
+        BTES_uels = {h.uels(1), {'O0007027', 'O0007017', 'O0007012', 'O0007006', 'O0007023', 'O0007026', 'O0007028', 'O0007024'}};
+        BTES_S_init.val=zeros(1,8);
+        BTES_S_init.uels=BTES_uels;
+        %BTES_S_init=rmfield(BTES_S_init,'field');
+        BTES_D_init.val=zeros(1,8);
+        BTES_D_init.uels=BTES_uels;
+        %BTES_D_init=rmfield(BTES_D_init,'field');
         Initial(1:8)=0;
         %INITIAL SoC for energy storage, Must agree with min_SOC
         Initial(4)=0.20;
         Initial(5)=0.20;
     else
-    [Initial, x]=readGtoM(t);
-    Initial(4)=Initial(4)/opt_fx_inv_BFCh_cap.val;
-    Initial(5)=Initial(5)/opt_fx_inv_BES_cap.val;
+        [Initial, x, BTES_S_init, BTES_D_init]=readGtoM(t);
+        Initial(4)=Initial(4)/opt_fx_inv_BFCh_cap.val;
+        Initial(5)=Initial(5)/opt_fx_inv_BES_cap.val;
     end
     Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',Initial(6));
     
@@ -708,9 +711,20 @@ for t=sim_start:sim_stop
 
     opt_fx_inv_TES_init = struct('name','opt_fx_inv_TES_init','type','parameter','form','full','val',Initial(3));
 
-    opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',Initial(2));
- 
-    opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',Initial(1));
+    %opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',Initial(2));
+    
+    BTES_S_init=rmfield(BTES_S_init,'field');
+    opt_fx_inv_BTES_S_init = BTES_S_init;
+    opt_fx_inv_BTES_S_init.name='opt_fx_inv_BTES_S_init';
+    opt_fx_inv_BTES_S_init.type='parameter';
+     
+    %opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',Initial(1));
+    
+    BTES_D_init=rmfield(BTES_D_init,'field');
+    opt_fx_inv_BTES_D_init = BTES_D_init;
+    opt_fx_inv_BTES_D_init.name='opt_fx_inv_BTES_D_init';
+    opt_fx_inv_BTES_D_init.type='parameter';
+    
     
     %% Preparing input GDX file (MtoG) and RUN GAMS model
 wgdx('MtoG.gdx', opt_fx_inv, opt_fx_inv_RMMC,...
@@ -726,13 +740,14 @@ wgdx('MtoG.gdx', opt_fx_inv, opt_fx_inv_RMMC,...
      el_VKA1_0, el_VKA4_0,el_AAC_0,h_AbsC_0,Gekv_roof,Gekv_facade,...     
      BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,DH_heating_season,BAC_savings_period,...
      PVID,PVID_roof,PV_roof_cap,PVID_facade,PV_facade_cap,...
-     el_price,el_certificate,h_price,tout,BAC_savings_factor,...
+     el_price,el_certificate,h_price,tout,BAC_savings_factor,... 
      temp_optn0,temp_optn1, temp_optn2, temp_optn3, temp_synth_baseline, FED_Inv_lim,BusID,opt_fx_inv_BFCh, opt_fx_inv_BFCh_cap,...
-     opt_fx_inv_BES_maxP,opt_fx_inv_BFCh_maxP,opt_fx_inv_BTES_D_init,opt_fx_inv_BTES_S_init,...
-     opt_fx_inv_TES_init,opt_fx_inv_BFCh_init,opt_fx_inv_BES_init,import,export,Boiler1,FGC,Boiler1_prev_disp,...
+     opt_fx_inv_BES_maxP,opt_fx_inv_BFCh_maxP, opt_fx_inv_BTES_D_init, opt_fx_inv_BTES_S_init,...
+     opt_fx_inv_TES_init,opt_fx_inv_BFCh_init,opt_fx_inv_BES_init,import,export,Boiler1,FGC,Boiler1_prev_disp,... 
      MA_PEF_exG,MA_CO2F_exG,max_exG_prev,MA_Cost_DH,VKA1_prev_disp,VKA4_prev_disp,AAC_prev_disp,...
-     DH_Node_ID, DH_Nodes_Transfer_Limits,...
+     DH_Node_ID, DH_Nodes_Transfer_Limits,... 
      DC_Node_ID, DC_Nodes_Transfer_Limits, el_exG_slack,h_DH_slack,c_DC_slack,h_exp_AH_hist, h_imp_AH_hist,opt_fx_inv_BTES,opt_fx_inv_BAC);
+ 
  
 Time(2).point='Wgdx and Inputs';
 Time(2).value=toc;

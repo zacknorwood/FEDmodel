@@ -5,15 +5,18 @@
 *THIS ROUTINE IS USED TO READ INPUT DATA FROM MtoG USED IN THE MAIN MODEL IN GDX FORMAT
 
 *----------Building IDs---------------------------------------------------------
-set BID           Building ID used to define load points
-;
+set
+    BID           Building ID used to define load points
+h                SIMULATION TIME;
 
 $GDXIN MtoG.gdx
 $LOAD BID
+$LOAD h
+
 $GDXIN
 
 *-----------Simulation time, BTES and BAC investments and parameters-----------
-set h                SIMULATION TIME
+set
     BTES_Inv(BID)     used for fixed BTES inv option
     BAC_Inv(BID)       used for fixed BAC inv option
     BTES_properties  Building Inertia TES properties
@@ -24,7 +27,6 @@ parameter
 ;
 
 $GDXIN MtoG.gdx
-$LOAD h
 $LOAD BTES_Inv
 $LOAD opt_fx_inv_BTES
 $LOAD BAC_Inv

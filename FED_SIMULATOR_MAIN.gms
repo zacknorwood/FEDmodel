@@ -2,6 +2,7 @@
 *---------------------FED MAIN SIMULATOR----------------------------------------
 *-------------------------------------------------------------------------------
 
+$onUElList
 $Include FED_Initialize
 $Include FED_Variables
 $Include FED_Equations
@@ -37,7 +38,12 @@ invCost_RMInv       investment cost of RMInv
 total_cap_PV_roof   total capacity in kW
 total_cap_PV_facade total capacity in kW
 h_demand_nonAH_sum  total demand for non AH buildings
+order(h)         The value of ord(h)
+order_BID(BID)         The value of ord(h)
 ;
+order(h)=ord(h);
+order_BID(BID)=ord(BID);
+display order, order_BID;
 
 invCost_HP = HP_cap.l*cost_inv_opt('HP');
 invCost_PV = sum(PVID, PV_cap_roof.l(PVID)*cost_inv_opt('PV')) + sum(PVID, PV_cap_facade.l(PVID)*cost_inv_opt('PV'));
@@ -178,7 +184,7 @@ vc_el_TURB= sum(h,el_TURB.l(h)*utot_cost('TURB',h));
 
 
 **************************************************************
-
+$ontext
 parameter
 v_e_imp
 v_e_exp
@@ -269,7 +275,7 @@ v_h_DH_slack_var = sum(h, h_DH_slack_var.l(h)+0.00000000000001);
 
 *vc_e_PV                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
 
-
+$offtext
 **************************************************
 
 ************AH PE use and CO2 emission*************************************
