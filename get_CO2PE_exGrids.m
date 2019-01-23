@@ -90,5 +90,6 @@ for tt=1:length(DH_CO2F_ma)
     end
 end
 
-
+DH_CO2F_ma(DH_CO2F_ma==98)=CO2F_spillvarme;
+%DH_PEF_ma
 
