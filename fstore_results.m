@@ -46,31 +46,31 @@ data.tout=gdx2mat(gdxData,'tout',h_sim.uels);
 
 %FED PE
 data.FED_PE=gdx2mat(gdxData,'FED_PE',h_sim.uels);
-data.MA_FED_PE=gdx2mat(gdxData,'MA_FED_PE',h_sim.uels);
+%data.MA_FED_PE=gdx2mat(gdxData,'MA_FED_PE',h_sim.uels);
 data.tot_PE=gdx2mat(gdxData,'tot_PE');
-data.MA_tot_PE=gdx2mat(gdxData,'MA_tot_PE');
+%data.MA_tot_PE=gdx2mat(gdxData,'MA_tot_PE');
 
 %AH PE
 data.AH_PE=gdx2mat(gdxData,'AH_PE',h_sim.uels);
-data.MA_AH_PE=gdx2mat(gdxData,'MA_AH_PE',h_sim.uels);
+%data.MA_AH_PE=gdx2mat(gdxData,'MA_AH_PE',h_sim.uels);
 
 %FED CO2
 data.FED_CO2=gdx2mat(gdxData,'FED_CO2',h_sim.uels);
-data.MA_FED_CO2=gdx2mat(gdxData,'MA_FED_CO2',h_sim.uels);
+%data.MA_FED_CO2=gdx2mat(gdxData,'MA_FED_CO2',h_sim.uels);
 data.FED_CO2_tot=gdx2mat(gdxData,'FED_CO2_tot');
-data.MA_FED_CO2_tot=gdx2mat(gdxData,'MA_FED_CO2_tot');
+%data.MA_FED_CO2_tot=gdx2mat(gdxData,'MA_FED_CO2_tot');
 
 %AH CO2
 data.AH_CO2=gdx2mat(gdxData,'AH_CO2',h_sim.uels);
-data.MA_AH_CO2=gdx2mat(gdxData,'MA_AH_CO2',h_sim.uels);
+%data.MA_AH_CO2=gdx2mat(gdxData,'MA_AH_CO2',h_sim.uels);
 
 %PEF and CO2F used in the simulation
 data.CO2F_PV=gdx2mat(gdxData,'CO2F_PV');
 data.PEF_PV=gdx2mat(gdxData,'PEF_PV');
-data.CO2F_P1=gdx2mat(gdxData,'CO2F_P1');
-data.PEF_P1=gdx2mat(gdxData,'PEF_P1');
-data.CO2F_P2=gdx2mat(gdxData,'CO2F_P2');
-data.PEF_P2=gdx2mat(gdxData,'PEF_P2');
+data.CO2F_Boiler1=gdx2mat(gdxData,'CO2F_Boiler1');
+data.PEF_Boiler1=gdx2mat(gdxData,'PEF_Boiler1');
+data.CO2F_Boiler2=gdx2mat(gdxData,'CO2F_Boiler2');
+data.PEF_Boiler2=gdx2mat(gdxData,'PEF_Boiler2');
 data.CO2F_exG=gdx2mat(gdxData,'CO2F_exG',h_sim.uels);
 data.PEF_exG=gdx2mat(gdxData,'PEF_exG',h_sim.uels);
 data.CO2F_DH=gdx2mat(gdxData,'CO2F_DH',h_sim.uels);
@@ -81,7 +81,7 @@ data.h_Boiler1=gdx2mat(gdxData,'h_Boiler1',h_sim.uels);
 data.h_RGK1=gdx2mat(gdxData,'h_RGK1',h_sim.uels);
 data.qB1=gdx2mat(gdxData,'qB1',h_sim.uels);
 data.qF1=gdx2mat(gdxData,'qF1',h_sim.uels);
-data.fuel_P1=gdx2mat(gdxData,'fuel_P1',h_sim.uels);
+data.fuel_Boiler1=gdx2mat(gdxData,'fuel_Boiler1',h_sim.uels);
 data.P1_eff=gdx2mat(gdxData,'P1_eff');
 data.H_VKA1=gdx2mat(gdxData,'H_VKA1',h_sim.uels);
 data.C_VKA1=gdx2mat(gdxData,'C_VKA1',h_sim.uels);
@@ -148,11 +148,11 @@ data.invCost_BAC=gdx2mat(gdxData,'invCost_BAC');
 data.BAC_savings_period=gdx2mat(gdxData,'BAC_savings_period',h_sim.uels);
 
 %Boiler 2
-data.B_P2=gdx2mat(gdxData,'B_P2');
-data.invCost_P2=gdx2mat(gdxData,'invCost_P2');
-data.fuel_P2=gdx2mat(gdxData,'fuel_P2',h_sim.uels);
-data.h_P2=gdx2mat(gdxData,'h_P2',h_sim.uels);
-data.H_P2T=gdx2mat(gdxData,'H_P2T',h_sim.uels);
+data.B_Boiler2=gdx2mat(gdxData,'B_Boiler2');
+data.invCost_Boiler2=gdx2mat(gdxData,'invCost_Boiler2');
+data.fuel_Boiler2=gdx2mat(gdxData,'fuel_Boiler2',h_sim.uels);
+data.h_Boiler2=gdx2mat(gdxData,'h_Boiler2',h_sim.uels);
+data.H_Boiler2T=gdx2mat(gdxData,'H_Boiler2T',h_sim.uels);
 data.B_TURB=gdx2mat(gdxData,'B_TURB');
 data.invCost_TURB=gdx2mat(gdxData,'invCost_TURB');
 data.el_TURB=gdx2mat(gdxData,'el_TURB',h_sim.uels);

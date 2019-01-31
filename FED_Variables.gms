@@ -114,21 +114,21 @@ positive variable
 AbsCInv_cap.fx $ (opt_fx_inv_AbsCInv_cap gt -1) = opt_fx_inv_AbsCInv_cap;
 *----------------Boiler 2 related -----------------------------------------------
 positive variable
-         fuel_P2(h)        fuel demand in P2
-         h_P2(h)           generated heating in P2
+         fuel_Boiler2(h)        fuel demand in P2
+         h_Boiler2(h)           generated heating in P2
 ;
-h_P2.up(h)=P2_max;
+h_Boiler2.up(h)=P2_max;
 *h_P2.lo(h)=P2_min;
 binary variable
-         B_P2              Decision variable for P2 investment
+         B_Boiler2              Decision variable for P2 investment
 ;
-B_P2.fx $ (opt_fx_inv_P2 gt -1) = opt_fx_inv_P2;
+B_Boiler2.fx $ (opt_fx_inv_Boiler2 gt -1) = opt_fx_inv_Boiler2;
 
 *----------------Refurbished turbine for Boiler 2  ------------------------------
 positive variable
          el_TURB(h)         electricity generated in turbine-gen
          h_TURB(h)         steam demand in turbine
-         H_P2T(h)          steam generated in P2-turb combo
+         H_Boiler2T(h)          steam generated in P2-turb combo
 ;
 Variable
          el_TURB_reac(h)    Turbines reactive power
@@ -213,7 +213,7 @@ positive variables
          BES_dis(h,BID)      Battery discharging at time t and building BID
          BES_cap(BID)         Capacity of the battery at building BID
 
-         BFCh_en(h,BID)       Energy stored in the battry at time t and building BID
+         BFCh_en(h,BID)       Energy stored in the battery at time t and building BID
          BFCh_ch(h,BID)       Battery charing at time t and building BID
          BFCh_dis(h,BID)      Battery discharging at time t and building BID
          BFCh_cap(BID)         Capacity of the battery at building BID
@@ -272,12 +272,12 @@ positive variable
 variable
          FED_CO2(h)     Hourly CO2 av. emissions in the FED system
          tot_CO2        Total CO2 av. emissions of the FED system
-         MA_FED_CO2(h)  Hourly CO2 marginal emissions in the FED system
-         MA_tot_CO2     Total CO2 marginal emissions of the FED system
+*         MA_FED_CO2(h)  Hourly CO2 marginal emissions in the FED system
+*         MA_tot_CO2     Total CO2 marginal emissions of the FED system
          FED_PE(h)      Hourly av. PE use in the FED system
-         MA_FED_PE(h)   Hourly marginal PE use in the FED system
+*         MA_FED_PE(h)   Hourly marginal PE use in the FED system
          tot_PE         Total av. PE use in the FED system
-         MA_tot_PE      Total marginal PE use in the FED system
+*         MA_tot_PE      Total marginal PE use in the FED system
 
 ;
 
@@ -300,7 +300,7 @@ variable
          totCost            total cost
          invCost            total investment cost
          FED_CO2_tot        total av. CO2 emissions from the FED system
-         MA_FED_CO2_tot     total marginal CO2 emissions from the FED system
+*         MA_FED_CO2_tot     total marginal CO2 emissions from the FED system
          peak_CO2           CO2 peak
          obj                objective function
 ;

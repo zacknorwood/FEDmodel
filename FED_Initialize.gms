@@ -325,7 +325,8 @@ parameter
 
 * 0.0031 is grid tariff per kWh from Göteborg Energi home page; 0.011sek/kWh average profit for GE for large customers
 price('exG',h)=net_tariff + unit_avrg_prof_buy + el_price(h);
-price('DH',h)=h_price(h)$(opt_marg_factors eq 0) + MA_Cost_DH(h)$(opt_marg_factors eq 1);
+* This is the real time price in the FED system based on marginal units, h_price(h) is the price using the normal GE tariffs.
+price('DH',h)= MA_Cost_DH(h);
 
 el_sell_price(h) =el_price(h) - unit_prof_sell - net_tariff  +  el_certificate(h) + ursprungsgaranti;
 *the data 0.186 kr/kWh is obtained from Energimyndigheten 2015 wood chips for District Heating Uses
