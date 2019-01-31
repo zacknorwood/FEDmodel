@@ -322,10 +322,6 @@ PARAMETERS
             PEF_exG(h)         PE factor of the electricity grid
             CO2F_DH(h)         CO2 av. factor of the district heating grid
             PEF_DH(h)          PE av. factor of the district heating grid
-*            MA_CO2F_DH(h)      CO2 marginal factor of the district heating grid
-*            MA_PEF_DH(h)       PE marginal factor of the district heating grid
-*            MA_CO2F_exG(h)     CO2 marginal factor of the electrical grid
-*            MA_PEF_exG(h)      PE marginal factor of the electrical grid
 *            max_exG_prev       max exG of previous dispatch
             MA_Cost_DH         DH marginal cost
 ;
@@ -340,10 +336,6 @@ $LOAD CO2F_exG
 $LOAD PEF_exG
 $LOAD CO2F_DH
 $LOAD PEF_DH
-*$LOAD MA_CO2F_DH
-*$LOAD MA_PEF_DH
-*$load MA_PEF_exG
-*$load MA_CO2F_exG
 *$load max_exG_prev
 $load MA_Cost_DH
 $GDXIN
@@ -371,7 +363,6 @@ PARAMETERS
          opt_fx_inv_BFCh        options to fix investment in new BFCh
          opt_fx_inv_BFCh_cap    capacity of the new BFCh
          opt_fx_inv_BFCh_maxP   power factor limit of the new BFCh
-*         opt_marg_factors       option to choose between marginal and average factors
 ;
 $GDXIN MtoG.gdx
 $LOAD opt_fx_inv
@@ -404,9 +395,7 @@ Parameters
 *      FGC                    FGC forecast?
 *      import                 Import forecast?
 *      export                 Export forecast?
-*      VKA1_prev_disp         Previous dispatch of VKA1
-*      VKA4_prev_disp         Previous dispatch of VKA4
-*      AAC_prev_disp          Previous dispatch of AAC
+
 ;
 $GDXIN MtoG.gdx
 $load opt_fx_inv_BES_init
@@ -420,9 +409,7 @@ $load Boiler2_prev_disp
 *$load import
 *$load export
 *$load FGC
-*$load VKA1_prev_disp
-*$load VKA4_prev_disp
-*$load AAC_prev_disp
+
 $GDXIN
 *the combination is used to comment out sections codes inside
 

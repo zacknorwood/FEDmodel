@@ -1,9 +1,9 @@
 function [] = FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline)
 % optimization options
 % min_totCost_0: option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
-% min_totCost:  %weighting factor for total cost to use in the minimization function
-% min_totPE:    %weighting factor for PE to use in the minimization function
-% min_totCO2:   %weighting factor CO2 emissions to use in the minimization function
+% min_totCost:  weighting factor for total cost to use in the minimization function
+% min_totPE:    weighting factor for PE to use in the minimization function
+% min_totCO2:   weighting factor CO2 emissions to use in the minimization function
 
 profile on  %to monitor time used to run different parts of model code
 tic
@@ -143,11 +143,6 @@ Gekv_roof = struct('name','G_roof','type','parameter','form','full');
 
 %forecasted solar PV irradiance -facade
 Gekv_facade = struct('name','G_facade','type','parameter','form','full');
-
-% import = struct('name','import','type','parameter','form','full');
-% export = struct('name','export','type','parameter','form','full');
-% Boiler1 = struct('name','Boiler1','type','parameter','form','full');
-% FGC = struct('name','FGC','type','parameter','form','full');
 
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 %Read static properties of the model
@@ -351,18 +346,10 @@ DH_heating_season = struct('name','DH_heating_season','type','parameter','form',
 %BAC saving period
 BAC_savings_period = struct('name','BAC_savings_period','type','parameter','form','full');
 
-% FED_CO2_max = struct('name','CO2_max','type','parameter');
-% FED_CO2_peakref = struct('name','CO2_peak_ref','type','parameter');
-% FED_PE_totref = struct('name','PE_tot_ref','type','parameter');
-
 CO2F_exG = struct('name','CO2F_exG','type','parameter','form','full');
 PEF_exG = struct('name','PEF_exG','type','parameter','form','full');
-%MA_CO2F_exG = struct('name','MA_CO2F_exG','type','parameter','form','full');
-%MA_PEF_exG = struct('name','MA_PEF_exG','type','parameter','form','full');
 CO2F_DH = struct('name','CO2F_DH','type','parameter','form','full');
-%MA_CO2F_DH = struct('name','MA_CO2F_DH','type','parameter','form','full');
 PEF_DH = struct('name','PEF_DH','type','parameter','form','full');
-%MA_PEF_DH = struct('name','MA_PEF_DH','type','parameter','form','full');
 MA_Cost_DH = struct('name','MA_Cost_DH','type','parameter','form','full');
 
 %%el exG slack bus data
@@ -445,16 +432,6 @@ for t=sim_start:sim_stop
     h_demand.val = h_demand_measured(t:forecast_end,:);
     h_demand.uels={h.uels,BID.uels};
     
-    %     %Sample code using ANN to forecast Edit heat demand
-    %     heat_Edit_forecast=zeros(1,10);
-    % %     for i=1:t_len_m
-    % %
-    % % %    heat_Edit_forecast(i)=sim(net_Edit,vertcat(flip(temperature((t_init_m-25+i):(t_init_m-2+i))'),flip(workday_index(15719:15742)'),flip(month_index(15719:15742)'),flip(Timeofday_index(15719:15742)')));
-    % %
-    % %     end
-    %     heat_Edit.val = heat_Edit_forecast;
-    %     heat_Edit.uels={h.uels,'O0007024'};
-    
     %forecasted cooling demand
     c_demand.val = c_demand_measured(t:forecast_end,:);
     c_demand.uels={h.uels,BID.uels};
@@ -536,17 +513,9 @@ for t=sim_start:sim_stop
     CO2F_exG.val = CO2intensityFinal_El(t:forecast_end,:);
     CO2F_exG.uels=h.uels;
     
-    %     el_exGCO2F1=EL_CO2F_ma((t-1441):(forecast_end-1441),:);
-    %     MA_CO2F_exG.val = el_exGCO2F1;
-    %     MA_CO2F_exG.uels=h.uels;
-    
     %PE factors of the external el grid
     PEF_exG.val = PEintensityFinal_El(t:forecast_end,:);
     PEF_exG.uels=h.uels;
-    
-    %     el_exGPEF1=EL_PEF_ma((t-1441):(forecast_end-1441),:);
-    %     MA_PEF_exG.val = el_exGPEF1;
-    %     MA_PEF_exG.uels=h.uels;
     
     %CO2 factors of the external DH grid (AVERAGE AND MARGINAL) & marginal
     %DH cost
@@ -556,27 +525,9 @@ for t=sim_start:sim_stop
     CO2F_DH.val = CO2intensityFinal_DH(t:forecast_end,:);
     CO2F_DH.uels=h.uels;
     
-    %     MA_CO2F_DH.val = CO2intensityFinal_DH(t:forecast_end,:);
-    %     MA_CO2F_DH.uels=h.uels;
-    
     %PE factors of the external DH grid(AVERAGE AND MARGINAL)
     PEF_DH.val = PEintensityFinal_DH(t:forecast_end,:);
     PEF_DH.uels=h.uels;
-    
-    %     MA_PEF_DH.val = DH_PEF_ma(t:forecast_end,:);
-    %     MA_PEF_DH.uels=h.uels;
-    
-    %     import.val = forecast_import((t-26):(t_len_m+t-27),:);
-    %     import.uels=h.uels;
-    %
-    %     export.val = forecast_export((t-26):(t_len_m+t-27),:);
-    %     export.uels=h.uels;
-    %
-    %     Boiler1.val = Boiler1_forecast((t-26):(t_len_m+t-27),:);
-    %     Boiler1.uels=h.uels;
-    %
-    %     FGC.val = FGC_forecast((t-26):(t_len_m+t-27),:);
-    %     FGC.uels=h.uels;
     
     %el exG slack bus data
     el_exG_slack.val=el_slack(t:forecast_end,:);
@@ -593,13 +544,6 @@ for t=sim_start:sim_stop
     %Initial SoC of storage systems and devices with ramp rate.
     BTES_BID_uels = {'O0007027', 'O0007017', 'O0007012', 'O0007006', 'O0007023', 'O0007026', 'O0007028', 'O0007024'};
     if t==sim_start
-        %         BTES_S_init.val=zeros(1,8);
-        %         BTES_D_init.val=zeros(1,8);
-        %         BES_en.val=0.20*opt_fx_inv_BES_cap.val;
-        %         BFCh_en.val=0.20*opt_fx_inv_BFCh_cap.val;
-        %         h_Boiler1.val=0;
-        %         h_Boiler2.val=0;
-        %
         opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',zeros(1,length(BTES_BID_uels)));
         opt_fx_inv_BTES_S_init.uels = {num2cell(t), BTES_BID_uels};
         opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',zeros(1,length(BTES_BID_uels)));
@@ -620,21 +564,8 @@ for t=sim_start:sim_stop
         %Boiler2_prev_disp.uels = h.uels;
         
     else
-        [opt_fx_inv_BTES_D_init, opt_fx_inv_BTES_S_init, opt_fx_inv_BES_init, opt_fx_inv_BFCh_init, Boiler1_prev_disp, Boiler2_prev_disp] = readGtoM(t-1,BTES_BID_uels);
-        %         Initial(4)=Initial(4)/opt_fx_inv_BFCh_cap.val;
-        %         Initial(5)=Initial(5)/opt_fx_inv_BES_cap.val;
+        [opt_fx_inv_BTES_D_init, opt_fx_inv_BTES_S_init, opt_fx_inv_BES_init, opt_fx_inv_BFCh_init, Boiler1_prev_disp, Boiler2_prev_disp] = readGtoM(t-1, BTES_BID_uels, opt_fx_inv_BES_cap.uels, opt_fx_inv_BFCh_cap.uels);
     end
-    
-    %  opt_fx_inv_TES_init = struct('name','opt_fx_inv_TES_init','type','parameter','form','full','val',Initial(3));
-    %opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',Initial(2));
-    % Why aren't these the same as BTES_Inv.uels? - ZN
-    % BTES_S_init=rmfield(BTES_S_init,'field');
-    %     opt_fx_inv_BTES_S_init.name='opt_fx_inv_BTES_S_init';
-    %     opt_fx_inv_BTES_S_init.type='parameter';
-    %opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',Initial(1));
-    %BTES_D_init=rmfield(BTES_D_init,'field');
-    %     opt_fx_inv_BTES_D_init.name='opt_fx_inv_BTES_D_init';
-    %     opt_fx_inv_BTES_D_init.type='parameter';
     
     %% Preparing input GDX file (MtoG) and RUN GAMS model
     wgdx('MtoG.gdx', opt_fx_inv, opt_fx_inv_RMMC,...

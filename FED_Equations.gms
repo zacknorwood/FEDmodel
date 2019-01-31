@@ -169,13 +169,9 @@ equation
 *           eq_dcpowerflow12  slack voltage constraint
 
            eq_PE         PE use in the FED system (marginal or average depending on which factors are used)
-*           eq_PE_ma      Hourly marginal PE use in the FED system
            eq_totPE      Total PE use in the FED system (marginal or average depending on which factors are used)
-*           eq_totPE_ma   Total marginal PE use in the FED system
            eq_CO2        FED CO2 emissions (marginal or average depending on which factors are used)
-*           eq_CO2_ma     FED CO2 marginal emission
            eq_totCO2    with aim to minimize total FED aver. CO2 emission
-*           eq_CO2_TOT_ma with aim to minimize total FED marginal CO2 emission
 
            eq_max_exG1 maximum monthly peak demand
 * Not used in rolling time horizon - ZN
@@ -661,25 +657,10 @@ eq_PE(h)..
                       + C_DC(h)*1000000000
                       + el_slack_var(h)*1000000000;
 
-$ontext
-eq_PE_ma(h)..
-        MA_FED_PE(h)=e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*MA_PEF_exG(h)
-                     + el_PV(h)*PEF_PV
-                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*MA_PEF_DH(h) + ((h_Boiler1(h)+h_RGK1(h))/P1_eff)*PEF_P1
-                     + fuel_P2(h)*PEF_P2
-                     + h_DH_slack_var(h)*1000000000
-                      + C_DC(h)*1000000000
-                      + el_slack_var(h)*1000000000;
-$offtext
-
 **********************Total PE use in the FED system****************************
 eq_totPE..
          tot_PE=e=sum(h,FED_PE(h));
 
-$ontext
-eq_totPE_ma..
-         MA_tot_PE=e=sum(h,MA_FED_PE(h));
-$offtext
 *---------------FED CO2 emission------------------------------------------------
 eq_CO2(h)..
        FED_CO2(h) =e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*CO2F_exG(h)
@@ -689,24 +670,11 @@ eq_CO2(h)..
                       + h_DH_slack_var(h)*1000000000
                       + C_DC(h)*1000000000
                       + el_slack_var(h)*1000000000;
-$ontext
-eq_CO2_ma(h)..
-       MA_FED_CO2(h) =e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*MA_CO2F_exG(h)
-                      + el_PV(h)*CO2F_PV
-                      + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*MA_CO2F_DH(h) + ((h_Boiler1(h)+h_RGK1(h))/P1_eff)*CO2F_P1
-                      + fuel_P2(h) * CO2F_P2
-                      + h_DH_slack_var(h)*1000000000
-                      + C_DC(h)*1000000000
-                      + el_slack_var(h)*1000000000;
-$offtext
 
 ****************Total CO2 emission in the FED system****************************
 eq_totCO2..
          FED_CO2_tot =e= sum(h, FED_CO2(h));
-$ontext
-eq_CO2_TOT_ma..
-         MA_FED_CO2_tot =e= sum(h, MA_FED_CO2(h));
-$offtext
+
 **************** Power tariffs *******************
 eq_max_exG1(h,m)..
                max_exG(m) =g= (el_imp_AH(h)-el_exp_AH(h) + 0*el_imp_nonAH(h))*HoM(h,m);

@@ -1,4 +1,4 @@
-function[BTES_Den, BTES_Sen, BES_en, BFCh_en, h_Boiler1, h_Boiler2]=readGtoM(hour,BTES_BID_uels)
+function[BTES_Den, BTES_Sen, BES_en, BFCh_en, h_Boiler1, h_Boiler2]=readGtoM(hour,BTES_BID_uels, BES_BID_uels, BFCh_BID_uels)
 %Read GtoM.gdx reads the output GAMS GDX file to keep State of Charge (SoC) for relevant energy
 %storage devices (Batteries, Cold water storage, PCM) and devices with ramp rate
 %constraints (Boilers)consistent over the rolling time horizon runs.
@@ -11,9 +11,8 @@ BFCh_en=struct('name','BFCh_en','form','full','compress','false');
 h_Boiler1=struct('name','h_Boiler1','form','full','compress','false');
 h_Boiler2=struct('name','h_Boiler2','form','full','compress','false');
 
-% By setting the uels to BTES to the current hour in the simulation and
-% only the required buildings rgdx does a "selective read" for only these
-% values.
+% By setting the uels to the current hour and only the required BIDS,
+% rgdx does a "selective read" for only these values.
 BTES_uels = {num2cell(hour), BTES_BID_uels};
 
 BTES_Den.uels=BTES_uels;
@@ -22,10 +21,18 @@ BTES_Den = rgdx('GtoM',BTES_Den);
 BTES_Sen.uels=BTES_uels;
 BTES_Sen = rgdx('GtoM',BTES_Sen);
 
-BFCh_en=rgdx('GtoM',BFCh_en);
+BES_en.uels={num2cell(hour), BES_BID_uels};
 BES_en=rgdx('GtoM',BES_en);
+
+BFCh_en.uels={num2cell(hour), BFCh_BID_uels};
+BFCh_en=rgdx('GtoM',BFCh_en);
+
+h_Boiler1.uels = num2cell(hour);
 h_Boiler1=rgdx('GtoM',h_Boiler1);
+
+h_Boiler2.uels = num2cell(hour);
 h_Boiler2=rgdx('GtoM',h_Boiler2);
+
 
 % names must be changed here to match the variables in GAMS where the
 % initial state data will be passed. They must also be changed from variables to
@@ -89,27 +96,5 @@ end
 % end
 
 
-
-%initial(1:7)=[BFCh_en,BES_en,h_Boiler1,h_Boiler2];
-% for i=1:5
-%     temp=0;
-%     s=size(initial(i).uels{1,1},2);
-%     for j=1:s
-%         if str2num(initial(i).uels{1,1}{1,j})==currenthour
-%             temp=initial(i).val(j);
-%         end
-%     end
-%     InitialSoC(i)=temp;
-% end
-% for i=6:9
-%     temp=0;
-%     s=size(initial(i).uels{1,1},2);
-%     for j=1:s
-%         if str2num(initial(i).uels{1,1}{1,j})==currenthour-1
-%             temp=initial(i).val(j);
-%         end
-%     end
-%     InitialSoC(i)=temp;
-% end
 
 

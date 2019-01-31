@@ -30,8 +30,6 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 the default is t
     %% Marginal CO2 and PE factors of the external grid
     %Import marginal CO2 and PE factors, marginal DH cost
     prodMix=xlsread('Input_dispatch_model\electricityMap - Marginal mix updated v2 - SE - 2016 - 2017.xlsx',1,'B2:M17545');
-%     % Set missing data to zero
-%     prodMix(isnan(prodMix))=0;
     
     % Calculate the weighted CO2/PE factors with the production mix. 
     % Note: Hydro-charge is calculated as the weighted marginal CO2/PE of the
@@ -105,10 +103,5 @@ end
 marginalCost_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'X31:X10230')/1000;
 
 end
-% for tt=1:length(DH_CO2F_ma)
-%     if isnan(DH_CO2F_ma(tt))
-%         DH_CO2F_ma(tt)=EL_CO2F_ma(tt)/COP_RYA_VP;
-%         DH_PEF_ma(tt)=EL_PEF_ma(tt)/COP_RYA_VP;
-%     end
-% end
+
 

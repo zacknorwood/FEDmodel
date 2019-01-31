@@ -46,23 +46,17 @@ data.tout=gdx2mat(gdxData,'tout',h_sim.uels);
 
 %FED PE
 data.FED_PE=gdx2mat(gdxData,'FED_PE',h_sim.uels);
-%data.MA_FED_PE=gdx2mat(gdxData,'MA_FED_PE',h_sim.uels);
 data.tot_PE=gdx2mat(gdxData,'tot_PE');
-%data.MA_tot_PE=gdx2mat(gdxData,'MA_tot_PE');
 
 %AH PE
 data.AH_PE=gdx2mat(gdxData,'AH_PE',h_sim.uels);
-%data.MA_AH_PE=gdx2mat(gdxData,'MA_AH_PE',h_sim.uels);
 
 %FED CO2
 data.FED_CO2=gdx2mat(gdxData,'FED_CO2',h_sim.uels);
-%data.MA_FED_CO2=gdx2mat(gdxData,'MA_FED_CO2',h_sim.uels);
 data.FED_CO2_tot=gdx2mat(gdxData,'FED_CO2_tot');
-%data.MA_FED_CO2_tot=gdx2mat(gdxData,'MA_FED_CO2_tot');
 
 %AH CO2
 data.AH_CO2=gdx2mat(gdxData,'AH_CO2',h_sim.uels);
-%data.MA_AH_CO2=gdx2mat(gdxData,'MA_AH_CO2',h_sim.uels);
 
 %PEF and CO2F used in the simulation
 data.CO2F_PV=gdx2mat(gdxData,'CO2F_PV');

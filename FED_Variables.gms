@@ -272,13 +272,8 @@ positive variable
 variable
          FED_CO2(h)     Hourly CO2 av. emissions in the FED system
          tot_CO2        Total CO2 av. emissions of the FED system
-*         MA_FED_CO2(h)  Hourly CO2 marginal emissions in the FED system
-*         MA_tot_CO2     Total CO2 marginal emissions of the FED system
          FED_PE(h)      Hourly av. PE use in the FED system
-*         MA_FED_PE(h)   Hourly marginal PE use in the FED system
          tot_PE         Total av. PE use in the FED system
-*         MA_tot_PE      Total marginal PE use in the FED system
-
 ;
 
 *-------------------- Power tariffs --------------------------------------------
@@ -300,7 +295,6 @@ variable
          totCost            total cost
          invCost            total investment cost
          FED_CO2_tot        total av. CO2 emissions from the FED system
-*         MA_FED_CO2_tot     total marginal CO2 emissions from the FED system
          peak_CO2           CO2 peak
          obj                objective function
 ;
