@@ -1,4 +1,4 @@
-function[BTES_Den, BTES_Sen, BES_en, BFCh_en, h_Boiler1, h_Boiler2]=readGtoM(hour,BTES_BID_uels, BES_BID_uels, BFCh_BID_uels)
+function[BTES_D_init, BTES_S_init, BES_init, BFCh_init, Boiler1_init, Boiler2_init]=readGtoM(hour,BTES_BID_uels, BES_BID_uels, BFCh_BID_uels)
 %Read GtoM.gdx reads the output GAMS GDX file to keep State of Charge (SoC) for relevant energy
 %storage devices (Batteries, Cold water storage, PCM) and devices with ramp rate
 %constraints (Boilers)consistent over the rolling time horizon runs.
@@ -17,54 +17,27 @@ BTES_uels = {num2cell(hour), BTES_BID_uels};
 
 BTES_Den.uels=BTES_uels;
 BTES_Den = rgdx('GtoM',BTES_Den);
+BTES_D_init = BTES_Den.val;
 
 BTES_Sen.uels=BTES_uels;
 BTES_Sen = rgdx('GtoM',BTES_Sen);
+BTES_S_init = BTES_Sen.val;
 
 BES_en.uels={num2cell(hour), BES_BID_uels};
 BES_en=rgdx('GtoM',BES_en);
+BES_init = BES_en.val;
 
 BFCh_en.uels={num2cell(hour), BFCh_BID_uels};
 BFCh_en=rgdx('GtoM',BFCh_en);
+BFCh_init = BFCh_en.val;
 
 h_Boiler1.uels = num2cell(hour);
 h_Boiler1=rgdx('GtoM',h_Boiler1);
+Boiler1_init = h_Boiler1.val;
 
 h_Boiler2.uels = num2cell(hour);
 h_Boiler2=rgdx('GtoM',h_Boiler2);
-
-
-% names must be changed here to match the variables in GAMS where the
-% initial state data will be passed. They must also be changed from variables to
-% parameters.
-BTES_Den.name='opt_fx_inv_BTES_D_init';
-BTES_Den.type='parameter';
-BTES_Sen.name='opt_fx_inv_BTES_S_init';
-BTES_Sen.type='parameter';
-BES_en.name='opt_fx_inv_BES_init';
-BES_en.type='parameter';
-BFCh_en.name='opt_fx_inv_BFCh_init';
-BFCh_en.type='parameter';
-h_Boiler1.name='Boiler1_prev_disp';
-h_Boiler1.type='parameter';
-h_Boiler2.name='Boiler2_prev_disp';
-h_Boiler2.type='parameter';
-
-% rgdx creates a field called 'field' that must be removed before writing
-% with wgdx.
-% Uels for the BES and Boilers that are indexed over hours also need to be
-% removed as they are now single dimension parameters when passed as
-% initial values.
-BTES_Den=rmfield(BTES_Den,'field');
-BTES_Sen=rmfield(BTES_Sen,'field');
-BES_en=rmfield(BES_en,'field');
-BES_en=rmfield(BES_en,'uels');
-BFCh_en=rmfield(BFCh_en,'field');
-BFCh_en=rmfield(BFCh_en,'uels');
-h_Boiler1=rmfield(h_Boiler1,'field');
-h_Boiler1=rmfield(h_Boiler1,'uels');
-h_Boiler2=rmfield(h_Boiler2,'field');
-h_Boiler2=rmfield(h_Boiler2,'uels');
+Boiler2_init = h_Boiler2.val;
 end
 % try
 %     BTES_Den.uels{1} = BTES_Den.uels{1}(1); % This ensures only the first hour is present in the uels
