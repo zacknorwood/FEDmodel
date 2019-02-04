@@ -314,37 +314,29 @@ PARAMETERS
             PE_tot_ref         reference total PE use
             CO2F_PV            CO2 factor of solar PV
             PEF_PV             PE factor of solar PV
-            CO2F_P1            CO2 factor of Boiler1 (P1)
-            PEF_P1             PE factor of Boiler1 (P1)
-            CO2F_P2            CO2 factor of Boiler2 (P2)
-            PEF_P2             PE factor of Boiler2 (P2)
+            CO2F_Boiler1            CO2 factor of Boiler1 (P1)
+            PEF_Boiler1             PE factor of Boiler1 (P1)
+            CO2F_Boiler2            CO2 factor of Boiler2 (P2)
+            PEF_Boiler2             PE factor of Boiler2 (P2)
             CO2F_exG(h)        CO2 factor of the electricity grid
             PEF_exG(h)         PE factor of the electricity grid
             CO2F_DH(h)         CO2 av. factor of the district heating grid
             PEF_DH(h)          PE av. factor of the district heating grid
-            MA_CO2F_DH(h)      CO2 marginal factor of the district heating grid
-            MA_PEF_DH(h)       PE marginal factor of the district heating grid
-            MA_CO2F_exG(h)     CO2 marginal factor of the electrical grid
-            MA_PEF_exG(h)      PE marginal factor of the electrical grid
-            max_exG_prev       max exG of previous dispatch
+*            max_exG_prev       max exG of previous dispatch
             MA_Cost_DH         DH marginal cost
 ;
 $GDXIN MtoG.gdx
 $LOAD CO2F_PV
 $LOAD PEF_PV
-$LOAD CO2F_P1
-$LOAD PEF_P1
-$LOAD CO2F_P2
-$LOAD PEF_P2
+$LOAD CO2F_Boiler1
+$LOAD PEF_Boiler1
+$LOAD CO2F_Boiler2
+$LOAD PEF_Boiler2
 $LOAD CO2F_exG
 $LOAD PEF_exG
 $LOAD CO2F_DH
 $LOAD PEF_DH
-$LOAD MA_CO2F_DH
-$LOAD MA_PEF_DH
-$load MA_PEF_exG
-$load MA_CO2F_exG
-$load max_exG_prev
+*$load max_exG_prev
 $load MA_Cost_DH
 $GDXIN
 *-----------Investmet limit----------------------------------------------------
@@ -360,7 +352,7 @@ PARAMETERS
          opt_fx_inv             option to fix investments
          opt_fx_inv_RMMC        options to fix the RMMC investment
          opt_fx_inv_AbsCInv_cap capacity of the new AbsChiller
-         opt_fx_inv_P2          options to fix the P2 investment
+         opt_fx_inv_Boiler2          options to fix the P2 investment
          opt_fx_inv_TURB        options to fix the TURB investment
          opt_fx_inv_HP_cap      Capacity of the fixed new HP
          opt_fx_inv_RMInv_cap   Capacity of the fixed new RM
@@ -371,13 +363,12 @@ PARAMETERS
          opt_fx_inv_BFCh        options to fix investment in new BFCh
          opt_fx_inv_BFCh_cap    capacity of the new BFCh
          opt_fx_inv_BFCh_maxP   power factor limit of the new BFCh
-         opt_marg_factors       option to choose between marginal and average factors
 ;
 $GDXIN MtoG.gdx
 $LOAD opt_fx_inv
 $LOAD opt_fx_inv_RMMC
 $LOAD opt_fx_inv_AbsCInv_cap
-$LOAD opt_fx_inv_P2
+$LOAD opt_fx_inv_Boiler2
 $LOAD opt_fx_inv_TURB
 $LOAD opt_fx_inv_HP_cap
 $LOAD opt_fx_inv_RMInv_cap
@@ -388,39 +379,37 @@ $LOAD opt_fx_inv_BFCh
 $LOAD opt_fx_inv_BFCh_cap
 $LOAD opt_fx_inv_BES_maxP
 $load opt_fx_inv_BFCh_maxP
-$load opt_marg_factors
+*$load opt_marg_factors
 $GDXIN
 
 *-------Initial SoC of Storage systems------*
 Parameters
       opt_fx_inv_BES_init    BES Init. SoC
       opt_fx_inv_BFCh_init   BFCh Init. SoC
-      opt_fx_inv_TES_init    TES Init. SoC
-      opt_fx_inv_BTES_S_init BTES_S Init. SoC
-      opt_fx_inv_BTES_D_init BTES_D Init. SoC
-      Boiler1_prev_disp        Boiler1 previous dispatch
-      Boiler1                 Boiler1 forecast?
-      FGC                    FGC forecast?
-      import                 Import forecast?
-      export                 Export forecast?
-      VKA1_prev_disp         Previous dispatch of VKA1
-      VKA4_prev_disp         Previous dispatch of VKA4
-      AAC_prev_disp          Previous dispatch of AAC
+*      opt_fx_inv_TES_init    TES Init. SoC
+      opt_fx_inv_BTES_S_init(h,BID) BTES_S Init. SoC
+      opt_fx_inv_BTES_D_init(h,BID) BTES_D Init. SoC
+      Boiler1_prev_disp      Boiler1 previous dispatch
+      Boiler2_prev_disp      Boiler2 previous dispatch
+*      Boiler1                 Boiler1 forecast?
+*      FGC                    FGC forecast?
+*      import                 Import forecast?
+*      export                 Export forecast?
+
 ;
 $GDXIN MtoG.gdx
-$lOAD opt_fx_inv_BES_init
-$lOAD opt_fx_inv_BFCh_init
-$lOAD opt_fx_inv_TES_init
-$lOAD opt_fx_inv_BTES_S_init
-$lOAD opt_fx_inv_BTES_D_init
+$load opt_fx_inv_BES_init
+$load opt_fx_inv_BFCh_init
+*$load opt_fx_inv_TES_init
+$load opt_fx_inv_BTES_S_init
+$load opt_fx_inv_BTES_D_init
 $load Boiler1_prev_disp
-$load Boiler1
-$load import
-$load export
-$load FGC
-$load VKA1_prev_disp
-$load VKA4_prev_disp
-$load AAC_prev_disp
+$load Boiler2_prev_disp
+*$load Boiler1
+*$load import
+*$load export
+*$load FGC
+
 $GDXIN
 *the combination is used to comment out sections codes inside
 
