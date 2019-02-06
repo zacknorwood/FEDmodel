@@ -1,7 +1,8 @@
 function[BTES_D_init, BTES_S_init, BES_init, BFCh_init, Boiler1_init, Boiler2_init]=readGtoM(hour,BTES_BID_uels, BES_BID_uels, BFCh_BID_uels)
 %Read GtoM.gdx reads the output GAMS GDX file to keep State of Charge (SoC) for relevant energy
 %storage devices (Batteries, Cold water storage, PCM) and devices with ramp rate
-%constraints (Boilers)consistent over the rolling time horizon runs.
+%constraints (Boilers)consistent over the rolling time horizon runs. The
+%values of these structures are returned, not the structures themselves.
 % Note Cold Water Storage and PCM is not implemented at this time.
 
 BTES_Den=struct('name','BTES_Den','form','full','compress','false');
