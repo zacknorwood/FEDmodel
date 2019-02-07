@@ -121,25 +121,36 @@ data.TES_inv=gdx2mat(gdxData,'TES_inv');
 data.invCost_TES=gdx2mat(gdxData,'invCost_TES');
 data.TES_dis_eff=gdx2mat(gdxData,'TES_dis_eff');
 data.TES_chr_eff=gdx2mat(gdxData,'TES_chr_eff');
-data.BTES_Sch=gdx2mat(gdxData,'BTES_Sch',{h_sim.uels,BID.uels});
-data.BTES_Sdis=gdx2mat(gdxData,'BTES_Sdis',{h_sim.uels,BID.uels});
-data.BTES_Sen=gdx2mat(gdxData,'BTES_Sen',{h_sim.uels,BID.uels});
-data.BTES_Den=gdx2mat(gdxData,'BTES_Den',{h_sim.uels,BID.uels});
-data.BTES_Sloss=gdx2mat(gdxData,'BTES_Sloss',{h_sim.uels,BTES_properties.uels});
-data.BTES_Dloss=gdx2mat(gdxData,'BTES_Dloss',{h_sim.uels,BTES_properties.uels});
-data.link_BS_BD=gdx2mat(gdxData,'link_BS_BD',{h_sim.uels,BTES_properties.uels});
-data.BTES_dis_eff=gdx2mat(gdxData,'BTES_dis_eff');
-data.B_BTES=gdx2mat(gdxData,'B_BTES',BTES_properties.uels);
-data.invCost_BTES=gdx2mat(gdxData,'invCost_BTES');
-data.invCost_BTES=gdx2mat(gdxData,'invCost_BTES');
+
 %BTES model
 data.BTES_model=gdx2mat(gdxData,'BTES_model',{BTES_properties.uels,BID.uels});
 
 %BAC
-data.h_BAC_savings=gdx2mat(gdxData,'h_BAC_savings',{h_sim.uels,BTES_properties.uels});
+data.BAC_Sch=gdx2mat(gdxData,'BAC_Sch',{h_sim.uels,BID.uels});
+data.BAC_Sdis=gdx2mat(gdxData,'BAC_Sdis',{h_sim.uels,BID.uels});
+data.BAC_Sen=gdx2mat(gdxData,'BAC_Sen',{h_sim.uels,BID.uels});
+data.BAC_Den=gdx2mat(gdxData,'BAC_Den',{h_sim.uels,BID.uels});
+data.BAC_Sloss=gdx2mat(gdxData,'BAC_Sloss',{h_sim.uels,BTES_properties.uels});
+data.BAC_Dloss=gdx2mat(gdxData,'BAC_Dloss',{h_sim.uels,BTES_properties.uels});
+data.BAC_link_BS_BD=gdx2mat(gdxData,'BAC_link_BS_BD',{h_sim.uels,BTES_properties.uels});
+data.BTES_dis_eff=gdx2mat(gdxData,'BTES_dis_eff');
 data.B_BAC=gdx2mat(gdxData,'B_BAC',BTES_properties.uels);
 data.invCost_BAC=gdx2mat(gdxData,'invCost_BAC');
+data.h_BAC_savings=gdx2mat(gdxData,'h_BAC_savings',{h_sim.uels,BTES_properties.uels});
 data.BAC_savings_period=gdx2mat(gdxData,'BAC_savings_period',h_sim.uels);
+
+%Setpoint Offset
+% data.BTES_Sch=gdx2mat(gdxData,'BAC_Sch',{h_sim.uels,BID.uels});
+% data.BTES_Sdis=gdx2mat(gdxData,'BAC_Sdis',{h_sim.uels,BID.uels});
+% data.BTES_Sen=gdx2mat(gdxData,'BAC_Sen',{h_sim.uels,BID.uels});
+% data.BTES_Den=gdx2mat(gdxData,'BAC_Den',{h_sim.uels,BID.uels});
+% data.BTES_Sloss=gdx2mat(gdxData,'BAC_Sloss',{h_sim.uels,BTES_properties.uels});
+% data.BTES_Dloss=gdx2mat(gdxData,'BAC_Dloss',{h_sim.uels,BTES_properties.uels});
+% data.link_BS_BD=gdx2mat(gdxData,'BAC_link_BS_BD',{h_sim.uels,BTES_properties.uels});
+% data.BTES_dis_eff=gdx2mat(gdxData,'BTES_dis_eff');
+% data.B_BTES=gdx2mat(gdxData,'B_BAC',BTES_properties.uels);
+% data.invCost_BTES=gdx2mat(gdxData,'invCost_BAC');
+% data.invCost_BTES=gdx2mat(gdxData,'invCost_BAC');
 
 %Boiler 2
 data.B_Boiler2=gdx2mat(gdxData,'B_Boiler2');

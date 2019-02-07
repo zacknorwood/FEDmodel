@@ -76,6 +76,7 @@ BID_nonAH_c.uels={'O3060101', 'O3060102_3', 'O3060104_15',...
     'Chabo'};
 
 %Subset of buildings in the FED system which are not considered for thermal energy storage
+% AK Check if these are used
 BID_nonBTES.name='BID_nonBTES';
 BID_nonBTES.uels={'O0007043',...
     'SSPA', 'Studentbostader', 'Karhus_CFAB',...
@@ -146,6 +147,7 @@ Gekv_facade = struct('name','G_facade','type','parameter','form','full');
 
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 %Read static properties of the model
+% AK Change BAC, and BTES namings
 [P1P2_disp, DH_exp_season,DH_heating_season_full, BAC_sav_period, pv_area_roof, pv_area_facades, BTES_param ] = fread_static_properties();
 
 %Read variable/measured input data
@@ -227,17 +229,22 @@ opt_fx_inv_BFCh_cap.uels={'O0007028'}; %OBS: Refers to Bus 5
 opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full','val',50);
 opt_fx_inv_BFCh_maxP.uels=opt_fx_inv_BFCh_cap.uels;
 
-%Option for BTES investment
-opt_fx_inv_BTES = struct('name','opt_fx_inv_BTES','type','parameter','form','full','val',1);
-BTES_Inv.name='BTES_Inv';
-BTES_Inv.uels= {'O0007017','O0007012','O0007006','O0007023','O0007026','O0007027','O0007888', 'O0007028', 'O0007024', 'O0011001','O3060133'};
-
-%Option for BAC investment
-%0 is used when there is no investment, 1 if there is investment
+%Option for Building Thermal Energy Storage solutions. Should be set to 1
+%for FED investments. If set to 0 no BTES will be used (Investment option
+%not implemented)
+% AK SHould 'O0007024' be included?
 opt_fx_inv_BAC = struct('name','opt_fx_inv_BAC','type','parameter','form','full','val',1);
-BAC_Inv.name='BAC_Inv';
-BAC_Inv.uels={'O0007017','O0007012','O0007006','O0007023','O0007026', 'O0007027','O3060133'};
+opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','val',1);
 
+BTES_BAC_uels = {'O0007006', 'O0007012', 'O0007017', 'O0007023', 'O0007026', 'O3060135', 'O3060133'}; %Buildings with Advanced Control (BAC) system
+BTES_PS_uels = {'O0011001', 'O0007888'}; % Buildings with Pump Stop (PS) capability
+BTES_SO_uels = {'O0007028', 'O0007027'} % Buildings with Setpoint Offset (SO) capability
+% AK O7:10, O7:20, should be included in BTES_SO (parts of EDIT)
+BTES_BAC_Inv.name = 'BTES_BAC_Inv';
+BTES_BAC_Inv.uels = BTES_BAC_uels;
+
+BTES_SO_Inv.name = 'BTES_SO_Inv';
+BTES_SO_Inv.uels = BTES_SO_uels;
 %Placement of roof PVs (Existing)
 PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista p� anl�ggningar.xlsx" as well as the 3d shading model
 
@@ -326,11 +333,12 @@ h_price = struct('name','h_price','type','parameter','form','full');
 tout = struct('name','tout','type','parameter','form','full');
 
 %Building termal energy storage properties
+% AK Change to EVI
 BTES_properties.name='BTES_properties';
 BTES_properties.uels={'BTES_Scap', 'BTES_Dcap', 'BTES_Esig', 'BTES_Sch_hc',...
     'BTES_Sdis_hc', 'kloss_Sday', 'kloss_Snight', 'kloss_D', 'K_BS_BD'};
 
-%BITES model
+%BTES model
 BTES_model = struct('name','BTES_model','type','parameter','form','full','val',BTES_param);
 BTES_model.uels={BTES_properties.uels,BID.uels};
 
@@ -542,14 +550,23 @@ for t=sim_start:sim_stop
     c_DC_slack.uels=h.uels;
     
     %Initial SoC of storage systems and devices with ramp rate.
-    BTES_BID_uels = {'O0007027', 'O0007017', 'O0007012', 'O0007006', 'O0007023', 'O0007026', 'O0007028', 'O0007024'};
     BES_BID_uels = opt_fx_inv_BES_cap.uels;
     BFCh_BID_uels = opt_fx_inv_BFCh_cap.uels;
     if t==sim_start
-        opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',zeros(1,length(BTES_BID_uels)));
-        opt_fx_inv_BTES_D_init.uels = {num2cell(t), BTES_BID_uels};
-        opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',zeros(1,length(BTES_BID_uels)));
-        opt_fx_inv_BTES_S_init.uels = {num2cell(t), BTES_BID_uels};
+        % Set initial state of BAC Buildings to empty
+        opt_fx_inv_BTES_BAC_D_init = struct('name','opt_fx_inv_BTES_BAC_D_init','type','parameter','form','full','val',zeros(1,length(BTES_BAC_uels))); 
+        opt_fx_inv_BTES_BAC_D_init.uels = {num2cell(t), BTES_BAC_uels};
+        opt_fx_inv_BTES_BAC_S_init = struct('name','opt_fx_inv_BTES_BAC_S_init','type','parameter','form','full','val',zeros(1,length(BTES_BAC_uels)));
+        opt_fx_inv_BTES_BAC_S_init.uels = {num2cell(t), BTES_BAC_uels};
+        
+        % Set initial state of SO Buildings to empty
+        opt_fx_inv_BTES_SO_init = struct('name','opt_fx_inv_BTES_SO_init','type','parameter','form','full','val',zeros(1,length(BTES_SO_uels))); 
+        opt_fx_inv_BTES_SO_init.uels = {num2cell(t), BTES_SO_uels};
+        
+        % Set inital state of PS Buildings 
+        % AK How to implement?
+        opt_fx_inv_BTES_PS_init = struct('name','opt_fx_inv_BTES_PS_init','type','parameter','form','full','val',zeros(1,length(BTES_PS_uels))); 
+        opt_fx_inv_BTES_PS_init.uels = {num2cell(t), BTES_PS_uels};
         
         %Initial SoC for energy storage must agree with min_SOC in GAMS. This should be fixed and passed from Matlab to GAMS -ZN
         opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',0.20*opt_fx_inv_BES_cap.val);
@@ -560,16 +577,23 @@ for t=sim_start:sim_stop
     else
         % The initial conditions for t-1 are read in from ReadGtoM.
         % Note only the .value fields of the rgdx GAMS structure are passed in here.
-        [BTES_D_init, BTES_S_init, BES_init, BFCh_init, Boiler1_init, Boiler2_init] = readGtoM(t-1, BTES_BID_uels, BES_BID_uels, BFCh_BID_uels);
+        [BTES_BAC_D_init, BTES_BAC_S_init, BTES_SO_init, BTES_PS_init, BES_init, BFCh_init, Boiler1_init, Boiler2_init] = readGtoM(t-1, BTES_BAC_uels, BTES_SO_uels, BTES_PS_uels, BES_BID_uels, BFCh_BID_uels);
         
         % Here the values are restructured to be written to GAMS. Note that
         % the BTES structures need to have uels to specify what buildings,
         % but that the others are simple non-indexed parameters (hence no
-        % uels).
-        opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',BTES_D_init);
-        opt_fx_inv_BTES_D_init.uels = {num2cell(t), BTES_BID_uels};
-        opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',BTES_S_init);
-        opt_fx_inv_BTES_S_init.uels = {num2cell(t), BTES_BID_uels};
+        % uels).      
+        opt_fx_inv_BTES_BAC_D_init = struct('name','opt_fx_inv_BTES_BAC_D_init','type','parameter','form','full','val',BTES_BAC_D_init);
+        opt_fx_inv_BTES_BAC_D_init.uels = {num2cell(t), BTES_BAC_uels};
+        opt_fx_inv_BTES_BAC_S_init = struct('name','opt_fx_inv_BTES_BAC_S_init','type','parameter','form','full','val',BTES_BAC_S_init);
+        opt_fx_inv_BTES_BAC_S_init.uels = {num2cell(t), BTES_BAC_uels};
+        
+        opt_fx_inv_BTES_SO_init = struct('name','opt_fx_inv_BTES_SO_init','type','parameter','form','full','val',BTES_SO_init); 
+        opt_fx_inv_BTES_SO_init.uels = {num2cell(t), BTES_SO_uels};
+        % AK implement PS
+        %opt_fx_inv_BTES_PS_init = struct('name','opt_fx_inv_BTES_PS_init','type','parameter','form','full','val',BTES_PS_init); 
+        %opt_fx_inv_BTES_PS_init.uels = {num2cell(t), BTES_PS_uels};
+        
         opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',BES_init);
         opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',BFCh_init);
         Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',Boiler1_init);
@@ -577,12 +601,14 @@ for t=sim_start:sim_stop
     end
     
     %% Preparing input GDX file (MtoG) and RUN GAMS model
+    % AK Change to BTES_EVI_D...
+    % AK Add BTES_SO, BTES_PS
     wgdx('MtoG.gdx', opt_fx_inv, opt_fx_inv_RMMC,...
         opt_fx_inv_AbsCInv_cap,...
         opt_fx_inv_Boiler2,opt_fx_inv_TURB,opt_fx_inv_HP_cap,...
         opt_fx_inv_RMInv_cap,...
         opt_fx_inv_TES_cap,...
-        opt_fx_inv_BES, opt_fx_inv_BES_cap, h, BTES_Inv, BAC_Inv,...
+        opt_fx_inv_BES, opt_fx_inv_BES_cap, h, BTES_BAC_Inv, BTES_SO_Inv,...
         CO2F_exG, PEF_exG, CO2F_DH, PEF_DH, MA_Cost_DH,...
         CO2F_PV, PEF_PV, CO2F_Boiler1, PEF_Boiler1, CO2F_Boiler2, PEF_Boiler2,...
         BID,BID_AH_el,BID_nonAH_el,BID_AH_h,BID_nonAH_h,BID_AH_c,BID_nonAH_c,BID_nonBTES,...
@@ -592,10 +618,10 @@ for t=sim_start:sim_stop
         PVID,PVID_roof,PV_roof_cap,PVID_facade,PV_facade_cap,...
         el_price,el_certificate,h_price,tout,BAC_savings_factor,...
         min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline, FED_Inv_lim,BusID,opt_fx_inv_BFCh, opt_fx_inv_BFCh_cap,...
-        opt_fx_inv_BES_maxP,opt_fx_inv_BFCh_maxP, opt_fx_inv_BTES_D_init, opt_fx_inv_BTES_S_init,...
+        opt_fx_inv_BES_maxP,opt_fx_inv_BFCh_maxP, opt_fx_inv_BTES_BAC_D_init, opt_fx_inv_BTES_BAC_S_init, opt_fx_inv_BTES_SO_init,...
         opt_fx_inv_BFCh_init,opt_fx_inv_BES_init,Boiler1_prev_disp,Boiler2_prev_disp,...
         DH_Node_ID, DH_Nodes_Transfer_Limits,...
-        DC_Node_ID, DC_Nodes_Transfer_Limits, el_exG_slack,h_DH_slack,c_DC_slack,h_exp_AH_hist, h_imp_AH_hist,opt_fx_inv_BTES,opt_fx_inv_BAC);
+        DC_Node_ID, DC_Nodes_Transfer_Limits, el_exG_slack,h_DH_slack,c_DC_slack,h_exp_AH_hist, h_imp_AH_hist,opt_fx_inv_SO,opt_fx_inv_BAC);
     
     
     Time(2).point='Wgdx and Inputs';
@@ -607,6 +633,8 @@ for t=sim_start:sim_stop
     end
     
     %% Store the results from each iteration
+    % AK Change to BTES_EVI_D...
+    % AK Add BTES_SO, BTES_PS
     Results(t).dispatch = fstore_results(h,BID,BTES_properties,BusID);
 end
 Time(3).point='Gams running and storing';
