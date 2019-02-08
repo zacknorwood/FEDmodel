@@ -177,7 +177,7 @@ variable
          BAC_link_BS_BD(h,BID)  heat flow between the shallow and the deep section
 ;
 binary variable
-         B_BAC(BID)       Decision variable weither to invest BTES control sys-
+         B_BAC(BID)       Decision variable weither to invest Building Advanced Control
 ;
 
 *0 is used in case there is no investment ,
@@ -185,29 +185,27 @@ B_BAC.fx(BID) $ (opt_fx_inv eq 1)=0;
 B_BAC.fx(BTES_BAC_Inv) $ (opt_fx_inv eq 1 and opt_fx_inv_BAC eq 1)=1;
 
 *------------------Building Setpoint Offset related----------------------
-$ontext
 positive variable
-         BTES_Sch(h,BID)    charing rate of shallow section of the building
-         BTES_Sdis(h,BID)   dischargin rate of shallow section of the building
-         BTES_Sen(h,BID)    energy stored in the shallow section of the building
-         BTES_Den(h,BID)    energy stored in the deep section of the building
-         BTES_Sloss(h,BID)  heat loss from the shallow section of the building
-         BTES_Dloss(h,BID)  heat loss from the deep section of the building
+         SO_Sch(h,BID)    charing rate of shallow section of the building
+         SO_Sdis(h,BID)   dischargin rate of shallow section of the building
+         SO_Sen(h,BID)    energy stored in the shallow section of the building
+         SO_Den(h,BID)    energy stored in the deep section of the building
+         SO_Sloss(h,BID)  heat loss from the shallow section of the building
+         SO_Dloss(h,BID)  heat loss from the deep section of the building
+
 ;
-BTES_Sen.up(h,BID)=1000*BTES_model('BTES_Scap',BID);
-BTES_Den.up(h,BID)=1000*BTES_model('BTES_Dcap',BID);
+SO_Sen.up(h,BID)=1000*BTES_model('BTES_Scap',BID);
+SO_Den.up(h,BID)=1000*BTES_model('BTES_Dcap',BID);
 variable
-         link_BS_BD(h,BID)  heat flow between the shallow and the deep section
+         SO_link_BS_BD(h,BID)  heat flow between the shallow and the deep section
 ;
 binary variable
-         B_BTES(BID)       Decision variable weither to invest BTES control sys-
+         B_SO(BID)       Decision variable weither to invest Setpoint offset
 ;
 
 *0 is used in case there is no investment ,
-B_BTES.fx(BID) $ (opt_fx_inv eq 1)=0;
-B_BTES.fx(BTES_Inv) $ (opt_fx_inv eq 1 and opt_fx_inv_BTES eq 1)=1;
-
-$offtext
+B_SO.fx(BID) $ (opt_fx_inv eq 1)=0;
+B_SO.fx(BTES_SO_Inv) $ (opt_fx_inv eq 1 and opt_fx_inv_SO eq 1)=1;
 *----------------Solar PV PV relate variables-----------------------------------
 positive variable
          el_PV(h)                electricity produced by PV

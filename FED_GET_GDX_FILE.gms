@@ -94,12 +94,12 @@ $LOAD h_imp_AH_hist
 $GDXIN
 
 *--------------Building catagories based on how energy is supplied--------------
-set BID_AH_el(BID)    buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok
-    BID_nonAH_el(BID) buildings considered in the FED system not connected to the AH(Akadamiskahus) el netwrok
-    BID_AH_h(BID)     buildings considered in the FED system connected to the AH(Akadamiskahus) heat netwrok
-    BID_nonAH_h(BID)  buildings considered in the FED system not connected to the AH(Akadamiskahus) heat netwrok
-    BID_AH_c(BID)     buildings considered in the FED system connected to the AH(Akadamiskahus) cooling netwrok
-    BID_nonAH_c(BID)  buildings considered in the FED system not connected to the AH(Akadamiskahus) cooling netwrok
+set BID_AH_el(BID)    buildings considered in the FED system connected the AH(Akadamiskahus) el network
+    BID_nonAH_el(BID) buildings considered in the FED system not connected to the AH(Akadamiskahus) el network
+    BID_AH_h(BID)     buildings considered in the FED system connected to the AH(Akadamiskahus) heat network
+    BID_nonAH_h(BID)  buildings considered in the FED system not connected to the AH(Akadamiskahus) heat network
+    BID_AH_c(BID)     buildings considered in the FED system connected to the AH(Akadamiskahus) cooling network
+    BID_nonAH_c(BID)  buildings considered in the FED system not connected to the AH(Akadamiskahus) cooling network
     BID_nonBTES(BID) Buildings not applicable for BTES
 ;
 $GDXIN MtoG.gdx
@@ -390,8 +390,8 @@ Parameters
 *      opt_fx_inv_TES_init    TES Init. SoC
       opt_fx_inv_BTES_BAC_D_init Initial energy storage for BAC Deep storage
       opt_fx_inv_BTES_BAC_S_init Initial energy storage for BAC Shallow storage
-*      opt_fx_inv_BTES_SO_D_init    Initial energy storage for SO Deep storage
-*      opt_fx_inv_BTES_SO_S_init    Initial energy storage for SO Shallow storage
+      opt_fx_inv_BTES_SO_D_init    Initial energy storage for SO Deep storage
+      opt_fx_inv_BTES_SO_S_init    Initial energy storage for SO Shallow storage
 *      opt_fx_inv_BTES_PS_D_init    Initial energy storage for PS Shallow storage
 *      opt_fx_inv_BTES_PS_D_init    Initial energy storage for PS Shallow storage
       Boiler1_prev_disp      Boiler1 previous dispatch
@@ -411,8 +411,8 @@ $load opt_fx_inv_BFCh_init
 *$load opt_fx_inv_TES_init
 $load opt_fx_inv_BTES_BAC_D_init
 $load opt_fx_inv_BTES_BAC_S_init
-*$load opt_fx_inv_BTES_SO_D_init
-*$load opt_fx_inv_BTES_SO_S_init
+$load opt_fx_inv_BTES_SO_D_init
+$load opt_fx_inv_BTES_SO_S_init
 *$load opt_fx_inv_BTES_PS_D_init
 *$load opt_fx_inv_BTES_PS_D_init
 $load Boiler1_prev_disp

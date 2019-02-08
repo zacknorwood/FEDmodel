@@ -6,8 +6,8 @@ $Include FED_GET_GDX_FILE
 
 *--------------SET PARAMETRS OF PRODUCTION active UNITS in the FED system-------
 set
-         sup_unit   supply units /PV, HP, BES, TES, BTES, BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP, RMInv, RGK1/
-         inv_opt    investment options /PV, HP, BES, TES, BTES, BAC, RMMC, P2, TURB, AbsCInv, RMInv/
+         sup_unit   supply units /PV, HP, BES, TES, SO, BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP, RMInv, RGK1/
+         inv_opt    investment options /PV, HP, BES, TES, SO, BAC, RMMC, P2, TURB, AbsCInv, RMInv/
 ;
 
 ************ the technical limit of import/export on heat and electricty is based on feedback from AH
@@ -35,14 +35,14 @@ Parameter
 * BAC costs from AH/CFAB estimates, calculated as average per building cost
 Parameter
          cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC P2 and Turbine
-                     /PV 14196, BES 6000, HP 6552, BTES 35000, BAC 350333, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 2808, RMInv 936/
+                     /PV 14196, BES 6000, HP 6552, SO 35000, BAC 350333, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 2808, RMInv 936/
 ;
 
 *******Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
-* BAC - Building Advanced Control is assumed to have same lifetime as BTES
+* BAC - Building Advanced Control is assumed to have same lifetime as BTES with Setpoint Offset
 Parameter
          lifT_inv_opt(inv_opt)    Life time of investment options
-                     /PV 30, BES 15, HP 25, TES 30, BTES 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25, RMInv 25/;
+                     /PV 30, BES 15, HP 25, TES 30, SO 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25, RMInv 25/;
 
 ***************Existing units***************************************************
 
@@ -400,8 +400,4 @@ scalar
 ;
 
 *--------------Limit on investment----------------------------------------------
-$Ontext
-
-$Offtext
-
 
