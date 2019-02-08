@@ -24,16 +24,16 @@ BTES_BAC_D_init = BAC_Den.val;
 
 BAC_Sen.uels=BTES_BAC_uels;
 BAC_Sen = rgdx('GtoM',BAC_Sen);
-BTES_BAC_S_init = BTES_Sen.val;
+BTES_BAC_S_init = BAC_Sen.val;
 
 
 BTES_SO_uels = {num2cell(hour), BTES_SO_uels};
-SO_Den.uels=BTES_BAC_uels;
+SO_Den.uels=BTES_SO_uels;
 SO_Den = rgdx('GtoM',SO_Den);
 BTES_SO_D_init = SO_Den.val;
 
-SO_Sen.uels=BTES_BAC_uels;
-SO_Sen = rgdx('GtoM',BAC_Sen);
+SO_Sen.uels=BTES_SO_uels;
+SO_Sen = rgdx('GtoM',SO_Sen);
 BTES_SO_S_init = SO_Sen.val;
 
 % AK Implement pump stop
