@@ -385,7 +385,10 @@ eq_HP3(h)..
 *------------------TES equations------------------------------------------------
 eq_TESen0(h,BID)$(ord(h) eq 1)..
              TES_en(h) =e= TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
+* This should be implemented if we are to use TES
+*             TES_en(h) =e= TES_hourly_loss_fac*(TES_en_init+TES_ch(h)-TES_dis(h));
 
+*This must be corrected if included in model for dispatch!
 eq_TESen1(h,BID)$(ord(h) eq 1)..
              TES_en(h) =e= TES_inv;
 *sw_TES*TES_cap*TES_density;
@@ -405,7 +408,7 @@ eq_TESinv(h)..
 
 *----------Cold Water Basin equations (cold storage)----------------------------
 eq_CWB_en_init(h)$(ord(h) eq 1)..
-         CWB_en(h) =e= CWB_en_init;
+         CWB_en(h) =e= CWB_en_init+CWB_ch(h)-CWB_dis(h);
 eq_CWB_en(h)$(ord(h) gt 1)..
          CWB_en(h) =e= CWB_en(h-1)+CWB_ch(h)-CWB_dis(h);
 
@@ -417,7 +420,8 @@ eq_CWB_discharge(h)..
 *         BTES_Sen(h,i) =e= (BTES_kSloss(i)*BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
 *                           + BTES_Sch(h,i)*BTES_Sch_eff - link_BS_BD(h,i));
 eq_BTES_Sen1(h,BID) $ (ord(h) eq 1)..
-         BTES_Sen(h,BID) =e= opt_fx_inv_BTES_S_init(h,BID);
+         BTES_Sen(h,BID) =e= (BTES_kSloss(BID)*opt_fx_inv_BTES_S_init(h,BID) - BTES_Sdis(h,BID)/BTES_Sdis_eff
+                           + BTES_Sch(h,BID)*BTES_Sch_eff - link_BS_BD(h,BID));
 * sw_BTES*BTES_Sen_int(i);
 eq_BTES_Sch(h,BID)..
          BTES_Sch(h,BID) =l= B_BTES(BID)*BTES_Sch_max(h,BID);
@@ -427,12 +431,13 @@ eq_BTES_Sen2(h,BID) $ (ord(h) gt 1)..
          BTES_Sen(h,BID) =e= (BTES_kSloss(BID)*BTES_Sen(h-1,BID) - BTES_Sdis(h,BID)/BTES_Sdis_eff
                            + BTES_Sch(h,BID)*BTES_Sch_eff - link_BS_BD(h,BID));
 eq_BTES_Den1(h,BID) $ (ord(h) eq 1)..
-         BTES_Den(h,BID) =e= opt_fx_inv_BTES_D_init(h,BID);
+         BTES_Den(h,BID) =e= (BTES_kDloss(BID)*opt_fx_inv_BTES_D_init(h,BID) + link_BS_BD(h,BID));
 * sw_BTES*BTES_Den_int(BID);
 *eq_BTES_Den0(h,i) $ (ord(h) eq 1)..
 *         BTES_Den(h,i) =e= (BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));
 eq_BTES_Den2(h,BID) $ (ord(h) gt 1)..
          BTES_Den(h,BID) =e= (BTES_kDloss(BID)*BTES_Den(h-1,BID) + link_BS_BD(h,BID));
+
 eq_BS_BD(h,BID) $ (BTES_model('BTES_Scap',BID) ne 0)..
          link_BS_BD(h,BID) =e= ((BTES_Sen(h,BID)/BTES_model('BTES_Scap',BID)
                               - BTES_Den(h,BID)/BTES_model('BTES_Dcap',BID))*BTES_model('K_BS_BD',BID));
@@ -447,7 +452,8 @@ eq_BAC_savings(h,BID)..
 
 *-----------------Battery constraints-------------------------------------------
 eq_BES1(h,BID) $ (ord(h) eq 1)..
-             BES_en(h,BID)=e= opt_fx_inv_BES_init;
+             BES_en(h,BID)=e= (opt_fx_inv_BES_init(h,BID)+BES_ch(h,BID)-BES_dis(h,BID));
+
 eq_BES2(h,BID)$(ord(h) gt 1)..
              BES_en(h,BID)=e=(BES_en(h-1,BID)+BES_ch(h,BID)-BES_dis(h,BID));
 eq_BES3(h,BID) ..
@@ -471,7 +477,7 @@ eq_BES_reac7(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=l=1.15*op
 eq_BES_reac8(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=g=-1.15*opt_fx_inv_BES_maxP(BID);
 *-----------------Battery Fast Charge constraints-------------------------------------------
 eq_BFCh1(h,BID) $ (ord(h) eq 1)..
-             BFCh_en(h,BID)=e= opt_fx_inv_BFCh_init;
+             BFCh_en(h,BID)=e= (opt_fx_inv_BFCh_init(h,BID)+BFCh_ch(h,BID)-BFCh_dis(h,BID));
 eq_BFCh2(h,BID)$(ord(h) gt 1)..
              BFCh_en(h,BID)=e=(BFCh_en(h-1,BID)+BFCh_ch(h,BID)-BFCh_dis(h,BID));
 eq_BFCh3(h,BID) ..
