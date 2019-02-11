@@ -313,7 +313,7 @@ parameter
          PT_cost(sup_unit)       Power tariff SEK per kW per month
          el_sell_price(h)        Sell price for electricty
          el_buy_price(h)         Buy price for electricty
-         net_tariff              Network tariff   /0.031/
+         net_tariff              Network tariff   /0.31/
          unit_avrg_prof_buy      Average buy profit pr kWh  /0.011/
          unit_prof_sell          Sell profit pr kWh  /0.019/
          ursprungsgaranti       /0.01/

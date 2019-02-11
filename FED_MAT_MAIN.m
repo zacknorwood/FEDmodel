@@ -199,7 +199,7 @@ opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','ful
 
 %Option for new HP investment
 %>=0 =fixed investment, -1=variable of optimization; 630 kw is heating capacity of the HP invested in
-opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',1);
+opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',630);
 
 %Option for new RM investment
 %>=0 =fixed investment, -1=variable of optimization
@@ -543,28 +543,37 @@ for t=sim_start:sim_stop
     
     %Initial SoC of storage systems and devices with ramp rate.
     BTES_BID_uels = {'O0007027', 'O0007017', 'O0007012', 'O0007006', 'O0007023', 'O0007026', 'O0007028', 'O0007024'};
+    BES_BID_uels = opt_fx_inv_BES_cap.uels;
+    BFCh_BID_uels = opt_fx_inv_BFCh_cap.uels;
     if t==sim_start
-        opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',zeros(1,length(BTES_BID_uels)));
-        opt_fx_inv_BTES_S_init.uels = {num2cell(t), BTES_BID_uels};
         opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',zeros(1,length(BTES_BID_uels)));
         opt_fx_inv_BTES_D_init.uels = {num2cell(t), BTES_BID_uels};
+        opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',zeros(1,length(BTES_BID_uels)));
+        opt_fx_inv_BTES_S_init.uels = {num2cell(t), BTES_BID_uels};
         
-        %This should be fixed and passed from Matlab to GAMS -ZN
-        %Initial SoC for energy storage must agree with min_SOC.
+        %Initial SoC for energy storage must agree with min_SOC in GAMS. This should be fixed and passed from Matlab to GAMS -ZN
         opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',0.20*opt_fx_inv_BES_cap.val);
-        %opt_fx_inv_BES_init.uels=opt_fx_inv_BES_cap.uels;
-        
         opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',0.20*opt_fx_inv_BFCh_cap.val);
-        %opt_fx_inv_BFCh_init.uels=opt_fx_inv_BFCh_cap.uels;
-        
         Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',0);
-        %Boiler1_prev_disp.uels = h.uels;
-        
         Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',0);
-        %Boiler2_prev_disp.uels = h.uels;
         
     else
-        [opt_fx_inv_BTES_D_init, opt_fx_inv_BTES_S_init, opt_fx_inv_BES_init, opt_fx_inv_BFCh_init, Boiler1_prev_disp, Boiler2_prev_disp] = readGtoM(t-1, BTES_BID_uels, opt_fx_inv_BES_cap.uels, opt_fx_inv_BFCh_cap.uels);
+        % The initial conditions for t-1 are read in from ReadGtoM.
+        % Note only the .value fields of the rgdx GAMS structure are passed in here.
+        [BTES_D_init, BTES_S_init, BES_init, BFCh_init, Boiler1_init, Boiler2_init] = readGtoM(t-1, BTES_BID_uels, BES_BID_uels, BFCh_BID_uels);
+        
+        % Here the values are restructured to be written to GAMS. Note that
+        % the BTES structures need to have uels to specify what buildings,
+        % but that the others are simple non-indexed parameters (hence no
+        % uels).
+        opt_fx_inv_BTES_D_init = struct('name','opt_fx_inv_BTES_D_init','type','parameter','form','full','val',BTES_D_init);
+        opt_fx_inv_BTES_D_init.uels = {num2cell(t), BTES_BID_uels};
+        opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',BTES_S_init);
+        opt_fx_inv_BTES_S_init.uels = {num2cell(t), BTES_BID_uels};
+        opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',BES_init);
+        opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',BFCh_init);
+        Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',Boiler1_init);
+        Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',Boiler2_init);
     end
     
     %% Preparing input GDX file (MtoG) and RUN GAMS model
