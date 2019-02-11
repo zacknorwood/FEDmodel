@@ -105,3 +105,4 @@ marginalCost_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser oc
 end
 
 
+
