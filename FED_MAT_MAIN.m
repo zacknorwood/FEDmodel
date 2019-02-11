@@ -1,4 +1,4 @@
-function [] = FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline)
+function [Results] = FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline)
 % optimization options
 % min_totCost_0: option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
 % min_totCost:  weighting factor for total cost to use in the minimization function
@@ -391,8 +391,8 @@ sim_start_h=1;
 %Sim stop time
 sim_stop_y=2016;
 sim_stop_m=3;
-sim_stop_d=31;
-sim_stop_h=24;
+sim_stop_d=1;
+sim_stop_h=4;
 
 %Get month and hours of simulation
 [HoS, MoS]=fget_time_vector(sim_start_y,sim_stop_y);
@@ -552,8 +552,10 @@ for t=sim_start:sim_stop
         opt_fx_inv_BTES_S_init.uels = {num2cell(t), BTES_BID_uels};
         
         %Initial SoC for energy storage must agree with min_SOC in GAMS. This should be fixed and passed from Matlab to GAMS -ZN
-        opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',0.20*opt_fx_inv_BES_cap.val);
-        opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',0.20*opt_fx_inv_BFCh_cap.val);
+        opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',ones(1,length(BES_BID_uels))*0.20*opt_fx_inv_BES_cap.val);
+        opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
+        opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',ones(1,length(BFCh_BID_uels))*0.20*opt_fx_inv_BFCh_cap.val);
+        opt_fx_inv_BFCh_init.uels = {num2cell(t), BFCh_BID_uels};
         Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',0);
         Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',0);
         
@@ -571,7 +573,9 @@ for t=sim_start:sim_stop
         opt_fx_inv_BTES_S_init = struct('name','opt_fx_inv_BTES_S_init','type','parameter','form','full','val',BTES_S_init);
         opt_fx_inv_BTES_S_init.uels = {num2cell(t), BTES_BID_uels};
         opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',BES_init);
+        opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
         opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',BFCh_init);
+        opt_fx_inv_BFCh_init.uels = {num2cell(t), BFCh_BID_uels};
         Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',Boiler1_init);
         Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',Boiler2_init);
     end
@@ -609,6 +613,62 @@ for t=sim_start:sim_stop
  
  %% Store the results from each iteration
 Results(t).dispatch = fstore_results(h,BID,BTES_properties,BusID);
+
+Results(t).dispatch.el_TURB(1,2)
+%% Write to Excel sheet
+tic
+% Timestep
+xlswrite('result_temp.xls',t,'Electricity',['A' num2str(t-sim_start+3)])
+%Turbine el kWh
+xlswrite('result_temp.xls',Results(t).dispatch.el_TURB(1,2),'Electricity',['B' num2str(t-sim_start+3)])
+%Turbine el cost
+
+% PV	PV	
+%MISSING
+%xlswrite('result_temp.xls',Results(t).dispatch.el_imp_AH(1,2),'Electricity',['D' num2str(t-sim_start+3)])
+%Import El	Import El	
+
+xlswrite('result_temp.xls',Results(t).dispatch.el_imp_AH(1,2),'Electricity',['F' num2str(t-sim_start+3)])
+%AbsC el	AbsC el	
+%MISSING
+%xlswrite('result_temp.xls',Results(t).dispatch.,'Electricity',['B' num2str(t-simstart+3)])
+%VKA1 el	VKA1 el	
+xlswrite('result_temp.xls',Results(t).dispatch.el_VKA1(1,2),'Electricity',['J' num2str(t-sim_start+3)])
+
+%VKA4 el	VKA4 el	
+xlswrite('result_temp.xls',Results(t).dispatch.el_VKA4(1,2),'Electricity',['L' num2str(t-sim_start+3)])
+
+%New HP el	New HP el	
+xlswrite('result_temp.xls',Results(t).dispatch.el_HP(1,2),'Electricity',['N' num2str(t-sim_start+3)])
+
+%AAC el	AAC el	
+%NEGLECT THIS?
+xlswrite('result_temp.xls',Results(t).dispatch.el_AAC(1,2),'Electricity',['P' num2str(t-sim_start+3)])
+
+%Refrig el	Refrig el	
+xlswrite('result_temp.xls',Results(t).dispatch.el_RM(1,2),'Electricity',['R' num2str(t-sim_start+3)])
+
+%imbalans dem supply measurement	imbalans dem supply measurement	
+%MISSING
+%xlswrite('result_temp.xls',Results(t).dispatch.el_RM(1,2),'Electricity',['T' num2str(t-sim_start+3)])
+
+%Slack el	Slack el
+%MISSING
+%xlswrite('result_temp.xls',Results(t).dispatch.el_,'Electricity',['V' num2str(t-sim_start+3)])
+
+%Battery energy	Battery charge	Battery discharge	
+%MISSING
+%xlswrite('result_temp.xls',Results(t).dispatch.,'Electricity',['X' num2str(t-sim_start+3)])
+
+%Battery Fast Charge energy	Battery Fast charge Charge	Battery Fast Charge discharge
+%MISSING
+%xlswrite('result_temp.xls',Results(t).dispatch.,'Electricity',['AA' num2str(t-sim_start+3)])	
+
+%Electricity Demand
+xlswrite('result_temp.xls',Results(t).dispatch.elec_demand(1,2),'Electricity',['AD' num2str(t-sim_start+3)])
+
+toc
+
 end
 Time(3).point='Gams running and storing';
 Time(3).value=toc;
