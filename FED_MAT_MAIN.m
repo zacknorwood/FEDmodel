@@ -389,10 +389,10 @@ sim_start_d=1;
 sim_start_h=1;
 
 %Sim stop time
-sim_stop_y=2016;
-sim_stop_m=3;
-sim_stop_d=1;
-sim_stop_h=4;
+sim_stop_y=2017;
+sim_stop_m=2;
+sim_stop_d=28;
+sim_stop_h=24;
 
 %Get month and hours of simulation
 [HoS, MoS]=fget_time_vector(sim_start_y,sim_stop_y);

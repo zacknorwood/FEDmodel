@@ -315,9 +315,9 @@ parameter
          el_buy_price(h)         Buy price for electricty
          net_tariff              Network tariff   /0.31/
 * 0.31SEK/kWh is grid tariff per kWh from Goteborg Energi home page;
-         unit_avrg_prof_buy      Average buy profit pr kWh  /0.011/
+         el_profit_margin_buy    Average electric utility buying profit margin (SEK per kWh)  /0.011/
 * 0.011SEK/kWh is the average profit for GE for large customers buying electricity, and 0.019 SEK/kWh for selling.
-         unit_prof_sell          Sell profit pr kWh  /0.019/
+         el_profit_margin_sell   Average electric utility selling profit margin (SEK per kWh)  /0.019/
          guarantee_origin        guarantee of origin "ursprungsgaranti" /0.01/
          quota_elcertificate     "kvotplikt" /0.305/
          el_tax                   Electricity tax    /0.325/
@@ -326,13 +326,13 @@ parameter
 ;
 
 * Purchase price from the external grid (not including taxes which is included later in utot_cost) is the spot price plus the net tariff plus the average profit + electricity certificate price multiplied by the quota.
-price('exG',h)= el_price(h) + net_tariff + unit_avrg_prof_buy + quota_elcertificate * el_certificate(h);
+price('exG',h)= el_price(h) + net_tariff + el_profit_margin_buy + quota_elcertificate * el_certificate(h);
 
 * This is the real time price in the FED system based on marginal units, h_price(h) is the price using the normal GE tariffs.
 price('DH',h)= MA_Cost_DH(h);
 
-* This price must be lower than the buy price, spot price - profit margin + el certificate price (since everything is renewable in FED) +
-el_sell_price(h) =el_price(h) - unit_prof_sell +  el_certificate(h) + ursprungsgaranti;
+* This price must be lower than the buy price: spot price - profit margin + el certificate price (since everything is renewable in FED) + guarantee of origin
+el_sell_price(h) =el_price(h) - el_profit_margin_sell +  el_certificate(h) + guarantee_origin;
 
 *the data 0.186 kr/kWh is obtained from Energimyndigheten 2015 wood chips for District Heating Uses
 *woodchip cost of 0.353 kr/kWh is obtained from AH
