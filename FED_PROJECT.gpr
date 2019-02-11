@@ -459,6 +459,14 @@ PlaneRownr=-1
 [RP:PROSUMER_V3]
 1=
 
+[RP:FED_VARIABLES]
+1=
+
+[RP:FED_EQUATIONS]
+1=
+2=GDXVIEWER.EXE
+3= C:\> gams trnsport.gms GDX=trnsport.gdx
+
 [RP:FED_GET_GDX_FILE]
 1=
 
@@ -467,14 +475,6 @@ PlaneRownr=-1
 
 [RP:FED_SIMULATOR_MAIN]
 1=
-
-[RP:FED_VARIABLES]
-1=
-
-[RP:FED_EQUATIONS]
-1=
-2=GDXVIEWER.EXE
-3= C:\> gams trnsport.gms GDX=trnsport.gdx
 
 [MRUFILES]
 1=D:\FED Project\FED_SIMULATOR\FEDmodel\FED_SIMULATOR_MAIN.lst
@@ -493,7 +493,7 @@ FILE1=D:\Users\norwood\Documents\FEDmodel\FED_GET_GDX_FILE.gms
 FILE2=D:\Users\norwood\Documents\FEDmodel\FED_Initialize.gms
 FILE3=D:\Users\norwood\Documents\FEDmodel\FED_SIMULATOR_MAIN.gms
 FILE4=D:\Users\norwood\Documents\FEDmodel\FED_Variables.gms
-FILE5=D:\Users\norwood\Documents\FEDmodel\FED_GET_GDX_FILE.gms
+FILE5=D:\Users\norwood\Documents\FEDmodel\FED_Initialize.gms
 MAXIM=0
 TOP=5
 LEFT=-1
