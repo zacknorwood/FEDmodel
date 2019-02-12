@@ -389,6 +389,7 @@ sim_start_d=1;
 sim_start_h=1;
 
 %Sim stop time
+
 sim_stop_y=2017;
 sim_stop_m=2;
 sim_stop_d=28;
@@ -525,7 +526,7 @@ for t=sim_start:sim_stop
     CO2F_DH.val = CO2intensityFinal_DH(t:forecast_end,:);
     CO2F_DH.uels=h.uels;
     
-    %PE factors of the external DH grid(AVERAGE AND MARGINAL)
+    %PE factors of the external DH grid(AVERAGE AND MARGINAL) ONLY MARGINAL???
     PEF_DH.val = PEintensityFinal_DH(t:forecast_end,:);
     PEF_DH.uels=h.uels;
     
@@ -613,63 +614,94 @@ for t=sim_start:sim_stop
  
  %% Store the results from each iteration
 Results(t).dispatch = fstore_results(h,BID,BTES_properties,BusID);
-
-Results(t).dispatch.el_TURB(1,2)
 %% Write to Excel sheet
 tic
-% Timestep
-xlswrite('result_temp.xls',t,'Electricity',['A' num2str(t-sim_start+3)])
-%Turbine el kWh
-xlswrite('result_temp.xls',Results(t).dispatch.el_TURB(1,2),'Electricity',['B' num2str(t-sim_start+3)])
-%Turbine el cost
+t_step=t-sim_start+1;
 
-% PV	PV	
-%MISSING
-%xlswrite('result_temp.xls',Results(t).dispatch.el_imp_AH(1,2),'Electricity',['D' num2str(t-sim_start+3)])
-%Import El	Import El	
+% INITIALIZE output array
+if t==sim_start
+to_excel_el(1:sim_stop-sim_start,1:31)=0;
+to_excel_heat(1:sim_stop-sim_start,1:35)=0;
+to_excel_cool(1:sim_stop-sim_start,1:23)=0;
+to_excel_co2(1:sim_stop-sim_start,1:5)=0;
+end
 
-xlswrite('result_temp.xls',Results(t).dispatch.el_imp_AH(1,2),'Electricity',['F' num2str(t-sim_start+3)])
-%AbsC el	AbsC el	
-%MISSING
-%xlswrite('result_temp.xls',Results(t).dispatch.,'Electricity',['B' num2str(t-simstart+3)])
-%VKA1 el	VKA1 el	
-xlswrite('result_temp.xls',Results(t).dispatch.el_VKA1(1,2),'Electricity',['J' num2str(t-sim_start+3)])
+%ELECTRICITY DATA
+to_excel_el(t_step,1)=t;
+to_excel_el(t_step,2)=Results(t).dispatch.el_TURB(1,2); 
+to_excel_el(t_step,4)=Results(t).dispatch.el_PV(1,2); 
+to_excel_el(t_step,6)=Results(t).dispatch.el_imp_AH(1,2);
+to_excel_el(t_step,8)=-Results(t).dispatch.el_AbsC(1,2);
+to_excel_el(t_step,10)=-Results(t).dispatch.el_VKA1(1,2);
+to_excel_el(t_step,12)=-Results(t).dispatch.el_VKA4(1,2);
+to_excel_el(t_step,14)=-Results(t).dispatch.el_HP(1,2);
+to_excel_el(t_step,16)=-Results(t).dispatch.el_AAC(1,2);
+to_excel_el(t_step,18)=-Results(t).dispatch.el_RM(1,2);
+%to_excel_el(t_step,20)=Results(t).dispatch.el_imb(1,2);
+%to_excel_el(t_step,22)=Results(t).dispatch.el_slack(1,2);
+to_excel_el(t_step,24)=Results(1441).dispatch.BES_en(find(Results(1441).dispatch.BES_en(:,2)==33,1),3);
+to_excel_el(t_step,25)=-Results(1441).dispatch.BES_ch(find(Results(1441).dispatch.BES_ch(:,2)==33,1),3);
+to_excel_el(t_step,26)=Results(1441).dispatch.BES_dis(find(Results(1441).dispatch.BES_dis(:,2)==33,1),3);
+to_excel_el(t_step,27)=Results(1441).dispatch.BFCh_en(find(Results(1441).dispatch.BFCh_en(:,2)==20,1),3);
+to_excel_el(t_step,28)=-Results(1441).dispatch.BFCh_ch(find(Results(1441).dispatch.BFCh_ch(:,2)==20,1),3);
+to_excel_el(t_step,29)=Results(1441).dispatch.BFCh_dis(find(Results(1441).dispatch.BFCh_dis(:,2)==20,1),3);
 
-%VKA4 el	VKA4 el	
-xlswrite('result_temp.xls',Results(t).dispatch.el_VKA4(1,2),'Electricity',['L' num2str(t-sim_start+3)])
+to_excel_el(t_step,30)=Results(t).dispatch.el_imp_nonAH(1,2);
+to_excel_el(t_step,31)=-Results(t).dispatch.elec_demand(1,2);
 
-%New HP el	New HP el	
-xlswrite('result_temp.xls',Results(t).dispatch.el_HP(1,2),'Electricity',['N' num2str(t-sim_start+3)])
+%HEATING DATA
+to_excel_heat(t_step,1)=t; 
+to_excel_heat(t_step,2)=Results(t).dispatch.h_Boiler1(1,2); 
+to_excel_heat(t_step,4)=Results(t).dispatch.h_Boiler2(1,2); 
+to_excel_heat(t_step,6)=Results(t).dispatch.h_RGK1(1,2);
+to_excel_heat(t_step,8)=Results(t).dispatch.h_VKA1(1,2);
+to_excel_heat(t_step,10)=Results(t).dispatch.h_VKA4(1,2);
+to_excel_heat(t_step,12)=Results(t).dispatch.h_HP(1,2);
+to_excel_heat(t_step,14)=-Results(t).dispatch.h_exp_AH(1,2);
+to_excel_heat(t_step,16)=Results(t).dispatch.h_imp_AH(1,2);
+to_excel_heat(t_step,18)=Results(t).dispatch.H_Boiler2T(1,2);
+to_excel_heat(t_step,20)=Results(t).dispatch.h_TURB(1,2)*0.75;
+to_excel_heat(t_step,22)=-Results(t).dispatch.h_AbsC(1,2);
+to_excel_heat(t_step,24)=sum(Results(1441).dispatch.h_BAC_savings(find(Results(1441).dispatch.h_BAC_savings(:,1)==1),3));
+%to_excel_heat(t_step,26)=Results(t).dispatch.h_imb(1,2);
+%to_excel_heat(t_step,28)=Results(t).dispatch.h_slack(1,2);
+to_excel_heat(t_step,30)=sum(Results(1441).dispatch.BTES_Sen(find(Results(1441).dispatch.BTES_Sen(:,1)==1),3));
+to_excel_heat(t_step,31)=-sum(Results(1441).dispatch.BTES_Sch(find(Results(1441).dispatch.BTES_Sch(:,1)==1),3));
+to_excel_heat(t_step,32)=sum(Results(1441).dispatch.BTES_Sdis(find(Results(1441).dispatch.BTES_Sdis(:,1)==1),3));
+to_excel_heat(t_step,33)=sum(Results(1441).dispatch.BTES_Den(find(Results(1441).dispatch.BTES_Den(:,1)==1),3));
+to_excel_heat(t_step,34)=Results(t).dispatch.h_imp_nonAH(1,2);
+to_excel_heat(t_step,35)=-Results(t).dispatch.heat_demand(1,2);
 
-%AAC el	AAC el	
-%NEGLECT THIS?
-xlswrite('result_temp.xls',Results(t).dispatch.el_AAC(1,2),'Electricity',['P' num2str(t-sim_start+3)])
+% COOLING DATA
+to_excel_cool(t_step,1)=t; 
+to_excel_cool(t_step,2)=Results(t).dispatch.c_VKA1(1,2);
+to_excel_cool(t_step,4)=Results(t).dispatch.c_VKA4(1,2);
+to_excel_cool(t_step,6)=Results(t).dispatch.c_HP(1,2);
+%to_excel_cool(t_step,8)=Results(t).dispatch.c_imb(1,2);
+to_excel_cool(t_step,10)=Results(t).dispatch.c_AbsC(1,2);
+to_excel_cool(t_step,12)=Results(t).dispatch.c_AAC(1,2);
+to_excel_cool(t_step,14)=Results(t).dispatch.c_RM(1,2); 
+to_excel_cool(t_step,16)=Results(t).dispatch.c_RMMC(1,2); 
+to_excel_cool(t_step,18)=Results(t).dispatch.CWB_en(1,2); 
+to_excel_cool(t_step,19)=-Results(t).dispatch.CWB_ch(1,2); 
+to_excel_cool(t_step,20)=Results(t).dispatch.CWB_dis(1,2); 
+to_excel_cool(t_step,23)=-Results(t).dispatch.cool_demand(1,2); 
 
-%Refrig el	Refrig el	
-xlswrite('result_temp.xls',Results(t).dispatch.el_RM(1,2),'Electricity',['R' num2str(t-sim_start+3)])
-
-%imbalans dem supply measurement	imbalans dem supply measurement	
-%MISSING
-%xlswrite('result_temp.xls',Results(t).dispatch.el_RM(1,2),'Electricity',['T' num2str(t-sim_start+3)])
-
-%Slack el	Slack el
-%MISSING
-%xlswrite('result_temp.xls',Results(t).dispatch.el_,'Electricity',['V' num2str(t-sim_start+3)])
-
-%Battery energy	Battery charge	Battery discharge	
-%MISSING
-%xlswrite('result_temp.xls',Results(t).dispatch.,'Electricity',['X' num2str(t-sim_start+3)])
-
-%Battery Fast Charge energy	Battery Fast charge Charge	Battery Fast Charge discharge
-%MISSING
-%xlswrite('result_temp.xls',Results(t).dispatch.,'Electricity',['AA' num2str(t-sim_start+3)])	
-
-%Electricity Demand
-xlswrite('result_temp.xls',Results(t).dispatch.elec_demand(1,2),'Electricity',['AD' num2str(t-sim_start+3)])
-
+to_excel_co2(t_step,1)=t;
+to_excel_co2(t_step,2)=Results(t).dispatch.FED_PE(1,2);
+to_excel_co2(t_step,3)=Results(t).dispatch.FED_CO2(1,2);
+to_excel_co2(t_step,4)=Results(t).dispatch.AH_PE(1,2);
+to_excel_co2(t_step,5)=Results(t).dispatch.AH_CO2(1,2);
 toc
 
 end
+tic
+xlswrite('result_temp.xls',to_excel_el,'Electricity','A3')
+xlswrite('result_temp.xls',to_excel_heat,'Heat','A3')
+xlswrite('result_temp.xls',to_excel_cool,'Cooling','A3')
+xlswrite('result_temp.xls',to_excel_co2,'CO2_PE','A3')
+toc
+
 Time(3).point='Gams running and storing';
 Time(3).value=toc;
 

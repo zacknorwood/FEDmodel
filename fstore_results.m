@@ -77,13 +77,14 @@ data.qB1=gdx2mat(gdxData,'qB1',h_sim.uels);
 data.qF1=gdx2mat(gdxData,'qF1',h_sim.uels);
 data.fuel_Boiler1=gdx2mat(gdxData,'fuel_Boiler1',h_sim.uels);
 data.P1_eff=gdx2mat(gdxData,'P1_eff');
-data.H_VKA1=gdx2mat(gdxData,'H_VKA1',h_sim.uels);
-data.C_VKA1=gdx2mat(gdxData,'C_VKA1',h_sim.uels);
+data.h_VKA1=gdx2mat(gdxData,'H_VKA1',h_sim.uels);
+data.c_VKA1=gdx2mat(gdxData,'C_VKA1',h_sim.uels);
 data.el_VKA1=gdx2mat(gdxData,'el_VKA1',h_sim.uels);
-data.H_VKA4=gdx2mat(gdxData,'H_VKA4',h_sim.uels);
-data.C_VKA4=gdx2mat(gdxData,'C_VKA4',h_sim.uels);
+data.h_VKA4=gdx2mat(gdxData,'H_VKA4',h_sim.uels);
+data.c_VKA4=gdx2mat(gdxData,'C_VKA4',h_sim.uels);
 data.el_VKA4=gdx2mat(gdxData,'el_VKA4',h_sim.uels);
 data.h_AbsC=gdx2mat(gdxData,'h_AbsC',h_sim.uels);
+data.el_AbsC=gdx2mat(gdxData,'el_AbsC',h_sim.uels);
 data.c_AbsC=gdx2mat(gdxData,'c_AbsC',h_sim.uels);
 data.h_AbsCInv=gdx2mat(gdxData,'h_AbsCInv',h_sim.uels);
 data.c_AbsCInv=gdx2mat(gdxData,'c_AbsCInv',h_sim.uels);
@@ -104,15 +105,21 @@ data.c_HP=gdx2mat(gdxData,'c_HP',h_sim.uels);
 data.HP_cap=gdx2mat(gdxData,'HP_cap');
 data.invCost_HP=gdx2mat(gdxData,'invCost_HP');
 
+data.el_PV=gdx2mat(gdxData,'el_PV',h_sim.uels);
+
 %storage
-data.BES_en=gdx2mat(gdxData,'BES_en',{h_sim.uels,BusID.uels});
-data.BES_ch=gdx2mat(gdxData,'BES_ch',{h_sim.uels,BusID.uels});
-data.BES_dis=gdx2mat(gdxData,'BES_dis',{h_sim.uels,BusID.uels});
-data.BES_reac=gdx2mat(gdxData,'BES_reac',{h_sim.uels,BusID.uels});
-data.BFCh_en=gdx2mat(gdxData,'BFCh_en',{h_sim.uels,BusID.uels});
-data.BFCh_ch=gdx2mat(gdxData,'BFCh_ch',{h_sim.uels,BusID.uels});
-data.BFCh_dis=gdx2mat(gdxData,'BFCh_dis',{h_sim.uels,BusID.uels});
-data.BFCh_reac=gdx2mat(gdxData,'BFCh_reac',{h_sim.uels,BusID.uels});
+data.CWB_en=gdx2mat(gdxData,'CWB_en',{h_sim.uels});
+data.CWB_ch=gdx2mat(gdxData,'CWB_ch',{h_sim.uels});
+data.CWB_dis=gdx2mat(gdxData,'CWB_dis',{h_sim.uels});
+
+data.BES_en=gdx2mat(gdxData,'BES_en',{h_sim.uels,BID.uels});
+data.BES_ch=gdx2mat(gdxData,'BES_ch',{h_sim.uels,BID.uels});
+data.BES_dis=gdx2mat(gdxData,'BES_dis',{h_sim.uels,BID.uels});
+data.BES_reac=gdx2mat(gdxData,'BES_reac',{h_sim.uels,BID.uels});
+data.BFCh_en=gdx2mat(gdxData,'BFCh_en',{h_sim.uels,BID.uels});
+data.BFCh_ch=gdx2mat(gdxData,'BFCh_ch',{h_sim.uels,BID.uels});
+data.BFCh_dis=gdx2mat(gdxData,'BFCh_dis',{h_sim.uels,BID.uels});
+data.BFCh_reac=gdx2mat(gdxData,'BFCh_reac',{h_sim.uels,BID.uels});
 data.TES_ch=gdx2mat(gdxData,'TES_ch',h_sim.uels);
 data.TES_dis=gdx2mat(gdxData,'TES_dis',h_sim.uels);
 data.TES_en=gdx2mat(gdxData,'TES_en',h_sim.uels);
@@ -136,8 +143,8 @@ data.invCost_BTES=gdx2mat(gdxData,'invCost_BTES');
 data.BTES_model=gdx2mat(gdxData,'BTES_model',{BTES_properties.uels,BID.uels});
 
 %BAC
-data.h_BAC_savings=gdx2mat(gdxData,'h_BAC_savings',{h_sim.uels,BTES_properties.uels});
-data.B_BAC=gdx2mat(gdxData,'B_BAC',BTES_properties.uels);
+data.h_BAC_savings=gdx2mat(gdxData,'h_BAC_savings',{h_sim.uels,BID.uels});
+data.B_BAC=gdx2mat(gdxData,'B_BAC',BID.uels);
 data.invCost_BAC=gdx2mat(gdxData,'invCost_BAC');
 data.BAC_savings_period=gdx2mat(gdxData,'BAC_savings_period',h_sim.uels);
 
