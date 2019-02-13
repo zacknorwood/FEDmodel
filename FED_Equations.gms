@@ -429,10 +429,11 @@ eq_CWB_discharge(h)..
 *------------------Building Advanced Control equations--------------------------
 
 eq_BAC_S_init(h,BID) $ (ord(h) eq 1)..
-         BAC_Sen(h,BID) =e= opt_fx_inv_BTES_BAC_S_init(h-1,BID);
+         BAC_Sen(h,BID) =e= (BTES_kSloss(BID)*opt_fx_inv_BTES_BAC_S_init(h,BID) - BAC_Sdis(h,BID)/BTES_Sdis_eff
+                           + BAC_Sch(h,BID)*BTES_Sch_eff - BAC_link_BS_BD(h,BID));
 
 eq_BAC_D_init(h,BID) $ (ord(h) eq 1)..
-         BAC_Den(h,BID) =e= opt_fx_inv_BTES_BAC_D_init(h-1,BID);
+         BAC_Den(h,BID) =e= (BTES_kDloss(BID)*opt_fx_inv_BTES_BAC_D_init(h,BID) + BAC_link_BS_BD(h,BID));
 
 eq_BAC_Sch(h,BID)..
          BAC_Sch(h,BID) =l= B_BAC(BID)*BTES_Sch_max(h,BID);
@@ -467,13 +468,14 @@ eq_BAC_D_loss(h,BID)..
 *------------------Building Setpoint Offset equations---------------------------
 
 eq_SO_S_init(h,BID) $ (ord(h) eq 1)..
-         SO_Sen(h,BID) =e= opt_fx_inv_BTES_SO_S_init(h-1,BID);
+         SO_Sen(h,BID) =e= (BTES_kSloss(BID)*opt_fx_inv_BTES_SO_S_init(h,BID) - SO_Sdis(h,BID)/BTES_Sdis_eff
+                           + SO_Sch(h,BID)*BTES_Sch_eff - SO_link_BS_BD(h,BID));
 
 eq_SO_D_init(h,BID) $ (ord(h) eq 1)..
-         BAC_Den(h,BID) =e= opt_fx_inv_BTES_SO_D_init(h-1,BID);
+         SO_Den(h,BID) =e= (BTES_kDloss(BID)*opt_fx_inv_BTES_SO_D_init(h,BID) + SO_link_BS_BD(h,BID));
 
 eq_SO_Sch(h,BID)..
-         BAC_Sch(h,BID) =l= B_SO(BID)*BTES_SO_max_power(BID);
+         SO_Sch(h,BID) =l= B_SO(BID)*BTES_SO_max_power(BID);
 
 eq_SO_Sdis(h,BID)..
          SO_Sdis(h,BID) =l= B_SO(BID)*BTES_SO_max_power(BID);
