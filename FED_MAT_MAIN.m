@@ -680,15 +680,16 @@ to_excel_el(t_step,12)=-Results(t).dispatch.el_VKA4(1,2);
 to_excel_el(t_step,14)=-Results(t).dispatch.el_HP(1,2);
 %to_excel_el(t_step,16)=-Results(t).dispatch.el_AAC(1,2);
 to_excel_el(t_step,18)=-Results(t).dispatch.el_RM(1,2);
-%to_excel_el(t_step,20)=Results(t).dispatch.el_imb(1,2);
-%to_excel_el(t_step,22)=Results(t).dispatch.el_slack(1,2);
 
-%to_excel_el(t_step,24)=Results(t).dispatch.BES_en(find(Results(t).dispatch.BES_en(:,2)==33,1),3);
-%to_excel_el(t_step,25)=-Results(t).dispatch.BES_ch(find(Results(t).dispatch.BES_ch(:,2)==33,1),3);
-%to_excel_el(t_step,26)=Results(t).dispatch.BES_dis(find(Results(t).dispatch.BES_dis(:,2)==33,1),3);
-%to_excel_el(t_step,27)=Results(t).dispatch.BFCh_en(find(Results(t).dispatch.BFCh_en(:,2)==20,1),3);
-%to_excel_el(t_step,28)=-Results(t).dispatch.BFCh_ch(find(Results(t).dispatch.BFCh_ch(:,2)==20,1),3);
-%to_excel_el(t_step,29)=Results(t).dispatch.BFCh_dis(find(Results(t).dispatch.BFCh_dis(:,2)==20,1),3);
+to_excel_el(t_step,20)=Results(t).dispatch.el_slack(1,2);
+to_excel_el(t_step,22)=Results(t).dispatch.el_slack_var(1,2);
+to_excel_el(t_step,24)=Results(t).dispatch.BES_en(find(Results(t).dispatch.BES_en(:,2)==33,1),3);
+to_excel_el(t_step,25)=-Results(t).dispatch.BES_ch(find(Results(t).dispatch.BES_ch(:,2)==33,1),3);
+to_excel_el(t_step,26)=Results(t).dispatch.BES_dis(find(Results(t).dispatch.BES_dis(:,2)==33,1),3);
+to_excel_el(t_step,27)=Results(t).dispatch.BFCh_en(find(Results(t).dispatch.BFCh_en(:,2)==20,1),3);
+to_excel_el(t_step,28)=-Results(t).dispatch.BFCh_ch(find(Results(t).dispatch.BFCh_ch(:,2)==20,1),3);
+to_excel_el(t_step,29)=Results(t).dispatch.BFCh_dis(find(Results(t).dispatch.BFCh_dis(:,2)==20,1),3);
+
 
 to_excel_el(t_step,30)=Results(t).dispatch.el_imp_nonAH(1,2);
 to_excel_el(t_step,31)=-Results(t).dispatch.elec_demand(1,2);
@@ -707,12 +708,14 @@ to_excel_heat(t_step,18)=Results(t).dispatch.H_Boiler2T(1,2);
 to_excel_heat(t_step,20)=Results(t).dispatch.h_TURB(1,2)*0.75;
 to_excel_heat(t_step,22)=-Results(t).dispatch.h_AbsC(1,2);
 to_excel_heat(t_step,24)=sum(Results(t).dispatch.h_BAC_savings(find(Results(t).dispatch.h_BAC_savings(:,1)==1),3));
-%to_excel_heat(t_step,26)=Results(t).dispatch.h_imb(1,2);
-%to_excel_heat(t_step,28)=Results(t).dispatch.h_slack(1,2);
-to_excel_heat(t_step,30)=sum(Results(t).dispatch.BAC_Sen(find(Results(t).dispatch.BAC_Sen(:,1)==1),3));
-to_excel_heat(t_step,31)=-sum(Results(t).dispatch.BAC_Sch(find(Results(t).dispatch.BAC_Sch(:,1)==1),3));
-to_excel_heat(t_step,32)=sum(Results(t).dispatch.BAC_Sdis(find(Results(t).dispatch.BAC_Sdis(:,1)==1),3));
-to_excel_heat(t_step,33)=sum(Results(t).dispatch.BAC_Den(find(Results(t).dispatch.BAC_Den(:,1)==1),3));
+
+to_excel_heat(t_step,26)=Results(t).dispatch.h_slack(1,2);
+to_excel_heat(t_step,28)=Results(t).dispatch.h_slack_var(1,2);
+to_excel_heat(t_step,30)=sum(Results(t).dispatch.BTES_Sen(find(Results(t).dispatch.BTES_Sen(:,1)==1),3));
+to_excel_heat(t_step,31)=-sum(Results(t).dispatch.BTES_Sch(find(Results(t).dispatch.BTES_Sch(:,1)==1),3));
+to_excel_heat(t_step,32)=sum(Results(t).dispatch.BTES_Sdis(find(Results(t).dispatch.BTES_Sdis(:,1)==1),3));
+to_excel_heat(t_step,33)=sum(Results(t).dispatch.BTES_Den(find(Results(t).dispatch.BTES_Den(:,1)==1),3));
+
 
 % AK Add BTES_SO output as well
 
@@ -724,7 +727,7 @@ to_excel_cool(t_step,1)=t;
 to_excel_cool(t_step,2)=Results(t).dispatch.c_VKA1(1,2);
 to_excel_cool(t_step,4)=Results(t).dispatch.c_VKA4(1,2);
 to_excel_cool(t_step,6)=Results(t).dispatch.c_HP(1,2);
-%to_excel_cool(t_step,8)=Results(t).dispatch.c_imb(1,2);
+to_excel_cool(t_step,8)=Results(t).dispatch.c_slack(1,2);
 to_excel_cool(t_step,10)=Results(t).dispatch.c_AbsC(1,2);
 %to_excel_cool(t_step,12)=Results(t).dispatch.c_AAC(1,2);
 to_excel_cool(t_step,14)=Results(t).dispatch.c_RM(1,2); 

@@ -277,7 +277,7 @@ y_temp(h);
 
 *------------------Grid DC related----------------------------------------------
 positive variable
-         C_DC(h)             cooling from district cooling system
+         C_DC_slack_var(h)             cooling from district cooling system
 ;
 
 

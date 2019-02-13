@@ -36,6 +36,14 @@ data.h_imp_nonAH=gdx2mat(gdxData,'h_imp_nonAH',h_sim.uels);
 data.AH_h_imp_tot=gdx2mat(gdxData,'AH_h_imp_tot');
 data.AH_h_exp_tot=gdx2mat(gdxData,'AH_h_exp_tot');
 
+%imbalance and error between measurement demand/supply
+data.h_slack=gdx2mat(gdxData,'h_DH_slack',h_sim.uels);
+data.h_slack_var=gdx2mat(gdxData,'h_DH_slack_var',h_sim.uels);
+data.c_slack=gdx2mat(gdxData,'c_DC_slack',h_sim.uels);
+data.c_slack_var=gdx2mat(gdxData,'c_DC_slack_var',h_sim.uels);
+data.el_slack=gdx2mat(gdxData,'el_exG_slack',h_sim.uels);
+data.el_slack_var=gdx2mat(gdxData,'el_slack_var',h_sim.uels);
+
 %prices
 data.el_sell_price=gdx2mat(gdxData,'el_sell_price',h_sim.uels);
 data.el_price=gdx2mat(gdxData,'el_price',h_sim.uels);
