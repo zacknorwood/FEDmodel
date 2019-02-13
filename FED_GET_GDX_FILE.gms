@@ -275,6 +275,14 @@ $LOAD BAC_savings_period
 $LOAD BAC_savings_factor
 $GDXIN
 
+*--------------Building Set Point Offset parameters-----------------------------
+Parameters
+         BTES_SO_max_power(BID)        Maximum charging or discharging of building
+;
+$GDXIN MtoG.gdx
+$LOAD BTES_SO_max_power
+$GDXIN
+
 *-----------DH export season from MATLAB----------------------------------------
 PARAMETERS
             DH_export_season(h)           Period in which DH exports are payed for

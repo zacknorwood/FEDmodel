@@ -467,10 +467,10 @@ eq_SO_D_init(h,BID) $ (ord(h) eq 1)..
          BAC_Den(h,BID) =e= opt_fx_inv_BTES_SO_D_init(h-1,BID);
 
 eq_SO_Sch(h,BID)..
-         BAC_Sch(h,BID) =l= B_SO(BID)*BTES_Sch_max(h,BID);
+         BAC_Sch(h,BID) =l= B_SO(BID)*BTES_SO_max_power(BID);
 
 eq_SO_Sdis(h,BID)..
-         SO_Sdis(h,BID) =l= B_SO(BID)*BTES_Sdis_max(h,BID);
+         SO_Sdis(h,BID) =l= B_SO(BID)*BTES_SO_max_power(BID);
 
 
 eq_SO_S_change(h,BID) $ (ord(h) gt 1)..

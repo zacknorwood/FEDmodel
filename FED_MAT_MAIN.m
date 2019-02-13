@@ -238,15 +238,21 @@ opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','
 
 BTES_BAC_uels = {'O0007006', 'O0007012', 'O0007017', 'O0007023', 'O0007026', 'O3060135', 'O3060133'}; %Buildings with Advanced Control (BAC) system
 BTES_PS_uels = {'O0011001', 'O0007888'}; % Buildings with Pump Stop (PS) capability
-BTES_SO_uels = {'O0007028', 'O0007027'} % Buildings with Setpoint Offset (SO) capability
+BTES_SO_uels = {'O0007028', 'O0007027', 'O0007024'} % Buildings with Setpoint Offset (SO) capability, O0007024 (EDIT) included to represent O7:10, and O7:20 which are parts of EDIT
 warning('Pump Stop buildings currently running with Setpoint Offset model')
 BTES_SO_uels = [BTES_PS_uels, BTES_SO_uels] % Temporary: Combine PS into SO until PS is implemented properly.
-% AK O7:10, O7:20, should be included in BTES_SO (parts of EDIT)
 BTES_BAC_Inv.name = 'BTES_BAC_Inv';
 BTES_BAC_Inv.uels = BTES_BAC_uels;
 
 BTES_SO_Inv.name = 'BTES_SO_Inv';
 BTES_SO_Inv.uels = BTES_SO_uels;
+% Maximum charging/discharging power available for building setpoint
+% offsets according to power charts attatched to Building agent
+% descriptions. Calculated assuming 10°C offset available.
+BTES_SO_max_power = struct('name', 'BTES_SO_max_power', 'type', 'parameter', 'form', 'full');
+BTES_SO_max_power.uels = BTES_SO_uels;
+BTES_SO_max_power.val = [45, 20, 90, 76, 11]; % kWh/h, Requires ordering of BTES_SO_UELS to be O11:01, O7:888, O7:28, O7, 27, O7:24
+
 %Placement of roof PVs (Existing)
 PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista pï¿½ anlï¿½ggningar.xlsx" as well as the 3d shading model
 
@@ -624,7 +630,8 @@ for t=sim_start:sim_stop
         PVID,PVID_roof,PV_roof_cap,PVID_facade,PV_facade_cap,...
         el_price,el_certificate,h_price,tout,BAC_savings_factor,...
         min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline, FED_Inv_lim,BusID,opt_fx_inv_BFCh, opt_fx_inv_BFCh_cap,...
-        opt_fx_inv_BES_maxP,opt_fx_inv_BFCh_maxP, opt_fx_inv_BTES_BAC_D_init, opt_fx_inv_BTES_BAC_S_init, opt_fx_inv_BTES_SO_D_init, opt_fx_inv_BTES_SO_S_init,...
+        opt_fx_inv_BES_maxP,opt_fx_inv_BFCh_maxP, opt_fx_inv_BTES_BAC_D_init, opt_fx_inv_BTES_BAC_S_init,...
+        opt_fx_inv_BTES_SO_D_init, opt_fx_inv_BTES_SO_S_init,BTES_SO_max_power,...
         opt_fx_inv_BFCh_init,opt_fx_inv_BES_init,Boiler1_prev_disp,Boiler2_prev_disp,...
         DH_Node_ID, DH_Nodes_Transfer_Limits,...
         DC_Node_ID, DC_Nodes_Transfer_Limits, el_exG_slack,h_DH_slack,c_DC_slack,h_exp_AH_hist, h_imp_AH_hist,opt_fx_inv_SO,opt_fx_inv_BAC);
