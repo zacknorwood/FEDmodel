@@ -238,9 +238,9 @@ opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','
 
 BTES_BAC_uels = {'O0007006', 'O0007012', 'O0007017', 'O0007023', 'O0007026', 'O3060135', 'O3060133'}; %Buildings with Advanced Control (BAC) system
 BTES_PS_uels = {'O0011001', 'O0007888'}; % Buildings with Pump Stop (PS) capability
-BTES_SO_uels = {'O0007028', 'O0007027', 'O0007024'} % Buildings with Setpoint Offset (SO) capability, O0007024 (EDIT) included to represent O7:10, and O7:20 which are parts of EDIT
+BTES_SO_uels = {'O0007028', 'O0007027', 'O0007024'}; % Buildings with Setpoint Offset (SO) capability, O0007024 (EDIT) included to represent O7:10, and O7:20 which are parts of EDIT
 warning('Pump Stop buildings currently running with Setpoint Offset model')
-BTES_SO_uels = [BTES_PS_uels, BTES_SO_uels] % Temporary: Combine PS into SO until PS is implemented properly.
+BTES_SO_uels = [BTES_PS_uels, BTES_SO_uels]; % Temporary: Combine PS into SO until PS is implemented properly.
 BTES_BAC_Inv.name = 'BTES_BAC_Inv';
 BTES_BAC_Inv.uels = BTES_BAC_uels;
 
@@ -575,8 +575,8 @@ for t=sim_start:sim_stop
         
         % Set inital state of PS Buildings 
         % AK How to implement?
-        opt_fx_inv_BTES_PS_init = struct('name','opt_fx_inv_BTES_PS_init','type','parameter','form','full','val',zeros(1,length(BTES_PS_uels))); 
-        opt_fx_inv_BTES_PS_init.uels = {num2cell(t), BTES_PS_uels};
+        %opt_fx_inv_BTES_PS_init = struct('name','opt_fx_inv_BTES_PS_init','type','parameter','form','full','val',zeros(1,length(BTES_PS_uels))); 
+        %opt_fx_inv_BTES_PS_init.uels = {num2cell(t), BTES_PS_uels};
         
         %Initial SoC for energy storage must agree with min_SOC in GAMS. This should be fixed and passed from Matlab to GAMS -ZN
         opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',ones(1,length(BES_BID_uels))*0.20*opt_fx_inv_BES_cap.val);
@@ -589,7 +589,7 @@ for t=sim_start:sim_stop
     else
         % The initial conditions for t-1 are read in from ReadGtoM.
         % Note only the .value fields of the rgdx GAMS structure are passed in here.
-        [BTES_BAC_D_init, BTES_BAC_S_init, BTES_SO_S_init, BTES_SO_D_init, BTES_PS_init, BES_init, BFCh_init, Boiler1_init, Boiler2_init] = readGtoM(t-1, BTES_BAC_uels, BTES_SO_uels, BTES_PS_uels, BES_BID_uels, BFCh_BID_uels);
+        [BTES_BAC_D_init, BTES_BAC_S_init, BTES_SO_S_init, BTES_SO_D_init, BES_init, BFCh_init, Boiler1_init, Boiler2_init] = readGtoM(t-1, BTES_BAC_uels, BTES_SO_uels, BES_BID_uels, BFCh_BID_uels);
         
         % Here the values are restructured to be written to GAMS. Note that
         % the BTES structures need to have uels to specify what buildings,
@@ -678,12 +678,13 @@ to_excel_el(t_step,16)=-Results(t).dispatch.el_AAC(1,2);
 to_excel_el(t_step,18)=-Results(t).dispatch.el_RM(1,2);
 %to_excel_el(t_step,20)=Results(t).dispatch.el_imb(1,2);
 %to_excel_el(t_step,22)=Results(t).dispatch.el_slack(1,2);
-to_excel_el(t_step,24)=Results(t).dispatch.BES_en(find(Results(t).dispatch.BES_en(:,2)==33,1),3);
-to_excel_el(t_step,25)=-Results(t).dispatch.BES_ch(find(Results(t).dispatch.BES_ch(:,2)==33,1),3);
-to_excel_el(t_step,26)=Results(t).dispatch.BES_dis(find(Results(t).dispatch.BES_dis(:,2)==33,1),3);
-to_excel_el(t_step,27)=Results(t).dispatch.BFCh_en(find(Results(t).dispatch.BFCh_en(:,2)==20,1),3);
-to_excel_el(t_step,28)=-Results(t).dispatch.BFCh_ch(find(Results(t).dispatch.BFCh_ch(:,2)==20,1),3);
-to_excel_el(t_step,29)=Results(t).dispatch.BFCh_dis(find(Results(t).dispatch.BFCh_dis(:,2)==20,1),3);
+
+%to_excel_el(t_step,24)=Results(t).dispatch.BES_en(find(Results(t).dispatch.BES_en(:,2)==33,1),3);
+%to_excel_el(t_step,25)=-Results(t).dispatch.BES_ch(find(Results(t).dispatch.BES_ch(:,2)==33,1),3);
+%to_excel_el(t_step,26)=Results(t).dispatch.BES_dis(find(Results(t).dispatch.BES_dis(:,2)==33,1),3);
+%to_excel_el(t_step,27)=Results(t).dispatch.BFCh_en(find(Results(t).dispatch.BFCh_en(:,2)==20,1),3);
+%to_excel_el(t_step,28)=-Results(t).dispatch.BFCh_ch(find(Results(t).dispatch.BFCh_ch(:,2)==20,1),3);
+%to_excel_el(t_step,29)=Results(t).dispatch.BFCh_dis(find(Results(t).dispatch.BFCh_dis(:,2)==20,1),3);
 
 to_excel_el(t_step,30)=Results(t).dispatch.el_imp_nonAH(1,2);
 to_excel_el(t_step,31)=-Results(t).dispatch.elec_demand(1,2);
@@ -704,10 +705,13 @@ to_excel_heat(t_step,22)=-Results(t).dispatch.h_AbsC(1,2);
 to_excel_heat(t_step,24)=sum(Results(t).dispatch.h_BAC_savings(find(Results(t).dispatch.h_BAC_savings(:,1)==1),3));
 %to_excel_heat(t_step,26)=Results(t).dispatch.h_imb(1,2);
 %to_excel_heat(t_step,28)=Results(t).dispatch.h_slack(1,2);
-to_excel_heat(t_step,30)=sum(Results(t).dispatch.BTES_Sen(find(Results(t).dispatch.BTES_Sen(:,1)==1),3));
-to_excel_heat(t_step,31)=-sum(Results(t).dispatch.BTES_Sch(find(Results(t).dispatch.BTES_Sch(:,1)==1),3));
-to_excel_heat(t_step,32)=sum(Results(t).dispatch.BTES_Sdis(find(Results(t).dispatch.BTES_Sdis(:,1)==1),3));
-to_excel_heat(t_step,33)=sum(Results(t).dispatch.BTES_Den(find(Results(t).dispatch.BTES_Den(:,1)==1),3));
+to_excel_heat(t_step,30)=sum(Results(t).dispatch.BAC_Sen(find(Results(t).dispatch.BAC_Sen(:,1)==1),3));
+to_excel_heat(t_step,31)=-sum(Results(t).dispatch.BAC_Sch(find(Results(t).dispatch.BAC_Sch(:,1)==1),3));
+to_excel_heat(t_step,32)=sum(Results(t).dispatch.BAC_Sdis(find(Results(t).dispatch.BAC_Sdis(:,1)==1),3));
+to_excel_heat(t_step,33)=sum(Results(t).dispatch.BAC_Den(find(Results(t).dispatch.BAC_Den(:,1)==1),3));
+
+% AK Add BTES_SO output as well
+
 to_excel_heat(t_step,34)=Results(t).dispatch.h_imp_nonAH(1,2);
 to_excel_heat(t_step,35)=-Results(t).dispatch.heat_demand(1,2);
 
