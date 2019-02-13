@@ -102,7 +102,7 @@ var_cost_existing_AH(h) =      el_imp_AH.l(h)*utot_cost('exG',h)
                                + c_AbsC.l(h)*utot_cost('AbsC',h)
                                + c_RM.l(h)*utot_cost('RM',h)
                                + c_RMMC.l(h)*utot_cost('RM',h)
-                               + c_AAC.l(h)*utot_cost('AAC',h)
+*                               + c_AAC.l(h)*utot_cost('AAC',h)
 *                               + sum(m,(h_AbsC.l(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10)))
 *                               + sum(m,(h_AbsC.l(h)*0.7*HoM(h,m))$((ord(m) =11)))
 *                               + sum(m,(h_AbsC.l(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12)))
@@ -165,7 +165,7 @@ vc_h_VKA4= sum(h,h_VKA4.l(h)*utot_cost('HP',h));
 *vc_c_absC= sum(h,c_AbsC.l(h)*utot_cost('AbsC',h));
 vc_c_RM  = sum(h,c_RM.l(h)*utot_cost('RM',h));
 vc_c_RMMC= sum(h,c_RMMC.l(h)*utot_cost('RM',h));
-vc_c_AAC = sum(h,c_AAC.l(h)*utot_cost('AAC',h));
+*vc_c_AAC = sum(h,c_AAC.l(h)*utot_cost('AAC',h));
 *vc_el_PV  = sum(h,el_existPV.l(h)*utot_cost('PV',h));
 *vc_c_absC = sum(h,sum(m,(h_AbsC.l(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10)))
 *          + sum(m,(h_AbsC.l(h)*0.7*HoM(h,m))$((ord(m) =11)))
@@ -374,7 +374,7 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       B_Boiler2, invCost_Boiler2, fuel_Boiler2, h_Boiler2, H_Boiler2T, B_TURB, invCost_TURB, el_TURB, h_TURB, P2_eff, TURB_eff,
                       h_AbsC, c_AbsC, el_AbsC, h_AbsCInv, c_AbsCInv, AbsCInv_cap, invCost_AbsCInv,
                       el_RM, c_RM, el_RMMC, h_RMMC, c_RMMC, RMMC_inv, invCost_RMMC,
-                      el_AAC, c_AAC,
+*                      el_AAC, c_AAC,
                       h_HP, el_HP, c_HP, HP_cap, invCost_HP,
                       TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES, TES_dis_eff, TES_chr_eff,
                       BTES_dis_eff, BTES_chr_eff,   BTES_model,

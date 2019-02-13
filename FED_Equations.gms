@@ -39,9 +39,9 @@ equation
            eq_RM1       Refrigerator equation
            eq_RM2       Refrigerator equation
 
-           eq_ACC1      Refrigerator equation
-           eq_ACC2      Refrigerator equation
-           eq_ACC3      Temperature limit of Ambient Air Cooler
+*           eq_ACC1      Refrigerator equation
+*           eq_ACC2      Refrigerator equation
+*           eq_ACC3      Temperature limit of Ambient Air Cooler
 *           eq_ACC4      Ramp constraints for synth baseline
 *           eq_ACC5      Ramp constraints for synth baseline
 *           eq_ACC6      Ramp constraints for synth baseline
@@ -70,8 +70,8 @@ equation
            eq3_TURB     investment equation for turbine-gen
            eq4_TURB     active-reactive power limits of turbine
            eq5_TURB     active-reactive power limits of turbine
-           eq6_TURB     active-reactive power limits of turbin
-           eq7_TURB     active-reactive power limits of turbin
+           eq6_TURB     active-reactive power limits of turbine
+           eq7_TURB     active-reactive power limits of turbine
            eq8_TURB     enforcement of maximum power to heat ratio
 
            eq_HP1       heat production from HP
@@ -313,13 +313,13 @@ eq_RM2(h)..
              c_RM(h) =l= RM_cap;
 
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
-eq_ACC1(h)..
-             c_AAC(h) =e= AAC_COP*el_AAC(h);
-eq_ACC2(h) $ (min_totCost_0 eq 0)..
-             c_AAC(h) =l= AAC_cap;
-
-eq_ACC3(h)$(tout(h) gt AAC_TempLim and min_totCost_0 eq 0)..
-             c_AAC(h)=e= 0;
+*eq_ACC1(h)..
+*             c_AAC(h) =e= AAC_COP*el_AAC(h);
+*eq_ACC2(h) $ (min_totCost_0 eq 0)..
+*             c_AAC(h) =l= AAC_cap;
+*
+*eq_ACC3(h)$(tout(h) gt AAC_TempLim and min_totCost_0 eq 0)..
+*             c_AAC(h)=e= 0;
 
 * Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN
 *eq_ACC4(h)$(ord(h) gt 1 and synth_baseline eq 1)..
@@ -659,13 +659,13 @@ eq_hbalance3(h)..
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
          sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=l=C_DC(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
-                                + c_RM(h) + c_RMMC(h) + c_AAC(h) + c_HP(h) + c_RMInv(h)
+                                + c_RM(h) + c_RMMC(h) + c_HP(h) + c_RMInv(h)
                                 + c_AbsCInv(h)
                                 + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
 
 *--------------Demand supply balance for electricity ---------------------------
 eq_ebalance3(h)..
-        sum(BID,el_demand(h,BID)) =l= el_imp_AH(h) + el_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - el_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - el_RMMC(h) - el_AAC(h)
+        sum(BID,el_demand(h,BID)) =l= el_imp_AH(h) + el_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - el_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - el_RMMC(h)
                                  + el_PV(h) - el_HP(h) - el_RMInv(h)
                                  + sum(BID_AH_el,(BES_dis(h,BID_AH_el)*BES_dis_eff - BES_ch(h,BID_AH_el)/BES_ch_eff)+(BFCh_dis(h,BID_AH_el)*BFCh_dis_eff - BFCh_ch(h,BID_AH_el)/BFCh_ch_eff))
                                  + el_TURB(h);
@@ -787,7 +787,6 @@ eq_var_cost_existing..
                                + sum(h,c_AbsC(h) * utot_cost('AbsC',h))
                                + sum(h,c_RM(h) * utot_cost('RM',h))
                                + sum(h,c_RMMC(h) * utot_cost('RM',h))
-                               + sum(h,c_AAC(h) * utot_cost('AAC',h))
                                + sum(h,h_AbsC(h) * utot_cost('DH',h))
                                +sum(h,h_DH_slack_var(h)) * 1000000000
                                +sum(h,C_DC(h)) * 1000000000
