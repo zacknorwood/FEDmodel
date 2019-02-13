@@ -1,4 +1,4 @@
-function [] = FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline)
+function [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, Results] = FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline)
 % optimization options
 % min_totCost_0: option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
 % min_totCost:  weighting factor for total cost to use in the minimization function
@@ -248,7 +248,7 @@ BTES_SO_Inv.name = 'BTES_SO_Inv';
 BTES_SO_Inv.uels = BTES_SO_uels;
 % Maximum charging/discharging power available for building setpoint
 % offsets according to power charts attatched to Building agent
-% descriptions. Calculated assuming 10°C offset available.
+% descriptions. Calculated assuming 10ï¿½C offset available.
 BTES_SO_max_power = struct('name', 'BTES_SO_max_power', 'type', 'parameter', 'form', 'full');
 BTES_SO_max_power.uels = BTES_SO_uels;
 BTES_SO_max_power.val = [45, 20, 90, 76, 11]; % kWh/h, Requires ordering of BTES_SO_UELS to be O11:01, O7:888, O7:28, O7, 27, O7:24
@@ -405,9 +405,10 @@ sim_start_d=1;
 sim_start_h=1;
 
 %Sim stop time
-sim_stop_y=2016;
-sim_stop_m=3;
-sim_stop_d=31;
+
+sim_stop_y=2017;
+sim_stop_m=2;
+sim_stop_d=27;
 sim_stop_h=24;
 
 %Get month and hours of simulation
@@ -417,7 +418,6 @@ sim_stop_h=24;
 
 sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop=HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
-
 forecast_horizon=10;
 
 Time(1).point='fixed inputs';
@@ -541,7 +541,7 @@ for t=sim_start:sim_stop
     CO2F_DH.val = CO2intensityFinal_DH(t:forecast_end,:);
     CO2F_DH.uels=h.uels;
     
-    %PE factors of the external DH grid(AVERAGE AND MARGINAL)
+    %PE factors of the external DH grid(AVERAGE AND MARGINAL) ONLY MARGINAL???
     PEF_DH.val = PEintensityFinal_DH(t:forecast_end,:);
     PEF_DH.uels=h.uels;
     
@@ -579,8 +579,10 @@ for t=sim_start:sim_stop
         opt_fx_inv_BTES_PS_init.uels = {num2cell(t), BTES_PS_uels};
         
         %Initial SoC for energy storage must agree with min_SOC in GAMS. This should be fixed and passed from Matlab to GAMS -ZN
-        opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',0.20*opt_fx_inv_BES_cap.val);
-        opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',0.20*opt_fx_inv_BFCh_cap.val);
+        opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',ones(1,length(BES_BID_uels))*0.20*opt_fx_inv_BES_cap.val);
+        opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
+        opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',ones(1,length(BFCh_BID_uels))*0.20*opt_fx_inv_BFCh_cap.val);
+        opt_fx_inv_BFCh_init.uels = {num2cell(t), BFCh_BID_uels};
         Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',0);
         Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',0);
         
@@ -607,7 +609,9 @@ for t=sim_start:sim_stop
         %opt_fx_inv_BTES_PS_init.uels = {num2cell(t), BTES_PS_uels};
         
         opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',BES_init);
+        opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
         opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',BFCh_init);
+        opt_fx_inv_BFCh_init.uels = {num2cell(t), BFCh_BID_uels};
         Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',Boiler1_init);
         Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',Boiler2_init);
     end
@@ -642,14 +646,102 @@ for t=sim_start:sim_stop
     tic
     
     if opt_RunGAMSModel==1
-        system 'gams FED_SIMULATOR_MAIN lo=3';
+        system 'gams FED_SIMULATOR_MAIN lo=2';
     end
     
-    %% Store the results from each iteration
-    % AK Change to BTES_EVI_D...
-    % AK Add BTES_SO, BTES_PS
-    Results(t).dispatch = fstore_results(h,BID,BTES_properties,BusID);
+
+ 
+ %% Store the results from each iteration
+Results(t).dispatch = fstore_results(h,BID,BTES_properties,BusID);
+%% Write to Excel sheet
+tic
+t_step=t-sim_start+1;
+t
+% INITIALIZE output array
+if t==sim_start
+to_excel_el(1:sim_stop-sim_start,1:31)=0;
+to_excel_heat(1:sim_stop-sim_start,1:35)=0;
+to_excel_cool(1:sim_stop-sim_start,1:23)=0;
+to_excel_co2(1:sim_stop-sim_start,1:6)=0;
 end
+
+%ELECTRICITY DATA
+to_excel_el(t_step,1)=t;
+to_excel_el(t_step,2)=Results(t).dispatch.el_TURB(1,2); 
+to_excel_el(t_step,4)=Results(t).dispatch.el_PV(1,2); 
+to_excel_el(t_step,6)=Results(t).dispatch.el_imp_AH(1,2);
+to_excel_el(t_step,8)=-Results(t).dispatch.el_AbsC(1,2);
+to_excel_el(t_step,10)=-Results(t).dispatch.el_VKA1(1,2);
+to_excel_el(t_step,12)=-Results(t).dispatch.el_VKA4(1,2);
+to_excel_el(t_step,14)=-Results(t).dispatch.el_HP(1,2);
+to_excel_el(t_step,16)=-Results(t).dispatch.el_AAC(1,2);
+to_excel_el(t_step,18)=-Results(t).dispatch.el_RM(1,2);
+%to_excel_el(t_step,20)=Results(t).dispatch.el_imb(1,2);
+%to_excel_el(t_step,22)=Results(t).dispatch.el_slack(1,2);
+to_excel_el(t_step,24)=Results(t).dispatch.BES_en(find(Results(t).dispatch.BES_en(:,2)==33,1),3);
+to_excel_el(t_step,25)=-Results(t).dispatch.BES_ch(find(Results(t).dispatch.BES_ch(:,2)==33,1),3);
+to_excel_el(t_step,26)=Results(t).dispatch.BES_dis(find(Results(t).dispatch.BES_dis(:,2)==33,1),3);
+to_excel_el(t_step,27)=Results(t).dispatch.BFCh_en(find(Results(t).dispatch.BFCh_en(:,2)==20,1),3);
+to_excel_el(t_step,28)=-Results(t).dispatch.BFCh_ch(find(Results(t).dispatch.BFCh_ch(:,2)==20,1),3);
+to_excel_el(t_step,29)=Results(t).dispatch.BFCh_dis(find(Results(t).dispatch.BFCh_dis(:,2)==20,1),3);
+
+to_excel_el(t_step,30)=Results(t).dispatch.el_imp_nonAH(1,2);
+to_excel_el(t_step,31)=-Results(t).dispatch.elec_demand(1,2);
+
+%HEATING DATA
+to_excel_heat(t_step,1)=t; 
+to_excel_heat(t_step,2)=Results(t).dispatch.h_Boiler1(1,2); 
+to_excel_heat(t_step,4)=Results(t).dispatch.h_Boiler2(1,2); 
+to_excel_heat(t_step,6)=Results(t).dispatch.h_RGK1(1,2);
+to_excel_heat(t_step,8)=Results(t).dispatch.h_VKA1(1,2);
+to_excel_heat(t_step,10)=Results(t).dispatch.h_VKA4(1,2);
+to_excel_heat(t_step,12)=Results(t).dispatch.h_HP(1,2);
+to_excel_heat(t_step,14)=-Results(t).dispatch.h_exp_AH(1,2);
+to_excel_heat(t_step,16)=Results(t).dispatch.h_imp_AH(1,2);
+to_excel_heat(t_step,18)=Results(t).dispatch.H_Boiler2T(1,2);
+to_excel_heat(t_step,20)=Results(t).dispatch.h_TURB(1,2)*0.75;
+to_excel_heat(t_step,22)=-Results(t).dispatch.h_AbsC(1,2);
+to_excel_heat(t_step,24)=sum(Results(t).dispatch.h_BAC_savings(find(Results(t).dispatch.h_BAC_savings(:,1)==1),3));
+%to_excel_heat(t_step,26)=Results(t).dispatch.h_imb(1,2);
+%to_excel_heat(t_step,28)=Results(t).dispatch.h_slack(1,2);
+to_excel_heat(t_step,30)=sum(Results(t).dispatch.BTES_Sen(find(Results(t).dispatch.BTES_Sen(:,1)==1),3));
+to_excel_heat(t_step,31)=-sum(Results(t).dispatch.BTES_Sch(find(Results(t).dispatch.BTES_Sch(:,1)==1),3));
+to_excel_heat(t_step,32)=sum(Results(t).dispatch.BTES_Sdis(find(Results(t).dispatch.BTES_Sdis(:,1)==1),3));
+to_excel_heat(t_step,33)=sum(Results(t).dispatch.BTES_Den(find(Results(t).dispatch.BTES_Den(:,1)==1),3));
+to_excel_heat(t_step,34)=Results(t).dispatch.h_imp_nonAH(1,2);
+to_excel_heat(t_step,35)=-Results(t).dispatch.heat_demand(1,2);
+
+% COOLING DATA
+to_excel_cool(t_step,1)=t; 
+to_excel_cool(t_step,2)=Results(t).dispatch.c_VKA1(1,2);
+to_excel_cool(t_step,4)=Results(t).dispatch.c_VKA4(1,2);
+to_excel_cool(t_step,6)=Results(t).dispatch.c_HP(1,2);
+%to_excel_cool(t_step,8)=Results(t).dispatch.c_imb(1,2);
+to_excel_cool(t_step,10)=Results(t).dispatch.c_AbsC(1,2);
+to_excel_cool(t_step,12)=Results(t).dispatch.c_AAC(1,2);
+to_excel_cool(t_step,14)=Results(t).dispatch.c_RM(1,2); 
+to_excel_cool(t_step,16)=Results(t).dispatch.c_RMMC(1,2); 
+to_excel_cool(t_step,18)=Results(t).dispatch.CWB_en(1,2); 
+to_excel_cool(t_step,19)=-Results(t).dispatch.CWB_ch(1,2); 
+to_excel_cool(t_step,20)=Results(t).dispatch.CWB_dis(1,2); 
+to_excel_cool(t_step,23)=-Results(t).dispatch.cool_demand(1,2); 
+
+to_excel_co2(t_step,1)=t;
+to_excel_co2(t_step,2)=Results(t).dispatch.FED_PE(1,2);
+to_excel_co2(t_step,3)=Results(t).dispatch.FED_CO2(1,2);
+to_excel_co2(t_step,4)=Results(t).dispatch.AH_PE(1,2);
+to_excel_co2(t_step,5)=Results(t).dispatch.AH_CO2(1,2);
+to_excel_co2(t_step,6)=Results(t).dispatch.model_status(1);
+toc
+
+end
+tic
+xlswrite('result_temp.xls',to_excel_el,'Electricity','A3')
+xlswrite('result_temp.xls',to_excel_heat,'Heat','A3')
+xlswrite('result_temp.xls',to_excel_cool,'Cooling','A3')
+xlswrite('result_temp.xls',to_excel_co2,'CO2_PE','A3')
+toc
+
 Time(3).point='Gams running and storing';
 Time(3).value=toc;
 

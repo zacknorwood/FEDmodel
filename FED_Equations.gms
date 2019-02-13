@@ -396,7 +396,10 @@ eq_HP3(h)..
 *------------------TES equations------------------------------------------------
 eq_TESen0(h,BID)$(ord(h) eq 1)..
              TES_en(h) =e= TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
+* This should be implemented if we are to use TES
+*             TES_en(h) =e= TES_hourly_loss_fac*(TES_en_init+TES_ch(h)-TES_dis(h));
 
+*This must be corrected if included in model for dispatch!
 eq_TESen1(h,BID)$(ord(h) eq 1)..
              TES_en(h) =e= TES_inv;
 *sw_TES*TES_cap*TES_density;
@@ -416,7 +419,7 @@ eq_TESinv(h)..
 
 *----------Cold Water Basin equations (cold storage)----------------------------
 eq_CWB_en_init(h)$(ord(h) eq 1)..
-         CWB_en(h) =e= CWB_en_init;
+         CWB_en(h) =e= CWB_en_init+CWB_ch(h)-CWB_dis(h);
 eq_CWB_en(h)$(ord(h) gt 1)..
          CWB_en(h) =e= CWB_en(h-1)+CWB_ch(h)-CWB_dis(h);
 
@@ -450,6 +453,7 @@ eq_BAC_link(h,BID) $ (BTES_model('BTES_Scap',BID) ne 0)..
                               - BAC_Den(h,BID)/BTES_model('BTES_Dcap',BID))*BTES_model('K_BS_BD',BID));
 *eq_BAC(BID)..
 *         B_BAC(BID) =l= B_BTES(BID);
+
 
 eq_BAC_savings(h,BID)..
           h_BAC_savings(h,BID) =l= BAC_savings_factor(h)*B_BAC(BID)*h_demand(h,BID);
@@ -499,7 +503,8 @@ eq_maximum_BTES_investments(BID)..
 *-----------------Battery constraints-------------------------------------------
 
 eq_BES1(h,BID) $ (ord(h) eq 1)..
-             BES_en(h,BID)=e= opt_fx_inv_BES_init;
+             BES_en(h,BID)=e= (opt_fx_inv_BES_init(h,BID)+BES_ch(h,BID)-BES_dis(h,BID));
+
 eq_BES2(h,BID)$(ord(h) gt 1)..
              BES_en(h,BID)=e=(BES_en(h-1,BID)+BES_ch(h,BID)-BES_dis(h,BID));
 eq_BES3(h,BID) ..
@@ -524,7 +529,7 @@ eq_BES_reac8(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=g=-1.15*o
 
 *-----------------Battery Fast Charge constraints-------------------------------------------
 eq_BFCh1(h,BID) $ (ord(h) eq 1)..
-             BFCh_en(h,BID)=e= opt_fx_inv_BFCh_init;
+             BFCh_en(h,BID)=e= (opt_fx_inv_BFCh_init(h,BID)+BFCh_ch(h,BID)-BFCh_dis(h,BID));
 eq_BFCh2(h,BID)$(ord(h) gt 1)..
              BFCh_en(h,BID)=e=(BFCh_en(h-1,BID)+BFCh_ch(h,BID)-BFCh_dis(h,BID));
 eq_BFCh3(h,BID) ..

@@ -393,8 +393,8 @@ $GDXIN
 
 *-------Initial SoC of Storage systems------*
 Parameters
-      opt_fx_inv_BES_init    BES Init. SoC
-      opt_fx_inv_BFCh_init   BFCh Init. SoC
+      opt_fx_inv_BES_init(h,BID)    BES Init. energy level (SoC in kWh)
+      opt_fx_inv_BFCh_init(h,BID)   BFCh Init. energy level (SOC in kWh)
 *      opt_fx_inv_TES_init    TES Init. SoC
       opt_fx_inv_BTES_BAC_D_init Initial energy storage for BAC Deep storage
       opt_fx_inv_BTES_BAC_S_init Initial energy storage for BAC Shallow storage
