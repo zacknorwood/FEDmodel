@@ -39,9 +39,9 @@ equation
            eq_RM1       Refrigerator equation
            eq_RM2       Refrigerator equation
 
-           eq_ACC1      Refrigerator equation
-           eq_ACC2      Refrigerator equation
-           eq_ACC3      Temperature limit of Ambient Air Cooler
+*           eq_ACC1      Refrigerator equation
+*           eq_ACC2      Refrigerator equation
+*           eq_ACC3      Temperature limit of Ambient Air Cooler
 *           eq_ACC4      Ramp constraints for synth baseline
 *           eq_ACC5      Ramp constraints for synth baseline
 *           eq_ACC6      Ramp constraints for synth baseline
@@ -70,8 +70,8 @@ equation
            eq3_TURB     investment equation for turbine-gen
            eq4_TURB     active-reactive power limits of turbine
            eq5_TURB     active-reactive power limits of turbine
-           eq6_TURB     active-reactive power limits of turbin
-           eq7_TURB     active-reactive power limits of turbin
+           eq6_TURB     active-reactive power limits of turbine
+           eq7_TURB     active-reactive power limits of turbine
            eq8_TURB     enforcement of maximum power to heat ratio
 
            eq_HP1       heat production from HP
@@ -86,19 +86,30 @@ equation
            eq_TESch     charging rate of the TES
            eq_TESinv    investment decision for TES
 
-           eq_BTES_Sch   charging rate of shallow part the building
-           eq_BTES_Sdis  discharging rate of shallow part the building
-*          eq_BTES_Sen0  initial energy content of shallow part of the building
-           eq_BTES_Sen1  initial energy content of shallow part of the building
-           eq_BTES_Sen2  energy content of shallow part of the building at hour h
-*           eq_BTES_Den0  initial energy content of deep part of the building
-           eq_BTES_Den1  initial energy content of deep part of the building
-           eq_BTES_Den2  energy content of deep part of the building at hour h
-           eq_BS_BD      energy flow between the shallow and deep part of the building
+           eq_BAC_S_init    initial energy stored in shallow storage of BAC
+           eq_BAC_D_init    initial energy stored in deep storage of BAC
+           eq_BAC_Sch       limit on maximum hourly charging of BAC shallow
+           eq_BAC_Sdis      limit on maximum hourly discharging of BAC shallow
+           eq_BAC_S_change  hourly change in energy stored in shallow storage of BAC
+           eq_BAC_D_change  hourly change in energy stored in deep storage of BAC
+           eq_BAC_link      hourly flow between shallow and deep storage of BAC
+           eq_BAC_savings   hourly energy savings of BAC
+           eq_BAC_S_loss    losses from shallow storage of BAC
+           eq_BAC_D_loss    losses from deep storage of BAC
 
-           eq_BAC         investment decision equation for Building Advanced Control
-           eq_BAC_savings hourly heat saved by BAC investment for each building
+           eq_SO_S_init    initial energy stored in shallow storage of SO
+           eq_SO_D_init    initial energy stored in deep storage of SO
+           eq_SO_Sch       limit on maximum hourly charging of SO shallow
+           eq_SO_Sdis      limit on maximum hourly discharging of SO shallo
+           eq_SO_S_change  hourly change in energy stored in shallow storage of SO
+           eq_SO_D_change  hourly change in energy stored in deep storage of SO
+           eq_SO_link      hourly flow between shallow and deep storage of SO
+           eq_SO_S_loss    losses from shallow storage of SO
+           eq_SO_D_loss    losses from deep storage of SO
 
+           eq_maximum_BTES_investments   Limits BTES Bids preventing double investments
+
+$ontext
            eq_BES1       intial energy in the Battery
            eq_BES2       energy in the Battery at hour h
            eq_BES3       maximum energy in the Battery
@@ -113,7 +124,7 @@ equation
            eq_BES_reac6  equation 6 for reactive power of BES
            eq_BES_reac7  equation 7 for reactive power of BES
            eq_BES_reac8  equation 8 for reactive power of BES
-
+$offtext
            eq_BFCh1       intial energy in the Battery Fast charge
            eq_BFCh2       energy in the Battery Fast Charge at hour h
            eq_BFCh3       maximum energy in the Battery Fast Charge
@@ -302,13 +313,13 @@ eq_RM2(h)..
              c_RM(h) =l= RM_cap;
 
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
-eq_ACC1(h)..
-             c_AAC(h) =e= AAC_COP*el_AAC(h);
-eq_ACC2(h) $ (min_totCost_0 eq 0)..
-             c_AAC(h) =l= AAC_cap;
-
-eq_ACC3(h)$(tout(h) gt AAC_TempLim and min_totCost_0 eq 0)..
-             c_AAC(h)=e= 0;
+*eq_ACC1(h)..
+*             c_AAC(h) =e= AAC_COP*el_AAC(h);
+*eq_ACC2(h) $ (min_totCost_0 eq 0)..
+*             c_AAC(h) =l= AAC_cap;
+*
+*eq_ACC3(h)$(tout(h) gt AAC_TempLim and min_totCost_0 eq 0)..
+*             c_AAC(h)=e= 0;
 
 * Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN
 *eq_ACC4(h)$(ord(h) gt 1 and synth_baseline eq 1)..
@@ -415,42 +426,84 @@ eq_CWB_en(h)$(ord(h) gt 1)..
 eq_CWB_discharge(h)..
          CWB_dis(h) =l= c_demand(h,'O0007028');
 
-*------------------BTES equations (Building srorage)----------------------------
-*eq_BTES_Sen0(h,i) $ (ord(h) eq 1)..
-*         BTES_Sen(h,i) =e= (BTES_kSloss(i)*BTES_Sen(h-1,i) - BTES_Sdis(h,i)/BTES_Sdis_eff
-*                           + BTES_Sch(h,i)*BTES_Sch_eff - link_BS_BD(h,i));
-eq_BTES_Sen1(h,BID) $ (ord(h) eq 1)..
-         BTES_Sen(h,BID) =e= (BTES_kSloss(BID)*opt_fx_inv_BTES_S_init(h,BID) - BTES_Sdis(h,BID)/BTES_Sdis_eff
-                           + BTES_Sch(h,BID)*BTES_Sch_eff - link_BS_BD(h,BID));
-* sw_BTES*BTES_Sen_int(i);
-eq_BTES_Sch(h,BID)..
-         BTES_Sch(h,BID) =l= B_BTES(BID)*BTES_Sch_max(h,BID);
-eq_BTES_Sdis(h,BID)..
-         BTES_Sdis(h,BID) =l= B_BTES(BID)*BTES_Sdis_max(h,BID);
-eq_BTES_Sen2(h,BID) $ (ord(h) gt 1)..
-         BTES_Sen(h,BID) =e= (BTES_kSloss(BID)*BTES_Sen(h-1,BID) - BTES_Sdis(h,BID)/BTES_Sdis_eff
-                           + BTES_Sch(h,BID)*BTES_Sch_eff - link_BS_BD(h,BID));
-eq_BTES_Den1(h,BID) $ (ord(h) eq 1)..
-         BTES_Den(h,BID) =e= (BTES_kDloss(BID)*opt_fx_inv_BTES_D_init(h,BID) + link_BS_BD(h,BID));
-* sw_BTES*BTES_Den_int(BID);
-*eq_BTES_Den0(h,i) $ (ord(h) eq 1)..
-*         BTES_Den(h,i) =e= (BTES_kDloss(i)*BTES_Den(h-1,i) + link_BS_BD(h,i));
-eq_BTES_Den2(h,BID) $ (ord(h) gt 1)..
-         BTES_Den(h,BID) =e= (BTES_kDloss(BID)*BTES_Den(h-1,BID) + link_BS_BD(h,BID));
+*------------------Building Advanced Control equations--------------------------
 
-eq_BS_BD(h,BID) $ (BTES_model('BTES_Scap',BID) ne 0)..
-         link_BS_BD(h,BID) =e= ((BTES_Sen(h,BID)/BTES_model('BTES_Scap',BID)
-                              - BTES_Den(h,BID)/BTES_model('BTES_Dcap',BID))*BTES_model('K_BS_BD',BID));
+eq_BAC_S_init(h,BID) $ (ord(h) eq 1)..
+         BAC_Sen(h,BID) =e= (BTES_kSloss(BID)*opt_fx_inv_BTES_BAC_S_init(h,BID) - BAC_Sdis(h,BID)/BTES_Sdis_eff
+                           + BAC_Sch(h,BID)*BTES_Sch_eff - BAC_link_BS_BD(h,BID));
 
-*-----------------BAC constraints-----------------------------------------------
-eq_BAC(BID)..
-         B_BAC(BID) =l= B_BTES(BID);
+eq_BAC_D_init(h,BID) $ (ord(h) eq 1)..
+         BAC_Den(h,BID) =e= (BTES_kDloss(BID)*opt_fx_inv_BTES_BAC_D_init(h,BID) + BAC_link_BS_BD(h,BID));
+
+eq_BAC_Sch(h,BID)..
+         BAC_Sch(h,BID) =l= B_BAC(BID)*BTES_Sch_max(h,BID);
+
+eq_BAC_Sdis(h,BID)..
+         BAC_Sdis(h,BID) =l= B_BAC(BID)*BTES_Sdis_max(h,BID);
+
+
+eq_BAC_S_change(h,BID) $ (ord(h) gt 1)..
+        BAC_Sen(h,BID) =e= (BTES_kSloss(BID)*BAC_Sen(h-1,BID) - BAC_Sdis(h,BID)/BTES_Sdis_eff
+                           + BAC_Sch(h,BID)*BTES_Sch_eff - BAC_link_BS_BD(h,BID));
+
+eq_BAC_D_change(h,BID) $ (ord(h) gt 1)..
+         BAC_Den(h,BID) =e= (BTES_kDloss(BID)*BAC_Den(h-1,BID) + BAC_link_BS_BD(h,BID));
+
+eq_BAC_link(h,BID) $ (BTES_model('BTES_Scap',BID) ne 0)..
+         BAC_link_BS_BD(h,BID) =e= ((BAC_Sen(h,BID)/BTES_model('BTES_Scap',BID)
+                              - BAC_Den(h,BID)/BTES_model('BTES_Dcap',BID))*BTES_model('K_BS_BD',BID));
+*eq_BAC(BID)..
+*         B_BAC(BID) =l= B_BTES(BID);
+
 
 eq_BAC_savings(h,BID)..
-*         h_BAC_savings(h,i) =l= BAC_savings_period(h)*B_BAC(i)*BAC_savings_factor*h_demand(h,i);
           h_BAC_savings(h,BID) =l= BAC_savings_factor(h)*B_BAC(BID)*h_demand(h,BID);
 
+eq_BAC_S_loss(h,BID)..
+         BAC_Sloss(h,BID) =e= BTES_kSloss(BID)*BAC_Sen(h-1,BID);
+
+eq_BAC_D_loss(h,BID)..
+         BAC_Dloss(h,BID) =e= BTES_kDloss(BID)*BAC_Den(h-1,BID);
+
+*------------------Building Setpoint Offset equations---------------------------
+
+eq_SO_S_init(h,BID) $ (ord(h) eq 1)..
+         SO_Sen(h,BID) =e= (BTES_kSloss(BID)*opt_fx_inv_BTES_SO_S_init(h,BID) - SO_Sdis(h,BID)/BTES_Sdis_eff
+                           + SO_Sch(h,BID)*BTES_Sch_eff - SO_link_BS_BD(h,BID));
+
+eq_SO_D_init(h,BID) $ (ord(h) eq 1)..
+         SO_Den(h,BID) =e= (BTES_kDloss(BID)*opt_fx_inv_BTES_SO_D_init(h,BID) + SO_link_BS_BD(h,BID));
+
+eq_SO_Sch(h,BID)..
+         SO_Sch(h,BID) =l= B_SO(BID)*BTES_SO_max_power(BID);
+
+eq_SO_Sdis(h,BID)..
+         SO_Sdis(h,BID) =l= B_SO(BID)*BTES_SO_max_power(BID);
+
+
+eq_SO_S_change(h,BID) $ (ord(h) gt 1)..
+        SO_Sen(h,BID) =e= (BTES_kSloss(BID)*SO_Sen(h-1,BID) - SO_Sdis(h,BID)/BTES_Sdis_eff
+                           + SO_Sch(h,BID)*BTES_Sch_eff - SO_link_BS_BD(h,BID));
+
+eq_SO_D_change(h,BID) $ (ord(h) gt 1)..
+         SO_Den(h,BID) =e= (BTES_kDloss(BID)*SO_Den(h-1,BID) + SO_link_BS_BD(h,BID));
+
+eq_SO_link(h,BID) $ (BTES_model('BTES_Scap',BID) ne 0)..
+         SO_link_BS_BD(h,BID) =e= ((SO_Sen(h,BID)/BTES_model('BTES_Scap',BID)
+                              - SO_Den(h,BID)/BTES_model('BTES_Dcap',BID))*BTES_model('K_BS_BD',BID));
+
+eq_SO_S_loss(h,BID)..
+         SO_Sloss(h,BID) =e= BTES_kSloss(BID)*SO_Sen(h-1,BID);
+
+eq_SO_D_loss(h,BID)..
+         SO_Dloss(h,BID) =e= BTES_kDloss(BID)*SO_Den(h-1,BID);
+
+eq_maximum_BTES_investments(BID)..
+         1 =g= B_SO(BID) + B_BAC(BID);
+*------------------Building Pump Stop equations---------------------------------
+
 *-----------------Battery constraints-------------------------------------------
+$ontext
 eq_BES1(h,BID) $ (ord(h) eq 1)..
              BES_en(h,BID)=e= (opt_fx_inv_BES_init(h,BID)+BES_ch(h,BID)-BES_dis(h,BID));
 
@@ -475,6 +528,7 @@ eq_BES_reac5(h,BID)..-0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=l=1.15*o
 eq_BES_reac6(h,BID)..-0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=g=-1.15*opt_fx_inv_BES_maxP(BID);
 eq_BES_reac7(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=l=1.15*opt_fx_inv_BES_maxP(BID);
 eq_BES_reac8(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=g=-1.15*opt_fx_inv_BES_maxP(BID);
+$offtext
 *-----------------Battery Fast Charge constraints-------------------------------------------
 eq_BFCh1(h,BID) $ (ord(h) eq 1)..
              BFCh_en(h,BID)=e= (opt_fx_inv_BFCh_init(h,BID)+BFCh_ch(h,BID)-BFCh_dis(h,BID));
@@ -596,23 +650,26 @@ eq_hbalance2(h)..
                                      + h_VKA4(h) + H_Boiler2T(h) + 0.75*h_TURB(h) + h_RMMC(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
-                                     + (sum(BID,BTES_Sdis(h,BID))*BTES_dis_eff - sum(BID,BTES_Sch(h,BID))/BTES_chr_eff)
+                                     + (sum(BID,BAC_Sdis(h,BID))*BTES_dis_eff - sum(BID,BAC_Sch(h,BID))/BTES_chr_eff)
+                                     + (sum(BID,SO_Sdis(h,BID))*BTES_dis_eff - sum(BID,SO_Sch(h,BID))/BTES_chr_eff)
                                      + (sum(BID,h_BAC_savings(h,BID)))
                                      - h_AbsCInv(h);
 eq_hbalance3(h)..
              h_imp_nonAH(h)=e=sum(BID_nonAH_h,h_demand_nonAH(h,BID_nonAH_h))
-                       - (sum(BID_nonAH_h,BTES_Sdis(h,BID_nonAH_h))*BTES_dis_eff-sum(BID_nonAH_h,BTES_Sch(h,BID_nonAH_h))/BTES_chr_eff);
+                       - (sum(BID_nonAH_h,BAC_Sdis(h,BID_nonAH_h))*BTES_dis_eff-sum(BID_nonAH_h,BAC_Sch(h,BID_nonAH_h))/BTES_chr_eff);
 
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
+
          sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=l=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
-                                + c_RM(h) + c_RMMC(h) + c_AAC(h) + c_HP(h) + c_RMInv(h)
+                                + c_RM(h) + c_RMMC(h) + c_HP(h) + c_RMInv(h)
+
                                 + c_AbsCInv(h)
                                 + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
 
 *--------------Demand supply balance for electricity ---------------------------
 eq_ebalance3(h)..
-        sum(BID,el_demand(h,BID)) =l= el_imp_AH(h) + el_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - el_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - el_RMMC(h) - el_AAC(h)
+        sum(BID,el_demand(h,BID)) =l= el_imp_AH(h) + el_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - el_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - el_RMMC(h)
                                  + el_PV(h) - el_HP(h) - el_RMInv(h)
                                  + sum(BID_AH_el,(BES_dis(h,BID_AH_el)*BES_dis_eff - BES_ch(h,BID_AH_el)/BES_ch_eff)+(BFCh_dis(h,BID_AH_el)*BFCh_dis_eff - BFCh_ch(h,BID_AH_el)/BFCh_ch_eff))
                                  + el_TURB(h);
@@ -710,13 +767,15 @@ eq2_fix_cost_DH(h)..w(h)+1000000*y_temp(h)=g=166.666;
 eq3_fix_cost_DH(h)..w(h)+1000000*(1-y_temp(h))=g=41.666;
 eq4_fix_cost_DH(h)..h_imp_AH(h)-(1-y_temp(h))*10000000=l=0;
 
+
 eq_fix_cost_new..
          fix_cost_new =e=  (sum(PVID, PV_cap_roof(PVID) + PV_cap_facade(PVID)))*fix_cost('PV')
                            + HP_cap*fix_cost('HP')
                            + sum(BID,BES_cap(BID)*fix_cost('BES'))
                            + TES_cap*fix_cost('TES')
                            + RMInv_cap*fix_cost('RMInv')
-                           + fix_cost('BTES')*sum(BID,B_BTES(BID))
+                           + fix_cost('BAC')*sum(BID,B_BAC(BID))
+                           + fix_cost('SO')*sum(BID,B_SO(BID))
                            + B_Boiler2 * fix_cost('P2')
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
@@ -732,7 +791,6 @@ eq_var_cost_existing..
                                + sum(h,c_AbsC(h) * utot_cost('AbsC',h))
                                + sum(h,c_RM(h) * utot_cost('RM',h))
                                + sum(h,c_RMMC(h) * utot_cost('RM',h))
-                               + sum(h,c_AAC(h) * utot_cost('AAC',h))
                                + sum(h,h_AbsC(h) * utot_cost('DH',h))
                                +sum(h,h_DH_slack_var(h)) * 1000000000
                                +sum(h,c_DC_slack_var(h)) * 1000000000
@@ -744,10 +802,12 @@ eq_var_cost_new..
                            + sum(h,c_RMInv(h)*utot_cost('RMInv',h))
                            + sum((h,BID),BES_dis(h,BID)*utot_cost('BES',h))
                            + sum(h,TES_dis(h)*utot_cost('TES',h))
-                           + sum((h,BID),BTES_Sch(h,BID)*utot_cost('BTES',h))
+                           + sum((h,BID),BAC_Sch(h,BID)*utot_cost('BAC',h))
+                           + sum((h,BID),SO_Sch(h,BID)*utot_cost('SO',h))
                            + sum(h,h_Boiler2(h)*utot_cost('P2',h))
                            + sum(h,el_TURB(h)*utot_cost('TURB',h))
                            + sum(h,c_AbsCInv(h)*utot_cost('AbsCInv',h));
+
 eq_Ainv_cost..
           Ainv_cost =e=
                 + HP_cap*cost_inv_opt('HP')/lifT_inv_opt('HP')
@@ -755,7 +815,7 @@ eq_Ainv_cost..
                 + (sum(PVID, PV_cap_roof(PVID) + PV_cap_facade(PVID)))*cost_inv_opt('PV')/lifT_inv_opt('PV')
                 + sum(BID,BES_cap(BID)*cost_inv_opt('BES')/lifT_inv_opt('BES'))
                 + (TES_cap*TES_vr_cost + TES_inv * TES_fx_cost)/lifT_inv_opt('TES')
-                + cost_inv_opt('BTES')*sum(BID,B_BTES(BID))/lifT_inv_opt('BTES')
+                + cost_inv_opt('SO')*sum(BID,B_SO(BID))/lifT_inv_opt('SO')
                 + cost_inv_opt('BAC')*sum(BID,B_BAC(BID))/lifT_inv_opt('BAC')
                 + RMMC_inv*cost_inv_opt('RMMC')/lifT_inv_opt('RMMC')
                 + B_Boiler2 * cost_inv_opt('P2')/lifT_inv_opt('P2')
@@ -765,13 +825,14 @@ eq_totCost..
          totCost =e= fix_cost_existing + var_cost_existing
                      + fix_cost_new + var_cost_new + Ainv_cost;
 ****************Total investment cost*******************************************
+
 eq_invCost..
          invCost =e= HP_cap*cost_inv_opt('HP')
                      + RMInv_cap*cost_inv_opt('RMInv')
                      + (sum(PVID, PV_cap_roof(PVID) + PV_cap_facade(PVID)))*cost_inv_opt('PV')
                      + sum(BID,BES_cap(BID)*cost_inv_opt('BES'))
                      + ((TES_cap*TES_vr_cost + TES_inv * TES_fx_cost))
-                     + cost_inv_opt('BTES')*sum(BID,B_BTES(BID))
+                     + cost_inv_opt('SO')*sum(BID,B_SO(BID))
                      + cost_inv_opt('BAC')*sum(BID,B_BAC(BID))
                      + RMMC_inv*cost_inv_opt('RMMC')
                      + B_Boiler2 * cost_inv_opt('P2')
