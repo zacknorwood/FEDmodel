@@ -82,13 +82,13 @@ CWB_ch.up(h) = CWB_ch_max;
 CWB_dis.up(h) = CWB_dis_max;
 
 *------------------Ambient Air Cooling Machine related--------------------------
-positive variable
-         el_AAC(h)           electricity demand for refrigerator
-         c_AAC(h)           cooling power available from the refrigerator
-         AAC_cap            capacity of refrigerator
-;
-AAC_cap.fx = cap_sup_unit('AAC');
-el_AAC.fx(h)$(min_totCost_0 = 1)=el_AAC_0(h);
+*positive variable
+*         el_AAC(h)           electricity demand for refrigerator
+*         c_AAC(h)           cooling power available from the refrigerator
+*         AAC_cap            capacity of refrigerator
+*;
+*AAC_cap.fx = cap_sup_unit('AAC');
+*el_AAC.fx(h)$(min_totCost_0 = 1)=el_AAC_0(h);
 
 
 ******************New investments***********************************************

@@ -99,11 +99,11 @@ scalar
 
 *--------------AAC(Ambient Air Cooler), cooling source--------------------------
 * Source Per
-scalar
-         AAC_COP Coefficent of performance of AAC /10/
-         AAC_eff Efficiency of AAC /0.95/
-         AAC_TempLim Temperature limit of AAC/12/
-;
+*scalar
+*         AAC_COP Coefficent of performance of AAC /10/
+*         AAC_eff Efficiency of AAC /0.95/
+*         AAC_TempLim Temperature limit of AAC/12/
+*;
 
 *--------------Refrigerator Machines, cooling source----------------------------
 scalar
@@ -374,8 +374,8 @@ fix_cost('AbsC')= 3000 / kilo * EUR_to_SEK_2015;
 var_cost('AbsCInv',h)= 0.9 / kilo * AbsCInv_COP * EUR_to_SEK_2015;
 fix_cost('AbsCInv')= 3000 / kilo * EUR_to_SEK_2015;
 * No data on ambient air chillers, assume same as absorption heater for both variable O&M and fixed costs
-var_cost('AAC',h)= 0.9 / kilo * EUR_to_SEK_2015;
-fix_cost('AAC')= 3000 / kilo * EUR_to_SEK_2015;
+*var_cost('AAC',h)= 0.9 / kilo * EUR_to_SEK_2015;
+*fix_cost('AAC')= 3000 / kilo * EUR_to_SEK_2015;
 * No data in Danish Energy Agency report for lithium ion, assume costs same as for NaS
 var_cost('BES',h)= 5.3 / kilo * EUR_to_SEK_2015;
 fix_cost('BES')= 51000 / kilo * EUR_to_SEK_2015;
