@@ -605,7 +605,7 @@ eq_hbalance3(h)..
 
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
-         sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=l=C_DC(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
+         sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=l=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_AAC(h) + c_HP(h) + c_RMInv(h)
                                 + c_AbsCInv(h)
                                 + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
@@ -660,7 +660,7 @@ eq_PE(h)..
                      + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*PEF_DH(h) + ((h_Boiler1(h)+h_RGK1(h))/P1_eff)*PEF_Boiler1
                      + fuel_Boiler2(h)*PEF_Boiler2
                      + h_DH_slack_var(h)*1000000000
-                      + C_DC(h)*1000000000
+                      + C_DC_slack_var(h)*1000000000
                       + el_slack_var(h)*1000000000;
 
 **********************Total PE use in the FED system****************************
@@ -674,7 +674,7 @@ eq_CO2(h)..
                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*CO2F_DH(h) + ((h_Boiler1(h)+h_RGK1(h))/P1_eff)*CO2F_Boiler1
                       + fuel_Boiler2(h) * CO2F_Boiler2
                       + h_DH_slack_var(h)*1000000000
-                      + C_DC(h)*1000000000
+                      + C_DC_slack_var(h)*1000000000
                       + el_slack_var(h)*1000000000;
 
 ****************Total CO2 emission in the FED system****************************
@@ -735,7 +735,7 @@ eq_var_cost_existing..
                                + sum(h,c_AAC(h) * utot_cost('AAC',h))
                                + sum(h,h_AbsC(h) * utot_cost('DH',h))
                                +sum(h,h_DH_slack_var(h)) * 1000000000
-                               +sum(h,C_DC(h)) * 1000000000
+                               +sum(h,c_DC_slack_var(h)) * 1000000000
                                +sum(h,el_slack_var(h)) * 1000000000;
 
 eq_var_cost_new..

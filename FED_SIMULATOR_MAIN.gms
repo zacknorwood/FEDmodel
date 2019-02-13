@@ -269,7 +269,7 @@ v_h_RGK1 = sum(h,h_RGK1.l(h)+0.00000000000001);
 v_h_BAC_savings = sum(h,(sum(BID,h_BAC_savings.l(h,BID)))+0.00000000000001 );
 
 
-v_c_slack = sum(h, c_DC.l(h)+0.00000000000001);
+v_c_slack = sum(h, c_DC_slack_var.l(h)+0.00000000000001);
 v_e_slack = sum(h, el_slack_var.l(h)+0.00000000000001);
 v_h_DH_slack = sum(h, h_DH_slack(h)+0.00000000000001);
 v_h_DH_slack_var = sum(h, h_DH_slack_var.l(h)+0.00000000000001);
@@ -357,8 +357,6 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       el_demand, el_demand_nonAH, h_demand, c_demand, c_demand_AH,
                       el_imp_AH, el_exp_AH, el_imp_nonAH,AH_el_imp_tot, AH_el_exp_tot,
                       h_imp_AH, h_exp_AH, h_imp_nonAH, AH_h_imp_tot, AH_h_exp_tot,
-                      C_DC,
-                      h_DH_slack_var,
                       h_demand_nonAH, h_demand, h_demand_nonAH_sum
                       el_sell_price, el_price, h_price, tout, cool_demand,heat_demand,elec_demand
                       BTES_model,
@@ -371,6 +369,7 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       el_RM, c_RM, el_RMMC, h_RMMC, c_RMMC, RMMC_inv, invCost_RMMC,
                       el_AAC, c_AAC,
                       h_HP, el_HP, c_HP, HP_cap, invCost_HP,
+                      h_DH_slack, h_DH_slack_var, c_DC_slack, c_DC_slack_var, el_slack_var, el_exG_slack
                       TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES, TES_dis_eff, TES_chr_eff,
                       BTES_Sch, BTES_Sdis, BTES_Sen, BTES_Den, BTES_Sloss, BTES_Dloss, link_BS_BD,  BTES_dis_eff, BTES_chr_eff, B_BTES, invCost_BTES, BTES_model,
                       h_BAC_savings, B_BAC, invCost_BAC, BAC_savings_period, BAC_savings_factor,
@@ -397,7 +396,7 @@ execute_unload 'WP6' model_status, Ainv_cost, vc_e_imp,vc_e_exp,vc_h_imp,vc_h_ex
 
                 h_Boiler1, h_RGK1, h_VKA1, h_VKA4, H_P2T, h_TURB, h_RMMC, h_DH_slack, h_DH_slack_var, h_exp_AH, h_imp_AH, h_imp_AH_hist
 h_AbsCInv
-                C_DC, c_DC_slack, C_VKA1, C_VKA4,  c_AbsC, c_RM, c_RMMC, c_AAC, c_HP,
+                C_DC_slack_var, c_DC_slack, C_VKA1, C_VKA4,  c_AbsC, c_RM, c_RMMC, c_AAC, c_HP,
 c_RMInv, c_AbsCInv
 (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
                 e_imp_AH, e_imp_nonAH, el_exG_slack, e_exp_AH, el_VKA1, el_VKA4, el_RM, e_RMMC, e_AAC, e_PV, e_HP, e_RMInv, e_turb
