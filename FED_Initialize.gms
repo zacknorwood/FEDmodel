@@ -6,8 +6,8 @@ $Include FED_GET_GDX_FILE
 
 *--------------SET PARAMETRS OF PRODUCTION active UNITS in the FED system-------
 set
-         sup_unit   supply units /PV, HP, BES, TES, BTES, BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP, RMInv, RGK1/
-         inv_opt    investment options /PV, HP, BES, TES, BTES,BAC, RMMC, P2, TURB, AbsCInv, RMInv/
+         sup_unit   supply units /PV, HP, BES, TES, SO, BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP, RMInv, RGK1/
+         inv_opt    investment options /PV, HP, BES, TES, SO, BAC, RMMC, P2, TURB, AbsCInv, RMInv/
 ;
 
 ************ the technical limit of import/export on heat and electricty is based on feedback from AH
@@ -32,18 +32,17 @@ Parameter
 * RMInv 100 €/kW *9.36 = 936 - https://ec.europa.eu/energy/sites/ener/files/documents/Report%20WP2.pdf
 * Absorption chiller source: https://ec.europa.eu/energy/sites/ener/files/documents/Report%20WP2.pdf
 * Abs cost: 300 €/kW * 9.36 = 2808
-* BAC costs from AH/CFAB estimates, calculated as average per building cost subtracted with the cost of BTES capability
-*    makes sense because BAC is a more advanced version of the BTES system.
+* BAC costs from AH/CFAB estimates, calculated as average per building cost
 Parameter
          cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC P2 and Turbine
-                     /PV 14196, BES 6000, HP 6552, BTES 35000, BAC 315333, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 2808, RMInv 936/
+                     /PV 14196, BES 6000, HP 6552, SO 35000, BAC 350333, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 2808, RMInv 936/
 ;
 
 *******Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
-* BAC - Building Advanced Control is assumed to have same lifetime as BTES
+* BAC - Building Advanced Control is assumed to have same lifetime as BTES with Setpoint Offset
 Parameter
          lifT_inv_opt(inv_opt)    Life time of investment options
-                     /PV 30, BES 15, HP 25, TES 30, BTES 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25, RMInv 25/;
+                     /PV 30, BES 15, HP 25, TES 30, SO 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25, RMInv 25/;
 
 ***************Existing units***************************************************
 
@@ -244,33 +243,29 @@ scalar
 scalar
          BTES_chr_eff           BTES charging efficiency /0.95/
          BTES_dis_eff           BTES discharging efficiency/0.95/
+         BTES_Sdis_eff        Discharge efficiency of the shallow medium/0.95/
+         BTES_Sch_eff         Charging efficiency of the shallow medium/0.95/
 ;
 Parameters
-         BTES_Sen_int(BID)      Initial energy stored in the shalow medium of the building
-         BTES_Den_int(BID)      Initial energy stored in the deep medium of the building
-         BTES_Sdis_eff        Discharge efficiency of the shallow medium
-         BTES_Sch_eff         Charging efficiency of the shallow medium
          BTES_Sch_max(h,BID)    maximum charging limit
          BTES_Sdis_max(h,BID)   maximum discharging limit
          BTES_kSloss(BID)      loss coefficient-shallow
          BTES_kDloss(BID)      loss coefficient-deep
 ;
 
-BTES_Sdis_eff=0.95;
-BTES_Sch_eff=0.95;
+
 
 BTES_Sch_max(h,BID)=1000*Min(BTES_model('BTES_Sch_hc',BID), BTES_model('BTES_Esig',BID)*Max(Min(tout(h) - (-16),15 - (-16)),0));
 BTES_Sdis_max(h,BID)=1000*Min(BTES_model('BTES_Sdis_hc',BID), BTES_model('BTES_Esig',BID)*Max(Min(15 - tout(h),15 - (-16)),0));
 
-*[BTES_kSloss needs to be modified since it has different values during day and night]
-*here, it is assumed that BTES_kSloss is the same and the value for the day is used, which means that the loss is over estimated
+*BTES_kSloss needs to be modified since it has different values during day and night
+*here, it is assumed that BTES_kSloss is the same and the value for the day is used,
+*which means that the loss is over estimated
 BTES_kSloss(BID)= BTES_model('kloss_Sday',BID);
 BTES_kDloss(BID)= BTES_model('kloss_D',BID);
 
 *--------------BAC parameters---------------------------------------------------
-*scalar
-*         BAC_savings_factor      Savings from BAC /0.2/
-*;
+
 
 *--------------Battery storage characteristics----------------------------------
 scalar
@@ -410,8 +405,4 @@ scalar
 ;
 
 *--------------Limit on investment----------------------------------------------
-$Ontext
-
-$Offtext
-
 

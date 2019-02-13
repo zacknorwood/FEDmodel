@@ -17,22 +17,23 @@ $GDXIN
 
 *-----------Simulation time, BTES and BAC investments and parameters-----------
 set
-    BTES_Inv(BID)     used for fixed BTES inv option
-    BAC_Inv(BID)       used for fixed BAC inv option
-    BTES_properties  Building Inertia TES properties
+    BTES_BAC_Inv(BID)     used for fixed BTES inv option
+    BTES_SO_Inv(BID)      used for fixed BAC inv option
+    BTES_properties       Building Inertia TES properties
 ;
 parameter
-    opt_fx_inv_BTES   Parameter used to indicate investment in BTES
-    opt_fx_inv_BAC     Parameter used to indicate investment in BAC
+    opt_fx_inv_BAC   Parameter used to indicate investment in BAC
+    opt_fx_inv_SO     Parameter used to indicate investment in SO
 ;
 
 $GDXIN MtoG.gdx
-$LOAD BTES_Inv
-$LOAD opt_fx_inv_BTES
-$LOAD BAC_Inv
+$LOAD BTES_BAC_Inv
 $LOAD opt_fx_inv_BAC
+$LOAD BTES_SO_Inv
+$LOAD opt_fx_inv_SO
 $LOAD BTES_properties
 $GDXIN
+
 
 *-----------DH heating nodes and mapping of the nodes with buildings------------
 set DH_Node_ID     District heating network node names
@@ -93,12 +94,12 @@ $LOAD h_imp_AH_hist
 $GDXIN
 
 *--------------Building catagories based on how energy is supplied--------------
-set BID_AH_el(BID)    buildings considered in the FED system connected the AH(Akadamiskahus) el netwrok
-    BID_nonAH_el(BID) buildings considered in the FED system not connected to the AH(Akadamiskahus) el netwrok
-    BID_AH_h(BID)     buildings considered in the FED system connected to the AH(Akadamiskahus) heat netwrok
-    BID_nonAH_h(BID)  buildings considered in the FED system not connected to the AH(Akadamiskahus) heat netwrok
-    BID_AH_c(BID)     buildings considered in the FED system connected to the AH(Akadamiskahus) cooling netwrok
-    BID_nonAH_c(BID)  buildings considered in the FED system not connected to the AH(Akadamiskahus) cooling netwrok
+set BID_AH_el(BID)    buildings considered in the FED system connected the AH(Akadamiskahus) el network
+    BID_nonAH_el(BID) buildings considered in the FED system not connected to the AH(Akadamiskahus) el network
+    BID_AH_h(BID)     buildings considered in the FED system connected to the AH(Akadamiskahus) heat network
+    BID_nonAH_h(BID)  buildings considered in the FED system not connected to the AH(Akadamiskahus) heat network
+    BID_AH_c(BID)     buildings considered in the FED system connected to the AH(Akadamiskahus) cooling network
+    BID_nonAH_c(BID)  buildings considered in the FED system not connected to the AH(Akadamiskahus) cooling network
     BID_nonBTES(BID) Buildings not applicable for BTES
 ;
 $GDXIN MtoG.gdx
@@ -274,6 +275,14 @@ $LOAD BAC_savings_period
 $LOAD BAC_savings_factor
 $GDXIN
 
+*--------------Building Set Point Offset parameters-----------------------------
+Parameters
+         BTES_SO_max_power(BID)        Maximum charging or discharging of building
+;
+$GDXIN MtoG.gdx
+$LOAD BTES_SO_max_power
+$GDXIN
+
 *-----------DH export season from MATLAB----------------------------------------
 PARAMETERS
             DH_export_season(h)           Period in which DH exports are payed for
@@ -387,8 +396,12 @@ Parameters
       opt_fx_inv_BES_init(h,BID)    BES Init. energy level (SoC in kWh)
       opt_fx_inv_BFCh_init(h,BID)   BFCh Init. energy level (SOC in kWh)
 *      opt_fx_inv_TES_init    TES Init. SoC
-      opt_fx_inv_BTES_S_init(h,BID) BTES_S Init. SoC
-      opt_fx_inv_BTES_D_init(h,BID) BTES_D Init. SoC
+      opt_fx_inv_BTES_BAC_D_init Initial energy storage for BAC Deep storage
+      opt_fx_inv_BTES_BAC_S_init Initial energy storage for BAC Shallow storage
+      opt_fx_inv_BTES_SO_D_init    Initial energy storage for SO Deep storage
+      opt_fx_inv_BTES_SO_S_init    Initial energy storage for SO Shallow storage
+*      opt_fx_inv_BTES_PS_D_init    Initial energy storage for PS Shallow storage
+*      opt_fx_inv_BTES_PS_D_init    Initial energy storage for PS Shallow storage
       Boiler1_prev_disp      Boiler1 previous dispatch
       Boiler2_prev_disp      Boiler2 previous dispatch
 *      Boiler1                 Boiler1 forecast?
@@ -396,13 +409,20 @@ Parameters
 *      import                 Import forecast?
 *      export                 Export forecast?
 
+
+
+
 ;
 $GDXIN MtoG.gdx
 $load opt_fx_inv_BES_init
 $load opt_fx_inv_BFCh_init
 *$load opt_fx_inv_TES_init
-$load opt_fx_inv_BTES_S_init
-$load opt_fx_inv_BTES_D_init
+$load opt_fx_inv_BTES_BAC_D_init
+$load opt_fx_inv_BTES_BAC_S_init
+$load opt_fx_inv_BTES_SO_D_init
+$load opt_fx_inv_BTES_SO_S_init
+*$load opt_fx_inv_BTES_PS_D_init
+*$load opt_fx_inv_BTES_PS_D_init
 $load Boiler1_prev_disp
 $load Boiler2_prev_disp
 *$load Boiler1

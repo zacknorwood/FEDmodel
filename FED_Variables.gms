@@ -160,39 +160,52 @@ binary variable
 ;
 TES_inv.fx $ (opt_fx_inv_TES_cap gt -1) = 0 $ (opt_fx_inv_TES_cap eq 0) + 1 $ (opt_fx_inv_TES_cap gt 0);
 TES_cap.fx $ (opt_fx_inv_TES_cap gt -1) = opt_fx_inv_TES_cap;
-*------------------BTES (Building energy storage) related----------------------
+*------------------Building Advanced Control related----------------------
 positive variable
-         BTES_Sch(h,BID)    charing rate of shallow section of the building
-         BTES_Sdis(h,BID)   dischargin rate of shallow section of the building
-         BTES_Sen(h,BID)    energy stored in the shallow section of the building
-         BTES_Den(h,BID)    energy stored in the deep section of the building
-         BTES_Sloss(h,BID)  heat loss from the shallow section of the building
-         BTES_Dloss(h,BID)  heat loss from the deep section of the building
+         BAC_Sch(h,BID)    charing rate of shallow section of the building
+         BAC_Sdis(h,BID)   dischargin rate of shallow section of the building
+         BAC_Sen(h,BID)    energy stored in the shallow section of the building
+         BAC_Den(h,BID)    energy stored in the deep section of the building
+         BAC_Sloss(h,BID)  heat loss from the shallow section of the building
+         BAC_Dloss(h,BID)  heat loss from the deep section of the building
+         h_BAC_savings(h,BID) hourly heat consumption savings per building attributable to BAC investment
+
 ;
-BTES_Sen.up(h,BID)=1000*BTES_model('BTES_Scap',BID);
-BTES_Den.up(h,BID)=1000*BTES_model('BTES_Dcap',BID);
+BAC_Sen.up(h,BID)=1000*BTES_model('BTES_Scap',BID);
+BAC_Den.up(h,BID)=1000*BTES_model('BTES_Dcap',BID);
 variable
-         link_BS_BD(h,BID)  heat flow between the shallow and the deep section
+         BAC_link_BS_BD(h,BID)  heat flow between the shallow and the deep section
 ;
 binary variable
-         B_BTES(BID)       Decision variable weither to invest BTES control sys-
+         B_BAC(BID)       Decision variable weither to invest Building Advanced Control
 ;
 
 *0 is used in case there is no investment ,
-B_BTES.fx(BID) $ (opt_fx_inv eq 1)=0;
-B_BTES.fx(BTES_Inv) $ (opt_fx_inv eq 1 and opt_fx_inv_BTES eq 1)=1;
+B_BAC.fx(BID) $ (opt_fx_inv eq 1)=0;
+B_BAC.fx(BTES_BAC_Inv) $ (opt_fx_inv eq 1 and opt_fx_inv_BAC eq 1)=1;
 
-*----------------Building Advanced Control (BAC) related------------------------
+*------------------Building Setpoint Offset related----------------------
 positive variable
-         h_BAC_savings(h,BID) hourly heat consumption savings per building attributable to BAC investment
+         SO_Sch(h,BID)    charing rate of shallow section of the building
+         SO_Sdis(h,BID)   dischargin rate of shallow section of the building
+         SO_Sen(h,BID)    energy stored in the shallow section of the building
+         SO_Den(h,BID)    energy stored in the deep section of the building
+         SO_Sloss(h,BID)  heat loss from the shallow section of the building
+         SO_Dloss(h,BID)  heat loss from the deep section of the building
+
+;
+SO_Sen.up(h,BID)=1000*BTES_model('BTES_Scap',BID);
+SO_Den.up(h,BID)=1000*BTES_model('BTES_Dcap',BID);
+variable
+         SO_link_BS_BD(h,BID)  heat flow between the shallow and the deep section
+;
+binary variable
+         B_SO(BID)       Decision variable weither to invest Setpoint offset
 ;
 
-binary variable
-         B_BAC(BID)   Binary investment decision variable
-;
-*0 is used in case there is no investment
-B_BAC.fx(BID) $ (opt_fx_inv eq 1) =0;
-B_BAC.fx(BAC_inv) $ (opt_fx_inv eq 1 and opt_fx_inv_BAC eq 1) =1;
+*0 is used in case there is no investment ,
+B_SO.fx(BID) $ (opt_fx_inv eq 1)=0;
+B_SO.fx(BTES_SO_Inv) $ (opt_fx_inv eq 1 and opt_fx_inv_SO eq 1)=1;
 *----------------Solar PV PV relate variables-----------------------------------
 positive variable
          el_PV(h)                electricity produced by PV

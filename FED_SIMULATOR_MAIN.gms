@@ -28,7 +28,7 @@ parameter
 invCost_PV      investment cost of PV
 invCost_BEV     investment cost of battery storage
 invCost_TES     investment cost of thermal energy storage
-invCost_BTES   investment cost of building inertia thermal energy storage
+invCost_SO      investment cost of building inertia thermal energy storage with Setpoint Offset
 invCost_BAC     investment cost of building advanced control
 invCost_HP      investment cost of heat pump
 invCost_RMMC    investment cost of connecting MC2 RM
@@ -50,7 +50,7 @@ invCost_HP = HP_cap.l*cost_inv_opt('HP');
 invCost_PV = sum(PVID, PV_cap_roof.l(PVID)*cost_inv_opt('PV')) + sum(PVID, PV_cap_facade.l(PVID)*cost_inv_opt('PV'));
 invCost_BEV = sum(BID,BES_cap.l(BID)*cost_inv_opt('BES'));
 invCost_TES = (TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
-invCost_BTES = cost_inv_opt('BTES')*sum(BID,B_BTES.l(BID));
+invCost_SO = cost_inv_opt('SO')*sum(BID,B_SO.l(BID));
 invCost_BAC = cost_inv_opt('BAC')*sum(BID,B_BAC.l(BID));
 invCost_RMMC = cost_inv_opt('RMMC')*RMMC_inv.l;
 invCost_Boiler2 = B_Boiler2.l * cost_inv_opt('P2');
@@ -77,12 +77,14 @@ Parameters
 
 fix_cost_existing_AH = sum(sup_unit,fix_cost(sup_unit)*cap_sup_unit(sup_unit));
 ************BIDs associated to AH buildings need to be filtered here************
+
 fix_cost_new_AH = (sum(PVID, PV_cap_roof.l(PVID) + PV_cap_facade.l(PVID)))*fix_cost('PV')
                   + HP_cap.l*fix_cost('HP')
                   + sum(BID,BES_cap.l(BID)*fix_cost('BES'))
                   + TES_cap.l*fix_cost('TES')
                   + RMInv_cap.l*fix_cost('RMInv')
-                  + fix_cost('BTES')*sum(BID,B_BTES.l(BID))
+                  + fix_cost('BAC')*sum(BID,B_BAC.l(BID))
+                  + fix_cost('SO')*sum(BID,B_SO.l(BID))
                   + B_Boiler2.l * fix_cost('P2')
                   + B_TURB.l * fix_cost('TURB')
                   + AbsCInv_cap.l*fix_cost('AbsCInv');
@@ -105,13 +107,14 @@ var_cost_existing_AH(h) =      el_imp_AH.l(h)*utot_cost('exG',h)
 *                               + sum(m,(h_AbsC.l(h)*0.7*HoM(h,m))$((ord(m) =11)))
 *                               + sum(m,(h_AbsC.l(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12)))
                                 ;
-
+* AK Check BAC/SO Costs
 var_cost_new_AH(h)   =     el_PV.l(h)*utot_cost('PV',h)
                            + h_HP.l(h)*utot_cost('HP',h)
                            + c_RMInv.l(h)*utot_cost('RMInv',h)
                            + sum(BID,BES_dis.l(h,BID)*utot_cost('BES',h))
                            + TES_dis.l(h)*utot_cost('TES',h)
-                           + sum(BID,BTES_Sch.l(h,BID)*utot_cost('BTES',h))
+                           + sum(BID,BAC_Sch.l(h,BID)*utot_cost('BAC',h))
+                           + sum(BID,SO_Sch.l(h,BID)*utot_cost('SO',h))
                            + h_Boiler2.l(h)*utot_cost('P2',h)
                            + el_TURB.l(h)*utot_cost('TURB',h)
                            + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
@@ -144,7 +147,8 @@ vc_c_RM
 vc_c_new_RM
 vc_el_BES
 vc_h_TES
-vc_h_BTES
+vc_h_BAC
+vc_h_SO
 vc_h_Boiler2
 vc_el_TURB
 vc_tot;
@@ -170,13 +174,14 @@ vc_el_PT=sum(h,sum(m,PT_exG.l(m)*HoM(h,m)));
 
 
 ********** NEW INVESTMENT
-
+* AK Check BAC/SO/BTES Costs
 vc_el_new_PV  = sum(h,el_PV.l(h)*utot_cost('PV',h));
 vc_h_HP  = sum(h,h_HP.l(h)*utot_cost('HP',h));
 vc_c_new_RM  = sum(h,c_RMInv.l(h)*utot_cost('RMInv',h));
 vc_el_BES = sum(h,sum(BID,BES_dis.l(h,BID)*utot_cost('BES',h)));
 vc_h_TES = sum(h,TES_dis.l(h)*utot_cost('TES',h));
-vc_h_BTES= sum(h,sum(BID,BTES_Sch.l(h,BID)*utot_cost('BTES',h)));
+vc_h_BAC= sum(h,sum(BID,BAC_Sch.l(h,BID)*utot_cost('BAC',h)));
+vc_h_SO= sum(h,sum(BID,SO_Sch.l(h,BID)*utot_cost('SO',h)));
 vc_h_Boiler2  = sum(h,h_Boiler2.l(h)*utot_cost('P2',h));
 vc_el_TURB= sum(h,el_TURB.l(h)*utot_cost('TURB',h));
 *vc_e_PV                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
@@ -372,7 +377,9 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       el_AAC, c_AAC,
                       h_HP, el_HP, c_HP, HP_cap, invCost_HP,
                       TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES, TES_dis_eff, TES_chr_eff,
-                      BTES_Sch, BTES_Sdis, BTES_Sen, BTES_Den, BTES_Sloss, BTES_Dloss, link_BS_BD,  BTES_dis_eff, BTES_chr_eff, B_BTES, invCost_BTES, BTES_model,
+                      BTES_dis_eff, BTES_chr_eff,   BTES_model,
+                      SO_Sch, SO_Sdis, SO_Sen, SO_Den, SO_Sloss, SO_Dloss, SO_link_BS_BD, B_SO,  invCost_SO,
+                      BAC_Sch, BAC_Sdis, BAC_Sen, BAC_Den, BAC_Sloss, BAC_Dloss, BAC_link_BS_BD, B_BAC, invCost_BAC, BTES_model,
                       h_BAC_savings, B_BAC, invCost_BAC, BAC_savings_period, BAC_savings_factor,
                       el_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
                       BES_en, BES_ch, BES_dis, BES_cap, invCost_BEV, BES_dis_eff, BES_ch_eff,
