@@ -107,21 +107,23 @@ equation
            eq_SO_S_loss    losses from shallow storage of SO
            eq_SO_D_loss    losses from deep storage of SO
 
+           eq_maximum_BTES_investments   Limits BTES Bids preventing double investments
 
-*AK Add these back           eq_BES1       intial energy in the Battery
-*           eq_BES2       energy in the Battery at hour h
-*           eq_BES3       maximum energy in the Battery
-*           eq_BES4       Limit minimum SoC
-*           eq_BES_ch     maximum charging limit
-*           eq_BES_dis    maximum discharign limit
-*           eq_BES_reac1  equation 1 for reactive power of BES
-*           eq_BES_reac2  equation 2 for reactive power of BES
-*           eq_BES_reac3  equation 3 for reactive power of BES
-*           eq_BES_reac4  equation 4 for reactive power of BES
-*           eq_BES_reac5  equation 5 for reactive power of BES
-*           eq_BES_reac6  equation 6 for reactive power of BES
-*           eq_BES_reac7  equation 7 for reactive power of BES
-*           eq_BES_reac8  equation 8 for reactive power of BES
+
+           eq_BES1       intial energy in the Battery
+           eq_BES2       energy in the Battery at hour h
+           eq_BES3       maximum energy in the Battery
+           eq_BES4       Limit minimum SoC
+           eq_BES_ch     maximum charging limit
+           eq_BES_dis    maximum discharign limit
+           eq_BES_reac1  equation 1 for reactive power of BES
+           eq_BES_reac2  equation 2 for reactive power of BES
+           eq_BES_reac3  equation 3 for reactive power of BES
+           eq_BES_reac4  equation 4 for reactive power of BES
+           eq_BES_reac5  equation 5 for reactive power of BES
+           eq_BES_reac6  equation 6 for reactive power of BES
+           eq_BES_reac7  equation 7 for reactive power of BES
+           eq_BES_reac8  equation 8 for reactive power of BES
 
            eq_BFCh1       intial energy in the Battery Fast charge
            eq_BFCh2       energy in the Battery Fast Charge at hour h
@@ -489,11 +491,13 @@ eq_SO_S_loss(h,BID)..
 
 eq_SO_D_loss(h,BID)..
          SO_Dloss(h,BID) =e= BTES_kDloss(BID)*SO_Den(h-1,BID);
+
+eq_maximum_BTES_investments(BID)..
+         1 =l= B_SO(BID) + B_BAC(BID);
 *------------------Building Pump Stop equations---------------------------------
 
 *-----------------Battery constraints-------------------------------------------
-$ontext
-AK ADD THESE BACK
+
 eq_BES1(h,BID) $ (ord(h) eq 1)..
              BES_en(h,BID)=e= opt_fx_inv_BES_init;
 eq_BES2(h,BID)$(ord(h) gt 1)..
@@ -517,7 +521,7 @@ eq_BES_reac5(h,BID)..-0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=l=1.15*o
 eq_BES_reac6(h,BID)..-0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=g=-1.15*opt_fx_inv_BES_maxP(BID);
 eq_BES_reac7(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=l=1.15*opt_fx_inv_BES_maxP(BID);
 eq_BES_reac8(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=g=-1.15*opt_fx_inv_BES_maxP(BID);
-$offtext
+
 *-----------------Battery Fast Charge constraints-------------------------------------------
 eq_BFCh1(h,BID) $ (ord(h) eq 1)..
              BFCh_en(h,BID)=e= opt_fx_inv_BFCh_init;
@@ -754,7 +758,7 @@ eq2_fix_cost_DH(h)..w(h)+1000000*y_temp(h)=g=166.666;
 eq3_fix_cost_DH(h)..w(h)+1000000*(1-y_temp(h))=g=41.666;
 eq4_fix_cost_DH(h)..h_imp_AH(h)-(1-y_temp(h))*10000000=l=0;
 
-* AK check SO/PS costs
+
 eq_fix_cost_new..
          fix_cost_new =e=  (sum(PVID, PV_cap_roof(PVID) + PV_cap_facade(PVID)))*fix_cost('PV')
                            + HP_cap*fix_cost('HP')
@@ -783,7 +787,7 @@ eq_var_cost_existing..
                                +sum(h,h_DH_slack_var(h)) * 1000000000
                                +sum(h,C_DC(h)) * 1000000000
                                +sum(h,el_slack_var(h)) * 1000000000;
-* AK check SO/PS costs
+
 eq_var_cost_new..
          var_cost_new =e=  sum(h,el_PV(h)*utot_cost('PV',h))
                            + sum(h,h_HP(h)*utot_cost('HP',h))
@@ -795,7 +799,7 @@ eq_var_cost_new..
                            + sum(h,h_Boiler2(h)*utot_cost('P2',h))
                            + sum(h,el_TURB(h)*utot_cost('TURB',h))
                            + sum(h,c_AbsCInv(h)*utot_cost('AbsCInv',h));
-* AK check SO/PS costs
+
 eq_Ainv_cost..
           Ainv_cost =e=
                 + HP_cap*cost_inv_opt('HP')/lifT_inv_opt('HP')
@@ -813,7 +817,7 @@ eq_totCost..
          totCost =e= fix_cost_existing + var_cost_existing
                      + fix_cost_new + var_cost_new + Ainv_cost;
 ****************Total investment cost*******************************************
-* AK check SO/PS costs
+
 eq_invCost..
          invCost =e= HP_cap*cost_inv_opt('HP')
                      + RMInv_cap*cost_inv_opt('RMInv')
