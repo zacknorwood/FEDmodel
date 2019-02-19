@@ -664,7 +664,7 @@ t
 % INITIALIZE output array
 if t==sim_start
 to_excel_el(1:sim_stop-sim_start,1:31)=0;
-to_excel_heat(1:sim_stop-sim_start,1:35)=0;
+to_excel_heat(1:sim_stop-sim_start,1:39)=0;
 to_excel_cool(1:sim_stop-sim_start,1:23)=0;
 to_excel_co2(1:sim_stop-sim_start,1:6)=0;
 end
@@ -711,16 +711,20 @@ to_excel_heat(t_step,24)=sum(Results(t).dispatch.h_BAC_savings(find(Results(t).d
 
 to_excel_heat(t_step,26)=Results(t).dispatch.h_slack(1,2);
 to_excel_heat(t_step,28)=Results(t).dispatch.h_slack_var(1,2);
-to_excel_heat(t_step,30)=sum(Results(t).dispatch.BTES_Sen(find(Results(t).dispatch.BTES_Sen(:,1)==1),3));
-to_excel_heat(t_step,31)=-sum(Results(t).dispatch.BTES_Sch(find(Results(t).dispatch.BTES_Sch(:,1)==1),3));
-to_excel_heat(t_step,32)=sum(Results(t).dispatch.BTES_Sdis(find(Results(t).dispatch.BTES_Sdis(:,1)==1),3));
-to_excel_heat(t_step,33)=sum(Results(t).dispatch.BTES_Den(find(Results(t).dispatch.BTES_Den(:,1)==1),3));
+
+to_excel_heat(t_step,30)=sum(Results(t).dispatch.BAC_Sen(find(Results(t).dispatch.BAC_Sen(:,1)==1),3));
+to_excel_heat(t_step,31)=-sum(Results(t).dispatch.BAC_Sch(find(Results(t).dispatch.BAC_Sch(:,1)==1),3));
+to_excel_heat(t_step,32)=sum(Results(t).dispatch.BAC_Sdis(find(Results(t).dispatch.BAC_Sdis(:,1)==1),3));
+to_excel_heat(t_step,33)=sum(Results(t).dispatch.BAC_Den(find(Results(t).dispatch.BAC_Den(:,1)==1),3));
+
+to_excel_heat(t_step,34)=sum(Results(t).dispatch.SO_Sen(find(Results(t).dispatch.SO_Sen(:,1)==1),3));
+to_excel_heat(t_step,35)=-sum(Results(t).dispatch.SO_Sch(find(Results(t).dispatch.SO_Sch(:,1)==1),3));
+to_excel_heat(t_step,36)=sum(Results(t).dispatch.SO_Sdis(find(Results(t).dispatch.SO_Sdis(:,1)==1),3));
+to_excel_heat(t_step,37)=sum(Results(t).dispatch.SO_Den(find(Results(t).dispatch.SO_Den(:,1)==1),3));
 
 
-% AK Add BTES_SO output as well
-
-to_excel_heat(t_step,34)=Results(t).dispatch.h_imp_nonAH(1,2);
-to_excel_heat(t_step,35)=-Results(t).dispatch.heat_demand(1,2);
+to_excel_heat(t_step,38)=Results(t).dispatch.h_imp_nonAH(1,2);
+to_excel_heat(t_step,39)=-Results(t).dispatch.heat_demand(1,2);
 
 % COOLING DATA
 to_excel_cool(t_step,1)=t; 

@@ -156,10 +156,10 @@ data.h_BAC_savings=gdx2mat(gdxData,'h_BAC_savings',{h_sim.uels,BTES_properties.u
 data.BAC_savings_period=gdx2mat(gdxData,'BAC_savings_period',h_sim.uels);
 
 %Setpoint Offset
-% data.BTES_Sch=gdx2mat(gdxData,'BAC_Sch',{h_sim.uels,BID.uels});
-% data.BTES_Sdis=gdx2mat(gdxData,'BAC_Sdis',{h_sim.uels,BID.uels});
-% data.BTES_Sen=gdx2mat(gdxData,'BAC_Sen',{h_sim.uels,BID.uels});
-% data.BTES_Den=gdx2mat(gdxData,'BAC_Den',{h_sim.uels,BID.uels});
+data.SO_Sch=gdx2mat(gdxData,'SO_Sch',{h_sim.uels,BID.uels});
+data.SO_Sdis=gdx2mat(gdxData,'SO_Sdis',{h_sim.uels,BID.uels});
+data.SO_Sen=gdx2mat(gdxData,'SO_Sen',{h_sim.uels,BID.uels});
+data.SO_Den=gdx2mat(gdxData,'SO_Den',{h_sim.uels,BID.uels});
 % data.BTES_Sloss=gdx2mat(gdxData,'BAC_Sloss',{h_sim.uels,BTES_properties.uels});
 % data.BTES_Dloss=gdx2mat(gdxData,'BAC_Dloss',{h_sim.uels,BTES_properties.uels});
 % data.link_BS_BD=gdx2mat(gdxData,'BAC_link_BS_BD',{h_sim.uels,BTES_properties.uels});

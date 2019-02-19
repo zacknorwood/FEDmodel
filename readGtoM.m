@@ -43,10 +43,10 @@ BTES_PS_init = 0;
 %BTES_PS_en = rgdx('GtoM',BTES_PS_en);
 %BTES_PS_init = BTES_PS_en.val;
 
-BES_init = 0
-%BES_en.uels={num2cell(hour), BTES_BAC_uels};
-%BES_en=rgdx('GtoM',BES_en);
-%BES_init = BES_en.val;
+
+BES_en.uels={num2cell(hour), BES_BID_uels};
+BES_en=rgdx('GtoM',BES_en);
+BES_init = BES_en.val;
 
 BFCh_en.uels={num2cell(hour), BFCh_BID_uels};
 BFCh_en=rgdx('GtoM',BFCh_en);
