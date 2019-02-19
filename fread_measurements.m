@@ -49,7 +49,7 @@ h_F1_measured(isnan(h_F1_measured))=0;
 sheet=2;
 xlRange = strcat('C',int2str(2+t_init),':B',int2str(2+t_len+t_init-1));
 el_VKA1_measured=xlsread('Input_dispatch_model\varmepump VKA1.xls',sheet,xlRange);
-el_VKA1_measured(isnan(h_VKA1_measured))=0;
+el_VKA1_measured(isnan(el_VKA1_measured))=0;
 %el_VKA1_measured=h_VKA1_measured/3; Removed by AK, previously h_VKA1 (col C) was
 %read and divided by COP to get approximate electricity use
 
@@ -57,7 +57,7 @@ el_VKA1_measured(isnan(h_VKA1_measured))=0;
 sheet=2;
 xlRange = strcat('C',int2str(2+t_init),':B',int2str(2+t_len+t_init-1));
 el_VKA4_measured=xlsread('Input_dispatch_model\varmepump VKA4.xls',sheet,xlRange);
-el_VKA4_measured(isnan(h_VKA4_measured))=0;
+el_VKA4_measured(isnan(el_VKA4_measured))=0;
 %el_VKA4_measured=h_VKA4_measured/3; Removed by AK, previously h_VKA4 (col C) was
 %read and divided by COP to get approximate electricity use
 
