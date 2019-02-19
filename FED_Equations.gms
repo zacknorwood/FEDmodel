@@ -109,7 +109,7 @@ equation
 
            eq_maximum_BTES_investments   Limits BTES Bids preventing double investments
 
-$ontext
+
            eq_BES1       intial energy in the Battery
            eq_BES2       energy in the Battery at hour h
            eq_BES3       maximum energy in the Battery
@@ -124,7 +124,7 @@ $ontext
            eq_BES_reac6  equation 6 for reactive power of BES
            eq_BES_reac7  equation 7 for reactive power of BES
            eq_BES_reac8  equation 8 for reactive power of BES
-$offtext
+
            eq_BFCh1       intial energy in the Battery Fast charge
            eq_BFCh2       energy in the Battery Fast Charge at hour h
            eq_BFCh3       maximum energy in the Battery Fast Charge
@@ -503,7 +503,7 @@ eq_maximum_BTES_investments(BID)..
 *------------------Building Pump Stop equations---------------------------------
 
 *-----------------Battery constraints-------------------------------------------
-$ontext
+
 eq_BES1(h,BID) $ (ord(h) eq 1)..
              BES_en(h,BID)=e= (opt_fx_inv_BES_init(h,BID)+BES_ch(h,BID)-BES_dis(h,BID));
 
@@ -528,7 +528,7 @@ eq_BES_reac5(h,BID)..-0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=l=1.15*o
 eq_BES_reac6(h,BID)..-0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=g=-1.15*opt_fx_inv_BES_maxP(BID);
 eq_BES_reac7(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=l=1.15*opt_fx_inv_BES_maxP(BID);
 eq_BES_reac8(h,BID)..0.58*BES_reac(h,BID)-BES_ch(h,BID)+BES_dis(h,BID)=g=-1.15*opt_fx_inv_BES_maxP(BID);
-$offtext
+
 *-----------------Battery Fast Charge constraints-------------------------------------------
 eq_BFCh1(h,BID) $ (ord(h) eq 1)..
              BFCh_en(h,BID)=e= (opt_fx_inv_BFCh_init(h,BID)+BFCh_ch(h,BID)-BFCh_dis(h,BID));
