@@ -664,12 +664,13 @@ Results(t).dispatch = fstore_results(h,BID,BTES_properties,BusID);
 % INITIALIZE output array
 if t==sim_start
 to_excel_el(1:sim_stop-sim_start,1:31)=0;
-to_excel_heat(1:sim_stop-sim_start,1:35)=0;
+to_excel_heat(1:sim_stop-sim_start,1:39)=0;
 to_excel_cool(1:sim_stop-sim_start,1:23)=0;
 to_excel_co2(1:sim_stop-sim_start,1:7)=0;
 
 end
 [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
+
 
 end
 tic
