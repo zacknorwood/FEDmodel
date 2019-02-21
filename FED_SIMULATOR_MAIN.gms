@@ -99,6 +99,8 @@ var_cost_existing_AH(h) =      el_imp_AH.l(h)*utot_cost('exG',h)
                                + h_Boiler1.l(h)*utot_cost('P1',h)
                                + h_VKA1.l(h)*utot_cost('HP',h)
                                + h_VKA4.l(h)*utot_cost('HP',h)
+                               + el_AbsC.l(h) * utot_cost('exG',h)
+                               + h_AbsC.l(h)*utot_cost('DH',h)
                                + c_AbsC.l(h)*utot_cost('AbsC',h)
                                + c_RM.l(h)*utot_cost('RM',h)
                                + c_RMMC.l(h)*utot_cost('RM',h)
@@ -126,64 +128,79 @@ tot_fixed_cost=fix_cost_existing_AH + fix_cost_new_AH;
 
 **********************************************************
 parameter
-vc_el_imp
-vc_el_exp
-vc_h_imp
-*vc_h_exp
-vc_h_Boiler1
-vc_h_VKA1
-vc_h_VKA4
-vc_c_RM
-vc_c_RMMC
-*vc_c_AAC
-*vc_el_PV
-*vc_c_absC
-*vc_el_PV
-vc_el_new_PV
-vc_h_HP
-*vc_h_ABSC
-vc_el_PT
-vc_c_RM
-vc_c_new_RM
-vc_el_BES
-vc_h_TES
-vc_h_BAC
-vc_h_SO
-vc_h_Boiler2
-vc_el_TURB
-vc_tot;
+vc_el_imp(h)
+vc_el_imp_AH(h)
+vc_el_exp(h)
+vc_el_absC
+vc_h_imp(h)
+vc_h_imp_AH(h)
+vc_h_exp(h)
+vc_h_Boiler1(h)
+vc_h_VKA1(h)
+vc_h_VKA4(h)
+vc_h_ABSC
+vc_c_RM(h)
+vc_c_RMMC(h)
+*vc_c_AAC(h)
+*vc_el_PV(h)
+vc_c_absC(h)
+*vc_el_PV(h)
+vc_el_new_PV(h)
+vc_h_HP(h)
+vc_el_PT(h)
+vc_c_RM(h)
+vc_c_new_RM(h)
+vc_el_BES(h)
+vc_h_TES(h)
+vc_h_BAC(h)
+vc_h_SO(h)
+vc_h_Boiler2(h)
+vc_el_TURB(h)
+vc_tot(h)
+vc_h_slack_var(h)
+vc_c_slack(h)
+vc_el_slack(h)
+;
 
+*Individual cost per production as calculated in model Added eps to avoid error when importing to matlab
+vc_el_imp(h) = (el_imp_AH.l(h) + el_imp_nonAH.l(h))*utot_cost('exG',h)+eps;
+vc_el_imp_AH(h) = el_imp_AH.l(h)*utot_cost('exG',h)+eps;
+vc_el_exp(h) = el_exp_AH.l(h)*el_sell_price(h)+eps;
+vc_el_absC(h) = el_AbsC.l(h) * utot_cost('exG',h)+eps;
+vc_h_imp_AH(h) = (h_imp_AH.l(h))*utot_cost('DH',h)+eps;
+vc_h_imp(h) =(h_imp_AH.l(h) + h_imp_nonAH.l(h)) * utot_cost('DH',h)+eps;
+vc_h_exp(h) = h_exp_AH.l(h) * utot_cost('DH',h)+eps;
+vc_h_Boiler1(h) = h_Boiler1.l(h)*utot_cost('P1',h)+eps;
+vc_h_VKA1(h) = h_VKA1.l(h)*utot_cost('HP',h)+eps;
+vc_h_VKA4(h) = h_VKA4.l(h)*utot_cost('HP',h)+eps;
+vc_h_ABSC(h) =h_AbsC.l(h) * utot_cost('DH',h)+eps;
+vc_c_absC(h) = c_AbsC.l(h)*utot_cost('AbsC',h)+eps;
+vc_c_RM (h) = c_RM.l(h)*utot_cost('RM',h)+eps;
+vc_c_RMMC(h) = c_RMMC.l(h)*utot_cost('RM',h)+eps;
+vc_h_slack_var(h) = h_DH_slack_var.l(h) * 1000000000+eps;
+vc_c_slack(h) = c_DC_slack_var.l(h) * 1000000000+eps;
+vc_el_slack(h) = el_slack_var.l(h) * 1000000000+eps;
 
-vc_el_imp = sum(h,el_imp_AH.l(h)*utot_cost('exG',h));
-vc_el_exp = sum(h,el_exp_AH.l(h)*el_sell_price(h));
-vc_h_imp = sum(h,(h_imp_AH.l(h))*utot_cost('DH',h));
-*vc_h_exp = sum(h,sum(m,(h_exp_AH.l(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12))));
-vc_h_Boiler1 = sum(h,h_Boiler1.l(h)*utot_cost('P1',h));
-vc_h_VKA1= sum(h,h_VKA1.l(h)*utot_cost('HP',h));
-vc_h_VKA4= sum(h,h_VKA4.l(h)*utot_cost('HP',h));
-*vc_h_ABSC= sum(h,sum(m,(h_AbsC.l(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10))) + sum(m,(h_AbsC.l(h)*0.7*HoM(h,m))$((ord(m) =11))) + sum(m,(h_AbsC.l(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))));
-*vc_c_absC= sum(h,c_AbsC.l(h)*utot_cost('AbsC',h));
-vc_c_RM  = sum(h,c_RM.l(h)*utot_cost('RM',h));
-vc_c_RMMC= sum(h,c_RMMC.l(h)*utot_cost('RM',h));
-*vc_c_AAC = sum(h,c_AAC.l(h)*utot_cost('AAC',h));
-*vc_el_PV  = sum(h,el_existPV.l(h)*utot_cost('PV',h));
-*vc_c_absC = sum(h,sum(m,(h_AbsC.l(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10)))
+*vc_c_AAC(h) = c_AAC.l(h)*utot_cost('AAC',h);
+*vc_el_PV(h)  = el_existPV.l(h)*utot_cost('PV',h);
+*vc_c_absC(h) = sum(m,(h_AbsC.l(h)*0.15*HoM(h,m))$((ord(m) >=4) and (ord(m) <=10)))
 *          + sum(m,(h_AbsC.l(h)*0.7*HoM(h,m))$((ord(m) =11)))
-*          + sum(m,(h_AbsC.l(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12))));
-vc_el_PT=sum(h,sum(m,PT_exG.l(m)*HoM(h,m)));
+*          + sum(m,(h_AbsC.l(h)*HoM(h,m))$((ord(m) <=3) or (ord(m) >=12)));
+vc_el_PT(h)=sum(m,PT_exG.l(m)*HoM(h,m))+eps;
 
+display utot_cost, vc_el_absC, el_AbsC.l;
 
 ********** NEW INVESTMENT
 * AK Check BAC/SO/BTES Costs
-vc_el_new_PV  = sum(h,el_PV.l(h)*utot_cost('PV',h));
-vc_h_HP  = sum(h,h_HP.l(h)*utot_cost('HP',h));
-vc_c_new_RM  = sum(h,c_RMInv.l(h)*utot_cost('RMInv',h));
-vc_el_BES = sum(h,sum(BID,BES_dis.l(h,BID)*utot_cost('BES',h)));
-vc_h_TES = sum(h,TES_dis.l(h)*utot_cost('TES',h));
-vc_h_BAC= sum(h,sum(BID,BAC_Sch.l(h,BID)*utot_cost('BAC',h)));
-vc_h_SO= sum(h,sum(BID,SO_Sch.l(h,BID)*utot_cost('SO',h)));
-vc_h_Boiler2  = sum(h,h_Boiler2.l(h)*utot_cost('P2',h));
-vc_el_TURB= sum(h,el_TURB.l(h)*utot_cost('TURB',h));
+vc_el_new_PV(h)  = el_PV.l(h)*utot_cost('PV',h)+eps;
+vc_h_HP(h)  = h_HP.l(h)*utot_cost('HP',h)+eps;
+vc_c_new_RM(h)  = c_RMInv.l(h)*utot_cost('RMInv',h)+eps;
+vc_el_BES(h) = sum(BID,BES_dis.l(h,BID)*utot_cost('BES',h))+eps;
+vc_h_TES(h) = TES_dis.l(h)*utot_cost('TES',h)+eps;
+vc_h_BAC(h) = sum(BID,BAC_Sch.l(h,BID)*utot_cost('BAC',h))+eps;
+vc_h_SO(h) = sum(BID,SO_Sch.l(h,BID)*utot_cost('SO',h))+eps;
+vc_h_Boiler2(h)  = h_Boiler2.l(h)*utot_cost('P2',h)+eps;
+vc_el_TURB(h) = el_TURB.l(h)*utot_cost('TURB',h)+eps;
 *vc_e_PV                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
 *vc_tot = sum(h, tot_var_cost_AH(h));
 
@@ -358,7 +375,8 @@ B_Cooling_cost(h,BID_AH_c)=abs(eq_cbalance.M(h))*c_demand_AH(h,BID_AH_c);
 
 *Not used in rolling time horizon - ZN
 *max_exG_prev=sum(m, max_exG.l(m));
-execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
+option gdxuels = full;
+execute_unload 'GtoM'  min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       el_demand, el_demand_nonAH, h_demand, c_demand, c_demand_AH,
                       el_imp_AH, el_exp_AH, el_imp_nonAH,AH_el_imp_tot, AH_el_exp_tot,
                       h_imp_AH, h_exp_AH, h_imp_nonAH, AH_h_imp_tot, AH_h_exp_tot,
@@ -392,7 +410,9 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       model_status,B_Heating_cost,B_Electricity_cost,B_Cooling_cost
                       tot_var_cost_AH, sim_PT_exG,PT_DH, tot_fixed_cost, fix_cost_existing_AH, fix_cost_new_AH, var_cost_existing_AH, var_cost_new_AH,
                       DH_node_flows, DC_node_flows, CWB_en, CWB_dis, CWB_ch,
-
+                      vc_el_imp, vc_el_imp_AH,vc_el_exp,vc_el_absC,vc_h_imp,vc_h_imp_AH,vc_h_exp,vc_h_Boiler1,vc_h_VKA1,vc_h_VKA4,vc_c_absC,vc_c_RMMC,
+                      vc_h_HP , vc_c_RM, vc_el_BES,vc_h_TES,vc_el_new_PV, vc_c_new_RM, vc_h_BAC, vc_h_SO, vc_h_ABSC, vc_h_Boiler2,vc_el_TURB, vc_el_PT, vc_tot, tot_var_cost_AH,
+                      vc_h_slack_var,vc_c_slack,vc_el_slack,
                       model_status;
 
 $ontext
