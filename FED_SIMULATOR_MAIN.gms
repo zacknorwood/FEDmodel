@@ -320,6 +320,8 @@ AH_PE(h)= ( el_imp_AH.l(h)-el_exp_AH.l(h))*PEF_exG(h)
             + el_PV.l(h)*PEF_PV
             + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*PEF_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*PEF_Boiler1
                      + fuel_Boiler2.l(h)*PEF_Boiler2;
+
+
 $ontext
 MA_AH_PE(h)= (el_imp_AH.l(h)-el_exp_AH.l(h))*MA_PEF_exG(h)
               + el_PV.l(h)*PEF_PV

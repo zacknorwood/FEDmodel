@@ -531,11 +531,13 @@ eq_BES4(h,BID) ..
 
 ****************
 eq_BES_ch(h,BID) ..
+             BES_ch(h,BID)=l=opt_fx_inv_BES_maxP(BID);
 *Assuming 1C charging
-             BES_ch(h,BID)=l=(BES_cap(BID)-BES_en(h,BID));
+*(BES_cap(BID)-BES_en(h,BID));
 eq_BES_dis(h,BID)..
+             BES_dis(h,BID)=l=opt_fx_inv_BES_maxP(BID);
 *Assuming 1C discharging THIS IS PROBABLY NOT CORRECT
-             BES_dis(h,BID)=l=BES_en(h,BID);
+*BES_en(h,BID);
 *********************************
 
 eq_BES_Sdis2G(h,BID)..
@@ -566,10 +568,12 @@ eq_BFCh4(h,BID) ..
 ***************************************************
 eq_BFCh_ch(h,BID) ..
 *Assuming 1C charging
-             BFCh_ch(h,BID)=l=(BFCh_cap(BID)-BFCh_en(h,BID));
+             BFCh_ch(h,BID)=l=opt_fx_inv_BFCh_maxP(BID);
+*(BFCh_cap(BID)-BFCh_en(h,BID));
 eq_BFCh_dis(h,BID)..
 *Assuming 1C discharging
-             BFCh_dis(h,BID)=l=BFCh_en(h,BID);
+             BFCh_dis(h,BID)=l=opt_fx_inv_BFCh_maxP(BID);
+*BFCh_en(h,BID);
 ********************************************
 
 eq_BFCh_Sdis2G(h,BID)..
@@ -680,7 +684,7 @@ eq_hbalance1(h)..
              h_exp_AH(h) =l= h_Boiler1(h) + h_DH_slack_var(h);
 * Change to equal to test the slack variable
 eq_hbalance2(h)..
-             sum(BID,h_demand(h,BID)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Boiler1(h) + h_RGK1(h) + h_VKA1(h)
+             sum(BID,h_demand(h,BID)) =e=h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Boiler1(h) + h_RGK1(h) + h_VKA1(h)
                                      + h_VKA4(h) + H_Boiler2T(h) + 0.75*h_TURB(h) + h_RMMC(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
@@ -697,7 +701,7 @@ eq_hbalance3(h)..
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
 
-         sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=l=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
+         sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=e=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_HP(h) + c_RMInv(h)
 
                                 + c_AbsCInv(h)
@@ -705,7 +709,7 @@ eq_cbalance(h)..
 
 *--------------Demand supply balance for electricity ---------------------------
 eq_ebalance3(h)..
-        sum(BID,el_demand(h,BID)) =l= el_imp_AH(h) + el_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - el_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - el_RMMC(h)
+        sum(BID,el_demand(h,BID)) =e= el_imp_AH(h) + el_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - el_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - el_RMMC(h)
                                  + el_PV(h) - el_HP(h) - el_RMInv(h)
                                  + sum(BID_AH_el,(BES_dis_to_grid(h,BID_AH_el) - BES_ch_from_grid(h,BID_AH_el))+(BFCh_dis_to_grid(h,BID_AH_el) - BFCh_ch_from_grid(h,BID_AH_el)))
                                  + el_TURB(h);
