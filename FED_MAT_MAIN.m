@@ -408,9 +408,9 @@ sim_start_h=1;
 
 %Sim stop time
 
-sim_stop_y=2017;
-sim_stop_m=2;
-sim_stop_d=27;
+sim_stop_y=2016;
+sim_stop_m=3;
+sim_stop_d=1;%27;
 sim_stop_h=24;
 
 %Get month and hours of simulation
@@ -630,7 +630,7 @@ for t=sim_start:sim_stop
         CO2F_exG, PEF_exG, CO2F_DH, PEF_DH, MA_Cost_DH,...
         CO2F_PV, PEF_PV, CO2F_Boiler1, PEF_Boiler1, CO2F_Boiler2, PEF_Boiler2,...
         BID,BID_AH_el,BID_nonAH_el,BID_AH_h,BID_nonAH_h,BID_AH_c,BID_nonAH_c,BID_nonBTES,...
-        el_demand,h_demand,c_demand,qB1,qF1,...
+        el_demand,h_demand,c_demand,qB1,qF1,...        
         el_VKA1_0, el_VKA4_0,...
         h_AbsC_0,Gekv_roof,Gekv_facade,...
         BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,DH_heating_season,BAC_savings_period,...
@@ -643,7 +643,9 @@ for t=sim_start:sim_stop
         DH_Node_ID, DH_Nodes_Transfer_Limits,...
         DC_Node_ID, DC_Nodes_Transfer_Limits, el_exG_slack,h_DH_slack,c_DC_slack,h_exp_AH_hist, h_imp_AH_hist,opt_fx_inv_SO,opt_fx_inv_BAC);
 %el_AAC_0,
-    
+  
+  
+%%
     
     Time(2).point='Wgdx and Inputs';
     Time(2).value=toc;
@@ -655,99 +657,20 @@ for t=sim_start:sim_stop
     
 
  
- %% Store the results from each iteration
+%% Store the results from each iteration
 Results(t).dispatch = fstore_results(h,BID,BTES_properties,BusID);
-%% Write to Excel sheet
-tic
-t_step=t-sim_start+1;
-t
+
+% Store array to be exported to excel sheet
 % INITIALIZE output array
 if t==sim_start
 to_excel_el(1:sim_stop-sim_start,1:31)=0;
 to_excel_heat(1:sim_stop-sim_start,1:39)=0;
 to_excel_cool(1:sim_stop-sim_start,1:23)=0;
-to_excel_co2(1:sim_stop-sim_start,1:6)=0;
+to_excel_co2(1:sim_stop-sim_start,1:7)=0;
+
 end
+[to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
 
-%ELECTRICITY DATA
-to_excel_el(t_step,1)=t;
-to_excel_el(t_step,2)=Results(t).dispatch.el_TURB(1,2); 
-to_excel_el(t_step,4)=Results(t).dispatch.el_PV(1,2); 
-to_excel_el(t_step,6)=Results(t).dispatch.el_imp_AH(1,2);
-to_excel_el(t_step,8)=-Results(t).dispatch.el_AbsC(1,2);
-to_excel_el(t_step,10)=-Results(t).dispatch.el_VKA1(1,2);
-to_excel_el(t_step,12)=-Results(t).dispatch.el_VKA4(1,2);
-to_excel_el(t_step,14)=-Results(t).dispatch.el_HP(1,2);
-%to_excel_el(t_step,16)=-Results(t).dispatch.el_AAC(1,2);
-to_excel_el(t_step,18)=-Results(t).dispatch.el_RM(1,2);
-
-to_excel_el(t_step,20)=Results(t).dispatch.el_slack(1,2);
-to_excel_el(t_step,22)=Results(t).dispatch.el_slack_var(1,2);
-to_excel_el(t_step,24)=Results(t).dispatch.BES_en(find(Results(t).dispatch.BES_en(:,2)==33,1),3);
-to_excel_el(t_step,25)=-Results(t).dispatch.BES_ch(find(Results(t).dispatch.BES_ch(:,2)==33,1),3);
-to_excel_el(t_step,26)=Results(t).dispatch.BES_dis(find(Results(t).dispatch.BES_dis(:,2)==33,1),3);
-to_excel_el(t_step,27)=Results(t).dispatch.BFCh_en(find(Results(t).dispatch.BFCh_en(:,2)==20,1),3);
-to_excel_el(t_step,28)=-Results(t).dispatch.BFCh_ch(find(Results(t).dispatch.BFCh_ch(:,2)==20,1),3);
-to_excel_el(t_step,29)=Results(t).dispatch.BFCh_dis(find(Results(t).dispatch.BFCh_dis(:,2)==20,1),3);
-
-
-to_excel_el(t_step,30)=Results(t).dispatch.el_imp_nonAH(1,2);
-to_excel_el(t_step,31)=-Results(t).dispatch.elec_demand(1,2);
-
-%HEATING DATA
-to_excel_heat(t_step,1)=t; 
-to_excel_heat(t_step,2)=Results(t).dispatch.h_Boiler1(1,2); 
-to_excel_heat(t_step,4)=Results(t).dispatch.h_Boiler2(1,2); 
-to_excel_heat(t_step,6)=Results(t).dispatch.h_RGK1(1,2);
-to_excel_heat(t_step,8)=Results(t).dispatch.h_VKA1(1,2);
-to_excel_heat(t_step,10)=Results(t).dispatch.h_VKA4(1,2);
-to_excel_heat(t_step,12)=Results(t).dispatch.h_HP(1,2);
-to_excel_heat(t_step,14)=-Results(t).dispatch.h_exp_AH(1,2);
-to_excel_heat(t_step,16)=Results(t).dispatch.h_imp_AH(1,2);
-to_excel_heat(t_step,18)=Results(t).dispatch.H_Boiler2T(1,2);
-to_excel_heat(t_step,20)=Results(t).dispatch.h_TURB(1,2)*0.75;
-to_excel_heat(t_step,22)=-Results(t).dispatch.h_AbsC(1,2);
-to_excel_heat(t_step,24)=sum(Results(t).dispatch.h_BAC_savings(find(Results(t).dispatch.h_BAC_savings(:,1)==1),3));
-
-to_excel_heat(t_step,26)=Results(t).dispatch.h_slack(1,2);
-to_excel_heat(t_step,28)=Results(t).dispatch.h_slack_var(1,2);
-
-to_excel_heat(t_step,30)=sum(Results(t).dispatch.BAC_Sen(find(Results(t).dispatch.BAC_Sen(:,1)==1),3));
-to_excel_heat(t_step,31)=-sum(Results(t).dispatch.BAC_Sch(find(Results(t).dispatch.BAC_Sch(:,1)==1),3));
-to_excel_heat(t_step,32)=sum(Results(t).dispatch.BAC_Sdis(find(Results(t).dispatch.BAC_Sdis(:,1)==1),3));
-to_excel_heat(t_step,33)=sum(Results(t).dispatch.BAC_Den(find(Results(t).dispatch.BAC_Den(:,1)==1),3));
-
-to_excel_heat(t_step,34)=sum(Results(t).dispatch.SO_Sen(find(Results(t).dispatch.SO_Sen(:,1)==1),3));
-to_excel_heat(t_step,35)=-sum(Results(t).dispatch.SO_Sch(find(Results(t).dispatch.SO_Sch(:,1)==1),3));
-to_excel_heat(t_step,36)=sum(Results(t).dispatch.SO_Sdis(find(Results(t).dispatch.SO_Sdis(:,1)==1),3));
-to_excel_heat(t_step,37)=sum(Results(t).dispatch.SO_Den(find(Results(t).dispatch.SO_Den(:,1)==1),3));
-
-
-to_excel_heat(t_step,38)=Results(t).dispatch.h_imp_nonAH(1,2);
-to_excel_heat(t_step,39)=-Results(t).dispatch.heat_demand(1,2);
-
-% COOLING DATA
-to_excel_cool(t_step,1)=t; 
-to_excel_cool(t_step,2)=Results(t).dispatch.c_VKA1(1,2);
-to_excel_cool(t_step,4)=Results(t).dispatch.c_VKA4(1,2);
-to_excel_cool(t_step,6)=Results(t).dispatch.c_HP(1,2);
-to_excel_cool(t_step,8)=Results(t).dispatch.c_slack(1,2);
-to_excel_cool(t_step,10)=Results(t).dispatch.c_AbsC(1,2);
-%to_excel_cool(t_step,12)=Results(t).dispatch.c_AAC(1,2);
-to_excel_cool(t_step,14)=Results(t).dispatch.c_RM(1,2); 
-to_excel_cool(t_step,16)=Results(t).dispatch.c_RMMC(1,2); 
-to_excel_cool(t_step,18)=Results(t).dispatch.CWB_en(1,2); 
-to_excel_cool(t_step,19)=-Results(t).dispatch.CWB_ch(1,2); 
-to_excel_cool(t_step,20)=Results(t).dispatch.CWB_dis(1,2); 
-to_excel_cool(t_step,23)=-Results(t).dispatch.cool_demand(1,2); 
-
-to_excel_co2(t_step,1)=t;
-to_excel_co2(t_step,2)=Results(t).dispatch.FED_PE(1,2);
-to_excel_co2(t_step,3)=Results(t).dispatch.FED_CO2(1,2);
-to_excel_co2(t_step,4)=Results(t).dispatch.AH_PE(1,2);
-to_excel_co2(t_step,5)=Results(t).dispatch.AH_CO2(1,2);
-to_excel_co2(t_step,6)=Results(t).dispatch.model_status(1);
-toc
 
 end
 tic

@@ -109,7 +109,6 @@ equation
 
            eq_maximum_BTES_investments   Limits BTES Bids preventing double investments
 
-
            eq_BES1       intial energy in the Battery
            eq_BES2       energy in the Battery at hour h
            eq_BES3       maximum energy in the Battery
@@ -124,7 +123,6 @@ equation
            eq_BES_reac6  equation 6 for reactive power of BES
            eq_BES_reac7  equation 7 for reactive power of BES
            eq_BES_reac8  equation 8 for reactive power of BES
-
            eq_BFCh1       intial energy in the Battery Fast charge
            eq_BFCh2       energy in the Battery Fast Charge at hour h
            eq_BFCh3       maximum energy in the Battery Fast Charge
@@ -503,7 +501,6 @@ eq_maximum_BTES_investments(BID)..
 *------------------Building Pump Stop equations---------------------------------
 
 *-----------------Battery constraints-------------------------------------------
-
 eq_BES1(h,BID) $ (ord(h) eq 1)..
              BES_en(h,BID)=e= (opt_fx_inv_BES_init(h,BID)+BES_ch(h,BID)-BES_dis(h,BID));
 
@@ -783,6 +780,7 @@ eq_var_cost_existing..
 *Peak power tariffs for both electricty? and heating are supposed to be included in prices?
          var_cost_existing =e= sum(h,(el_imp_AH(h) + el_imp_nonAH(h)) * utot_cost('exG',h))
                                - sum(h,el_exp_AH(h) * el_sell_price(h))
+                               + sum(h,el_AbsC(h) * utot_cost('exG',h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h)) * utot_cost('DH',h))
                                - sum(h,h_exp_AH(h) * utot_cost('DH',h))
                                + sum(h,h_Boiler1(h) * utot_cost('P1',h))
