@@ -320,6 +320,8 @@ AH_PE(h)= ( el_imp_AH.l(h)-el_exp_AH.l(h))*PEF_exG(h)
             + el_PV.l(h)*PEF_PV
             + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*PEF_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*PEF_Boiler1
                      + fuel_Boiler2.l(h)*PEF_Boiler2;
+
+
 $ontext
 MA_AH_PE(h)= (el_imp_AH.l(h)-el_exp_AH.l(h))*MA_PEF_exG(h)
               + el_PV.l(h)*PEF_PV
@@ -395,17 +397,18 @@ execute_unload 'GtoM'  min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       h_DH_slack, h_DH_slack_var, c_DC_slack, c_DC_slack_var, el_slack_var, el_exG_slack
                       TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES, TES_dis_eff, TES_chr_eff,
                       BTES_dis_eff, BTES_chr_eff,   BTES_model,
-                      SO_Sch, SO_Sdis, SO_Sen, SO_Den, SO_Sloss, SO_Dloss, SO_link_BS_BD, B_SO,  invCost_SO,
-                      BAC_Sch, BAC_Sdis, BAC_Sen, BAC_Den, BAC_Sloss, BAC_Dloss, BAC_link_BS_BD, B_BAC, invCost_BAC, BTES_model,
+                      SO_Sch, SO_Sdis_to_grid , SO_Sch_from_grid, SO_Sdis, SO_Sen, SO_Den, SO_Sloss, SO_Dloss, SO_link_BS_BD, B_SO,  invCost_SO,
+                      BAC_Sch, BAC_Sch_from_grid, BAC_Sdis_to_grid, BAC_Sdis, BAC_Sen, BAC_Den, BAC_Sloss, BAC_Dloss, BAC_link_BS_BD, B_BAC, invCost_BAC, BTES_model,
+
                       h_BAC_savings, B_BAC, invCost_BAC, BAC_savings_period, BAC_savings_factor,
                       el_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
-                      BES_en, BES_ch, BES_dis, BES_cap, invCost_BEV, BES_dis_eff, BES_ch_eff,
+                      BES_en, BES_ch, BES_dis,BES_dis_to_grid, BES_ch_from_grid, BES_cap, invCost_BEV, BES_dis_eff, BES_chr_eff,
                       PT_exG, max_exG, PT_DH, mean_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
                       AH_PE, AH_CO2,
                       DH_export_season, P1P2_dispatchable, inv_lim,
-                      c_RMInv, el_RMInv, RMInv_cap, invCost_RMInv,BFCh_en,BFCh_ch,
+                      c_RMInv, el_RMInv, RMInv_cap, invCost_RMInv,BFCh_en,BFCh_ch, BFCh_dis_to_grid, BFCh_ch_from_grid,
                       BES_reac,BFCh_reac,BFCh_dis,el_TURB_reac,el_PV_reac_roof,el_PV_act_roof,el_TURB_reac,
                       model_status,B_Heating_cost,B_Electricity_cost,B_Cooling_cost
                       tot_var_cost_AH, sim_PT_exG,PT_DH, tot_fixed_cost, fix_cost_existing_AH, fix_cost_new_AH, var_cost_existing_AH, var_cost_new_AH,

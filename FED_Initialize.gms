@@ -269,10 +269,10 @@ BTES_kDloss(BID)= BTES_model('kloss_D',BID);
 
 *--------------Battery storage characteristics----------------------------------
 scalar
-         BES_ch_eff    Charging efficiency /0.95/
+         BES_chr_eff    Charging efficiency /0.95/
          BES_dis_eff   Discharding efficiency /0.95/
          BES_min_SOC   Minimum State of charge /0.20/
-         BFCh_ch_eff    Charging efficiency /0.95/
+         BFCh_chr_eff    Charging efficiency /0.95/
          BFCh_dis_eff   Discharding efficiency /0.95/
          BFCh_min_SOC   Minimum State of charge /0.20/
 ;

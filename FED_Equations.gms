@@ -90,6 +90,8 @@ equation
            eq_BAC_D_init    initial energy stored in deep storage of BAC
            eq_BAC_Sch       limit on maximum hourly charging of BAC shallow
            eq_BAC_Sdis      limit on maximum hourly discharging of BAC shallow
+           eq_BAC_Sdis2G        Estimate the useful energy discharged from the BAC storage
+           eq_BAC_Sch_from_grid Estimate the useful energy stored in the BAC storage
            eq_BAC_S_change  hourly change in energy stored in shallow storage of BAC
            eq_BAC_D_change  hourly change in energy stored in deep storage of BAC
            eq_BAC_link      hourly flow between shallow and deep storage of BAC
@@ -101,6 +103,8 @@ equation
            eq_SO_D_init    initial energy stored in deep storage of SO
            eq_SO_Sch       limit on maximum hourly charging of SO shallow
            eq_SO_Sdis      limit on maximum hourly discharging of SO shallo
+           eq_SO_Sdis2G        Estimate the useful energy discharged from the SO storage
+           eq_SO_Sch_from_grid Estimate the useful energy stored in the SO storage
            eq_SO_S_change  hourly change in energy stored in shallow storage of SO
            eq_SO_D_change  hourly change in energy stored in deep storage of SO
            eq_SO_link      hourly flow between shallow and deep storage of SO
@@ -115,6 +119,8 @@ equation
            eq_BES4       Limit minimum SoC
            eq_BES_ch     maximum charging limit
            eq_BES_dis    maximum discharign limit
+           eq_BES_Sdis2G        Estimate the useful energy discharged from the BES storage
+           eq_BES_Sch_from_grid Estimate the useful energy stored in the BES storage
            eq_BES_reac1  equation 1 for reactive power of BES
            eq_BES_reac2  equation 2 for reactive power of BES
            eq_BES_reac3  equation 3 for reactive power of BES
@@ -129,6 +135,8 @@ equation
            eq_BFch4       Limit minimum SoC
            eq_BFCh_ch     maximum charging limit
            eq_BFCh_dis    maximum discharging limit
+           eq_BFCh_Sdis2G        Estimate the useful energy discharged from the BFCh storage
+           eq_BFCh_Sch_from_grid Estimate the useful energy stored in the BFCh storage
            eq_BFCh_reac1  equation 1 for reactive power of BFCh
            eq_BFCh_reac2  equation 2 for reactive power of BFCh
            eq_BFCh_reac3  equation 3 for reactive power of BFCh
@@ -439,6 +447,11 @@ eq_BAC_Sch(h,BID)..
 eq_BAC_Sdis(h,BID)..
          BAC_Sdis(h,BID) =l= B_BAC(BID)*BTES_Sdis_max(h,BID);
 
+eq_BAC_Sdis2G(h,BID)..
+         BAC_Sdis_to_grid(h,BID) =e= BAC_Sdis(h,BID)*BTES_dis_eff;
+
+eq_BAC_Sch_from_grid(h,BID)..
+         BAC_Sch_from_grid(h,BID) =e= BAC_Sch(h,BID)/BTES_chr_eff;
 
 eq_BAC_S_change(h,BID) $ (ord(h) gt 1)..
         BAC_Sen(h,BID) =e= (BTES_kSloss(BID)*BAC_Sen(h-1,BID) - BAC_Sdis(h,BID)/BTES_Sdis_eff
@@ -478,6 +491,11 @@ eq_SO_Sch(h,BID)..
 eq_SO_Sdis(h,BID)..
          SO_Sdis(h,BID) =l= B_SO(BID)*BTES_SO_max_power(BID);
 
+eq_SO_Sdis2G(h,BID)..
+         SO_Sdis_to_grid(h,BID) =e= SO_Sdis(h,BID)*BTES_dis_eff;
+
+eq_SO_Sch_from_grid(h,BID)..
+         SO_Sch_from_grid(h,BID) =e= SO_Sch(h,BID)/BTES_chr_eff;
 
 eq_SO_S_change(h,BID) $ (ord(h) gt 1)..
         SO_Sen(h,BID) =e= (BTES_kSloss(BID)*SO_Sen(h-1,BID) - SO_Sdis(h,BID)/BTES_Sdis_eff
@@ -510,12 +528,24 @@ eq_BES3(h,BID) ..
              BES_en(h,BID)=l=BES_cap(BID);
 eq_BES4(h,BID) ..
              BES_en(h,BID)=g=BES_cap(BID)*BES_min_SOC;
+
+****************
 eq_BES_ch(h,BID) ..
+             BES_ch(h,BID)=l=opt_fx_inv_BES_maxP(BID);
 *Assuming 1C charging
-             BES_ch(h,BID)=l=(BES_cap(BID)-BES_en(h,BID));
+*(BES_cap(BID)-BES_en(h,BID));
 eq_BES_dis(h,BID)..
-*Assuming 1C discharging
-             BES_dis(h,BID)=l=BES_en(h,BID);
+             BES_dis(h,BID)=l=opt_fx_inv_BES_maxP(BID);
+*Assuming 1C discharging THIS IS PROBABLY NOT CORRECT
+*BES_en(h,BID);
+*********************************
+
+eq_BES_Sdis2G(h,BID)..
+         BES_dis_to_grid(h,BID) =e= BES_dis(h,BID)*BES_dis_eff;
+
+eq_BES_Sch_from_grid(h,BID)..
+         BES_ch_from_grid(h,BID) =e= BES_ch(h,BID)/BES_chr_eff;
+
 
 eq_BES_reac1(h,BID)..BES_reac(h,BID)=l=opt_fx_inv_BES_maxP(BID);
 eq_BES_reac2(h,BID)..BES_reac(h,BID)=g=-opt_fx_inv_BES_maxP(BID);
@@ -535,12 +565,23 @@ eq_BFCh3(h,BID) ..
              BFCh_en(h,BID)=l=BFCh_cap(BID);
 eq_BFCh4(h,BID) ..
              BFCh_en(h,BID)=g=BFCh_cap(BID)*BFCh_min_SOC;
+***************************************************
 eq_BFCh_ch(h,BID) ..
 *Assuming 1C charging
-             BFCh_ch(h,BID)=l=(BFCh_cap(BID)-BFCh_en(h,BID));
+             BFCh_ch(h,BID)=l=opt_fx_inv_BFCh_maxP(BID);
+*(BFCh_cap(BID)-BFCh_en(h,BID));
 eq_BFCh_dis(h,BID)..
 *Assuming 1C discharging
-             BFCh_dis(h,BID)=l=BFCh_en(h,BID);
+             BFCh_dis(h,BID)=l=opt_fx_inv_BFCh_maxP(BID);
+*BFCh_en(h,BID);
+********************************************
+
+eq_BFCh_Sdis2G(h,BID)..
+         BFCh_dis_to_grid(h,BID) =e= BFCh_dis(h,BID)*BFCh_dis_eff;
+
+eq_BFCh_Sch_from_grid(h,BID)..
+         BFCh_ch_from_grid(h,BID) =e= BFCh_ch(h,BID)/BFCh_chr_eff;
+
 
 eq_BFCh_reac1(h,BID)..BFCh_reac(h,BID)=l=opt_fx_inv_BFCh_maxP(BID);
 eq_BFCh_reac2(h,BID)..BFCh_reac(h,BID)=g=-opt_fx_inv_BFCh_maxP(BID);
@@ -643,22 +684,24 @@ eq_hbalance1(h)..
              h_exp_AH(h) =l= h_Boiler1(h) + h_DH_slack_var(h);
 * Change to equal to test the slack variable
 eq_hbalance2(h)..
-             sum(BID,h_demand(h,BID)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Boiler1(h) + h_RGK1(h) + h_VKA1(h)
+             sum(BID,h_demand(h,BID)) =e=h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Boiler1(h) + h_RGK1(h) + h_VKA1(h)
                                      + h_VKA4(h) + H_Boiler2T(h) + 0.75*h_TURB(h) + h_RMMC(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
-                                     + (sum(BID,BAC_Sdis(h,BID))*BTES_dis_eff - sum(BID,BAC_Sch(h,BID))/BTES_chr_eff)
-                                     + (sum(BID,SO_Sdis(h,BID))*BTES_dis_eff - sum(BID,SO_Sch(h,BID))/BTES_chr_eff)
+                                     + (sum(BID,BAC_Sdis_to_grid(h,BID)) - sum(BID,BAC_Sch_from_grid(h,BID)))
+                                     + (sum(BID,SO_Sdis_to_grid(h,BID)) - sum(BID,SO_Sch_from_grid(h,BID)))
                                      + (sum(BID,h_BAC_savings(h,BID)))
                                      - h_AbsCInv(h);
 eq_hbalance3(h)..
              h_imp_nonAH(h)=e=sum(BID_nonAH_h,h_demand_nonAH(h,BID_nonAH_h))
                        - (sum(BID_nonAH_h,BAC_Sdis(h,BID_nonAH_h))*BTES_dis_eff-sum(BID_nonAH_h,BAC_Sch(h,BID_nonAH_h))/BTES_chr_eff);
 
+
+
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
 
-         sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=l=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
+         sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=e=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_HP(h) + c_RMInv(h)
 
                                 + c_AbsCInv(h)
@@ -666,9 +709,9 @@ eq_cbalance(h)..
 
 *--------------Demand supply balance for electricity ---------------------------
 eq_ebalance3(h)..
-        sum(BID,el_demand(h,BID)) =l= el_imp_AH(h) + el_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - el_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - el_RMMC(h)
+        sum(BID,el_demand(h,BID)) =e= el_imp_AH(h) + el_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - el_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - el_RMMC(h)
                                  + el_PV(h) - el_HP(h) - el_RMInv(h)
-                                 + sum(BID_AH_el,(BES_dis(h,BID_AH_el)*BES_dis_eff - BES_ch(h,BID_AH_el)/BES_ch_eff)+(BFCh_dis(h,BID_AH_el)*BFCh_dis_eff - BFCh_ch(h,BID_AH_el)/BFCh_ch_eff))
+                                 + sum(BID_AH_el,(BES_dis_to_grid(h,BID_AH_el) - BES_ch_from_grid(h,BID_AH_el))+(BFCh_dis_to_grid(h,BID_AH_el) - BFCh_ch_from_grid(h,BID_AH_el)))
                                  + el_TURB(h);
 eq_ebalance4(h)..
         sum(BID_nonAH_el,el_demand(h,BID_nonAH_el)) =e= el_imp_nonAH(h);

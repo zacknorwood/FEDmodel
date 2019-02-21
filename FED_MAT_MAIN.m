@@ -187,7 +187,9 @@ opt_fx_inv = struct('name','opt_fx_inv','type','parameter','form','full','val',1
 
 %Option for RMMC investment
 %0=no investment, 1=fixed investment, -1=variable of optimization
-opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',0);
+% For FED run =1
+opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',1);
+%opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',0);
 
 %Option for new AbsChiller investment
 %>=0=fixed investment, -1=variable of optimization
@@ -410,7 +412,7 @@ sim_start_h=1;
 
 sim_stop_y=2016;
 sim_stop_m=3;
-sim_stop_d=1;%27;
+sim_stop_d=2;
 sim_stop_h=24;
 
 %Get month and hours of simulation
@@ -652,7 +654,9 @@ for t=sim_start:sim_stop
     tic
     
     if opt_RunGAMSModel==1
+        tic
         system 'gams FED_SIMULATOR_MAIN lo=2';
+        toc
     end
     
 

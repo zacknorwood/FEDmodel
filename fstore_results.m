@@ -121,12 +121,12 @@ data.CWB_ch=gdx2mat(gdxData,'CWB_ch',{h_sim.uels});
 data.CWB_dis=gdx2mat(gdxData,'CWB_dis',{h_sim.uels});
 
 data.BES_en=gdx2mat(gdxData,'BES_en',{h_sim.uels,BID.uels});
-data.BES_ch=gdx2mat(gdxData,'BES_ch',{h_sim.uels,BID.uels});
-data.BES_dis=gdx2mat(gdxData,'BES_dis',{h_sim.uels,BID.uels});
+data.BES_ch=gdx2mat(gdxData,'BES_ch_from_grid',{h_sim.uels,BID.uels});
+data.BES_dis=gdx2mat(gdxData,'BES_dis_to_grid',{h_sim.uels,BID.uels});
 data.BES_reac=gdx2mat(gdxData,'BES_reac',{h_sim.uels,BID.uels});
 data.BFCh_en=gdx2mat(gdxData,'BFCh_en',{h_sim.uels,BID.uels});
-data.BFCh_ch=gdx2mat(gdxData,'BFCh_ch',{h_sim.uels,BID.uels});
-data.BFCh_dis=gdx2mat(gdxData,'BFCh_dis',{h_sim.uels,BID.uels});
+data.BFCh_ch=gdx2mat(gdxData,'BFCh_ch_from_grid',{h_sim.uels,BID.uels});
+data.BFCh_dis=gdx2mat(gdxData,'BFCh_dis_to_grid',{h_sim.uels,BID.uels});
 data.BFCh_reac=gdx2mat(gdxData,'BFCh_reac',{h_sim.uels,BID.uels});
 data.TES_ch=gdx2mat(gdxData,'TES_ch',h_sim.uels);
 data.TES_dis=gdx2mat(gdxData,'TES_dis',h_sim.uels);
@@ -141,8 +141,8 @@ data.TES_chr_eff=gdx2mat(gdxData,'TES_chr_eff');
 data.BTES_model=gdx2mat(gdxData,'BTES_model',{BTES_properties.uels,BID.uels});
 
 %BAC
-data.BAC_Sch=gdx2mat(gdxData,'BAC_Sch',{h_sim.uels,BID.uels});
-data.BAC_Sdis=gdx2mat(gdxData,'BAC_Sdis',{h_sim.uels,BID.uels});
+data.BAC_Sch=gdx2mat(gdxData,'BAC_Sch_from_grid',{h_sim.uels,BID.uels});
+data.BAC_Sdis=gdx2mat(gdxData,'BAC_Sdis_to_grid',{h_sim.uels,BID.uels});
 data.BAC_Sen=gdx2mat(gdxData,'BAC_Sen',{h_sim.uels,BID.uels});
 data.BAC_Den=gdx2mat(gdxData,'BAC_Den',{h_sim.uels,BID.uels});
 data.BAC_Sloss=gdx2mat(gdxData,'BAC_Sloss',{h_sim.uels,BTES_properties.uels});
@@ -157,8 +157,8 @@ data.BAC_savings_period=gdx2mat(gdxData,'BAC_savings_period',h_sim.uels);
 
 %Setpoint Offset
 
-data.SO_Sch=gdx2mat(gdxData,'SO_Sch',{h_sim.uels,BID.uels});
-data.SO_Sdis=gdx2mat(gdxData,'SO_Sdis',{h_sim.uels,BID.uels});
+data.SO_Sch=gdx2mat(gdxData,'SO_Sch_from_grid',{h_sim.uels,BID.uels});
+data.SO_Sdis=gdx2mat(gdxData,'SO_Sdis_to_grid',{h_sim.uels,BID.uels});
 data.SO_Sen=gdx2mat(gdxData,'SO_Sen',{h_sim.uels,BID.uels});
 data.SO_Den=gdx2mat(gdxData,'SO_Den',{h_sim.uels,BID.uels});
 % data.BTES_Sloss=gdx2mat(gdxData,'BAC_Sloss',{h_sim.uels,BTES_properties.uels});
