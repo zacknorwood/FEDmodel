@@ -164,6 +164,8 @@ TES_cap.fx $ (opt_fx_inv_TES_cap gt -1) = opt_fx_inv_TES_cap;
 positive variable
          BAC_Sch(h,BID)    charing rate of shallow section of the building
          BAC_Sdis(h,BID)   dischargin rate of shallow section of the building
+         BAC_Sdis_to_grid(h,BID)  Useful discharging energy to the grid
+         BAC_Sch_from_grid(h,BID) Useful charging energy from the grid
          BAC_Sen(h,BID)    energy stored in the shallow section of the building
          BAC_Den(h,BID)    energy stored in the deep section of the building
          BAC_Sloss(h,BID)  heat loss from the shallow section of the building
@@ -188,6 +190,8 @@ B_BAC.fx(BTES_BAC_Inv) $ (opt_fx_inv eq 1 and opt_fx_inv_BAC eq 1)=1;
 positive variable
          SO_Sch(h,BID)    charing rate of shallow section of the building
          SO_Sdis(h,BID)   dischargin rate of shallow section of the building
+         SO_Sdis_to_grid(h,BID)  Useful discharging energy to the grid
+         SO_Sch_from_grid(h,BID) Useful charging energy from the grid
          SO_Sen(h,BID)    energy stored in the shallow section of the building
          SO_Den(h,BID)    energy stored in the deep section of the building
          SO_Sloss(h,BID)  heat loss from the shallow section of the building
@@ -224,11 +228,15 @@ positive variables
          BES_en(h,BID)     Energy stored in the battry at time t and building BID
          BES_ch(h,BID)       Battery charing at time t and building BID
          BES_dis(h,BID)      Battery discharging at time t and building BID
+         BES_dis_to_grid(h,BID)  Useful discharging energy to the grid
+         BES_ch_from_grid(h,BID) Useful charging energy from the grid
          BES_cap(BID)         Capacity of the battery at building BID
 
          BFCh_en(h,BID)       Energy stored in the battery at time t and building BID
          BFCh_ch(h,BID)       Battery charing at time t and building BID
          BFCh_dis(h,BID)      Battery discharging at time t and building BID
+         BFCh_dis_to_grid(h,BID)  Useful discharging energy to the grid
+         BFCh_ch_from_grid(h,BID) Useful charging energy from the grid
          BFCh_cap(BID)         Capacity of the battery at building BID
 ;
 BES_cap.fx(BID) $ (opt_fx_inv eq 1 and opt_fx_inv_BES eq 1) = opt_fx_inv_BES_cap(BID);
