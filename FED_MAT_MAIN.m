@@ -188,57 +188,56 @@ opt_fx_inv = struct('name','opt_fx_inv','type','parameter','form','full','val',1
 %Option for RMMC investment
 %0=no investment, 1=fixed investment, -1=variable of optimization
 % For FED run =1
-opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',1);
-%opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',0);
+opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',1*(1-min_totCost_0));
 
 %Option for new AbsChiller investment
-%>=0=fixed investment, -1=variable of optimization
-opt_fx_inv_AbsCInv_cap = struct('name','opt_fx_inv_AbsCInv_cap','type','parameter','form','full','val',0);
+%>=0-XX=fixed investment with capacity 0 or XX, -1=variable of optimization
+opt_fx_inv_AbsCInv_cap = struct('name','opt_fx_inv_AbsCInv_cap','type','parameter','form','full','val',0*(1-min_totCost_0));
 
 %Option for P2 investment
 %0=no investment, 1=fixed investment, -1=variable of optimization
-opt_fx_inv_Boiler2 = struct('name','opt_fx_inv_Boiler2','type','parameter','form','full','val',1);
+opt_fx_inv_Boiler2 = struct('name','opt_fx_inv_Boiler2','type','parameter','form','full','val',1*(1-min_totCost_0));
 
 %Option for Turbine investment
 %0=no investment, 1=fixed investment, -1=variable of optimization
-opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',1);
+opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',1*(1-min_totCost_0));
 
 %Option for new HP investment
 %>=0 =fixed investment, -1=variable of optimization; 630 kw is heating capacity of the HP invested in
-opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',630);
+opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',630*(1-min_totCost_0));
 
 %Option for new RM investment
 %>=0 =fixed investment, -1=variable of optimization
-opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','form','full','val',0);
+opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','form','full','val',0*(1-min_totCost_0));
 
 %Option for TES investment
 %>=0 =fixed investment, -1=variable of optimization
-opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',0);
+opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',0*(1-min_totCost_0));
 
 %Option for BES investment
-opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',1);
+opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',1*(1-min_totCost_0));
 %must be set to 200
-opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',200);
+opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',200*(1-min_totCost_0));
 opt_fx_inv_BES_cap.uels={'O0007027'}; %OBS: Refers to bus 28
 %must be set to 100
-opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full','val',100);
+opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full','val',100*(1-min_totCost_0));
 opt_fx_inv_BES_maxP.uels=opt_fx_inv_BES_cap.uels;
 
 %Option for BFCh investment  % Why is this battery investment separate?-ZN
-opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',0);
+opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',1*(1-min_totCost_0));
 %must be set to 100
-opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full','val',100);
+opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full','val',100*(1-min_totCost_0));
 opt_fx_inv_BFCh_cap.uels={'O0007028'}; %OBS: Refers to Bus 5
 %must be set to 50
-opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full','val',50);
+opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full','val',50*(1-min_totCost_0));
 opt_fx_inv_BFCh_maxP.uels=opt_fx_inv_BFCh_cap.uels;
 
 %Option for Building Thermal Energy Storage solutions. Should be set to 1
 %for FED investments. If set to 0 no BTES will be used (Investment option
 %not implemented)
 % AK SHould 'O0007024' be included?
-opt_fx_inv_BAC = struct('name','opt_fx_inv_BAC','type','parameter','form','full','val',1);
-opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','val',1);
+opt_fx_inv_BAC = struct('name','opt_fx_inv_BAC','type','parameter','form','full','val',1*(1-min_totCost_0));
+opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','val',1*(1-min_totCost_0));
 
 BTES_BAC_uels = {'O0007006', 'O0007012', 'O0007017', 'O0007023', 'O0007026', 'O3060135', 'O3060133'}; %Buildings with Advanced Control (BAC) system
 BTES_PS_uels = {'O0011001', 'O0007888'}; % Buildings with Pump Stop (PS) capability
@@ -274,7 +273,7 @@ PV_roof_cap_existing=[48 40]; % According to "solceller lista p� anl�ggninga
 %Capacity of roof PVs (Investments)
 %Note that these need to be set to zero if running the base case without PV investments.
 %PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]; % According to solceller lista p� anl�ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
+PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]*(1-min_totCost_0); % According to solceller lista p� anl�ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
 %the project plan for FED according to AH hence that capacity being zero.
 
 %Merge all roof PV capacities and create struct for GAMS
@@ -671,8 +670,8 @@ to_excel_el(1:sim_stop-sim_start,1:31)=0;
 to_excel_heat(1:sim_stop-sim_start,1:39)=0;
 to_excel_cool(1:sim_stop-sim_start,1:23)=0;
 to_excel_co2(1:sim_stop-sim_start,1:7)=0;
-
 end
+
 [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
 
 
