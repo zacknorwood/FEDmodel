@@ -77,7 +77,7 @@ positive variable
          CWB_ch(h)       hourly charging of basin
          CWB_dis(h)      hourly discharging of basin
 ;
-CWB_en.up(h) = CWB_max_cap_kwh;
+CWB_en.up(h) = CWB_max_cap_kwh$(min_totCost_0 = 0)+0$(min_totCost_0 = 1);
 CWB_ch.up(h) = CWB_ch_max;
 CWB_dis.up(h) = CWB_dis_max;
 

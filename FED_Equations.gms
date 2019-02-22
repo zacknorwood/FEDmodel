@@ -425,7 +425,7 @@ eq_TESinv(h)..
 
 *----------Cold Water Basin equations (cold storage)----------------------------
 eq_CWB_en_init(h)$(ord(h) eq 1)..
-         CWB_en(h) =e= CWB_en_init+CWB_ch(h)-CWB_dis(h);
+         CWB_en(h) =e= opt_fx_inv_CWB_init+CWB_ch(h)-CWB_dis(h);
 eq_CWB_en(h)$(ord(h) gt 1)..
          CWB_en(h) =e= CWB_en(h-1)+CWB_ch(h)-CWB_dis(h);
 
@@ -684,7 +684,7 @@ eq_hbalance1(h)..
              h_exp_AH(h) =l= h_Boiler1(h) + h_DH_slack_var(h);
 * Change to equal to test the slack variable
 eq_hbalance2(h)..
-             sum(BID,h_demand(h,BID)) =e=h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Boiler1(h) + h_RGK1(h) + h_VKA1(h)
+             sum(BID,h_demand(h,BID)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Boiler1(h) + h_RGK1(h) + h_VKA1(h)
                                      + h_VKA4(h) + H_Boiler2T(h) + 0.75*h_TURB(h) + h_RMMC(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)

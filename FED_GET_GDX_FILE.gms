@@ -393,6 +393,7 @@ $GDXIN
 
 *-------Initial SoC of Storage systems------*
 Parameters
+      opt_fx_inv_CWB_init           Initial SOC CWB
       opt_fx_inv_BES_init(h,BID)    BES Init. energy level (SoC in kWh)
       opt_fx_inv_BFCh_init(h,BID)   BFCh Init. energy level (SOC in kWh)
 *      opt_fx_inv_TES_init    TES Init. SoC
@@ -414,6 +415,7 @@ Parameters
 
 ;
 $GDXIN MtoG.gdx
+$load opt_fx_inv_CWB_init
 $load opt_fx_inv_BES_init
 $load opt_fx_inv_BFCh_init
 *$load opt_fx_inv_TES_init

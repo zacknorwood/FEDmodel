@@ -214,6 +214,20 @@ opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','
 %>=0 =fixed investment, -1=variable of optimization
 opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',0*(1-min_totCost_0));
 
+
+%Option for Cold water basin CURRENTLY NOT IN USE
+warning('CURRENTLY CWB DATA IS SET IN GAMS')
+opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0));
+%must be set to 200
+opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0));
+opt_fx_inv_CWB_cap.uels={'O0007027'}; %OBS: Refers to bus 28
+%must be set to 100
+opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter','form','full','val',203.5*(1-min_totCost_0));
+opt_fx_inv_CWB_ch_max.uels=opt_fx_inv_CWB_cap.uels;
+opt_fx_inv_CWB_dis_max = struct('name','opt_fx_inv_CWB_dis_max','type','parameter','form','full','val',35*(1-min_totCost_0));
+opt_fx_inv_CWB_dis_max.uels=opt_fx_inv_CWB_cap.uels;
+
+
 %Option for BES investment
 opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',1*(1-min_totCost_0));
 %must be set to 200
@@ -589,10 +603,12 @@ for t=sim_start:sim_stop
         Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',0);
         Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',0);
         
+        opt_fx_inv_CWB_init = struct('name','opt_fx_inv_CWB_init','type','parameter','form','full','val',0);
+             
     else
         % The initial conditions for t-1 are read in from ReadGtoM.
         % Note only the .value fields of the rgdx GAMS structure are passed in here.
-        [BTES_BAC_D_init, BTES_BAC_S_init, BTES_SO_S_init, BTES_SO_D_init, BES_init, BFCh_init, Boiler1_init, Boiler2_init] = readGtoM(t-1, BTES_BAC_uels, BTES_SO_uels, BES_BID_uels, BFCh_BID_uels);
+        [CWB_init, BTES_BAC_D_init, BTES_BAC_S_init, BTES_SO_S_init, BTES_SO_D_init, BES_init, BFCh_init, Boiler1_init, Boiler2_init] = readGtoM(t-1, BTES_BAC_uels, BTES_SO_uels, BES_BID_uels, BFCh_BID_uels);
         
         % Here the values are restructured to be written to GAMS. Note that
         % the BTES structures need to have uels to specify what buildings,
@@ -610,7 +626,9 @@ for t=sim_start:sim_stop
         % AK implement PS
         %opt_fx_inv_BTES_PS_init = struct('name','opt_fx_inv_BTES_PS_init','type','parameter','form','full','val',BTES_PS_init); 
         %opt_fx_inv_BTES_PS_init.uels = {num2cell(t), BTES_PS_uels};
-        
+      
+        opt_fx_inv_CWB_init = struct('name','opt_fx_inv_CWB_init','type','parameter','form','full','val',CWB_init);
+      
         opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',BES_init);
         opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
         opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',BFCh_init);
@@ -627,6 +645,7 @@ for t=sim_start:sim_stop
         opt_fx_inv_Boiler2,opt_fx_inv_TURB,opt_fx_inv_HP_cap,...
         opt_fx_inv_RMInv_cap,...
         opt_fx_inv_TES_cap,...
+        opt_fx_inv_CWB_init,...
         opt_fx_inv_BES, opt_fx_inv_BES_cap, h, BTES_BAC_Inv, BTES_SO_Inv,...
         CO2F_exG, PEF_exG, CO2F_DH, PEF_DH, MA_Cost_DH,...
         CO2F_PV, PEF_PV, CO2F_Boiler1, PEF_Boiler1, CO2F_Boiler2, PEF_Boiler2,...
