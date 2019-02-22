@@ -1,4 +1,4 @@
-function[BTES_BAC_D_init, BTES_BAC_S_init, BTES_SO_S_init, BTES_SO_D_init, BES_init, BFCh_init, Boiler1_init, Boiler2_init]=readGtoM(hour,BTES_BAC_uels, BTES_SO_uels,  BES_BID_uels, BFCh_BID_uels)
+function[CWB_init, BTES_BAC_D_init, BTES_BAC_S_init, BTES_SO_S_init, BTES_SO_D_init, BES_init, BFCh_init, Boiler1_init, Boiler2_init]=readGtoM(hour,BTES_BAC_uels, BTES_SO_uels,  BES_BID_uels, BFCh_BID_uels)
 %Read GtoM.gdx reads the output GAMS GDX file to keep State of Charge (SoC) for relevant energy
 %storage devices (Batteries, Cold water storage, PCM) and devices with ramp rate
 %constraints (Boilers)consistent over the rolling time horizon runs. The
@@ -9,6 +9,7 @@ BAC_Den=struct('name','BAC_Den','form','full','compress','false');
 BAC_Sen=struct('name','BAC_Sen','form','full','compress','false');
 SO_Den=struct('name','SO_Den','form','full','compress','false');
 SO_Sen=struct('name','SO_Sen','form','full','compress','false');
+CWB_en=struct('name','CWB_en','form','full','compress','false');
 BES_en=struct('name','BES_en','form','full','compress','false');
 BFCh_en=struct('name','BFCh_en','form','full','compress','false');
 h_Boiler1=struct('name','h_Boiler1','form','full','compress','false');
@@ -43,6 +44,9 @@ BTES_PS_init = 0;
 %BTES_PS_en = rgdx('GtoM',BTES_PS_en);
 %BTES_PS_init = BTES_PS_en.val;
 
+CWB_en.uels={num2cell(hour)};
+CWB_en=rgdx('GtoM',CWB_en);
+CWB_init = CWB_en.val;
 
 BES_en.uels={num2cell(hour), BES_BID_uels};
 BES_en=rgdx('GtoM',BES_en);

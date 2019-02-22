@@ -77,7 +77,7 @@ positive variable
          CWB_ch(h)       hourly charging of basin
          CWB_dis(h)      hourly discharging of basin
 ;
-CWB_en.up(h) = CWB_max_cap_kwh;
+CWB_en.up(h) = CWB_max_cap_kwh$(min_totCost_0 = 0)+0$(min_totCost_0 = 1);
 CWB_ch.up(h) = CWB_ch_max;
 CWB_dis.up(h) = CWB_dis_max;
 
@@ -239,8 +239,9 @@ positive variables
          BFCh_ch_from_grid(h,BID) Useful charging energy from the grid
          BFCh_cap(BID)         Capacity of the battery at building BID
 ;
-BES_cap.fx(BID) $ (opt_fx_inv eq 1 and opt_fx_inv_BES eq 1) = opt_fx_inv_BES_cap(BID);
-BFCh_cap.fx(BID) $ (opt_fx_inv eq 1 and opt_fx_inv_BFCh eq 1) = opt_fx_inv_BFCh_cap(BID);
+BES_cap.fx(BID) $ (opt_fx_inv eq 1) = opt_fx_inv_BES_cap(BID)$(opt_fx_inv_BES eq 1)+ 0$(opt_fx_inv_BES eq 0);
+BFCh_cap.fx(BID) $ (opt_fx_inv eq 1) = opt_fx_inv_BFCh_cap(BID)$(opt_fx_inv_BFCh eq 1)+ 0$(opt_fx_inv_BFCh eq 0);
+
 *------------------Refrigeration machine investment related---------------------
 positive variable
          c_RMInv(h)           cooling power available from RMInv

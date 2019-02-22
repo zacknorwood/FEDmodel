@@ -9,6 +9,9 @@ t_step=t-sim_start+1;   %Start putting the value at row 1
 %% ELECTRICITY DATA
 % (1,2) is for taking the value from the first hour (of the 10 hour
 % dispatch) and column 2 is for the power/cost
+if Results(t).dispatch.model_status(1)~= 1 && Results(t).dispatch.model_status(1)~= 6  
+to_excel_co2(t_step,7)=Results(t).dispatch.model_status(1);
+else
 to_excel_el(t_step,1)=t;
 to_excel_el(t_step,2)=Results(t).dispatch.el_TURB(1,2); 
 to_excel_el(t_step,4)=Results(t).dispatch.el_PV(1,2); 
@@ -146,7 +149,7 @@ to_excel_co2(t_step,4)=Results(t).dispatch.AH_PE(1,2);
 to_excel_co2(t_step,5)=Results(t).dispatch.AH_CO2(1,2);
 to_excel_co2(t_step,6)=Results(t).dispatch.vc_tot_AH(1,2);
 to_excel_co2(t_step,7)=Results(t).dispatch.model_status(1);
-
+end
 toc
 
 end
