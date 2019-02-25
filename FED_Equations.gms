@@ -710,7 +710,7 @@ eq_cbalance(h)..
 *--------------Demand supply balance for electricity ---------------------------
 eq_ebalance3(h)..
         sum(BID,el_demand(h,BID)) =l= el_imp_AH(h) + el_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - el_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - el_RMMC(h)
-                                 + el_PV(h) - el_HP(h) - el_RMInv(h) - el_AbsC(h)
+                                 + el_PV(h) - el_HP(h) - el_RMInv(h)
                                  + sum(BID_AH_el,(BES_dis_to_grid(h,BID_AH_el) - BES_ch_from_grid(h,BID_AH_el))+(BFCh_dis_to_grid(h,BID_AH_el) - BFCh_ch_from_grid(h,BID_AH_el)))
                                  + el_TURB(h);
 eq_ebalance4(h)..
