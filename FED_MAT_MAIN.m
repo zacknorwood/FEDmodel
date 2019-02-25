@@ -423,9 +423,9 @@ sim_start_h=1;
 
 %Sim stop time
 
-sim_stop_y=2016;
-sim_stop_m=3;
-sim_stop_d=2;
+sim_stop_y=2017;
+sim_stop_m=2;
+sim_stop_d=27;
 sim_stop_h=24;
 
 %Get month and hours of simulation
