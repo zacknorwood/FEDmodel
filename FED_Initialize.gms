@@ -313,6 +313,7 @@ parameter
          el_profit_margin_buy    Average electric utility buying profit margin (SEK per kWh)  /0.011/
 * 0.011SEK/kWh is the average profit for GE for large customers buying electricity, and 0.019 SEK/kWh for selling.
          el_profit_margin_sell   Average electric utility selling profit margin (SEK per kWh)  /0.019/
+         DH_margin               Margin for DH which applies to exporting /0.02/
          guarantee_origin        guarantee of origin "ursprungsgaranti" /0.01/
          quota_elcertificate     "kvotplikt" /0.305/
          el_tax                   Electricity tax    /0.325/
