@@ -177,6 +177,8 @@ Gekv_facade = struct('name','G_facade','type','parameter','form','full');
 [CO2intensityFinal_El, PEintensityFinal_El, CO2intensityFinal_DH, PEintensityFinal_DH, marginalCost_DH, CO2F_PV, PEF_PV, CO2F_Boiler1, PEF_Boiler1, CO2F_Boiler2, PEF_Boiler2] = get_CO2PE_exGrids(opt_marg_factors);
 
 %% Initialize FED INVESTMENT OPTIONS
+% If min_totCost_O=1, e.g. base case simulation then all investment option
+% will be set to 0.
 
 %FED investment limit
 %68570065; %76761000;  %this is projected FED investment cost in SEK
@@ -423,9 +425,9 @@ sim_start_h=1;
 
 %Sim stop time
 
-sim_stop_y=2016;
-sim_stop_m=3;
-sim_stop_d=2;
+sim_stop_y=2017;
+sim_stop_m=2;
+sim_stop_d=27;
 sim_stop_h=24;
 
 %Get month and hours of simulation
@@ -443,6 +445,7 @@ for t=sim_start:sim_stop
     %% Variable input data to the dispatch model
     %Read measured data
     tic
+    disp(['Time ' num2str(t) ' of ' num2str(sim_stop)])
     forecast_end=t+forecast_horizon-1;
     h.uels=num2cell(t:forecast_end);
     
@@ -669,12 +672,10 @@ for t=sim_start:sim_stop
     
     Time(2).point='Wgdx and Inputs';
     Time(2).value=toc;
-    tic
+    
     
     if opt_RunGAMSModel==1
-        tic
         system 'gams FED_SIMULATOR_MAIN lo=2';
-        toc
     end
     
 
@@ -693,7 +694,7 @@ end
 
 [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
 
-
+toc
 end
 tic
 xlswrite('result_temp.xls',to_excel_el,'Electricity','A3')
