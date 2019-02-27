@@ -60,7 +60,8 @@ positive variable
 * and thus have a minimum production.
 c_AbsC.lo(h)$(DH_heating_season(h)=0 and min_totCost_0 = 0) = AbsC_min_prod;
 AbsC_cap.fx = cap_sup_unit('AbsC');
-h_AbsC.fx(h)$(min_totCost_0 = 1)=h_AbsC_0(h);
+*in BAU Abs chiller is used as balancing unit since the AAC is set to zero
+h_AbsC.lo(h)$(min_totCost_0 = 1)=h_AbsC_0(h);
 
 *------------------Refrigerator Machine related---------------------------------
 positive variable
