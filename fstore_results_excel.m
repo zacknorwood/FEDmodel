@@ -76,10 +76,10 @@ to_excel_heat(t_step,33)=sum(Results(t).dispatch.BAC_Den(find(Results(t).dispatc
 
 
 % AK Add BTES_SO output as well
-to_excel_heat(t_step,34)=sum(Results(t).dispatch.SO_Sen(find(Results(t).dispatch.BAC_Sen(:,1)==1),3));
-to_excel_heat(t_step,35)=-sum(Results(t).dispatch.SO_Sch(find(Results(t).dispatch.BAC_Sch(:,1)==1),3));
-to_excel_heat(t_step,36)=sum(Results(t).dispatch.SO_Sdis(find(Results(t).dispatch.BAC_Sdis(:,1)==1),3));
-to_excel_heat(t_step,37)=sum(Results(t).dispatch.SO_Den(find(Results(t).dispatch.BAC_Den(:,1)==1),3));
+to_excel_heat(t_step,34)=sum(Results(t).dispatch.SO_Sen(find(Results(t).dispatch.SO_Sen(:,1)==1),3));
+to_excel_heat(t_step,35)=-sum(Results(t).dispatch.SO_Sch(find(Results(t).dispatch.SO_Sch(:,1)==1),3));
+to_excel_heat(t_step,36)=sum(Results(t).dispatch.SO_Sdis(find(Results(t).dispatch.SO_Sdis(:,1)==1),3));
+to_excel_heat(t_step,37)=sum(Results(t).dispatch.SO_Den(find(Results(t).dispatch.SO_Den(:,1)==1),3));
 
 to_excel_heat(t_step,38)=Results(t).dispatch.h_imp_nonAH(1,2);
 to_excel_heat(t_step,39)=-Results(t).dispatch.heat_demand(1,2);

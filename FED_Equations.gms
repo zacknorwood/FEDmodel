@@ -830,7 +830,7 @@ eq_var_cost_existing..
                                - sum(h,el_exp_AH(h) * el_sell_price(h))
                                + sum(h,el_AbsC(h) * utot_cost('exG',h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h)) * utot_cost('DH',h))
-                               - sum(h,h_exp_AH(h) * utot_cost('DH',h))
+                               - sum(h,h_exp_AH(h) * (utot_cost('DH',h)/(1+DH_margin)))
                                + sum(h,h_Boiler1(h) * utot_cost('P1',h))
                                + sum(h,h_VKA1(h) * utot_cost('HP',h))
                                + sum(h,h_VKA4(h) * utot_cost('HP',h))
