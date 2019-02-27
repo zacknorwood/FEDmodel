@@ -50,6 +50,7 @@ equation
            eq_RMMC1     MC2 Refrigerator equation - heating
            eq_RMMC2     MC2 Refrigerator equation - cooling
            eq_RMMC3     MC2 investment constraint
+           eq_RMMC4     MC2 Limit heat production to heat demand at MC2
 
            eq_CWB_en_init        Cold Water Basin initial charge state
            eq_CWB_en             Cold Water Basin charge equation
@@ -314,7 +315,7 @@ eq_AbsC3(h)..
 
 *----------Refrigerator Machine equations (electricity => cooling)--------------
 eq_RM1(h)..
-             c_RM(h) =e= RM_COP*el_RM(h);
+             c_RM(h) =e= RM_COP*el_RM(h)*(1-min_totCost_0);
 eq_RM2(h)..
              c_RM(h) =l= RM_cap;
 
@@ -344,13 +345,16 @@ eq_RM2(h)..
 *****************For new investment optons--------------------------------------
 *----------MC2 Heat pump equations (electricity => heating + cooling)-----------
 eq_RMMC1(h)..
-         h_RMMC(h) =e= RMCC_H_COP * el_RMMC(h);
+         h_RMMC(h) =l= RMCC_H_COP * el_RMMC(h);
 eq_RMMC2(h)..
          c_RMMC(h) =e= RMCC_C_COP * el_RMMC(h);
 * Needs to be limited even when we do not have RMMC, DS
 *eq_RMMC3(h) $ (opt_fx_inv_RMMC ne 0)..
 eq_RMMC3(h)..
          c_RMMC(h) =l= RMMC_inv * RMMC_cap;
+
+eq_RMMC4(h)..
+         h_RMMC(h) =l= h_demand(h,'O3060133');
 
 *----------------Absorption Chiller Investment----------------------------------
 eq1_AbsCInv(h)..
@@ -703,7 +707,6 @@ eq_cbalance(h)..
 
          sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=l=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_HP(h) + c_RMInv(h)
-
                                 + c_AbsCInv(h)
                                 + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
 
@@ -773,6 +776,8 @@ eq_CO2(h)..
                       + h_DH_slack_var(h)*1000000000
                       + C_DC_slack_var(h)*1000000000
                       + el_slack_var(h)*1000000000;
+
+
 
 ****************Total CO2 emission in the FED system****************************
 eq_totCO2..
