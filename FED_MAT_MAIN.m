@@ -697,10 +697,10 @@ end
 toc
 end
 tic
-xlswrite('result_temp.xls',to_excel_el,'Electricity','A3')
-xlswrite('result_temp.xls',to_excel_heat,'Heat','A3')
-xlswrite('result_temp.xls',to_excel_cool,'Cooling','A3')
-xlswrite('result_temp.xls',to_excel_co2,'CO2_PE','A3')
+xlswrite('result_temp.xlsx',to_excel_el,'Electricity','A3')
+xlswrite('result_temp.xlsx',to_excel_heat,'Heat','A3')
+xlswrite('result_temp.xlsx',to_excel_cool,'Cooling','A3')
+xlswrite('result_temp.xlsx',to_excel_co2,'CO2_PE','A3')
 toc
 
 Time(3).point='Gams running and storing';
