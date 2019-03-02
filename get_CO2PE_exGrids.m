@@ -1,4 +1,4 @@
-function [ CO2intensityFinal_El, PEintensityFinal_El, CO2intensityFinal_DH, PEintensityFinal_DH, marginalCost_DH, CO2F_PV, PEF_PV, CO2F_Boiler1, PEF_Boiler1, CO2F_Boiler2, PEF_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors)
+function [ CO2intensityFinal_El, PEintensityFinal_El, CO2intensityFinal_DH, PEintensityFinal_DH, marginalCost_DH, CO2F_PV, PEF_PV, CO2F_Boiler1, PEF_Boiler1, CO2F_Boiler2, PEF_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors, IPCC_factors)
 %% Here, the CO2 factor and PE factor of the external grids are calculated
 % The external grid production mix data read in is from the district
 % heating system (Göteborg Energi) and the Swedish electrical grid (Tomorrow / tmrow.com)
@@ -7,8 +7,19 @@ COP_HP_DH=305/90.1;  %Based on Alexanders data, COP of the HP in DH system (Rya)
 %CO2 and PE factors of the external electricity generation system
 % order: biomass coal gas hydro nuclear oil solar wind geothermal unknown hydro-discharge
 % Note that hydro-charge is calculated based on the other factors and hydro-discharge is set to 0 which assumes that round-trip efficiency of pumped hydro is 100%.
+% order [biomass	coal	gas	hydro	nuclear	oil	solar	wind geothermal	unknown	hydro-discharge]
 CO2intensityProdMix_El =[230  820  490  24   12   650  22   11   38   700  0];
+%New value based on IPCC
+if IPCC_factors==1
+    CO2intensityProdMix_El =[230  820  490  24   12   782  45   11   38   362  46];
+end
+
 PEintensityProdMix_El = [2.99 2.45 1.93 1.01 3.29 2.75 1.25 1.03 1.02 2.47 0];
+% New value based on fossil or not
+if IPCC_factors==1
+    PEintensityProdMix_El = [0 1 1 0 1 1 0 0 0 1 0];
+end
+
 numHours=24*366+24*365; % 2 years of hourly data. Note: 2016 was a leap year so 366 days.
 
 %CO2 and PE factors for local generation units
@@ -21,11 +32,21 @@ PEF_PV = struct('name','PEF_PV','type','parameter','val',PEintensityProdMix_El(7
 CO2F_Boiler1 = struct('name','CO2F_Boiler1','type','parameter','val',12);
 PEF_Boiler1 = struct('name','PEF_Boiler1','type','parameter','val',1.33);
 
+% New Values IPCC
+if IPCC_factors==1
+    CO2F_Boiler1 = struct('name','CO2F_Boiler1','type','parameter','val',79);
+    PEF_Boiler1 = struct('name','PEF_Boiler1','type','parameter','val',0);
+end
+
 %CO2 and PE emissions intensity factors for boiler 2. Depends on the type
 %of fuel used (assume pellets now).
 CO2F_Boiler2 = struct('name','CO2F_Boiler2','type','parameter','val',23);
 PEF_Boiler2 = struct('name','PEF_Boiler2','type','parameter','val',1.39);
-
+%New values IPCC
+if IPCC_factors==1
+    CO2F_Boiler2 = struct('name','CO2F_Boiler2','type','parameter','val',46);
+    PEF_Boiler2 = struct('name','PEF_Boiler2','type','parameter','val',0);
+end
 if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 the default is to calculate the marginal emissions.
     %% Marginal CO2 and PE factors of the external grid
     %Import marginal CO2 and PE factors, marginal DH cost
@@ -47,6 +68,37 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 the default is t
     %the COP of the heat pump (Rya) and the marginal electrical consumption.
     CO2intensityFinal_DH(isnan(CO2intensityFinal_DH))=CO2intensityFinal_El(isnan(CO2intensityFinal_DH))/COP_HP_DH;
     PEintensityFinal_DH(isnan(PEintensityFinal_DH))=PEintensityFinal_El(isnan(PEintensityFinal_DH))/COP_HP_DH;
+if IPCC_factors==1
+
+CO2intensityFinal_DH(CO2intensityFinal_DH==23)=79;
+CO2intensityFinal_DH(CO2intensityFinal_DH==12)=79;
+CO2intensityFinal_DH(CO2intensityFinal_DH==6.7)=46;
+CO2intensityFinal_DH(CO2intensityFinal_DH==72)=79;
+CO2intensityFinal_DH(CO2intensityFinal_DH==98)=59;
+CO2intensityFinal_DH(CO2intensityFinal_DH==177)=183;
+CO2intensityFinal_DH(CO2intensityFinal_DH==248)=299;
+CO2intensityFinal_DH(CO2intensityFinal_DH==347)=339;
+
+
+PEintensityFinal_DH(CO2intensityFinal_DH==23)=0;
+PEintensityFinal_DH(CO2intensityFinal_DH==12)=0;
+PEintensityFinal_DH(CO2intensityFinal_DH==6.7)=0;
+PEintensityFinal_DH(CO2intensityFinal_DH==72)=0;
+PEintensityFinal_DH(CO2intensityFinal_DH==98)=0;
+PEintensityFinal_DH(CO2intensityFinal_DH==177)=1;
+PEintensityFinal_DH(CO2intensityFinal_DH==248)=1;
+PEintensityFinal_DH(CO2intensityFinal_DH==347)=1;
+end
+% CO2intensityFinal_DH(CO2intensityFinal_DH==339)=339;
+%     if 23 then biopellets
+%         if 12 then woodship
+%             if 6.7 then chp woodship'
+%                if 72 then biooil
+%                    if 98 then wast inc
+%                        if 177 then ng chp
+%                            if 248 then ng
+%                                if 347 then oil eo5
+%                                    if 339 then oil eo1
     
 else % Warning, this option has not been checked and there are some apparent errors in the factors used! -ZN
     el_exGrid=xlsread('Input_dispatch_model\SE.xlsx',1,'C2:L17520');

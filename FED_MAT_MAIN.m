@@ -1,4 +1,4 @@
-function [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, Results] = FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline)
+function [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, Results] = FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline, IPCC_factors)
 % optimization options
 % min_totCost_0: option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
 % min_totCost:  weighting factor for total cost to use in the minimization function
@@ -174,7 +174,7 @@ Gekv_facade = struct('name','G_facade','type','parameter','form','full');
 %     %Import ANN data
 %     load('Input_dispatch_model\Heating_ANN');
 %% INPUT PE and CO2 FACTORS
-[CO2intensityFinal_El, PEintensityFinal_El, CO2intensityFinal_DH, PEintensityFinal_DH, marginalCost_DH, CO2F_PV, PEF_PV, CO2F_Boiler1, PEF_Boiler1, CO2F_Boiler2, PEF_Boiler2] = get_CO2PE_exGrids(opt_marg_factors);
+[CO2intensityFinal_El, PEintensityFinal_El, CO2intensityFinal_DH, PEintensityFinal_DH, marginalCost_DH, CO2F_PV, PEF_PV, CO2F_Boiler1, PEF_Boiler1, CO2F_Boiler2, PEF_Boiler2] = get_CO2PE_exGrids(opt_marg_factors, IPCC_factors);
 
 %% Initialize FED INVESTMENT OPTIONS
 % If min_totCost_O=1, e.g. base case simulation then all investment option
@@ -697,10 +697,10 @@ end
 toc
 end
 tic
-xlswrite('result_temp.xls',to_excel_el,'Electricity','A3')
-xlswrite('result_temp.xls',to_excel_heat,'Heat','A3')
-xlswrite('result_temp.xls',to_excel_cool,'Cooling','A3')
-xlswrite('result_temp.xls',to_excel_co2,'CO2_PE','A3')
+xlswrite('result_temp.xlsx',to_excel_el,'Electricity','A3')
+xlswrite('result_temp.xlsx',to_excel_heat,'Heat','A3')
+xlswrite('result_temp.xlsx',to_excel_cool,'Cooling','A3')
+xlswrite('result_temp.xlsx',to_excel_co2,'CO2_PE','A3')
 toc
 
 Time(3).point='Gams running and storing';

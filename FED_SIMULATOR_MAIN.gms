@@ -95,6 +95,7 @@ sim_PT_exG = max_PT_exG.l;
 var_cost_existing_AH(h) =      el_imp_AH.l(h)*utot_cost('exG',h)
                                -el_exp_AH.l(h)*el_sell_price(h)
                                + (h_imp_AH.l(h))*utot_cost('DH',h)
+                               - h_exp_AH.l(h) * (utot_cost('DH',h)/(1+DH_margin))
 *                               - sum(m,(h_exp_AH.l(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12)))
                                + h_Boiler1.l(h)*utot_cost('P1',h)
                                + h_VKA1.l(h)*utot_cost('HP',h)
