@@ -697,7 +697,7 @@ eq_hbalance2(h)..
                                      + (sum(BID,h_BAC_savings(h,BID)))
                                      - h_AbsCInv(h);
 eq_hbalance3(h)..
-             h_imp_nonAH(h)=l=sum(BID_nonAH_h,h_demand_nonAH(h,BID_nonAH_h))
+             h_imp_nonAH(h)=e=sum(BID_nonAH_h,h_demand_nonAH(h,BID_nonAH_h))
                        - (sum(BID_nonAH_h,BAC_Sdis(h,BID_nonAH_h))*BTES_dis_eff-sum(BID_nonAH_h,BAC_Sch(h,BID_nonAH_h))/BTES_chr_eff);
 
 
