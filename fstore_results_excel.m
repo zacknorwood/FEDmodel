@@ -69,6 +69,7 @@ to_excel_heat(t_step,24)=sum(Results(t).dispatch.h_BAC_savings(find(Results(t).d
 
 to_excel_heat(t_step,26)=Results(t).dispatch.h_slack(1,2);
 to_excel_heat(t_step,28)=Results(t).dispatch.h_slack_var(1,2);
+to_excel_heat(t_step,29)=Results(t).dispatch.h_RMMC(1,2);
 to_excel_heat(t_step,30)=sum(Results(t).dispatch.BAC_Sen(find(Results(t).dispatch.BAC_Sen(:,1)==1),3));
 to_excel_heat(t_step,31)=-sum(Results(t).dispatch.BAC_Sch(find(Results(t).dispatch.BAC_Sch(:,1)==1),3));
 to_excel_heat(t_step,32)=sum(Results(t).dispatch.BAC_Sdis(find(Results(t).dispatch.BAC_Sdis(:,1)==1),3));
@@ -99,7 +100,7 @@ to_excel_heat(t_step,17)=Results(t).dispatch.vc_h_imp_AH(1,2);
 to_excel_heat(t_step,23)=Results(t).dispatch.vc_h_absC(1,2);
 to_excel_heat(t_step,25)=Results(t).dispatch.vc_h_BAC(1,2);
 %slack
-to_excel_heat(t_step,29)=Results(t).dispatch.vc_h_slack_var(1,2);
+%to_excel_heat(t_step,29)=Results(t).dispatch.vc_h_slack_var(1,2);
 
 
 
