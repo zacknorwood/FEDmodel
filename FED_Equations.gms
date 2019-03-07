@@ -472,7 +472,7 @@ eq_BAC_link(h,BID) $ (BTES_model('BTES_Scap',BID) ne 0)..
 
 
 eq_BAC_savings(h,BID)..
-          h_BAC_savings(h,BID) =l= BAC_savings_factor(h)*B_BAC(BID)*h_demand(h,BID);
+          h_BAC_savings(h,BID) =e= BAC_savings_factor(h)*B_BAC(BID)*h_demand(h,BID);
 
 eq_BAC_S_loss(h,BID)..
          BAC_Sloss(h,BID) =e= BTES_kSloss(BID)*BAC_Sen(h-1,BID);
