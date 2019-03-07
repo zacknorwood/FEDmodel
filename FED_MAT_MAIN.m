@@ -271,6 +271,8 @@ BTES_SO_Inv.uels = BTES_SO_uels;
 BTES_SO_max_power = struct('name', 'BTES_SO_max_power', 'type', 'parameter', 'form', 'full');
 BTES_SO_max_power.uels = BTES_SO_uels;
 BTES_SO_max_power.val = [45, 20, 90, 76, 11]; % kWh/h, Requires ordering of BTES_SO_UELS to be O11:01, O7:888, O7:28, O7, 27, O7:24
+BTES_SO_EDIT_Correction_Factor = 0.19; % Correction factor for O7:10, O7:20 as they are only part of O7:24, used below for correcting BTES_model
+
 
 %Placement of roof PVs (Existing)
 PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista p� anl�ggningar.xlsx" as well as the 3d shading model
@@ -368,6 +370,8 @@ BTES_properties.uels={'BTES_Scap', 'BTES_Dcap', 'BTES_Esig', 'BTES_Sch_hc',...
 %BTES model
 BTES_model = struct('name','BTES_model','type','parameter','form','full','val',BTES_param);
 BTES_model.uels={BTES_properties.uels,BID.uels};
+BTES_model.val(1,23) = BTES_model.val(1,23) * BTES_SO_EDIT_Correction_Factor; % BTES_Scap correction of EDIT
+BTES_model.val(2,23) = BTES_model.val(2,23) * BTES_SO_EDIT_Correction_Factor; % BTES_Dcap correction of EDIT
 
 %P1P2 dispatchability
 P1P2_dispatchable = struct('name','P1P2_dispatchable','type','parameter','form','full');
