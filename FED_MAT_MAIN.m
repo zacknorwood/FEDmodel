@@ -13,6 +13,9 @@ delete MtoG.gdx
 %% Assigning buildings ID to the buildings in the FED system
 
 %Building IDs used to identify buildings in the FED system
+% DO NOT CHANGE THE ORDER OF THESE! The order is tied to the reading of
+% measurements in fread_measurements which relies on this order of
+% buildings in the input file
 BID.name='BID';
 BID.uels={'O3060132', 'O3060101', 'O3060102_3', 'O3060104_15', 'O0007043','O0007017',...
     'SSPA', 'O0007006', 'Studentbostader', 'O0007008','O0007888',...
