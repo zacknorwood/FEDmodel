@@ -1,4 +1,4 @@
-function [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, Results] = FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline, IPCC_factors)
+function [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, Results] = FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline)
 % optimization options
 % min_totCost_0: option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
 % min_totCost:  weighting factor for total cost to use in the minimization function
@@ -174,7 +174,7 @@ Gekv_facade = struct('name','G_facade','type','parameter','form','full');
 %     %Import ANN data
 %     load('Input_dispatch_model\Heating_ANN');
 %% INPUT PE and CO2 FACTORS
-[CO2intensityFinal_El, PEintensityFinal_El, CO2intensityFinal_DH, PEintensityFinal_DH, marginalCost_DH, CO2F_PV, PEF_PV, CO2F_Boiler1, PEF_Boiler1, CO2F_Boiler2, PEF_Boiler2] = get_CO2PE_exGrids(opt_marg_factors, IPCC_factors);
+[CO2intensityFinal_El, PEintensityFinal_El, CO2intensityFinal_DH, PEintensityFinal_DH, marginalCost_DH, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2] = get_CO2PE_exGrids(opt_marg_factors);
 
 %% Initialize FED INVESTMENT OPTIONS
 % If min_totCost_O=1, e.g. base case simulation then all investment option
@@ -427,17 +427,22 @@ sim_start_h=1;
 
 sim_stop_y=2017;
 sim_stop_m=2;
-sim_stop_d=27;
+sim_stop_d=28;
 sim_stop_h=24;
 
 %Get month and hours of simulation
 [HoS, MoS]=fget_time_vector(sim_start_y,sim_stop_y);
 
-% this_month=sim_start_m;
-
 sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop=HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 forecast_horizon=10;
+
+% Store array to be exported to excel sheet
+% INITIALIZE output array
+to_excel_el(1:sim_stop-sim_start,1:31)=0;
+to_excel_heat(1:sim_stop-sim_start,1:39)=0;
+to_excel_cool(1:sim_stop-sim_start,1:23)=0;
+to_excel_co2(1:sim_stop-sim_start,1:7)=0;
 
 Time(1).point='fixed inputs';
 Time(1).value=toc;
@@ -580,18 +585,15 @@ for t=sim_start:sim_stop
     %Initial SoC of storage systems and devices with ramp rate.
     BES_BID_uels = opt_fx_inv_BES_cap.uels;
     BFCh_BID_uels = opt_fx_inv_BFCh_cap.uels;
+    
     if t==sim_start
         % Set initial state of BAC Buildings to empty
         opt_fx_inv_BTES_BAC_D_init = struct('name','opt_fx_inv_BTES_BAC_D_init','type','parameter','form','full','val',zeros(1,length(BTES_BAC_uels))); 
-        opt_fx_inv_BTES_BAC_D_init.uels = {num2cell(t), BTES_BAC_uels};
         opt_fx_inv_BTES_BAC_S_init = struct('name','opt_fx_inv_BTES_BAC_S_init','type','parameter','form','full','val',zeros(1,length(BTES_BAC_uels)));
-        opt_fx_inv_BTES_BAC_S_init.uels = {num2cell(t), BTES_BAC_uels};
         
         % Set initial state of SO Buildings to empty
         opt_fx_inv_BTES_SO_D_init = struct('name','opt_fx_inv_BTES_SO_D_init','type','parameter','form','full','val',zeros(1,length(BTES_SO_uels))); 
-        opt_fx_inv_BTES_SO_D_init.uels = {num2cell(t), BTES_SO_uels};
         opt_fx_inv_BTES_SO_S_init = struct('name','opt_fx_inv_BTES_SO_S_init','type','parameter','form','full','val',zeros(1,length(BTES_SO_uels)));
-        opt_fx_inv_BTES_SO_S_init.uels = {num2cell(t), BTES_SO_uels};
         
         % Set inital state of PS Buildings 
         % AK How to implement?
@@ -600,12 +602,9 @@ for t=sim_start:sim_stop
         
         %Initial SoC for energy storage must agree with min_SOC in GAMS. This should be fixed and passed from Matlab to GAMS -ZN
         opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',ones(1,length(BES_BID_uels))*0.20*opt_fx_inv_BES_cap.val);
-        opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
         opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',ones(1,length(BFCh_BID_uels))*0.20*opt_fx_inv_BFCh_cap.val);
-        opt_fx_inv_BFCh_init.uels = {num2cell(t), BFCh_BID_uels};
         Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',0);
         Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',0);
-        
         opt_fx_inv_CWB_init = struct('name','opt_fx_inv_CWB_init','type','parameter','form','full','val',0);
              
     else
@@ -618,27 +617,28 @@ for t=sim_start:sim_stop
         % but that the others are simple non-indexed parameters (hence no
         % uels).      
         opt_fx_inv_BTES_BAC_D_init = struct('name','opt_fx_inv_BTES_BAC_D_init','type','parameter','form','full','val',BTES_BAC_D_init);
-        opt_fx_inv_BTES_BAC_D_init.uels = {num2cell(t), BTES_BAC_uels};
         opt_fx_inv_BTES_BAC_S_init = struct('name','opt_fx_inv_BTES_BAC_S_init','type','parameter','form','full','val',BTES_BAC_S_init);
-        opt_fx_inv_BTES_BAC_S_init.uels = {num2cell(t), BTES_BAC_uels};
-        
         opt_fx_inv_BTES_SO_D_init = struct('name','opt_fx_inv_BTES_SO_D_init','type','parameter','form','full','val',BTES_SO_D_init);
-        opt_fx_inv_BTES_SO_D_init.uels = {num2cell(t), BTES_SO_uels};
         opt_fx_inv_BTES_SO_S_init = struct('name','opt_fx_inv_BTES_SO_S_init','type','parameter','form','full','val',BTES_SO_S_init);
-        opt_fx_inv_BTES_SO_S_init.uels = {num2cell(t), BTES_SO_uels};
+
         % AK implement PS
         %opt_fx_inv_BTES_PS_init = struct('name','opt_fx_inv_BTES_PS_init','type','parameter','form','full','val',BTES_PS_init); 
         %opt_fx_inv_BTES_PS_init.uels = {num2cell(t), BTES_PS_uels};
       
         opt_fx_inv_CWB_init = struct('name','opt_fx_inv_CWB_init','type','parameter','form','full','val',CWB_init);
-      
         opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',BES_init);
-        opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
         opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',BFCh_init);
-        opt_fx_inv_BFCh_init.uels = {num2cell(t), BFCh_BID_uels};
         Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',Boiler1_init);
         Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',Boiler2_init);
     end
+    
+    % Set uels for BAC and BTES
+    opt_fx_inv_BTES_BAC_D_init.uels = {num2cell(t), BTES_BAC_uels};
+    opt_fx_inv_BTES_BAC_S_init.uels = {num2cell(t), BTES_BAC_uels};
+    opt_fx_inv_BTES_SO_D_init.uels = {num2cell(t), BTES_SO_uels};
+    opt_fx_inv_BTES_SO_S_init.uels = {num2cell(t), BTES_SO_uels};
+    opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
+    opt_fx_inv_BFCh_init.uels = {num2cell(t), BFCh_BID_uels};
     
     %% Preparing input GDX file (MtoG) and RUN GAMS model
     % AK Change to BTES_EVI_D...
@@ -651,7 +651,7 @@ for t=sim_start:sim_stop
         opt_fx_inv_CWB_init,...
         opt_fx_inv_BES, opt_fx_inv_BES_cap, h, BTES_BAC_Inv, BTES_SO_Inv,...
         CO2F_exG, PEF_exG, CO2F_DH, PEF_DH, MA_Cost_DH,...
-        CO2F_PV, PEF_PV, CO2F_Boiler1, PEF_Boiler1, CO2F_Boiler2, PEF_Boiler2,...
+        CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2,...
         BID,BID_AH_el,BID_nonAH_el,BID_AH_h,BID_nonAH_h,BID_AH_c,BID_nonAH_c,BID_nonBTES,...
         el_demand,h_demand,c_demand,qB1,qF1,...        
         el_VKA1_0, el_VKA4_0,...
@@ -664,36 +664,18 @@ for t=sim_start:sim_stop
         opt_fx_inv_BTES_SO_D_init, opt_fx_inv_BTES_SO_S_init,BTES_SO_max_power,...
         opt_fx_inv_BFCh_init,opt_fx_inv_BES_init,Boiler1_prev_disp,Boiler2_prev_disp,...
         DH_Node_ID, DH_Nodes_Transfer_Limits,...
-        DC_Node_ID, DC_Nodes_Transfer_Limits, el_exG_slack,h_DH_slack,c_DC_slack,h_exp_AH_hist, h_imp_AH_hist,opt_fx_inv_SO,opt_fx_inv_BAC);
-%el_AAC_0,
-  
-  
-%%
-    
+        DC_Node_ID, DC_Nodes_Transfer_Limits, el_exG_slack,h_DH_slack,c_DC_slack,h_exp_AH_hist, h_imp_AH_hist,opt_fx_inv_SO,opt_fx_inv_BAC); 
+%% 
     Time(2).point='Wgdx and Inputs';
-    Time(2).value=toc;
-    
+    Time(2).value=toc; 
     
     if opt_RunGAMSModel==1
         system 'gams FED_SIMULATOR_MAIN lo=2';
-    end
-    
-
- 
+    end   
 %% Store the results from each iteration
 Results(t).dispatch = fstore_results(h,BID,BTES_properties,BusID);
 
-% Store array to be exported to excel sheet
-% INITIALIZE output array
-if t==sim_start
-to_excel_el(1:sim_stop-sim_start,1:31)=0;
-to_excel_heat(1:sim_stop-sim_start,1:39)=0;
-to_excel_cool(1:sim_stop-sim_start,1:23)=0;
-to_excel_co2(1:sim_stop-sim_start,1:7)=0;
-end
-
 [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
-
 toc
 end
 tic

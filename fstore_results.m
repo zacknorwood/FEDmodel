@@ -68,11 +68,11 @@ data.AH_CO2=gdx2mat(gdxData,'AH_CO2',h_sim.uels);
 
 %PEF and CO2F used in the simulation
 data.CO2F_PV=gdx2mat(gdxData,'CO2F_PV');
-data.PEF_PV=gdx2mat(gdxData,'PEF_PV');
+data.NREF_PV=gdx2mat(gdxData,'NREF_PV');
 data.CO2F_Boiler1=gdx2mat(gdxData,'CO2F_Boiler1');
-data.PEF_Boiler1=gdx2mat(gdxData,'PEF_Boiler1');
+data.NREF_Boiler1=gdx2mat(gdxData,'NREF_Boiler1');
 data.CO2F_Boiler2=gdx2mat(gdxData,'CO2F_Boiler2');
-data.PEF_Boiler2=gdx2mat(gdxData,'PEF_Boiler2');
+data.NREF_Boiler2=gdx2mat(gdxData,'NREF_Boiler2');
 data.CO2F_exG=gdx2mat(gdxData,'CO2F_exG',h_sim.uels);
 data.PEF_exG=gdx2mat(gdxData,'PEF_exG',h_sim.uels);
 data.CO2F_DH=gdx2mat(gdxData,'CO2F_DH',h_sim.uels);

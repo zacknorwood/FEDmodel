@@ -322,11 +322,11 @@ PARAMETERS
             CO2_max            Maximum CO2 emission in the base case
             PE_tot_ref         reference total PE use
             CO2F_PV            CO2 factor of solar PV
-            PEF_PV             PE factor of solar PV
+            NREF_PV             NRE factor of solar PV
             CO2F_Boiler1            CO2 factor of Boiler1 (P1)
-            PEF_Boiler1             PE factor of Boiler1 (P1)
+            NREF_Boiler1             NRE factor of Boiler1 (P1)
             CO2F_Boiler2            CO2 factor of Boiler2 (P2)
-            PEF_Boiler2             PE factor of Boiler2 (P2)
+            NREF_Boiler2             NRE factor of Boiler2 (P2)
             CO2F_exG(h)        CO2 factor of the electricity grid
             PEF_exG(h)         PE factor of the electricity grid
             CO2F_DH(h)         CO2 av. factor of the district heating grid
@@ -336,11 +336,11 @@ PARAMETERS
 ;
 $GDXIN MtoG.gdx
 $LOAD CO2F_PV
-$LOAD PEF_PV
+$LOAD NREF_PV
 $LOAD CO2F_Boiler1
-$LOAD PEF_Boiler1
+$LOAD NREF_Boiler1
 $LOAD CO2F_Boiler2
-$LOAD PEF_Boiler2
+$LOAD NREF_Boiler2
 $LOAD CO2F_exG
 $LOAD PEF_exG
 $LOAD CO2F_DH

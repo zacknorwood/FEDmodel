@@ -1,104 +1,72 @@
-function [ CO2intensityFinal_El, PEintensityFinal_El, CO2intensityFinal_DH, PEintensityFinal_DH, marginalCost_DH, CO2F_PV, PEF_PV, CO2F_Boiler1, PEF_Boiler1, CO2F_Boiler2, PEF_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors, IPCC_factors)
-%% Here, the CO2 factor and PE factor of the external grids are calculated
+function [ CO2intensityFinal_El, NREintensityFinal_El, CO2intensityFinal_DH, NREintensityFinal_DH, marginalCost_DH, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors)
+%% Here, the CO2 factor and Energy factor of the external grids are calculated
 % The external grid production mix data read in is from the district
 % heating system (Göteborg Energi) and the Swedish electrical grid (Tomorrow / tmrow.com)
 
 COP_HP_DH=305/90.1;  %Based on Alexanders data, COP of the HP in DH system (Rya)
 %CO2 and PE factors of the external electricity generation system
-% order: biomass coal gas hydro nuclear oil solar wind geothermal unknown hydro-discharge
-% Note that hydro-charge is calculated based on the other factors and hydro-discharge is set to 0 which assumes that round-trip efficiency of pumped hydro is 100%.
-% order [biomass	coal	gas	hydro	nuclear	oil	solar	wind geothermal	unknown	hydro-discharge]
-CO2intensityProdMix_El =[230  820  490  24   12   650  22   11   38   700  0];
-%New value based on IPCC
-if IPCC_factors==1
-    CO2intensityProdMix_El =[230  820  490  24   12   782  45   11   38   362  46];
-end
+%New values based on IPCC / electricitymap.org
+% El order: [biomass coal gas hydro nuclear oil solar wind geothermal unknown hydro-discharge hydro-charge]
+CO2intensityProdMix_El = [230 820 490 24 12 782 45 11 38 362 46 0];
 
-PEintensityProdMix_El = [2.99 2.45 1.93 1.01 3.29 2.75 1.25 1.03 1.02 2.47 0];
-% New value based on fossil or not
-if IPCC_factors==1
-    PEintensityProdMix_El = [0 1 1 0 1 1 0 0 0 1 0];
-end
+% Heat order: [Biomass-HOB Biomass-CHP Gas-HOB Gas-CHP Oil-HOB RefineryHeat WasteIncineration-CHP]
+CO2intensityProdMix_Heat = [79 46 299 183 339 191 59];
 
-numHours=24*366+24*365; % 2 years of hourly data. Note: 2016 was a leap year so 366 days.
+%Old values based on D7.1.1
+%CO2intensityProdMix_El =[230  820  490  24   12   650  22   11   38   700  46 0];
+
+%New values based on NREF - Non-renewable Energy Factors
+NREintensityProdMix_El = [0 1 1 0 1 1 0 0 0 1 0 0];
+
+NREintensityProdMix_Heat = [0 0 1 1 1 1 0.08];
+
+%Old values based on D7.1.1. Note we have no primary energy factor for hydro-discharge so assuming the
+%same as hydro here.
+%PEintensityProdMix_El = [2.99 2.45 1.93 1.01 3.29 2.75 1.25 1.03 1.02 2.47 1.01 0];
+
+% Note that GE production data only goes to February 28, 2016... so a full 2 year run
+% is not possible. 10200 hours is from 2016-01-01 00:00 to 2017-02-28 23:00
+numHours=10200;
 
 %CO2 and PE factors for local generation units
 %CO2 and PE emissions intensity factors for solar PV
 CO2F_PV = struct('name','CO2F_PV','type','parameter','val',CO2intensityProdMix_El(7));
-PEF_PV = struct('name','PEF_PV','type','parameter','val',PEintensityProdMix_El(7));
+NREF_PV = struct('name','NREF_PV','type','parameter','val',NREintensityProdMix_El(7));
 
 %CO2 and PE emissions intensity factors for boiler 1. Depends on the type
-%of fuel used(assume wood chips now).
-CO2F_Boiler1 = struct('name','CO2F_Boiler1','type','parameter','val',12);
-PEF_Boiler1 = struct('name','PEF_Boiler1','type','parameter','val',1.33);
-
-% New Values IPCC
-if IPCC_factors==1
-    CO2F_Boiler1 = struct('name','CO2F_Boiler1','type','parameter','val',79);
-    PEF_Boiler1 = struct('name','PEF_Boiler1','type','parameter','val',0);
-end
+%of fuel used(assume biomass now). Note that the Biomass-HOB factor is used for
+%Boiler 1. This factor should be applied to the output of Boiler 1 before heat goes to the turbine.
+CO2F_Boiler1 = struct('name','CO2F_Boiler1','type','parameter','val',CO2intensityProdMix_Heat(1));
+NREF_Boiler1 = struct('name','NREF_Boiler1','type','parameter','val',NREintensityProdMix_Heat(1));
 
 %CO2 and PE emissions intensity factors for boiler 2. Depends on the type
-%of fuel used (assume pellets now).
-CO2F_Boiler2 = struct('name','CO2F_Boiler2','type','parameter','val',23);
-PEF_Boiler2 = struct('name','PEF_Boiler2','type','parameter','val',1.39);
-%New values IPCC
-if IPCC_factors==1
-    CO2F_Boiler2 = struct('name','CO2F_Boiler2','type','parameter','val',46);
-    PEF_Boiler2 = struct('name','PEF_Boiler2','type','parameter','val',0);
-end
-if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 the default is to calculate the marginal emissions.
-    %% Marginal CO2 and PE factors of the external grid
-    %Import marginal CO2 and PE factors, marginal DH cost
-    prodMix=xlsread('Input_dispatch_model\electricityMap - Marginal mix updated v2 - SE - 2016 - 2017.xlsx',1,'B2:M17545');
-    
-    % Calculate the weighted CO2/PE factors with the production mix. 
-    % Note: Hydro-charge is calculated as the weighted marginal CO2/PE of the
-    % rest of the system at the time of charging. Discharging is assumed to 
-    % have zero CO2/PE effect, and round cycle efficieny is assumed to be 100%.
-    CO2intensityFinal_El = sum(prodMix(:,1:length(CO2intensityProdMix_El)) .* CO2intensityProdMix_El, 2);
-    PEintensityFinal_El = sum(prodMix(:,1:length(PEintensityProdMix_El)) .* PEintensityProdMix_El, 2);
-    
-    %Get Marginal CO2F and PEF of DH
-    CO2intensityFinal_DH=xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'Y31:Y10230');
-    PEintensityFinal_DH=xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'Z31:Z10230');
-    
-    %Empty data (nan) in the spreadsheet is for the times that the heatpump is on the
-    %margin and the marginal production factors are then calculated based on
-    %the COP of the heat pump (Rya) and the marginal electrical consumption.
-    CO2intensityFinal_DH(isnan(CO2intensityFinal_DH))=CO2intensityFinal_El(isnan(CO2intensityFinal_DH))/COP_HP_DH;
-    PEintensityFinal_DH(isnan(PEintensityFinal_DH))=PEintensityFinal_El(isnan(PEintensityFinal_DH))/COP_HP_DH;
-if IPCC_factors==1
+%of fuel used (assume biomass now).
+CO2F_Boiler2 = struct('name','CO2F_Boiler2','type','parameter','val',CO2intensityProdMix_Heat(1));
+NREF_Boiler2 = struct('name','NREF_Boiler2','type','parameter','val',NREintensityProdMix_Heat(1));
 
-CO2intensityFinal_DH(CO2intensityFinal_DH==23)=79;
-CO2intensityFinal_DH(CO2intensityFinal_DH==12)=79;
-CO2intensityFinal_DH(CO2intensityFinal_DH==6.7)=46;
-CO2intensityFinal_DH(CO2intensityFinal_DH==72)=79;
-CO2intensityFinal_DH(CO2intensityFinal_DH==98)=59;
-CO2intensityFinal_DH(CO2intensityFinal_DH==177)=183;
-CO2intensityFinal_DH(CO2intensityFinal_DH==248)=299;
-CO2intensityFinal_DH(CO2intensityFinal_DH==347)=339;
+%Get Marginal cost DH (SEK / kWh)
+marginalCost_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('K2:K',num2str(numHours+1)));
 
-
-PEintensityFinal_DH(CO2intensityFinal_DH==23)=0;
-PEintensityFinal_DH(CO2intensityFinal_DH==12)=0;
-PEintensityFinal_DH(CO2intensityFinal_DH==6.7)=0;
-PEintensityFinal_DH(CO2intensityFinal_DH==72)=0;
-PEintensityFinal_DH(CO2intensityFinal_DH==98)=0;
-PEintensityFinal_DH(CO2intensityFinal_DH==177)=1;
-PEintensityFinal_DH(CO2intensityFinal_DH==248)=1;
-PEintensityFinal_DH(CO2intensityFinal_DH==347)=1;
-end
-% CO2intensityFinal_DH(CO2intensityFinal_DH==339)=339;
-%     if 23 then biopellets
-%         if 12 then woodship
-%             if 6.7 then chp woodship'
-%                if 72 then biooil
-%                    if 98 then wast inc
-%                        if 177 then ng chp
-%                            if 248 then ng
-%                                if 347 then oil eo5
-%                                    if 339 then oil eo1
+if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are based on the marginal production unit/mix.
+    %% Marginal CO2 and NRE factors of the external grid
+    %Import marginal CO2 and PE factors
+    prodMix_El=xlsread('Input_dispatch_model\electricityMap - Marginal mix updated v2 - SE - 2016 - 2017.xlsx',1,strcat('B2:M',num2str(numHours+1)));
+    
+    % Calculate the weighted CO2/NRE factors with the electric production mix. 
+    % Note: Hydro discharge is calculated as the weighted marginal CO2/NRE of the
+    % at the time of charging according to Electricity Maps algorithm. Charging is assumed to 
+    % have zero CO2/NRE effect, and round cycle efficieny is assumed to be 100%.
+    CO2intensityFinal_El = sum(prodMix_El(:,1:length(CO2intensityProdMix_El)) .* CO2intensityProdMix_El, 2);
+    NREintensityFinal_El = sum(prodMix_El(:,1:length(NREintensityProdMix_El)) .* NREintensityProdMix_El, 2);
+    
+    %Get Marginal units DH
+    marginalUnits_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('C2:J',num2str(numHours+1)));
+    
+    % Calculate the weighted CO2/NRE factors with the marginal district heating units.
+    % For the times that the heatpump is on the margin, the production
+    % factors are then calculated as the marginal electric mix divided by the COP of the heat pump (Rya).
+    CO2intensityFinal_DH = marginalUnits_DH(:,1:size(marginalUnits_DH,2)-1) * CO2intensityProdMix_Heat' + marginalUnits_DH(:,size(marginalUnits_DH,2)) .* CO2intensityFinal_El./COP_HP_DH; 
+    NREintensityFinal_DH = marginalUnits_DH(:,1:size(marginalUnits_DH,2)-1) * NREintensityProdMix_Heat' + marginalUnits_DH(:,size(marginalUnits_DH,2)) .* NREintensityFinal_El./COP_HP_DH;
     
 else % Warning, this option has not been checked and there are some apparent errors in the factors used! -ZN
     el_exGrid=xlsread('Input_dispatch_model\SE.xlsx',1,'C2:L17520');
@@ -108,14 +76,14 @@ else % Warning, this option has not been checked and there are some apparent err
     el_exGCO2F=zeros(numHours,1);
     el_exGPEF=zeros(numHours,1);
     CO2intensityFinal_DH=zeros(numHours,1);
-    PEintensityFinal_DH=zeros(numHours,1);
+    NREintensityFinal_DH=zeros(numHours,1);
     
     %calculate CO2 emissions for the external grid
     CO2_temp=0;
     PE_temp=0;
     for i=1:length(CO2intensityProdMix_El)
         CO2_temp=CO2_temp+el_exGrid(:,i)*CO2intensityProdMix_El(i);
-        PE_temp=PE_temp+el_exGrid(:,i)*PEintensityProdMix_El(i);
+        PE_temp=PE_temp+el_exGrid(:,i)*NREintensityProdMix_El(i);
     end
     el_exGCO2F(1:length(el_exGrid))=CO2_temp./sum(el_exGrid,2);
     el_exGCO2F(isnan(el_exGCO2F))=0;
@@ -147,12 +115,9 @@ else % Warning, this option has not been checked and there are some apparent err
     for i=1:length(heat_DH)
         temp=temp_heat_DH(i,:).*PEF_DH;
         temp(15)=temp_heat_DH(i,15)*el_exGPEF(i);    %HP of the DH uses el from exG
-        PEintensityFinal_DH(i)=sum(temp)./sum(temp_heat_DH(i,:));
+        NREintensityFinal_DH(i)=sum(temp)./sum(temp_heat_DH(i,:));
     end
 end
-
-%Get Marginal cost DH, convert to SEK per kWh
-marginalCost_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016 20181113.xlsx',1,'X31:X10230')/1000;
 
 end
 

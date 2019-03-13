@@ -189,7 +189,9 @@ equation
            eq_PE         PE use in the FED system (marginal or average depending on which factors are used)
            eq_totPE      Total PE use in the FED system (marginal or average depending on which factors are used)
            eq_CO2        FED CO2 emissions (marginal or average depending on which factors are used)
-           eq_totCO2    with aim to minimize total FED aver. CO2 emission
+           eq_AH_CO2     FED CO2 emissions (marginal or average depending on which factors are used) for AH system
+           eq_nonAH_CO2  FED CO2 emissions (marginal or average depending on which factors are used) for non-AH system
+           eq_totCO2     Total CO2 emissions during the modelled period.
 
            eq_max_exG1 maximum monthly peak demand
 * Not used in rolling time horizon - ZN
@@ -756,9 +758,9 @@ $offtext
 *--------------FED Primary energy use-------------------------------------------
 eq_PE(h)..
         FED_PE(h)=e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*PEF_exG(h)
-                     + el_PV(h)*PEF_PV
-                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*PEF_DH(h) + ((h_Boiler1(h)+h_RGK1(h))/P1_eff)*PEF_Boiler1
-                     + fuel_Boiler2(h)*PEF_Boiler2
+                     + el_PV(h)*NREF_PV
+                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*PEF_DH(h) + ((h_Boiler1(h)+h_RGK1(h))/P1_eff)*NREF_Boiler1
+                     + fuel_Boiler2(h)*NREF_Boiler2
                      + h_DH_slack_var(h)*1000000000
                       + C_DC_slack_var(h)*1000000000
                       + el_slack_var(h)*1000000000;
@@ -768,16 +770,22 @@ eq_totPE..
          tot_PE=e=sum(h,FED_PE(h));
 
 *---------------FED CO2 emission------------------------------------------------
+* Why is the heat CO2 only calculated during the DH_export_season? - ZN
+eq_AH_CO2(h)..
+         AH_CO2(h) =e= (el_imp_AH(h)-el_exp_AH(h))*CO2F_exG(h)
+                       + el_PV(h)*CO2F_PV
+                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h))*CO2F_DH(h) + ((h_Boiler1(h)+h_RGK1(h))/P1_eff)*CO2F_Boiler1
+                       + fuel_Boiler2(h) * CO2F_Boiler2;
+
+eq_nonAH_CO2(h)..
+         nonAH_CO2(h) =e= el_imp_nonAH(h) * CO2F_exG(h)
+                       + h_imp_nonAH(h) * CO2F_DH(h);
+
 eq_CO2(h)..
-       FED_CO2(h) =e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*CO2F_exG(h)
-                      + el_PV(h)*CO2F_PV
-                      + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*CO2F_DH(h) + ((h_Boiler1(h)+h_RGK1(h))/P1_eff)*CO2F_Boiler1
-                      + fuel_Boiler2(h) * CO2F_Boiler2
-                      + h_DH_slack_var(h)*1000000000
-                      + C_DC_slack_var(h)*1000000000
-                      + el_slack_var(h)*1000000000;
-
-
+         FED_CO2(h) =e= AH_CO2(h) + nonAH_CO2(h)
+                        + h_DH_slack_var(h)*1000000000
+                        + C_DC_slack_var(h)*1000000000
+                        + el_slack_var(h)*1000000000;
 
 ****************Total CO2 emission in the FED system****************************
 eq_totCO2..

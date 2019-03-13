@@ -293,10 +293,12 @@ positive variable
 
 *-------------------------PE and CO2 related -----------------------------------
 variable
-         FED_CO2(h)     Hourly CO2 av. emissions in the FED system
-         tot_CO2        Total CO2 av. emissions of the FED system
-         FED_PE(h)      Hourly av. PE use in the FED system
-         tot_PE         Total av. PE use in the FED system
+         AH_CO2(h)      Hourly CO2 emissions from the Akademiska Hus FED network
+         nonAH_CO2(h)   Hourly CO2 emissions from the non-Akademiska Hus FED network
+         FED_CO2(h)     Hourly CO2 emissions in the FED system
+         tot_CO2        Total CO2 emissions of the FED system
+         FED_PE(h)      Hourly PE use in the FED system
+         tot_PE         Total PE use in the FED system
 ;
 
 *-------------------- Power tariffs --------------------------------------------
