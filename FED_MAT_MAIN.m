@@ -2,13 +2,47 @@ function [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, Results] = FE
 % optimization options
 % min_totCost_0: option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
 % min_totCost:  weighting factor for total cost to use in the minimization function
-% min_totPE:    weighting factor for PE to use in the minimization function
-% min_totCO2:   weighting factor CO2 emissions to use in the minimization function
+% min_totPE:    weighting factor for NRE to use in the minimization function
+% min_totCO2:   weighting factor for CO2 emissions to use in the minimization function
 
-profile on  %to monitor time used to run different parts of model code
-tic
+%profile on  %to monitor time used to run different parts of model code
+%tic
 delete GtoM.gdx
 delete MtoG.gdx
+
+%Starts GAMS link to matlab so that the rgdx/wgdx interface works.
+system 'gams';
+
+%% SIMULATION START AND STOP TIME
+%Sim start time
+sim_start_y=2016;
+sim_start_m=3;
+sim_start_d=1;
+sim_start_h=1;
+
+%Sim stop time
+
+sim_stop_y=2017;
+sim_stop_m=2;
+sim_stop_d=28;
+sim_stop_h=24;
+
+%Get month and hours of simulation
+[HoS, ~]=fget_time_vector(sim_start_y,sim_stop_y);
+
+sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
+sim_stop=HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
+forecast_horizon=10;
+
+% DATA INDICES FOR INPUT DATA
+% Data_length is the number of hours of available data. Note that GE production data only goes to February 28, 2016... so a full 2 year run
+% is not possible. The max run currently is 10200 hours from 2016-01-01
+% 00:00 to 2017-02-28 23:00, but one year from 2016-03-01 to 2017-02-28 is
+% preferred for data completeness/correctness.
+data_length = sim_stop-sim_start+1; 
+
+% Initialize Results cell array
+%Results=cell(data_length,1);
 
 %% Assigning buildings ID to the buildings in the FED system
 
@@ -98,8 +132,7 @@ BusID.uels=num2cell(BusID_temp);
 %based on the file "solceller lista p� anl�ggningar.xlsx" which is from the 3d shading model
 
 PVID.name='PVID';
-PVID_temp=1:99;
-PVID.uels=num2cell(PVID_temp);
+PVID.uels=num2cell(1:99);
 
 %% District heating network transfer limits - initialize nodes and flow limits
 DH_Node_Fysik.name = 'Fysik';
@@ -139,27 +172,21 @@ DC_Nodes.maximum_flow = [26, 44, 32, 34, 32] .* 1/1000; % % l/s * m3/l = m3/s wh
 DC_Node_ID.name = 'DC_Node_ID';
 DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_Node_Fysik.name, DC_Node_Kemi.name};
 
-%forecasted solar PV irradiance -roof
-Gekv_roof = struct('name','G_roof','type','parameter','form','full');
-
-%forecasted solar PV irradiance -facade
-Gekv_facade = struct('name','G_facade','type','parameter','form','full');
-
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 %Read static properties of the model
 % AK Change BAC, and BTES namings
-[P1P2_disp, DH_exp_season,DH_heating_season_full, BAC_sav_period, pv_area_roof, pv_area_facades, BTES_param ] = fread_static_properties();
+[P1P2_dispatchable_full, DH_export_season_full, DH_heating_season_full, BAC_savings_period_full, ~, ~, BTES_param] = fread_static_properties(sim_start,sim_stop);
 
 %Read variable/measured input data
-[el_demand_measured, h_demand_measured,c_demand_measured,...
-    h_B1_measured,h_F1_measured,...
-    el_VKA1_measured,el_VKA4_measured,...
-    el_AAC_measured,...
-    h_AbsC_measured,...
-    el_price_measured,...
-    el_certificate_m,h_price_measured,tout_measured,...
-    irradiance_measured_facades,irradiance_measured_roof,...
-    DC_slack, el_slack, DH_slack, h_exp_AH_measured, h_imp_AH_measured] = fread_measurements(2, 17000);
+[el_demand_full, h_demand_full, c_demand_full,...
+    h_Boiler1_0_full, h_FlueGasCondenser1_0_full,...
+    el_VKA1_0_full, el_VKA4_0_full,...
+    ~,...
+    h_AbsC_0_full,...
+    el_price_full,...
+    el_certificate_full, h_price_full, tout_full,...
+    G_facade_full, G_roof_full,...
+    c_DC_slack_full, el_exG_slack_full, h_DH_slack_full, h_exp_AH_hist_full, h_imp_AH_hist_full] = fread_measurements(sim_start,sim_stop);
 
 %This must be modified
 %     temp=load('Input_dispatch_model\import_export_forecasting');
@@ -173,11 +200,12 @@ Gekv_facade = struct('name','G_facade','type','parameter','form','full');
 %
 %     %Import ANN data
 %     load('Input_dispatch_model\Heating_ANN');
-%% INPUT PE and CO2 FACTORS
-[CO2intensityFinal_El, PEintensityFinal_El, CO2intensityFinal_DH, PEintensityFinal_DH, marginalCost_DH, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2] = get_CO2PE_exGrids(opt_marg_factors);
+
+%% INPUT NRE and CO2 FACTORS
+[CO2F_El_full, NREF_El_full, CO2F_DH_full, NREF_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,sim_stop);
 
 %% Initialize FED INVESTMENT OPTIONS
-% If min_totCost_O=1, e.g. base case simulation then all investment option
+% If min_totCost_O=1, i.e. base case simulation, then all investment options
 % will be set to 0.
 
 %FED investment limit
@@ -215,7 +243,6 @@ opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','
 %Option for TES investment
 %>=0 =fixed investment, -1=variable of optimization
 opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',0*(1-min_totCost_0));
-
 
 %Option for Cold water basin CURRENTLY NOT IN USE
 warning('CURRENTLY CWB DATA IS SET IN GAMS')
@@ -272,6 +299,16 @@ BTES_SO_max_power = struct('name', 'BTES_SO_max_power', 'type', 'parameter', 'fo
 BTES_SO_max_power.uels = BTES_SO_uels;
 BTES_SO_max_power.val = [45, 20, 90, 76, 11]; % kWh/h, Requires ordering of BTES_SO_UELS to be O11:01, O7:888, O7:28, O7, 27, O7:24
 
+%Building thermal energy storage properties
+% AK Change to EVI  * Why is the .val never set for this parameter? - ZN
+BTES_properties=struct('name','BTES_properties','type','set','form','full');
+BTES_properties.uels={'BTES_Scap', 'BTES_Dcap', 'BTES_Esig', 'BTES_Sch_hc',...
+    'BTES_Sdis_hc', 'kloss_Sday', 'kloss_Snight', 'kloss_D', 'K_BS_BD'};
+
+%BTES model
+BTES_model = struct('name','BTES_model','type','parameter','form','full','val',BTES_param);
+BTES_model.uels={BTES_properties.uels,BID.uels};
+
 %Placement of roof PVs (Existing)
 PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista p� anl�ggningar.xlsx" as well as the 3d shading model
 
@@ -308,99 +345,7 @@ PV_facade_cap_existing=13.23;
 PV_facade_cap=struct('name','PV_facade_cap','type','parameter','form','full');
 PV_facade_cap.uels=PVID_facade.uels;
 PV_facade_cap.val=PV_facade_cap_existing;
-
-
-%% Define Variable inputs to the dispatch model
-
-h.name='h';
-%Define the forecast function here, here forecast is assumed to be the same
-%as measurment
-
-%forecasted el demand
-el_demand = struct('name','el_demand','type','parameter','form','full');
-
-%forecasted heat demand
-h_demand = struct('name','h_demand','type','parameter','form','full');
-
-%forecasted cooling demand
-c_demand = struct('name','c_demand','type','parameter','form','full');
-
-%Heat generation from boiler 1 in the base case
-qB1 = struct('name','qB1','type','parameter','form','full');
-
-%Historical heat import/export
-h_imp_AH_hist = struct('name','h_imp_AH_hist','type','parameter','form','full');
-h_exp_AH_hist = struct('name','h_exp_AH_hist','type','parameter','form','full');
-
-%Heat generaion from the Flue gas condenser in the base case
-qF1 = struct('name','qF1','type','parameter','form','full');
-
-%el used by VKA1 in the base case
-el_VKA1_0 = struct('name','el_VKA1_0','type','parameter','form','full');
-
-%el used by VKA4 in the base case
-el_VKA4_0 = struct('name','el_VKA4_0','type','parameter','form','full');
-
-%el used by AAC in the base case
-%el_AAC_0 = struct('name','el_AAC_0','type','parameter','form','full');
-
-%heat used by AbsC in the base case
-h_AbsC_0 = struct('name','h_AbsC_0','type','parameter','form','full');
-
-%forecasted Nordpool el price
-el_price = struct('name','el_price','type','parameter','form','full');
-
-%forecasted el certificate
-el_certificate = struct('name','el_certificate','type','parameter','form','full');
-
-%forecasted GE's heat price
-h_price = struct('name','h_price','type','parameter','form','full');
-
-%forecasted outdoor temprature
-tout = struct('name','tout','type','parameter','form','full');
-
-%Building termal energy storage properties
-% AK Change to EVI
-BTES_properties.name='BTES_properties';
-BTES_properties.uels={'BTES_Scap', 'BTES_Dcap', 'BTES_Esig', 'BTES_Sch_hc',...
-    'BTES_Sdis_hc', 'kloss_Sday', 'kloss_Snight', 'kloss_D', 'K_BS_BD'};
-
-%BTES model
-BTES_model = struct('name','BTES_model','type','parameter','form','full','val',BTES_param);
-BTES_model.uels={BTES_properties.uels,BID.uels};
-
-%P1P2 dispatchability
-P1P2_dispatchable = struct('name','P1P2_dispatchable','type','parameter','form','full');
-
-%Heat export season
-DH_export_season = struct('name','DH_export_season','type','parameter','form','full');
-
-%Heat export season
-DH_heating_season = struct('name','DH_heating_season','type','parameter','form','full');
-
-%BAC saving period
-BAC_savings_period = struct('name','BAC_savings_period','type','parameter','form','full');
-
-CO2F_exG = struct('name','CO2F_exG','type','parameter','form','full');
-PEF_exG = struct('name','PEF_exG','type','parameter','form','full');
-CO2F_DH = struct('name','CO2F_DH','type','parameter','form','full');
-PEF_DH = struct('name','PEF_DH','type','parameter','form','full');
-MA_Cost_DH = struct('name','MA_Cost_DH','type','parameter','form','full');
-
-%%el exG slack bus data
-el_exG_slack = struct('name','el_exG_slack','type','parameter','form','full');
-
-%%District heating slack bus data
-h_DH_slack = struct('name','h_DH_slack','type','parameter','form','full');
-
-%%District cooling slack bus data
-c_DC_slack = struct('name','c_DC_slack','type','parameter','form','full');
-
-%% SIMULATION OPTIONS
-%Option to choose between marginal and average heat price
-%if 0, average emissionand seasonal price is used; if 1 marginal price and emission is used
-% opt_marg_factors = struct('name','opt_marg_factors','type','parameter','form','full','val',opt_marg_factors);
-
+%% CHECK SIMULATION OPTIONS
 % For base case simulation, minimization of total cost is the only option.
 if (min_totCost_0 == 1)
     min_totCost=1;
@@ -415,28 +360,6 @@ min_totCO2 = struct('name','min_totCO2','type','parameter','form','full','val',m
 synth_baseline = struct('name','synth_baseline','type','parameter','form','full','val',synth_baseline);
 %%
 
-
-%SIMULATION START AND STOP TIME
-%Sim start time
-sim_start_y=2016;
-sim_start_m=3;
-sim_start_d=1;
-sim_start_h=1;
-
-%Sim stop time
-
-sim_stop_y=2017;
-sim_stop_m=2;
-sim_stop_d=28;
-sim_stop_h=24;
-
-%Get month and hours of simulation
-[HoS, MoS]=fget_time_vector(sim_start_y,sim_stop_y);
-
-sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
-sim_stop=HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
-forecast_horizon=10;
-
 % Store array to be exported to excel sheet
 % INITIALIZE output array
 to_excel_el(1:sim_stop-sim_start,1:31)=0;
@@ -444,61 +367,66 @@ to_excel_heat(1:sim_stop-sim_start,1:39)=0;
 to_excel_cool(1:sim_stop-sim_start,1:23)=0;
 to_excel_co2(1:sim_stop-sim_start,1:7)=0;
 
-Time(1).point='fixed inputs';
-Time(1).value=toc;
-for t=sim_start:sim_stop
-    %% Variable input data to the dispatch model
-    %Read measured data
-    tic
-    disp(['Time ' num2str(t) ' of ' num2str(sim_stop)])
+%Time(1).point='fixed inputs';
+%Time(1).value=toc;
+for t=1:data_length
+    %% Variable input data to the dispatch model 
+    %Structures are created to send to GAMS which contain subsets of the
+    %previously read Matlab data. This creates a rolling time horizon over
+    %which the model optimized on every step for X time steps ahead, where
+    %X is the forecast_horizon.
+    disp(['Time step' num2str(t) ' of ' num2str(data_length)])
     forecast_end=t+forecast_horizon-1;
+    
+    % hours in simulation
+    h = struct('name','h','type','set','form','full');
     h.uels=num2cell(t:forecast_end);
     
-    %Define the forecast function here, here forecast is assumed to be the same
-    %as measurment
+    %Define the forecast functions... forecast is assumed to be the same
+    %as measurment. 
     
     %forecasted solar PV irradiance Roof
-    Gekv_roof.val = irradiance_measured_roof(t:forecast_end,:);
-    Gekv_roof.uels={h.uels,PVID_roof.uels};
+    G_roof = struct('name','G_roof','type','parameter','form','full','val',G_roof_full(t:forecast_end,:));
+    G_roof.uels={h.uels,PVID_roof.uels};
     
     %forecasted solar PV irradiance Roof
-    Gekv_facade.val = irradiance_measured_facades(t:forecast_end,:);
-    Gekv_facade.uels={h.uels,PVID_facade.uels};
+    G_facade = struct('name','G_facade','type','parameter','form','full','val',G_facade_full(t:forecast_end,:));
+    G_facade.uels={h.uels,PVID_facade.uels};
     
     %forecasted el demand
-    el_demand.val = el_demand_measured(t:forecast_end,:);
+    el_demand = struct('name','el_demand','type','parameter','form','full','val',el_demand_full(t:forecast_end,:));
     el_demand.uels={h.uels,BID.uels};
     
     %forecasted heat demand
-    h_demand.val = h_demand_measured(t:forecast_end,:);
+    h_demand = struct('name','h_demand','type','parameter','form','full','val',h_demand_full(t:forecast_end,:));
     h_demand.uels={h.uels,BID.uels};
     
     %forecasted cooling demand
-    c_demand.val = c_demand_measured(t:forecast_end,:);
+    c_demand = struct('name','c_demand','type','parameter','form','full','val',c_demand_full(t:forecast_end,:));
     c_demand.uels={h.uels,BID.uels};
     
     %Historical heat export
-    h_exp_AH_hist.val = h_exp_AH_measured(t:forecast_end,:);
+    h_exp_AH_hist = struct('name','h_exp_AH_hist','type','parameter','form','full','val',h_exp_AH_hist_full(t:forecast_end,:));
     h_exp_AH_hist.uels=h.uels;
     
     %Historical heat import
-    h_imp_AH_hist.val = h_imp_AH_measured(t:forecast_end,:);
+    h_imp_AH_hist = struct('name','h_imp_AH_hist','type','parameter','form','full','val',h_imp_AH_hist_full(t:forecast_end,:));
     h_imp_AH_hist.uels=h.uels;
     
     %Heat generation from boiler 1 in the base case
-    qB1.val = h_B1_measured(t:forecast_end,:);
-    qB1.uels=h.uels;
+    h_Boiler1_0 = struct('name','h_Boiler1_0','type','parameter','form','full','val',h_Boiler1_0_full(t:forecast_end,:));
+    h_Boiler1_0.uels=h.uels;
     
-    %Heat generation from the Flue gas condenser in the base case
-    qF1.val = h_F1_measured(t:forecast_end,:);
-    qF1.uels=h.uels;
+    %Heat generation from the flue gas condenser in the base case
+    h_FlueGasCondenser1_0 = struct('name','h_FlueGasCondenser1_0','type','parameter','form','full','val',h_FlueGasCondenser1_0_full(t:forecast_end,:));
+    h_FlueGasCondenser1_0.uels=h.uels;
     
     %el used by VKA1 in the base case
-    el_VKA1_0.val=el_VKA1_measured(t:forecast_end,:);
+    el_VKA1_0 = struct('name','el_VKA1_0','type','parameter','form','full','val',el_VKA1_0_full(t:forecast_end,:));
     el_VKA1_0.uels=h.uels;
     
     %el used by VKA4 in the base case
-    el_VKA4_0.val=el_VKA4_measured(t:forecast_end,:);
+    el_VKA4_0 = struct('name','el_VKA4_0','type','parameter','form','full','val',el_VKA4_0_full(t:forecast_end,:));
     el_VKA4_0.uels=h.uels;
     
     %el used by AAC in the base case
@@ -506,39 +434,39 @@ for t=sim_start:sim_stop
     %el_AAC_0.uels=h.uels;
     
     %h used by ABC in the base case
-    h_AbsC_0.val=h_AbsC_measured(t:forecast_end,:);
+    h_AbsC_0 = struct('name','h_AbsC_0','type','parameter','form','full','val',h_AbsC_0_full(t:forecast_end,:));
     h_AbsC_0.uels=h.uels;
     
     %forecasted Nordpool el price
-    el_price.val = el_price_measured(t:forecast_end,:);
+    el_price = struct('name','el_price','type','parameter','form','full','val',el_price_full(t:forecast_end,:));
     el_price.uels=h.uels;
     
     %forecasted el certificate
-    el_certificate.val = el_certificate_m(t:forecast_end,:);
+    el_certificate = struct('name','el_certificate','type','parameter','form','full','val',el_certificate_full(t:forecast_end,:));
     el_certificate.uels=h.uels;
     
     %forecasted GE's heat price
-    h_price.val = h_price_measured(t:forecast_end,:);
+    h_price = struct('name','h_price','type','parameter','form','full','val',h_price_full(t:forecast_end,:));
     h_price.uels=h.uels;
     
     %forecasted outdoor temperature
-    tout.val = tout_measured(t:forecast_end,:);
+    tout = struct('name','tout','type','parameter','form','full','val',tout_full(t:forecast_end,:));
     tout.uels=h.uels;
     
     %P1P2 dispatchability
-    P1P2_dispatchable.val = P1P2_disp(t:forecast_end,:);
+    P1P2_dispatchable = struct('name','P1P2_dispatchable','type','parameter','form','full','val',P1P2_dispatchable_full(t:forecast_end,:));
     P1P2_dispatchable.uels=h.uels;
     
     %Heat export season
-    DH_export_season.val = DH_exp_season(t:forecast_end,:);
+    DH_export_season = struct('name','DH_export_season','type','parameter','form','full','val',DH_export_season_full(t:forecast_end,:));
     DH_export_season.uels=h.uels;
     
     %DH heating season
-    DH_heating_season.val = DH_heating_season_full(t:forecast_end,:);
+    DH_heating_season = struct('name','DH_heating_season','type','parameter','form','full','val',DH_heating_season_full(t:forecast_end,:));
     DH_heating_season.uels=h.uels;
     
     %BAC saving period
-    BAC_savings_period.val = BAC_sav_period(t:forecast_end,:);
+    BAC_savings_period = struct('name','BAC_savings_period','type','parameter','form','full','val',BAC_savings_period_full(t:forecast_end,:));
     BAC_savings_period.uels=h.uels;
     
     %Calculation of BAC savings factors
@@ -551,42 +479,42 @@ for t=sim_start:sim_stop
     DC_Nodes_Transfer_Limits = fget_dc_transfer_limits(DC_Nodes, h);
     
     %CO2 factors of the external el grid
-    CO2F_exG.val = CO2intensityFinal_El(t:forecast_end,:);
-    CO2F_exG.uels=h.uels;
+    CO2F_El = struct('name','CO2F_El','type','parameter','form','full','val',CO2F_El_full(t:forecast_end,:));
+    CO2F_El.uels=h.uels;
     
-    %PE factors of the external el grid
-    PEF_exG.val = PEintensityFinal_El(t:forecast_end,:);
-    PEF_exG.uels=h.uels;
+    %NRE factors of the external el grid
+    NREF_El = struct('name','NREF_El','type','parameter','form','full','val',NREF_El_full(t:forecast_end,:));
+    NREF_El.uels=h.uels;
     
     %CO2 factors of the external DH grid (AVERAGE AND MARGINAL) & marginal
     %DH cost
-    MA_Cost_DH.val = marginalCost_DH(t:forecast_end,:);
-    MA_Cost_DH.uels=h.uels;
+    marginalCost_DH = struct('name','marginalCost_DH','type','parameter','form','full','val',marginalCost_DH_full(t:forecast_end,:));
+    marginalCost_DH.uels=h.uels;
     
-    CO2F_DH.val = CO2intensityFinal_DH(t:forecast_end,:);
+    CO2F_DH = struct('name','CO2F_DH','type','parameter','form','full','val',CO2F_DH_full(t:forecast_end,:));
     CO2F_DH.uels=h.uels;
     
-    %PE factors of the external DH grid(AVERAGE AND MARGINAL) ONLY MARGINAL???
-    PEF_DH.val = PEintensityFinal_DH(t:forecast_end,:);
-    PEF_DH.uels=h.uels;
+    %NRE factors of the external DH grid
+    NREF_DH = struct('name','NREF_DH','type','parameter','form','full','val',NREF_DH_full(t:forecast_end,:));
+    NREF_DH.uels=h.uels;
     
     %el exG slack bus data
-    el_exG_slack.val=el_slack(t:forecast_end,:);
+    el_exG_slack = struct('name','el_exG_slack','type','parameter','form','full','val',el_exG_slack_full(t:forecast_end,:));
     el_exG_slack.uels=h.uels;
     
     %District heating slack bus data
-    h_DH_slack.val=DH_slack(t:forecast_end,:);
+    h_DH_slack = struct('name','h_DH_slack','type','parameter','form','full','val',h_DH_slack_full(t:forecast_end,:));
     h_DH_slack.uels=h.uels;
     
     %District cooling slack bus data
-    c_DC_slack.val=DC_slack(t:forecast_end,:);
+    c_DC_slack = struct('name','c_DC_slack','type','parameter','form','full','val',c_DC_slack_full(t:forecast_end,:));
     c_DC_slack.uels=h.uels;
     
-    %Initial SoC of storage systems and devices with ramp rate.
+    %Uels for Battery Energy Storage systems
     BES_BID_uels = opt_fx_inv_BES_cap.uels;
     BFCh_BID_uels = opt_fx_inv_BFCh_cap.uels;
     
-    if t==sim_start
+    if t==1
         % Set initial state of BAC Buildings to empty
         opt_fx_inv_BTES_BAC_D_init = struct('name','opt_fx_inv_BTES_BAC_D_init','type','parameter','form','full','val',zeros(1,length(BTES_BAC_uels))); 
         opt_fx_inv_BTES_BAC_S_init = struct('name','opt_fx_inv_BTES_BAC_S_init','type','parameter','form','full','val',zeros(1,length(BTES_BAC_uels)));
@@ -632,7 +560,7 @@ for t=sim_start:sim_stop
         Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',Boiler2_init);
     end
     
-    % Set uels for BAC and BTES
+    % Set uels for state of Charge (SoC) for BAC, BTES, BES, BFCh
     opt_fx_inv_BTES_BAC_D_init.uels = {num2cell(t), BTES_BAC_uels};
     opt_fx_inv_BTES_BAC_S_init.uels = {num2cell(t), BTES_BAC_uels};
     opt_fx_inv_BTES_SO_D_init.uels = {num2cell(t), BTES_SO_uels};
@@ -650,12 +578,12 @@ for t=sim_start:sim_stop
         opt_fx_inv_TES_cap,...
         opt_fx_inv_CWB_init,...
         opt_fx_inv_BES, opt_fx_inv_BES_cap, h, BTES_BAC_Inv, BTES_SO_Inv,...
-        CO2F_exG, PEF_exG, CO2F_DH, PEF_DH, MA_Cost_DH,...
+        CO2F_El, NREF_El, CO2F_DH, NREF_DH, marginalCost_DH,...
         CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2,...
         BID,BID_AH_el,BID_nonAH_el,BID_AH_h,BID_nonAH_h,BID_AH_c,BID_nonAH_c,BID_nonBTES,...
-        el_demand,h_demand,c_demand,qB1,qF1,...        
+        el_demand,h_demand,c_demand,h_Boiler1_0,h_FlueGasCondenser1_0,...        
         el_VKA1_0, el_VKA4_0,...
-        h_AbsC_0,Gekv_roof,Gekv_facade,...
+        h_AbsC_0,G_roof,G_facade,...
         BTES_properties,BTES_model,P1P2_dispatchable,DH_export_season,DH_heating_season,BAC_savings_period,...
         PVID,PVID_roof,PV_roof_cap,PVID_facade,PV_facade_cap,...
         el_price,el_certificate,h_price,tout,BAC_savings_factor,...
@@ -666,8 +594,8 @@ for t=sim_start:sim_stop
         DH_Node_ID, DH_Nodes_Transfer_Limits,...
         DC_Node_ID, DC_Nodes_Transfer_Limits, el_exG_slack,h_DH_slack,c_DC_slack,h_exp_AH_hist, h_imp_AH_hist,opt_fx_inv_SO,opt_fx_inv_BAC); 
 %% 
-    Time(2).point='Wgdx and Inputs';
-    Time(2).value=toc; 
+%    Time(2).point='Wgdx and Inputs';
+%    Time(2).value=toc; 
     
     if opt_RunGAMSModel==1
         system 'gams FED_SIMULATOR_MAIN lo=2';
@@ -676,24 +604,24 @@ for t=sim_start:sim_stop
 Results(t).dispatch = fstore_results(h,BID,BTES_properties,BusID);
 
 [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
-toc
+%toc
 end
-tic
+%tic
 xlswrite('result_temp.xlsx',to_excel_el,'Electricity','A3')
 xlswrite('result_temp.xlsx',to_excel_heat,'Heat','A3')
 xlswrite('result_temp.xlsx',to_excel_cool,'Cooling','A3')
 xlswrite('result_temp.xlsx',to_excel_co2,'CO2_PE','A3')
-toc
+%toc
 
-Time(3).point='Gams running and storing';
-Time(3).value=toc;
+%Time(3).point='Gams running and storing';
+%Time(3).value=toc;
 
 %% Post processing results
 
 %use the 'plot_results.m' script to plot desired results
 %%
-Time(4).point='Total';
-total=profile('info');
-total=total.FunctionTable.TotalTime;
-Time(4).value=total(1);
+%Time(4).point='Total';
+%total=profile('info');
+%total=total.FunctionTable.TotalTime;
+%Time(4).value=total(1);
 %excel_results(sim_start,sim_stop,Results,Time);

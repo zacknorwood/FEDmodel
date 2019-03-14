@@ -33,7 +33,7 @@ invCost_BAC     investment cost of building advanced control
 invCost_HP      investment cost of heat pump
 invCost_RMMC    investment cost of connecting MC2 RM
 invCost_AbsCInv     investment cost of absorption cooler
-invCost_Boiler2          investment cost of P2
+invCost_Boiler2          investment cost of B2
 invCost_TURB        investment cost of turbine
 invCost_RMInv       investment cost of RMInv
 total_cap_PV_roof   total capacity in kW
@@ -53,7 +53,7 @@ invCost_TES = (TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
 invCost_SO = cost_inv_opt('SO')*sum(BID,B_SO.l(BID));
 invCost_BAC = cost_inv_opt('BAC')*sum(BID,B_BAC.l(BID));
 invCost_RMMC = cost_inv_opt('RMMC')*RMMC_inv.l;
-invCost_Boiler2 = B_Boiler2.l * cost_inv_opt('P2');
+invCost_Boiler2 = B_Boiler2.l * cost_inv_opt('B2');
 invCost_TURB = B_TURB.l * cost_inv_opt('TURB');
 invCost_AbsCInv = (AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
 invCost_RMInv = RMInv_cap.l*cost_inv_opt('RMInv');
@@ -85,7 +85,7 @@ fix_cost_new_AH = (sum(PVID, PV_cap_roof.l(PVID) + PV_cap_facade.l(PVID)))*fix_c
                   + RMInv_cap.l*fix_cost('RMInv')
                   + fix_cost('BAC')*sum(BID,B_BAC.l(BID))
                   + fix_cost('SO')*sum(BID,B_SO.l(BID))
-                  + B_Boiler2.l * fix_cost('P2')
+                  + B_Boiler2.l * fix_cost('B2')
                   + B_TURB.l * fix_cost('TURB')
                   + AbsCInv_cap.l*fix_cost('AbsCInv');
 
@@ -97,7 +97,7 @@ var_cost_existing_AH(h) =      el_imp_AH.l(h)*utot_cost('exG',h)
                                + (h_imp_AH.l(h))*utot_cost('DH',h)
                                - h_exp_AH.l(h) * (utot_cost('DH',h)/(1+DH_margin))
 *                               - sum(m,(h_exp_AH.l(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12)))
-                               + h_Boiler1.l(h)*utot_cost('P1',h)
+                               + h_Boiler1.l(h)*utot_cost('B1',h)
                                + h_VKA1.l(h)*utot_cost('HP',h)
                                + h_VKA4.l(h)*utot_cost('HP',h)
                                + el_AbsC.l(h) * utot_cost('exG',h)
@@ -118,7 +118,7 @@ var_cost_new_AH(h)   =     el_PV.l(h)*utot_cost('PV',h)
                            + TES_dis.l(h)*utot_cost('TES',h)
                            + sum(BID,BAC_Sch.l(h,BID)*utot_cost('BAC',h))
                            + sum(BID,SO_Sch.l(h,BID)*utot_cost('SO',h))
-                           + h_Boiler2.l(h)*utot_cost('P2',h)
+                           + h_Boiler2.l(h)*utot_cost('B2',h)
                            + el_TURB.l(h)*utot_cost('TURB',h)
                            + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
 
@@ -171,7 +171,7 @@ vc_el_absC(h) = el_AbsC.l(h) * utot_cost('exG',h)+eps;
 vc_h_imp_AH(h) = (h_imp_AH.l(h))*utot_cost('DH',h)+eps;
 vc_h_imp(h) =(h_imp_AH.l(h) + h_imp_nonAH.l(h)) * utot_cost('DH',h)+eps;
 vc_h_exp(h) = h_exp_AH.l(h) * utot_cost('DH',h)+eps;
-vc_h_Boiler1(h) = h_Boiler1.l(h)*utot_cost('P1',h)+eps;
+vc_h_Boiler1(h) = h_Boiler1.l(h)*utot_cost('B1',h)+eps;
 vc_h_VKA1(h) = h_VKA1.l(h)*utot_cost('HP',h)+eps;
 vc_h_VKA4(h) = h_VKA4.l(h)*utot_cost('HP',h)+eps;
 vc_h_ABSC(h) =h_AbsC.l(h) * utot_cost('DH',h)+eps;
@@ -200,7 +200,7 @@ vc_el_BES(h) = sum(BID,BES_dis.l(h,BID)*utot_cost('BES',h))+eps;
 vc_h_TES(h) = TES_dis.l(h)*utot_cost('TES',h)+eps;
 vc_h_BAC(h) = sum(BID,BAC_Sch.l(h,BID)*utot_cost('BAC',h))+eps;
 vc_h_SO(h) = sum(BID,SO_Sch.l(h,BID)*utot_cost('SO',h))+eps;
-vc_h_Boiler2(h)  = h_Boiler2.l(h)*utot_cost('P2',h)+eps;
+vc_h_Boiler2(h)  = h_Boiler2.l(h)*utot_cost('B2',h)+eps;
 vc_el_TURB(h) = el_TURB.l(h)*utot_cost('TURB',h)+eps;
 *vc_e_PV                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
 *vc_tot = sum(h, tot_var_cost_AH(h));
@@ -222,9 +222,9 @@ AH_PE_tot      AH total PE average
 ;
 
 *-----------------AH average and margional PE use-------------------------------
-AH_PE(h)= ( el_imp_AH.l(h)-el_exp_AH.l(h))*PEF_exG(h)
+AH_PE(h)= ( el_imp_AH.l(h)-el_exp_AH.l(h))*NREF_El(h)
             + el_PV.l(h)*NREF_PV
-            + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*PEF_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*NREF_Boiler1
+            + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*NREF_DH(h) + ((h_Boiler1.l(h)+h_FlueGasCondenser1.l(h))/B1_eff)*NREF_Boiler1
                      + fuel_Boiler2.l(h)*NREF_Boiler2;
 
 
@@ -252,7 +252,7 @@ AH_PE_tot=sum(h,AH_PE(h));
 parameter
 *FED_PE_ft(h)  Primary energy as a function of time
           model_status  Model status
-          fuel_Boiler1(h)  Fuel input to P1
+          fuel_Boiler1(h)  Fuel input to B1
           AH_el_imp_tot
           AH_el_exp_tot
           AH_h_imp_tot
@@ -260,7 +260,7 @@ parameter
           sum_temp_slack(h, DH_Node_ID)
 ;
 
-fuel_Boiler1(h)=h_Boiler1.l(h)/P1_eff;
+fuel_Boiler1(h)=h_Boiler1.l(h)/B1_eff;
 model_status=total.modelstat;
 AH_el_imp_tot=sum(h,el_imp_AH.l(h));
 AH_el_exp_tot=sum(h,el_exp_AH.l(h));
@@ -284,11 +284,11 @@ execute_unload 'GtoM'  min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       h_demand_nonAH, h_demand, h_demand_nonAH_sum
                       el_sell_price, el_price, h_price, tout, cool_demand,heat_demand,elec_demand
                       BTES_model,
-                      FED_PE, FED_CO2, FED_CO2_tot, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2, CO2F_exG, PEF_exG, CO2F_DH, PEF_DH,
-                      h_Boiler1, h_RGK1, qB1, qF1, fuel_Boiler1, P1_eff, tot_PE,
+                      FED_PE, FED_CO2, FED_CO2_tot, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2, CO2F_El, NREF_El, CO2F_DH, NREF_DH,
+                      h_Boiler1, h_FlueGasCondenser1, h_Boiler1_0, h_FlueGasCondenser1_0, fuel_Boiler1, B1_eff, tot_PE,
                       h_VKA1, c_VKA1, el_VKA1,
                       h_VKA4, c_VKA4, el_VKA4,
-                      B_Boiler2, invCost_Boiler2, fuel_Boiler2, h_Boiler2, H_Boiler2T, B_TURB, invCost_TURB, el_TURB, h_TURB, P2_eff, TURB_eff,
+                      B_Boiler2, invCost_Boiler2, fuel_Boiler2, h_Boiler2, H_Boiler2T, B_TURB, invCost_TURB, el_TURB, h_TURB, B2_eff, TURB_eff,
                       h_AbsC, c_AbsC, el_AbsC, h_AbsCInv, c_AbsCInv, AbsCInv_cap, invCost_AbsCInv,
                       el_RM, c_RM, el_RMMC, h_RMMC, c_RMMC, RMMC_inv, invCost_RMMC,
 *                      el_AAC, c_AAC,

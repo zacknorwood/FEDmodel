@@ -73,18 +73,18 @@ data.CO2F_Boiler1=gdx2mat(gdxData,'CO2F_Boiler1');
 data.NREF_Boiler1=gdx2mat(gdxData,'NREF_Boiler1');
 data.CO2F_Boiler2=gdx2mat(gdxData,'CO2F_Boiler2');
 data.NREF_Boiler2=gdx2mat(gdxData,'NREF_Boiler2');
-data.CO2F_exG=gdx2mat(gdxData,'CO2F_exG',h_sim.uels);
-data.PEF_exG=gdx2mat(gdxData,'PEF_exG',h_sim.uels);
+data.CO2F_El=gdx2mat(gdxData,'CO2F_El',h_sim.uels);
+data.NREF_El=gdx2mat(gdxData,'NREF_El',h_sim.uels);
 data.CO2F_DH=gdx2mat(gdxData,'CO2F_DH',h_sim.uels);
-data.PEF_DH=gdx2mat(gdxData,'PEF_DH',h_sim.uels);
+data.NREF_DH=gdx2mat(gdxData,'NREF_DH',h_sim.uels);
 
 %Local production
 data.h_Boiler1=gdx2mat(gdxData,'h_Boiler1',h_sim.uels);
-data.h_RGK1=gdx2mat(gdxData,'h_RGK1',h_sim.uels);
-data.qB1=gdx2mat(gdxData,'qB1',h_sim.uels);
-data.qF1=gdx2mat(gdxData,'qF1',h_sim.uels);
+data.h_FlueGasCondenser1=gdx2mat(gdxData,'h_FlueGasCondenser1',h_sim.uels);
+data.h_Boiler1_0=gdx2mat(gdxData,'h_Boiler1_0',h_sim.uels);
+data.h_FlueGasCondenser1_0=gdx2mat(gdxData,'h_FlueGasCondenser1_0',h_sim.uels);
 data.fuel_Boiler1=gdx2mat(gdxData,'fuel_Boiler1',h_sim.uels);
-data.P1_eff=gdx2mat(gdxData,'P1_eff');
+data.B1_eff=gdx2mat(gdxData,'B1_eff');
 data.h_VKA1=gdx2mat(gdxData,'H_VKA1',h_sim.uels);
 data.c_VKA1=gdx2mat(gdxData,'C_VKA1',h_sim.uels);
 data.el_VKA1=gdx2mat(gdxData,'el_VKA1',h_sim.uels);
@@ -179,7 +179,7 @@ data.B_TURB=gdx2mat(gdxData,'B_TURB');
 data.invCost_TURB=gdx2mat(gdxData,'invCost_TURB');
 data.el_TURB=gdx2mat(gdxData,'el_TURB',h_sim.uels);
 data.h_TURB=gdx2mat(gdxData,'h_TURB',h_sim.uels);
-data.P2_eff=gdx2mat(gdxData,'P2_eff');
+data.B2_eff=gdx2mat(gdxData,'B2_eff');
 data.TURB_eff=gdx2mat(gdxData,'TURB_eff');
 
 %Costs
@@ -202,7 +202,7 @@ data.B_Electricity_cost=gdx2mat(gdxData,'B_Electricity_cost',{h_sim.uels,BID.uel
 data.B_Cooling_cost=gdx2mat(gdxData,'B_Cooling_cost',{h_sim.uels,BID.uels});
 
 %Variable Cost data   
-%sup_unit.uels = {'PV', 'HP', 'BES', 'TES', 'SO', 'BAC', 'RMMC', 'P1', 'P2', 'TURB', 'AbsC', 'AbsCInv', 'AAC', 'RM', 'exG', 'DH', 'CHP', 'RMInv', 'RGK1'}
+%sup_unit.uels = {'PV', 'HP', 'BES', 'TES', 'SO', 'BAC', 'RMMC', 'P1', 'P2', 'TURB', 'AbsC', 'AbsCInv', 'AAC', 'RM', 'exG', 'DH', 'CHP', 'RMInv', 'FGC1'}
 %data.utot_cost = gdx2mat(gdxData,'utot_cost',sup_unit.uels,h_sim.uels) 
 data.vc_el_imp =gdx2mat(gdxData,'vc_el_imp',h_sim.uels);
 data.vc_el_imp_AH =gdx2mat(gdxData,'vc_el_imp_AH',h_sim.uels);
