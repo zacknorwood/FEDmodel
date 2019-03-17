@@ -49,3 +49,8 @@ scenred.opt
 results_plot1.m
 
 FED_PROJECT.gpr
+Results_BAU=0_MTC=1_MCO2=0.01_MPE=0_IPCC=1_time=8736h
+Results_BAU=0_MTC=1_MCO2=0.01_MPE=0.59_IPCC=0_time=8736h
+Results_BAU=0_MTC=1_MCO2=0.01_MPE=0.59_IPCC=1_time=8736h
+Results_BAU=0_MTC=1_MCO2=0.01_MPE=0_IPCC=0_time=8736h
+Results_BAU=0_MTC=1_MCO2=1_MPE=0.035_IPCC=1_time=8736h
