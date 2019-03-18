@@ -90,7 +90,8 @@ scalar
 ;
 
 *--------------AbsC(Absorbition Refrigerator), cooling source-------------------
-* Source for these numbers?
+* The AbsC_COP is from which source?
+* The AbsC_el_COP and AbsC_min_prod is from the agent description
 scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
          AbsC_el_COP Electrical Coefficient of Performance of AbsC /22/
