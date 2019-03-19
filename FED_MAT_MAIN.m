@@ -15,31 +15,37 @@ system 'gams';
 
 %% SIMULATION START AND STOP TIME
 %Sim start time
-sim_start_y=2016;
-sim_start_m=3;
-sim_start_d=1;
-sim_start_h=1;
+sim_start_y = 2016;
+sim_start_m = 3;
+sim_start_d = 1;
+sim_start_h = 1;
 
 %Sim stop time
 
-sim_stop_y=2017;
-sim_stop_m=2;
-sim_stop_d=28;
-sim_stop_h=24;
+sim_stop_y = 2017;
+sim_stop_m = 2;
+sim_stop_d = 28;
+sim_stop_h = 14;
 
 %Get month and hours of simulation
-[HoS, ~]=fget_time_vector(sim_start_y,sim_stop_y);
+[HoS, ~] = fget_time_vector(sim_start_y,sim_stop_y);
 
-sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
-sim_stop=HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
-forecast_horizon=10;
+sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
+sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
+forecast_horizon = 10;
 
 % DATA INDICES FOR INPUT DATA
-% Data_length is the number of hours of available data. Note that GE production data only goes to February 28, 2016... so a full 2 year run
-% is not possible. The max run currently is 10200 hours from 2016-01-01
+% Data_length is the number of hours of available data.
+% Note there must always be at least as many extra hours of data
+% (beyond sim_start to sim_stop) to include the hours of the
+% forecast_horizon, thus data_read_stop is longer than sim_stop by the
+% forecast_horizon.
+% Note also that GE production data only goes to February 28, 2016... so a full 2 year run
+% is not possible. The max data length currently is 10200 hours from 2016-01-01
 % 00:00 to 2017-02-28 23:00, but one year from 2016-03-01 to 2017-02-28 is
 % preferred for data completeness/correctness.
-data_length = sim_stop-sim_start+1; 
+data_read_stop = sim_stop + forecast_horizon;
+data_length = data_read_stop - sim_start + 1;
 
 % Initialize Results cell array
 %Results=cell(data_length,1);
@@ -175,7 +181,7 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 %Read static properties of the model
 % AK Change BAC, and BTES namings
-[P1P2_dispatchable_full, DH_export_season_full, DH_heating_season_full, BAC_savings_period_full, ~, ~, BTES_param] = fread_static_properties(sim_start,sim_stop);
+[P1P2_dispatchable_full, DH_export_season_full, DH_heating_season_full, BAC_savings_period_full, ~, ~, BTES_param] = fread_static_properties(sim_start,data_read_stop);
 
 %Read variable/measured input data
 [el_demand_full, h_demand_full, c_demand_full,...
@@ -186,7 +192,7 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
     el_price_full,...
     el_certificate_full, h_price_full, tout_full,...
     G_facade_full, G_roof_full,...
-    c_DC_slack_full, el_exG_slack_full, h_DH_slack_full, h_exp_AH_hist_full, h_imp_AH_hist_full] = fread_measurements(sim_start,sim_stop);
+    c_DC_slack_full, el_exG_slack_full, h_DH_slack_full, h_exp_AH_hist_full, h_imp_AH_hist_full] = fread_measurements(sim_start,data_read_stop);
 
 %This must be modified
 %     temp=load('Input_dispatch_model\import_export_forecasting');
@@ -202,7 +208,7 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 %     load('Input_dispatch_model\Heating_ANN');
 
 %% INPUT NRE and CO2 FACTORS
-[CO2F_El_full, NREF_El_full, CO2F_DH_full, NREF_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,sim_stop);
+[CO2F_El_full, NREF_El_full, CO2F_DH_full, NREF_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop);
 
 %% Initialize FED INVESTMENT OPTIONS
 % If min_totCost_O=1, i.e. base case simulation, then all investment options
