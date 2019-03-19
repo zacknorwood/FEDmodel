@@ -45,7 +45,7 @@ forecast_horizon = 10;
 % 00:00 to 2017-02-28 23:00, but one year from 2016-03-01 to 2017-02-28 is
 % preferred for data completeness/correctness.
 data_read_stop = sim_stop + forecast_horizon;
-data_length = data_read_stop - sim_start + 1;
+sim_length = sim_stop - sim_start + 1;
 
 % Initialize Results cell array
 %Results=cell(data_length,1);
@@ -375,13 +375,13 @@ to_excel_co2(1:sim_stop-sim_start,1:7)=0;
 
 %Time(1).point='fixed inputs';
 %Time(1).value=toc;
-for t=1:data_length
+for t=1:sim_length
     %% Variable input data to the dispatch model 
     %Structures are created to send to GAMS which contain subsets of the
     %previously read Matlab data. This creates a rolling time horizon over
     %which the model optimized on every step for X time steps ahead, where
     %X is the forecast_horizon.
-    disp(['Time step' num2str(t) ' of ' num2str(data_length)])
+    disp(['Time step' num2str(t) ' of ' num2str(sim_length)])
     forecast_end=t+forecast_horizon-1;
     
     % hours in simulation
