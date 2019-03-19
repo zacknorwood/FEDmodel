@@ -6,8 +6,8 @@ $Include FED_GET_GDX_FILE
 
 *--------------SET PARAMETRS OF PRODUCTION active UNITS in the FED system-------
 set
-         sup_unit   supply units /PV, HP, BES, TES, SO, BAC , RMMC, P1, P2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP, RMInv, RGK1/
-         inv_opt    investment options /PV, HP, BES, TES, SO, BAC, RMMC, P2, TURB, AbsCInv, RMInv/
+         sup_unit   supply units /PV, HP, BES, TES, SO, BAC , RMMC, B1, B2, TURB, AbsC, AbsCInv, AAC, RM, exG, DH, CHP, RMInv, FGC1/
+         inv_opt    investment options /PV, HP, BES, TES, SO, BAC, RMMC, B2, TURB, AbsCInv, RMInv/
 ;
 
 ************ the technical limit of import/export on heat and electricty is based on feedback from AH
@@ -21,7 +21,7 @@ Parameter
 Parameter
 *RM capacity at AH is set to 900kW which the capacity of RM at Kemi (2*450 kW)
          cap_sup_unit(sup_unit)   operational capacity of the existing units
-                     /PV 65, P1 8000, AbsC 2300, AAC 1000, RM 900, RMMC 4200, RGK1 1200/
+                     /PV 65, B1 8000, AbsC 2300, AAC 1000, RM 900, RMMC 4200, FGC1 1200/
 ;
 
 *************** different costs of the investment options
@@ -34,35 +34,35 @@ Parameter
 * Abs cost: 300 €/kW * 9.36 = 2808
 * BAC costs from AH/CFAB estimates, calculated as average per building cost
 Parameter
-         cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC P2 and Turbine
-                     /PV 14196, BES 6000, HP 6552, SO 35000, BAC 350333, RMMC 500000, P2 46000000, TURB 1800000, AbsCInv 2808, RMInv 936/
+         cost_inv_opt(inv_opt)    Cost of the investment options in SEK per kW or kWh for battery or SEK per unit or building in the case of BTES RMMC B2 and Turbine
+                     /PV 14196, BES 6000, HP 6552, SO 35000, BAC 350333, RMMC 500000, B2 46000000, TURB 1800000, AbsCInv 2808, RMInv 936/
 ;
 
 *******Lifetimes source Danish Energy Agency: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
 * BAC - Building Advanced Control is assumed to have same lifetime as BTES with Setpoint Offset
 Parameter
          lifT_inv_opt(inv_opt)    Life time of investment options
-                     /PV 30, BES 15, HP 25, TES 30, SO 15, BAC 15 ,RMMC 25, P2 30, TURB 30, AbsCInv 25, RMInv 25/;
+                     /PV 30, BES 15, HP 25, TES 30, SO 15, BAC 15 ,RMMC 25, B2 30, TURB 30, AbsCInv 25, RMInv 25/;
 
 ***************Existing units***************************************************
 
-*--------------Existing Thermal boiler constants and parameters (P1)------------
+*--------------Existing Thermal boiler constants and parameters (B1)------------
 *This data is imported from MATLAB and stored in MtoG
 Parameter
 *          h_P1(h)     Total heat output from P1
-          P1_eff      Effeciency of P1
-          P1_cap      Capacity of Boiler 1 in kW excluding flue gas condecer /8000/
-          P1_max      Maximum output from P1 /6000/
-          P1_min      Minimum output from P1 /3000/
+          B1_eff      Effeciency of B1
+          B1_cap      Capacity of Boiler 1 in kW excluding flue gas condenser /8000/
+          B1_max      Maximum output from B1 /6000/
+          B1_min      Minimum output from B1 /3000/
 ;
-P1_eff=0.9;
+B1_eff=0.9;
 
-*---------------Flue gas condencer------------------------
+*---------------Flue gas condenser------------------------
 Parameters
-          RGK1_eff   Effeciency of flue gas condencer /0.4/
-          RGK1_cap   Capacity of flue gas condenceer /1000/
-          RGK1_max   Maximum output from the flue gas condencer /1000/
-          RGK1_min   Minimum output from the flue gas condencer /500/
+          FlueGasCondenser1_eff   Effeciency of flue gas condenser /0.4/
+          FlueGasCondenser1_cap   Capacity of flue gas condenser /1000/
+          FlueGasCondenser1_max   Maximum output from the flue gas condenser /1000/
+          FlueGasCondenser1_min   Minimum output from the flue gas condenser /500/
 ;
 
 *--------------VKA4 constants and parameters------------------------------------
@@ -133,13 +133,13 @@ scalar
 
 *----------------Boiler 2  ------------------------------------------------------
 scalar
-      P2_eff                 Efficiency of P2 /0.9/
-      P2_cap                 Capacity of P2 /6000/
-      P2_max                 Maximum output from P2 /6000/
-      P2_min                 Minimum output from P2 /1000/
-      P2_hourly_ramprate     hourly maximum ramp rate /4000/
-      P2_reseach_prod        Heat output during research /1500/
-      P2_power_to_heat_ratio power to heat ratio of P2 and turbine /0.2/
+      B2_eff                 Efficiency of B2 /0.9/
+      B2_cap                 Capacity of B2 /6000/
+      B2_max                 Maximum output from B2 /6000/
+      B2_min                 Minimum output from B2 /1000/
+      B2_hourly_ramprate     hourly maximum ramp rate /4000/
+      B2_research_prod        Heat output during research /1500/
+      B2_power_to_heat_ratio power to heat ratio of B2 and turbine /0.2/
 ;
 
 *----------------Refurbished turbine for Boiler 2  ------------------------------
@@ -326,7 +326,7 @@ parameter
 price('exG',h)= el_price(h) + net_tariff + el_profit_margin_buy + quota_elcertificate * el_certificate(h);
 
 * This is the real time price in the FED system based on marginal units, h_price(h) is the price using the normal GE tariffs.
-price('DH',h)= MA_Cost_DH(h);
+price('DH',h)= marginalCost_DH(h);
 
 * This price must be lower than the buy price: spot price - profit margin + el certificate price (since everything is renewable in FED) + guarantee of origin
 el_sell_price(h) =el_price(h) - el_profit_margin_sell +  el_certificate(h) + guarantee_origin;
@@ -336,16 +336,16 @@ el_sell_price(h) =el_price(h) - el_profit_margin_sell +  el_certificate(h) + gua
 fuel_cost('CHP',h)= 0.353;
 
 * Divided by efficiency to get actual fuel use when multiplying with heat output
-fuel_cost('P1',h)=0.353;
+fuel_cost('B1',h)=0.353;
 *0.186/P1_eff;
 
-fuel_cost('RGK1',h)=0.353;
+fuel_cost('FGC1',h)=0.353;
 
 *0.186/RGK1_eff;
 *fuel_cost('P1',h)=0.186*fuel_P1(h)/q_P1(h);
 * Divided by efficiency to get actual fuel use when multiplying with heat output
 
-fuel_cost('P2',h)=0.353;
+fuel_cost('B2',h)=0.353;
 *0.186/P2_eff;
 
 var_cost(sup_unit,h)=0;
@@ -366,9 +366,9 @@ var_cost('TURB',h)= 3.9 / kilo * EUR_to_SEK_2015;
 * variable costs of PV are assumed 0.
 fix_cost('PV')= 12540 / kilo * EUR_to_SEK_2015;
 * No data on fixed costs for wood chip boilers, included in variable O&M costs.
-var_cost('P1',h)= 5.4 / kilo * EUR_to_SEK_2015;
+var_cost('B1',h)= 5.4 / kilo * EUR_to_SEK_2015;
 *var_cost('RGK1',h)= 5.4 / kilo * EUR_to_SEK_2015; ???
-var_cost('P2',h)= 5.4 / kilo * EUR_to_SEK_2015;
+var_cost('B2',h)= 5.4 / kilo * EUR_to_SEK_2015;
 * AbsC variable O&M inclusive electricity, adjusted by COP for absorption heating compared to cooling factors
 var_cost('AbsC',h)= 0.9 / kilo * AbsC_COP * EUR_to_SEK_2015;
 fix_cost('AbsC')= 3000 / kilo * EUR_to_SEK_2015;

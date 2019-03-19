@@ -28,9 +28,9 @@ equation
 *           eq6_h_Boiler1           fixed Boiler1 for synth baseline
            eq_h_Boiler1_dispatch  Equation determining when Boiler1 is dispatchable
 
-           eq_h_RGK11            Equation related to flue gas heat production
+           eq_h_FlueGasCondenser11            Equation related to flue gas heat production
 *           eq_h_RGK12            Fixed FGC for synthetic baseline
-           eq_h_RGK1_dispatch    Equation determining when flue gas is dispatchable
+           eq_h_FlueGasCondenser1_dispatch    Equation determining when flue gas is dispatchable
 
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
@@ -59,11 +59,11 @@ equation
            eq1_AbsCInv  Production equation-AbsChiller investment
            eq2_AbsCInv  Investment capacity-AbsChiller investment
 
-           eq1_Boiler2                production equation for P2
-           eq2_Boiler2                investment equation for P2
+           eq1_Boiler2                production equation for B2
+           eq2_Boiler2                investment equation for B2
            eq3_Boiler2                maximum ramp up constraint
            eq4_Boiler2                maximum ramp down constraint
-           eq_h_Boiler2_research  P2 production constraint during research
+           eq_h_Boiler2_research  B2 production constraint during research
 
 
            eq1_TURB     production equation for turbine-gen
@@ -189,7 +189,9 @@ equation
            eq_PE         PE use in the FED system (marginal or average depending on which factors are used)
            eq_totPE      Total PE use in the FED system (marginal or average depending on which factors are used)
            eq_CO2        FED CO2 emissions (marginal or average depending on which factors are used)
-           eq_totCO2    with aim to minimize total FED aver. CO2 emission
+           eq_AH_CO2     FED CO2 emissions (marginal or average depending on which factors are used) for AH system
+           eq_nonAH_CO2  FED CO2 emissions (marginal or average depending on which factors are used) for non-AH system
+           eq_totCO2     Total CO2 emissions during the modelled period.
 
            eq_max_exG1 maximum monthly peak demand
 * Not used in rolling time horizon - ZN
@@ -291,17 +293,17 @@ eq5_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0
 *            h_Boiler1(h)=e= Boiler1(h);
 
 eq_h_Boiler1_dispatch(h)$(P1P2_dispatchable(h)=0 and min_totCost_0 eq 0)..
-        h_Boiler1(h) =e= qB1(h);
+        h_Boiler1(h) =e= h_Boiler1_0(h);
 
-eq_h_RGK11(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
-        h_RGK1(h)=l=h_Boiler1(h)/6;
+eq_h_FlueGasCondenser11(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
+        h_FlueGasCondenser1(h)=l=h_Boiler1(h)/6;
 
 *Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN.
 *eq_h_RGK12(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
 *        h_RGK1(h)=e=FGC(h);
 
-eq_h_RGK1_dispatch(h)$(P1P2_dispatchable(h)=0 and min_totCost_0 eq 0)..
-        h_RGK1(h) =e= qF1(h);
+eq_h_FlueGasCondenser1_dispatch(h)$(P1P2_dispatchable(h)=0 and min_totCost_0 eq 0)..
+        h_FlueGasCondenser1(h) =e= h_FlueGasCondenser1_0(h);
 
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 eq_AbsC1(h)..
@@ -365,18 +367,18 @@ eq2_AbsCInv(h)..
 
 *----------------Boiler 2 equations ---------------------------------------------
 eq1_Boiler2(h)..
-         h_Boiler2(h) =e= fuel_Boiler2(h) * P2_eff;
+         h_Boiler2(h) =e= fuel_Boiler2(h) * B2_eff;
 eq2_Boiler2(h)..
-         h_Boiler2(h) =l= B_Boiler2 * P2_cap;
+         h_Boiler2(h) =l= B_Boiler2 * B2_cap;
 
 eq3_Boiler2(h)$(P1P2_dispatchable(h)=1 and P1P2_dispatchable(h-1)=1  and ord(h) gt 1)..
-         h_Boiler2(h)-h_Boiler2(h-1) =l= P2_hourly_ramprate;
+         h_Boiler2(h)-h_Boiler2(h-1) =l= B2_hourly_ramprate;
 
 eq4_Boiler2(h)$(P1P2_dispatchable(h)=1  and P1P2_dispatchable(h-1)=1 and ord(h) gt 1)..
-         h_Boiler2(h) - h_Boiler2(h-1) =g= -P2_hourly_ramprate;
+         h_Boiler2(h) - h_Boiler2(h-1) =g= -B2_hourly_ramprate;
 
 eq_h_Boiler2_research(h)$(P1P2_dispatchable(h)=0)..
-         h_Boiler2(h) =e= B_Boiler2 * P2_reseach_prod;
+         h_Boiler2(h) =e= B_Boiler2 * B2_research_prod;
 
 *----------------Refurb turbine equations --------------------------------------
 eq1_TURB(h)..
@@ -393,7 +395,7 @@ eq5_TURB(h)..el_TURB_reac(h)=g=-0.4843*el_TURB(h);
 eq6_TURB(h)..-0.58*el_TURB_reac(h)+el_TURB(h)=l=1.15*TURB_cap;
 eq7_TURB(h)..+0.58*el_TURB_reac(h)+el_TURB(h)=l=1.15*TURB_cap;
 eq8_TURB(h)..
-         el_TURB(h) =l= h_Boiler2(h) * P2_power_to_heat_ratio;
+         el_TURB(h) =l= h_Boiler2(h) * B2_power_to_heat_ratio;
 
 *----------------HP equations --------------------------------------------------
 eq_HP1(h)..
@@ -688,7 +690,7 @@ eq_hbalance1(h)..
              h_exp_AH(h) =l= h_Boiler1(h) + h_DH_slack_var(h);
 * Change to equal to test the slack variable
 eq_hbalance2(h)..
-             sum(BID,h_demand(h,BID)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Boiler1(h) + h_RGK1(h) + h_VKA1(h)
+             sum(BID,h_demand(h,BID)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Boiler1(h) + h_FlueGasCondenser1(h) + h_VKA1(h)
                                      + h_VKA4(h) + H_Boiler2T(h) + 0.75*h_TURB(h) + h_RMMC(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
@@ -755,10 +757,10 @@ $ontext
 $offtext
 *--------------FED Primary energy use-------------------------------------------
 eq_PE(h)..
-        FED_PE(h)=e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*PEF_exG(h)
-                     + el_PV(h)*PEF_PV
-                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*PEF_DH(h) + ((h_Boiler1(h)+h_RGK1(h))/P1_eff)*PEF_Boiler1
-                     + fuel_Boiler2(h)*PEF_Boiler2
+        FED_PE(h)=e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*NREF_El(h)
+                     + el_PV(h)*NREF_PV
+                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*NREF_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*NREF_Boiler1
+                     + fuel_Boiler2(h)*NREF_Boiler2
                      + h_DH_slack_var(h)*1000000000
                       + C_DC_slack_var(h)*1000000000
                       + el_slack_var(h)*1000000000;
@@ -768,16 +770,22 @@ eq_totPE..
          tot_PE=e=sum(h,FED_PE(h));
 
 *---------------FED CO2 emission------------------------------------------------
+* Why is the heat CO2 only calculated during the DH_export_season? - ZN
+eq_AH_CO2(h)..
+         AH_CO2(h) =e= (el_imp_AH(h)-el_exp_AH(h))*CO2F_El(h)
+                       + el_PV(h)*CO2F_PV
+                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h))*CO2F_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*CO2F_Boiler1
+                       + fuel_Boiler2(h) * CO2F_Boiler2;
+
+eq_nonAH_CO2(h)..
+         nonAH_CO2(h) =e= el_imp_nonAH(h) * CO2F_El(h)
+                       + h_imp_nonAH(h) * CO2F_DH(h);
+
 eq_CO2(h)..
-       FED_CO2(h) =e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*CO2F_exG(h)
-                      + el_PV(h)*CO2F_PV
-                      + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*CO2F_DH(h) + ((h_Boiler1(h)+h_RGK1(h))/P1_eff)*CO2F_Boiler1
-                      + fuel_Boiler2(h) * CO2F_Boiler2
-                      + h_DH_slack_var(h)*1000000000
-                      + C_DC_slack_var(h)*1000000000
-                      + el_slack_var(h)*1000000000;
-
-
+         FED_CO2(h) =e= AH_CO2(h) + nonAH_CO2(h)
+                        + h_DH_slack_var(h)*1000000000
+                        + C_DC_slack_var(h)*1000000000
+                        + el_slack_var(h)*1000000000;
 
 ****************Total CO2 emission in the FED system****************************
 eq_totCO2..
@@ -821,7 +829,7 @@ eq_fix_cost_new..
                            + RMInv_cap*fix_cost('RMInv')
                            + fix_cost('BAC')*sum(BID,B_BAC(BID))
                            + fix_cost('SO')*sum(BID,B_SO(BID))
-                           + B_Boiler2 * fix_cost('P2')
+                           + B_Boiler2 * fix_cost('B2')
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
 eq_var_cost_existing..
@@ -831,7 +839,7 @@ eq_var_cost_existing..
                                + sum(h,el_AbsC(h) * utot_cost('exG',h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h)) * utot_cost('DH',h))
                                - sum(h,h_exp_AH(h) * (utot_cost('DH',h)/(1+DH_margin)))
-                               + sum(h,h_Boiler1(h) * utot_cost('P1',h))
+                               + sum(h,h_Boiler1(h) * utot_cost('B1',h))
                                + sum(h,h_VKA1(h) * utot_cost('HP',h))
                                + sum(h,h_VKA4(h) * utot_cost('HP',h))
                                + sum(h,c_AbsC(h) * utot_cost('AbsC',h))
@@ -850,7 +858,7 @@ eq_var_cost_new..
                            + sum(h,TES_dis(h)*utot_cost('TES',h))
                            + sum((h,BID),BAC_Sch(h,BID)*utot_cost('BAC',h))
                            + sum((h,BID),SO_Sch(h,BID)*utot_cost('SO',h))
-                           + sum(h,h_Boiler2(h)*utot_cost('P2',h))
+                           + sum(h,h_Boiler2(h)*utot_cost('B2',h))
                            + sum(h,el_TURB(h)*utot_cost('TURB',h))
                            + sum(h,c_AbsCInv(h)*utot_cost('AbsCInv',h));
 
@@ -864,7 +872,7 @@ eq_Ainv_cost..
                 + cost_inv_opt('SO')*sum(BID,B_SO(BID))/lifT_inv_opt('SO')
                 + cost_inv_opt('BAC')*sum(BID,B_BAC(BID))/lifT_inv_opt('BAC')
                 + RMMC_inv*cost_inv_opt('RMMC')/lifT_inv_opt('RMMC')
-                + B_Boiler2 * cost_inv_opt('P2')/lifT_inv_opt('P2')
+                + B_Boiler2 * cost_inv_opt('B2')/lifT_inv_opt('B2')
                 + B_TURB * cost_inv_opt('TURB')/lifT_inv_opt('TURB')
                 + AbsCInv_cap * cost_inv_opt('AbsCInv')/lifT_inv_opt('AbsCInv');
 eq_totCost..
@@ -881,7 +889,7 @@ eq_invCost..
                      + cost_inv_opt('SO')*sum(BID,B_SO(BID))
                      + cost_inv_opt('BAC')*sum(BID,B_BAC(BID))
                      + RMMC_inv*cost_inv_opt('RMMC')
-                     + B_Boiler2 * cost_inv_opt('P2')
+                     + B_Boiler2 * cost_inv_opt('B2')
                      + B_TURB * cost_inv_opt('TURB')
                      + AbsCInv_cap * cost_inv_opt('AbsCInv');
 eq_peak_CO2(h)..

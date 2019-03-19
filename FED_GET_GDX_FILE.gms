@@ -199,16 +199,16 @@ $GDXIN
 
 *-------------------Measured data in the base case------------------------------
 PARAMETERS
-            qB1(h)         Heat out from boiler 1 (Boiler1)
-            qF1(h)         Heat out from FGC (Boiler1)
+            h_Boiler1_0(h)         Heat out from boiler 1 (Boiler1)
+            h_FlueGasCondenser1_0(h)         Heat out from FGC (Boiler1)
             el_VKA1_0(h)   el used by VKA1 in the base case
             el_VKA4_0(h)   el used by VKA4 in the base case
             el_AAC_0(h)    el used by the AAC in the base case
             h_AbsC_0(h)    heat used by the AbsC in the base case
 ;
 $GDXIN MtoG.gdx
-$LOAD qB1
-$LOAD qF1
+$LOAD h_Boiler1_0
+$LOAD h_FlueGasCondenser1_0
 $LOAD el_VKA1_0
 $LOAD el_VKA4_0
 *$LOAD el_AAC_0
@@ -322,31 +322,31 @@ PARAMETERS
             CO2_max            Maximum CO2 emission in the base case
             PE_tot_ref         reference total PE use
             CO2F_PV            CO2 factor of solar PV
-            PEF_PV             PE factor of solar PV
-            CO2F_Boiler1            CO2 factor of Boiler1 (P1)
-            PEF_Boiler1             PE factor of Boiler1 (P1)
-            CO2F_Boiler2            CO2 factor of Boiler2 (P2)
-            PEF_Boiler2             PE factor of Boiler2 (P2)
-            CO2F_exG(h)        CO2 factor of the electricity grid
-            PEF_exG(h)         PE factor of the electricity grid
-            CO2F_DH(h)         CO2 av. factor of the district heating grid
-            PEF_DH(h)          PE av. factor of the district heating grid
+            NREF_PV            NRE factor of solar PV
+            CO2F_Boiler1       CO2 factor of Boiler1 (B1)
+            NREF_Boiler1       NRE factor of Boiler1 (B1)
+            CO2F_Boiler2       CO2 factor of Boiler2 (B2)
+            NREF_Boiler2       NRE factor of Boiler2 (B2)
+            CO2F_El(h)         CO2 factor of the electricity grid
+            NREF_El(h)         NRE factor of the electricity grid
+            CO2F_DH(h)         CO2 factor of the district heating grid
+            NREF_DH(h)         NRE factor of the district heating grid
 *            max_exG_prev       max exG of previous dispatch
-            MA_Cost_DH         DH marginal cost
+            marginalCost_DH         DH marginal cost
 ;
 $GDXIN MtoG.gdx
 $LOAD CO2F_PV
-$LOAD PEF_PV
+$LOAD NREF_PV
 $LOAD CO2F_Boiler1
-$LOAD PEF_Boiler1
+$LOAD NREF_Boiler1
 $LOAD CO2F_Boiler2
-$LOAD PEF_Boiler2
-$LOAD CO2F_exG
-$LOAD PEF_exG
+$LOAD NREF_Boiler2
+$LOAD CO2F_El
+$LOAD NREF_El
 $LOAD CO2F_DH
-$LOAD PEF_DH
+$LOAD NREF_DH
 *$load max_exG_prev
-$load MA_Cost_DH
+$load marginalCost_DH
 $GDXIN
 *-----------Investmet limit----------------------------------------------------
 parameters
@@ -361,7 +361,7 @@ PARAMETERS
          opt_fx_inv             option to fix investments
          opt_fx_inv_RMMC        options to fix the RMMC investment
          opt_fx_inv_AbsCInv_cap capacity of the new AbsChiller
-         opt_fx_inv_Boiler2          options to fix the P2 investment
+         opt_fx_inv_Boiler2          options to fix the B2 investment
          opt_fx_inv_TURB        options to fix the TURB investment
          opt_fx_inv_HP_cap      Capacity of the fixed new HP
          opt_fx_inv_RMInv_cap   Capacity of the fixed new RM
