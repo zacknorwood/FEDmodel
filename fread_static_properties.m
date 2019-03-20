@@ -6,16 +6,19 @@ xlRange = strcat('C',num2str(sim_start+1),':C',num2str(sim_stop+1));
 %re-formulated
 %P1P2 dispatchability***********This could be replaced with code****
 P1P2_dispatch = xlsread('Input_dispatch_model\P1P2_dispatchable.xlsx', 1, xlRange);
-P1P2_dispatch(isnan(P1P2_dispatch))=0;
+if length(P1P2_dispatch)<(sim_stop-sim_start), warning('Length of P1P2_dispatch differ'), end    
 
 %DH export season
 DH_export_season = xlsread('Input_dispatch_model\DH_export_season.xlsx', 1, xlRange);
+if length(DH_export_season)<(sim_stop-sim_start), warning('Length of DH_export_season differ'), end    
 
 %DH heating season
 DH_heating_season = xlsread('Input_dispatch_model\DH_heating_season.xlsx', 1, xlRange);
+if length(DH_heating_season)<(sim_stop-sim_start), warning('Length of DH_heating_season differ'), end    
 
 %BAC_savings_period
 BAC_savings_period = xlsread('Input_dispatch_model\BAC_parameters.xlsx', 1, xlRange);
+if length(BAC_savings_period)<(sim_stop-sim_start), warning('Length of BAC_savings_period differ'), end    
 
 %Irradiance data
 irradiance_area_range = 'A2:AI2';

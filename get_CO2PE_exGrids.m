@@ -47,7 +47,7 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     %% Marginal CO2 and NRE factors of the external grid
     %Import marginal CO2 and PE factors
     prodMix_El=xlsread('Input_dispatch_model\electricityMap - Marginal mix updated v2 - SE - 2016 - 2017.xlsx',1,strcat('B',num2str(sim_start+1),':M',num2str(sim_stop+1)));
-    
+    if length(prodMix_El)<(sim_stop-sim_start), warning('Length of prodMix_El differ'), end
     % Calculate the weighted CO2/NRE factors with the electric production mix. 
     % Note: Hydro discharge is calculated as the weighted marginal CO2/NRE of the
     % at the time of charging according to Electricity Maps algorithm. Charging is assumed to 
@@ -57,7 +57,7 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     
     %Get Marginal units DH
     marginalUnits_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('C',num2str(sim_start+1),':J',num2str(sim_stop+1)));
-    
+    if length(marginalUnits_DH)<(sim_stop-sim_start), warning('Length of marginalUnits_DH differ'), end    
     % Calculate the weighted CO2/NRE factors with the marginal district heating units.
     % For the times that the heatpump is on the margin, the production
     % factors are then calculated as the marginal electric mix divided by the COP of the heat pump (Rya).
@@ -65,6 +65,7 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     NREF_DH = marginalUnits_DH(:,1:size(marginalUnits_DH,2)-1) * NREintensityProdMix_Heat' + marginalUnits_DH(:,size(marginalUnits_DH,2)) .* NREF_El./COP_HP_DH;
     
 else % Warning, this option has not been checked and there are some apparent errors in the factors used! amongst other problems -ZN
+    warning('This option (opt_marg_factors) has not been checked and there are some apparent errors in the factors used! amongst other problems -ZN')
     el_exGrid=xlsread('Input_dispatch_model\SE.xlsx',1,'C2:L17520');
     
 %     % Preinitialze the average factors to all zeros and a series that is 2
