@@ -15,31 +15,37 @@ system 'gams';
 
 %% SIMULATION START AND STOP TIME
 %Sim start time
-sim_start_y=2016;
-sim_start_m=3;
-sim_start_d=1;
-sim_start_h=1;
+sim_start_y = 2016;
+sim_start_m = 3;
+sim_start_d = 1;
+sim_start_h = 1;
 
 %Sim stop time
 
-sim_stop_y=2017;
-sim_stop_m=2;
-sim_stop_d=28;
-sim_stop_h=24;
+sim_stop_y = 2017;
+sim_stop_m = 2;
+sim_stop_d = 28;
+sim_stop_h = 14;
 
 %Get month and hours of simulation
-[HoS, ~]=fget_time_vector(sim_start_y,sim_stop_y);
+[HoS, ~] = fget_time_vector(sim_start_y,sim_stop_y);
 
-sim_start=HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
-sim_stop=HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
-forecast_horizon=10;
+sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
+sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
+forecast_horizon = 10;
 
 % DATA INDICES FOR INPUT DATA
-% Data_length is the number of hours of available data. Note that GE production data only goes to February 28, 2016... so a full 2 year run
-% is not possible. The max run currently is 10200 hours from 2016-01-01
+% Data_length is the number of hours of available data.
+% Note there must always be at least as many extra hours of data
+% (beyond sim_start to sim_stop) to include the hours of the
+% forecast_horizon, thus data_read_stop is longer than sim_stop by the
+% forecast_horizon.
+% Note also that GE production data only goes to February 28, 2016... so a full 2 year run
+% is not possible. The max data length currently is 10200 hours from 2016-01-01
 % 00:00 to 2017-02-28 23:00, but one year from 2016-03-01 to 2017-02-28 is
 % preferred for data completeness/correctness.
-data_length = sim_stop-sim_start+1-forecast_horizon; 
+data_read_stop = sim_stop + forecast_horizon;
+sim_length = sim_stop - sim_start + 1;
 
 % Initialize Results cell array
 %Results=cell(data_length,1);
@@ -47,6 +53,9 @@ data_length = sim_stop-sim_start+1-forecast_horizon;
 %% Assigning buildings ID to the buildings in the FED system
 
 %Building IDs used to identify buildings in the FED system
+% DO NOT CHANGE THE ORDER OF THESE! The order is tied to the reading of
+% measurements in fread_measurements which relies on this order of
+% buildings in the input file
 BID.name='BID';
 BID.uels={'O3060132', 'O3060101', 'O3060102_3', 'O3060104_15', 'O0007043','O0007017',...
     'SSPA', 'O0007006', 'Studentbostader', 'O0007008','O0007888',...
@@ -75,38 +84,38 @@ BID_nonAH_el.uels={'O3060101', 'O3060102_3', 'O3060104_15',...
 
 %Subset of the buildings in the FED system which are connected to AH's local heat distribution network
 BID_AH_h.name='BID_AH_h';
-BID_AH_h.uels={'O3060132', 'O0007043','O0007017',...
+BID_AH_h.uels={'O3060132', 'O0007017',...
     'SSPA', 'O0007006', 'Studentbostader', 'O0007008','O0007888',...
     'Karhus_CFAB', 'O0007019', 'O0007040',...
     'O0007022', 'O0007025', 'O0007012', 'O0007021', 'O0007028','O0007001',...
     'O3060133', 'O0007024', 'O0007005', 'O0013001','O0011001',...
     'O0007018','O0007023', 'O0007026', 'O0007027',...
-    'Karhus_studenter'};
+    'Karhuset', 'Karhus_studenter'};
 
 %Subset of buildings in the FED system not connected to AH's local heat distribution network, buildings heat demand is hence supplied from GE's external DH system
 BID_nonAH_h.name='BID_nonAH_h';
-BID_nonAH_h.uels={'O3060101', 'O3060102_3', 'O3060104_15',...
+BID_nonAH_h.uels={'O3060101', 'O0007043','O3060102_3', 'O3060104_15',...
     'O0007014',...
-    'O3060137', 'Karhuset', 'O3060138',...
+    'O3060137', 'O3060138',...
     'Chabo'};
 
 %Subset of buildings in the FED system connected to AH's local cooling distribution network
 BID_AH_c.name='BID_AH_c';
-BID_AH_c.uels={'O3060132', 'O0007043','O0007017',...
+BID_AH_c.uels={'O3060132', 'O0007017',...
     'O0007006', 'O0007008','O0007888',...
     'Karhus_CFAB', 'O0007019',...
     'O0007022', 'O0007025', 'O0007012', 'O0007021', 'O0007028','O0007001',...
     'O3060133', 'O0007024', 'O0013001','O0011001',...
     'O0007018','O0007023', 'O0007026', 'O0007027',...
-    'Karhus_studenter'};
+    'Karhuset', 'Karhus_studenter'};
 
 %Subset of buildings in the FED system not connected to AH's local cooling distribution network; buildings cooling demand is hence supplied from local cooling generation
 BID_nonAH_c.name='BID_nonAH_c';
-BID_nonAH_c.uels={'O3060101', 'O3060102_3', 'O3060104_15',...
+BID_nonAH_c.uels={'O3060101','O0007043', 'O3060102_3', 'O3060104_15',...
     'SSPA','Studentbostader',...
     'O0007040', 'O0007014',...
     'O0007005',...
-    'O3060137', 'Karhuset', 'O3060138',...
+    'O3060137', 'O3060138',...
     'Chabo'};
 
 %Subset of buildings in the FED system which are not considered for thermal energy storage
@@ -175,7 +184,7 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 %Read static properties of the model
 % AK Change BAC, and BTES namings
-[P1P2_dispatchable_full, DH_export_season_full, DH_heating_season_full, BAC_savings_period_full, ~, ~, BTES_param] = fread_static_properties(sim_start,sim_stop);
+[P1P2_dispatchable_full, DH_export_season_full, DH_heating_season_full, BAC_savings_period_full, ~, ~, BTES_param] = fread_static_properties(sim_start,data_read_stop);
 
 %Read variable/measured input data
 [el_demand_full, h_demand_full, c_demand_full,...
@@ -186,7 +195,7 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
     el_price_full,...
     el_certificate_full, h_price_full, tout_full,...
     G_facade_full, G_roof_full,...
-    c_DC_slack_full, el_exG_slack_full, h_DH_slack_full, h_exp_AH_hist_full, h_imp_AH_hist_full] = fread_measurements(sim_start,sim_stop);
+    c_DC_slack_full, el_exG_slack_full, h_DH_slack_full, h_exp_AH_hist_full, h_imp_AH_hist_full] = fread_measurements(sim_start,data_read_stop);
 
 %This must be modified
 %     temp=load('Input_dispatch_model\import_export_forecasting');
@@ -202,7 +211,7 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 %     load('Input_dispatch_model\Heating_ANN');
 
 %% INPUT NRE and CO2 FACTORS
-[CO2F_El_full, NREF_El_full, CO2F_DH_full, NREF_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,sim_stop);
+[CO2F_El_full, NREF_El_full, CO2F_DH_full, NREF_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop);
 
 %% Initialize FED INVESTMENT OPTIONS
 % If min_totCost_O=1, i.e. base case simulation, then all investment options
@@ -304,6 +313,8 @@ BTES_SO_Inv.uels = BTES_SO_uels;
 BTES_SO_max_power = struct('name', 'BTES_SO_max_power', 'type', 'parameter', 'form', 'full');
 BTES_SO_max_power.uels = BTES_SO_uels;
 BTES_SO_max_power.val = [45, 20, 90, 76, 11]; % kWh/h, Requires ordering of BTES_SO_UELS to be O11:01, O7:888, O7:28, O7, 27, O7:24
+BTES_SO_EDIT_Correction_Factor = 0.19; % Correction factor for O7:10, O7:20 as they are only part of O7:24, used below for correcting BTES_model
+
 
 %Building thermal energy storage properties
 % AK Change to EVI  * Why is the .val never set for this parameter? - ZN
@@ -355,6 +366,7 @@ PV_facade_cap_existing=13.23;
 PV_facade_cap=struct('name','PV_facade_cap','type','parameter','form','full');
 PV_facade_cap.uels=PVID_facade.uels;
 PV_facade_cap.val=PV_facade_cap_existing;
+
 %% CHECK SIMULATION OPTIONS
 % For base case simulation, minimization of total cost is the only option.
 if (min_totCost_0 == 1)
@@ -379,13 +391,13 @@ to_excel_co2(1:sim_stop-sim_start,1:7)=0;
 
 %Time(1).point='fixed inputs';
 %Time(1).value=toc;
-for t=1:data_length
+for t=1:sim_length
     %% Variable input data to the dispatch model 
     %Structures are created to send to GAMS which contain subsets of the
     %previously read Matlab data. This creates a rolling time horizon over
     %which the model optimized on every step for X time steps ahead, where
     %X is the forecast_horizon.
-    disp(['Time step' num2str(t) ' of ' num2str(data_length)])
+    disp(['Time step' num2str(t) ' of ' num2str(sim_length)])
     forecast_end=t+forecast_horizon-1;
     
     % hours in simulation
