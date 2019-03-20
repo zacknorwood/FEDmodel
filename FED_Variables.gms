@@ -184,8 +184,8 @@ binary variable
 ;
 
 *0 is used in case there is no investment ,
-B_BAC.fx(BID) $ (opt_fx_inv eq 1)=0;
-B_BAC.fx(BTES_BAC_Inv) $ (opt_fx_inv eq 1 and opt_fx_inv_BAC eq 1)=1;
+B_BAC.fx(BID) $ (opt_fx_inv_BAC gt -1)=0;
+B_BAC.fx(BTES_BAC_Inv) $ (opt_fx_inv_BAC eq 1)=1;
 
 *------------------Building Setpoint Offset related----------------------
 positive variable
@@ -209,8 +209,8 @@ binary variable
 ;
 
 *0 is used in case there is no investment ,
-B_SO.fx(BID) $ (opt_fx_inv eq 1)=0;
-B_SO.fx(BTES_SO_Inv) $ (opt_fx_inv eq 1 and opt_fx_inv_SO eq 1)=1;
+B_SO.fx(BID) $ (opt_fx_inv_SO gt -1)=0;
+B_SO.fx(BTES_SO_Inv) $ (opt_fx_inv_SO eq 1)=1;
 *----------------Solar PV PV relate variables-----------------------------------
 positive variable
          el_PV(h)                electricity produced by PV
@@ -219,10 +219,10 @@ positive variable
          el_PV_reac_roof(h,PVID)  PVs reactive power
          el_PV_act_roof(h,PVID)   PVs active power
 ;
-PV_cap_roof.fx(PVID) $ (opt_fx_inv eq 1)=0;
-PV_cap_facade.fx(PVID) $ (opt_fx_inv eq 1)=0;
-PV_cap_roof.fx(PVID_roof) $ (opt_fx_inv eq 1) = PV_roof_cap(PVID_roof);
-PV_cap_facade.fx(PVID_facade) $ (opt_fx_inv eq 1) = PV_facade_cap(PVID_facade);
+PV_cap_roof.fx(PVID) $ (opt_fx_inv_PV gt -1)=0;
+PV_cap_facade.fx(PVID) $ (opt_fx_inv_PV gt - 1)=0;
+PV_cap_roof.fx(PVID_roof) $ (opt_fx_inv_PV eq 1) = PV_roof_cap(PVID_roof);
+PV_cap_facade.fx(PVID_facade) $ (opt_fx_inv_PV eq 1) = PV_facade_cap(PVID_facade);
 
 *------------------Battery related----------------------------------------------
 positive variables
@@ -240,8 +240,8 @@ positive variables
          BFCh_ch_from_grid(h,BID) Useful charging energy from the grid
          BFCh_cap(BID)         Capacity of the battery at building BID
 ;
-BES_cap.fx(BID) $ (opt_fx_inv eq 1) = opt_fx_inv_BES_cap(BID)$(opt_fx_inv_BES eq 1)+ 0$(opt_fx_inv_BES eq 0);
-BFCh_cap.fx(BID) $ (opt_fx_inv eq 1) = opt_fx_inv_BFCh_cap(BID)$(opt_fx_inv_BFCh eq 1)+ 0$(opt_fx_inv_BFCh eq 0);
+BES_cap.fx(BID) $ (opt_fx_inv_BES gt -1) = opt_fx_inv_BES_cap(BID)$(opt_fx_inv_BES eq 1)+ 0$(opt_fx_inv_BES eq 0);
+BFCh_cap.fx(BID) $ (opt_fx_inv_BFCh gt -1) = opt_fx_inv_BFCh_cap(BID)$(opt_fx_inv_BFCh eq 1)+ 0$(opt_fx_inv_BFCh eq 0);
 
 *------------------Refrigeration machine investment related---------------------
 positive variable
