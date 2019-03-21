@@ -8,6 +8,8 @@ function [el_demand, h_demand, c_demand,...
 %This function is used to read measurment between the indicated indices
 
 MWhtokWh = 1000; %Conversion factor MWh to kWh
+COP_VKA1 = 3; %COP value used for calculating historical heat generation
+COP_VKA4 = 3; %COP value used for calculating historical heat generation
 
 demand_range=strcat('B',int2str(sim_start+1),':AJ',int2str(sim_stop+1));
 %Measured electricity demand in kW
@@ -74,13 +76,19 @@ if length(h_price)<(sim_stop-sim_start), warning('Length of h_price differ'), en
 tout_measured=xlsread('Input_dispatch_model\measured_tout.xlsx',2,price_range);
 if length(tout_measured)<(sim_stop-sim_start), warning('Length of tout_measured differ'), end    
 
+%Historical import/export AH
+h_imp_AH_measured=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,strcat('C',int2str(sim_start+4),':C',int2str(sim_stop+4)))*MWhtokWh;
+h_exp_AH_measured=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,strcat('D',int2str(sim_start+4),':D',int2str(sim_stop+4)))*MWhtokWh;
+
 %el exgG slack bus data
 el_exG_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',1,strcat('F',int2str(sim_start+1),':F',int2str(sim_stop+1)));
 if length(el_exG_slack)<(sim_stop-sim_start), warning('Length of el_exG_slack differ'), end    
 
 %District heating slack bus data
-h_DH_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',2,strcat('P',int2str(sim_start+1),':P',int2str(sim_stop+1)));
-if length(h_DH_slack)<(sim_stop-sim_start), warning('Length of h_DH_slack differ'), end    
+
+net_prod = h_imp_AH_measured - h_exp_AH_measured + h_Boiler1_0 + h_FlueGasCondenser1_0 + el_VKA1_0*COP_VKA1 + el_VKA4_0*COP_VKA4;
+ah_demand = sum(h_demand(:,[1,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,29,31,32,33,34]), 2);
+h_DH_slack = net_prod - ah_demand;
 
 %District cooling slack bus data
 c_DC_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',3,strcat('N',int2str(sim_start+1),':N',int2str(sim_stop+1)));
@@ -92,10 +100,5 @@ if length(irradiance_measured_roof)<(sim_stop-sim_start), warning('Length of irr
 irradiance_measured_facades=xlsread('Input_dispatch_model\Irradiance_Arrays 20181119.xlsx',1,strcat('M',int2str(sim_start+1),':M',int2str(sim_stop+1)));
 if length(irradiance_measured_facades)<(sim_stop-sim_start), warning('Length of irradiance_measured_facades differ'), end    
 
-%Historical import/export AH
-h_imp_AH_measured=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,strcat('C',int2str(sim_start+4),':C',int2str(sim_stop+4)))*MWhtokWh;
-if length(h_imp_AH_measured)<(sim_stop-sim_start), warning('Length of h_imp_AH_measured differ'), end    
-h_exp_AH_measured=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,strcat('D',int2str(sim_start+4),':D',int2str(sim_stop+4)))*MWhtokWh;
-if length(h_exp_AH_measured)<(sim_stop-sim_start), warning('Length of h_exp_AH_measured differ'), end    
 end
 
