@@ -89,9 +89,9 @@ el_exG_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',1,strcat(
 el_exG_slack(isnan(el_exG_slack))=0;
 
 %District heating slack bus data
-net_prod = h_imp_AH_measured - h_exp_AH_measured + h_Boiler1_0 + h_FlueGasCondenser1_0 + h_VKA4_0 + h_VKA1_0
-ah_demand = sum(h_demand(:,[1,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,29,31,32,33,34]), 2)
-h_DH_slack = net_prod - ah_demand
+net_prod = h_imp_AH_measured - h_exp_AH_measured + h_Boiler1_0 + h_FlueGasCondenser1_0 + h_VKA4_0 + h_VKA1_0;
+ah_demand = sum(h_demand(:,[1,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,29,31,32,33,34]), 2);
+h_DH_slack = net_prod - ah_demand;
 
 %District cooling slack bus data
 c_DC_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',3,strcat('N',int2str(sim_start+1),':N',int2str(sim_stop+1)));
