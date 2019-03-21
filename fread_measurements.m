@@ -8,6 +8,8 @@ function [el_demand, h_demand, c_demand,...
 %This function is used to read measurment between the indicated indices
 
 MWhtokWh = 1000; %Conversion factor MWh to kWh
+COP_VKA1 = 3; %COP value used for calculating historical heat generation
+COP_VKA4 = 3; %COP value used for calculating historical heat generation
 
 demand_range=strcat('B',int2str(sim_start+1),':AJ',int2str(sim_stop+1));
 %Measured electricity demand in kW
@@ -30,14 +32,6 @@ h_Boiler1_0(isnan(h_Boiler1_0))=0;
 %Measured HEAT GENERATION FROM FLUE GAS CONDENSER (F1) converted to kWh
 h_FlueGasCondenser1_0=xlsread('Input_dispatch_model\Boiler1 2016-2017.xls',4,gen_range)*MWhtokWh;
 h_FlueGasCondenser1_0(isnan(h_FlueGasCondenser1_0))=0;
-
-%Measured heat input for VKA1
-h_VKA1_0=xlsread('Input_dispatch_model\varmepump VKA1.xls',2,strcat('C',int2str(sim_start+3),':C',int2str(sim_stop+3)));
-h_VKA1_0(isnan(h_VKA1_0))=0;
-
-%Measured heat input for VKA4
-h_VKA4_0=xlsread('Input_dispatch_model\varmepump VKA4.xls',2,strcat('C',int2str(sim_start+3),':C',int2str(sim_stop+3)));
-h_VKA4_0(isnan(h_VKA4_0))=0;
 
 %Measured el input for VKA1
 el_VKA1_0=xlsread('Input_dispatch_model\varmepump VKA1.xls',2,gen_range);
@@ -89,7 +83,7 @@ el_exG_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',1,strcat(
 el_exG_slack(isnan(el_exG_slack))=0;
 
 %District heating slack bus data
-net_prod = h_imp_AH_measured - h_exp_AH_measured + h_Boiler1_0 + h_FlueGasCondenser1_0 + h_VKA4_0 + h_VKA1_0;
+net_prod = h_imp_AH_measured - h_exp_AH_measured + h_Boiler1_0 + h_FlueGasCondenser1_0 + el_VKA1_0*COP_VKA1 + el_VKA4_0*COP_VKA4;
 ah_demand = sum(h_demand(:,[1,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,29,31,32,33,34]), 2);
 h_DH_slack = net_prod - ah_demand;
 
