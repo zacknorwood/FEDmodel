@@ -371,6 +371,10 @@ PARAMETERS
          
          opt_fx_inv_BAC        options to fix investment in BAC
          opt_fx_inv_SO       options to fix investment in SO
+         opt_fx_inv_CWB      options to fix investment in CWB
+         opt_fx_inv_CWB_cap  capacity of the CWB
+         opt_fx_inv_CWB_ch_max max charge power of the CWB
+         opt_fx_inv_CWB_dis_max max discharge power of the CWB
 ;
 $GDXIN MtoG.gdx
 $LOAD opt_fx_inv_PV
@@ -389,6 +393,10 @@ $LOAD opt_fx_inv_BES_maxP
 $load opt_fx_inv_BFCh_maxP
 $LOAD opt_fx_inv_BAC
 $LOAD opt_fx_inv_SO
+$LOAD opt_fx_inv_CWB
+$LOAD opt_fx_inv_CWB_cap
+$LOAD opt_fx_inv_CWB_ch_max
+$LOAD opt_fx_inv_CWB_dis_max
 *$load opt_marg_factors
 $GDXIN
 

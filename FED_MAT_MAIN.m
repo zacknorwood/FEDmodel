@@ -32,7 +32,10 @@ sim_stop_h = 14;
 
 sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
+
+
 forecast_horizon = 10;
+
 
 % DATA INDICES FOR INPUT DATA
 % Data_length is the number of hours of available data.
@@ -222,13 +225,13 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 FED_Inv_lim = struct('name','inv_lim','type','parameter','val',68570065);
 
 %Option to set if investments in BITES, BAC, PV and BES are to be fixed
-%This is set individually!!!
+%This is not used, it is set individually!!!
 opt_fx_inv = struct('name','opt_fx_inv','type','parameter','form','full','val',1);
 
 %Investment for synthetic baseline 
 % NO_inv=1 all investments are set to 0, NO_inv =0, all investments are
 % set to the assigned value
-NO_inv=1;
+NO_inv=0;
 
 %Option for RMMC investment
 %0=no investment, 1=fixed investment, -1=variable of optimization
@@ -260,16 +263,15 @@ opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','
 opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',0*(1-min_totCost_0)*(1-NO_inv));
 
 %Option for Cold water basin CURRENTLY NOT IN USE
-warning('CURRENTLY CWB DATA IS SET IN GAMS')
 opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
-%must be set to 200
 opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-NO_inv));
-opt_fx_inv_CWB_cap.uels={'O0007027'}; %OBS: Refers to bus 28
-%must be set to 100
+opt_fx_inv_CWB_cap.uels={'O0007027'}; %OBS: DS is this correct? Refers to bus 28
+
 opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter','form','full','val',203.5*(1-min_totCost_0)*(1-NO_inv));
 opt_fx_inv_CWB_ch_max.uels=opt_fx_inv_CWB_cap.uels;
 opt_fx_inv_CWB_dis_max = struct('name','opt_fx_inv_CWB_dis_max','type','parameter','form','full','val',35*(1-min_totCost_0)*(1-NO_inv));
 opt_fx_inv_CWB_dis_max.uels=opt_fx_inv_CWB_cap.uels;
+
 
 
 %Option for BES investment
@@ -493,7 +495,7 @@ for t=1:sim_length
     
     %Calculation of BAC savings factors
     BAC_savings_factor = fget_bac_savings_factor(h);
-    
+    BAC_savings_factors.uels=h.uels;
     %District heating network node transfer limits
     DH_Nodes_Transfer_Limits=fget_dh_transfer_limits(DH_Nodes, h, tout);
     
@@ -598,7 +600,7 @@ for t=1:sim_length
         opt_fx_inv_Boiler2,opt_fx_inv_TURB,opt_fx_inv_HP_cap,...
         opt_fx_inv_RMInv_cap,...
         opt_fx_inv_TES_cap,...
-        opt_fx_inv_CWB_init,...
+        opt_fx_inv_CWB, opt_fx_inv_CWB_cap, opt_fx_inv_CWB_ch_max, opt_fx_inv_CWB_dis_max, opt_fx_inv_CWB_init,...
         opt_fx_inv_BES, opt_fx_inv_BES_cap, h, BTES_BAC_Inv, BTES_SO_Inv,...
         CO2F_El, NREF_El, CO2F_DH, NREF_DH, marginalCost_DH,...
         CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2,...
