@@ -1,7 +1,7 @@
 function [ CO2F_El, NREF_El, CO2F_DH, NREF_DH, marginalCost_DH, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors, sim_start, sim_stop)
 %% Here, the CO2 factor and Energy factor of the external grids are calculated
 % The external grid production mix data read in is from the district
-% heating system (Göteborg Energi) and the Swedish electrical grid (Tomorrow / tmrow.com)
+% heating system (GÃ¶teborg Energi) and the Swedish electrical grid (Tomorrow / tmrow.com)
 
 COP_HP_DH=305/90.1;  %Based on Alexanders data, COP of the HP in DH system (Rya)
 %CO2 and PE factors of the external electricity generation system
@@ -47,8 +47,9 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     %% Marginal CO2 and NRE factors of the external grid
     %Import marginal CO2 and PE factors
     prodMix_El=xlsread('Input_dispatch_model\electricityMap - Marginal mix updated v2 - SE - 2016 - 2017.xlsx',1,strcat('B',num2str(sim_start+1),':M',num2str(sim_stop+1)));
-    
-    % Calculate the weighted CO2/NRE factors with the electric production mix.
+    if length(prodMix_El)<(sim_stop-sim_start), warning('Length of prodMix_El differ'), end
+    % Calculate the weighted CO2/NRE factors with the electric production mix. 
+
     % Note: Hydro discharge is calculated as the weighted marginal CO2/NRE of the
     % at the time of charging according to Electricity Maps algorithm. Charging is assumed to
     % have zero CO2/NRE effect, and round cycle efficieny is assumed to be 100%.
@@ -57,13 +58,13 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     
     %Get Marginal units DH
     marginalUnits_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('C',num2str(sim_start+1),':J',num2str(sim_stop+1)));
-    
+    if length(marginalUnits_DH)<(sim_stop-sim_start), warning('Length of marginalUnits_DH differ'), end    
     % Calculate the weighted CO2/NRE factors with the marginal district heating units.
     % For the times that the heatpump is on the margin, the production
     % factors are then calculated as the marginal electric mix divided by the COP of the heat pump (Rya).
     CO2F_DH = marginalUnits_DH(:,1:size(marginalUnits_DH,2)-1) * CO2intensityProdMix_Heat' + marginalUnits_DH(:,size(marginalUnits_DH,2)) .* CO2F_El./COP_HP_DH;
     NREF_DH = marginalUnits_DH(:,1:size(marginalUnits_DH,2)-1) * NREintensityProdMix_Heat' + marginalUnits_DH(:,size(marginalUnits_DH,2)) .* NREF_El./COP_HP_DH;
-    
+
 else
     error('Average emissions/price option is not currently implemented, set opt_marg_factors to 1');
 end

@@ -21,16 +21,11 @@ set
     BTES_SO_Inv(BID)      used for fixed BAC inv option
     BTES_properties       Building Inertia TES properties
 ;
-parameter
-    opt_fx_inv_BAC   Parameter used to indicate investment in BAC
-    opt_fx_inv_SO     Parameter used to indicate investment in SO
-;
+
 
 $GDXIN MtoG.gdx
 $LOAD BTES_BAC_Inv
-$LOAD opt_fx_inv_BAC
 $LOAD BTES_SO_Inv
-$LOAD opt_fx_inv_SO
 $LOAD BTES_properties
 $GDXIN
 
@@ -359,6 +354,7 @@ $GDXIN
 *--------------Choice of investment options to consider-------------------------
 PARAMETERS
          opt_fx_inv             option to fix investments
+         opt_fx_inv_PV             option to fix investments in PV
          opt_fx_inv_RMMC        options to fix the RMMC investment
          opt_fx_inv_AbsCInv_cap capacity of the new AbsChiller
          opt_fx_inv_Boiler2          options to fix the B2 investment
@@ -372,9 +368,16 @@ PARAMETERS
          opt_fx_inv_BFCh        options to fix investment in new BFCh
          opt_fx_inv_BFCh_cap    capacity of the new BFCh
          opt_fx_inv_BFCh_maxP   power factor limit of the new BFCh
+         
+         opt_fx_inv_BAC        options to fix investment in BAC
+         opt_fx_inv_SO       options to fix investment in SO
+         opt_fx_inv_CWB      options to fix investment in CWB
+         opt_fx_inv_CWB_cap  capacity of the CWB
+         opt_fx_inv_CWB_ch_max max charge power of the CWB
+         opt_fx_inv_CWB_dis_max max discharge power of the CWB
 ;
 $GDXIN MtoG.gdx
-$LOAD opt_fx_inv
+$LOAD opt_fx_inv_PV
 $LOAD opt_fx_inv_RMMC
 $LOAD opt_fx_inv_AbsCInv_cap
 $LOAD opt_fx_inv_Boiler2
@@ -388,6 +391,12 @@ $LOAD opt_fx_inv_BFCh
 $LOAD opt_fx_inv_BFCh_cap
 $LOAD opt_fx_inv_BES_maxP
 $load opt_fx_inv_BFCh_maxP
+$LOAD opt_fx_inv_BAC
+$LOAD opt_fx_inv_SO
+$LOAD opt_fx_inv_CWB
+$LOAD opt_fx_inv_CWB_cap
+$LOAD opt_fx_inv_CWB_ch_max
+$LOAD opt_fx_inv_CWB_dis_max
 *$load opt_marg_factors
 $GDXIN
 

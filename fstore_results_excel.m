@@ -20,7 +20,7 @@ to_excel_el(t,8)=-Results(t).dispatch.el_AbsC(1,2);
 to_excel_el(t,10)=-Results(t).dispatch.el_VKA1(1,2);
 to_excel_el(t,12)=-Results(t).dispatch.el_VKA4(1,2);
 to_excel_el(t,14)=-Results(t).dispatch.el_HP(1,2);
-%to_excel_el(t,16)=-Results(t).dispatch.el_AAC(1,2);
+to_excel_el(t,16)=-Results(t).dispatch.el_RMMC(1,2);
 to_excel_el(t,18)=-Results(t).dispatch.el_RM(1,2);
 
 to_excel_el(t,20)=Results(t).dispatch.el_slack(1,2);
@@ -62,8 +62,8 @@ to_excel_heat(t,10)=Results(t).dispatch.h_VKA4(1,2);
 to_excel_heat(t,12)=Results(t).dispatch.h_HP(1,2);
 to_excel_heat(t,14)=-Results(t).dispatch.h_exp_AH(1,2);
 to_excel_heat(t,16)=Results(t).dispatch.h_imp_AH(1,2);
-to_excel_heat(t,18)=Results(t).dispatch.H_Boiler2T(1,2);
-to_excel_heat(t,20)=Results(t).dispatch.h_TURB(1,2)*0.75;
+to_excel_heat(t,18)=Results(t).dispatch.H_B2_to_grid(1,2);
+to_excel_heat(t,20)=Results(t).dispatch.H_from_turb(1,2);
 to_excel_heat(t,22)=-Results(t).dispatch.h_AbsC(1,2);
 to_excel_heat(t,24)=sum(Results(t).dispatch.h_BAC_savings(find(Results(t).dispatch.h_BAC_savings(:,1)==1),3));
 

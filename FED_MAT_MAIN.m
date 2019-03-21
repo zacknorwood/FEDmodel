@@ -32,7 +32,10 @@ sim_stop_h = 14;
 
 sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
+
+
 forecast_horizon = 10;
+
 
 % DATA INDICES FOR INPUT DATA
 % Data_length is the number of hours of available data.
@@ -222,74 +225,79 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 FED_Inv_lim = struct('name','inv_lim','type','parameter','val',68570065);
 
 %Option to set if investments in BITES, BAC, PV and BES are to be fixed
+%This is not used, it is set individually!!!
 opt_fx_inv = struct('name','opt_fx_inv','type','parameter','form','full','val',1);
+
+%Investment for synthetic baseline 
+% NO_inv=1 all investments are set to 0, NO_inv =0, all investments are
+% set to the assigned value
+NO_inv=0;
 
 %Option for RMMC investment
 %0=no investment, 1=fixed investment, -1=variable of optimization
 % For FED run =1
-opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',1*(1-min_totCost_0));
+opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
 
 %Option for new AbsChiller investment
 %>=0-XX=fixed investment with capacity 0 or XX, -1=variable of optimization
-opt_fx_inv_AbsCInv_cap = struct('name','opt_fx_inv_AbsCInv_cap','type','parameter','form','full','val',0*(1-min_totCost_0));
+opt_fx_inv_AbsCInv_cap = struct('name','opt_fx_inv_AbsCInv_cap','type','parameter','form','full','val',0*(1-min_totCost_0)*(1-NO_inv));
 
 %Option for P2 investment
 %0=no investment, 1=fixed investment, -1=variable of optimization
-opt_fx_inv_Boiler2 = struct('name','opt_fx_inv_Boiler2','type','parameter','form','full','val',1*(1-min_totCost_0));
+opt_fx_inv_Boiler2 = struct('name','opt_fx_inv_Boiler2','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
 
 %Option for Turbine investment
 %0=no investment, 1=fixed investment, -1=variable of optimization
-opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',1*(1-min_totCost_0));
+opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
 
 %Option for new HP investment
 %>=0 =fixed investment, -1=variable of optimization; 630 kw is heating capacity of the HP invested in
-opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',630*(1-min_totCost_0));
+opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',630*(1-min_totCost_0)*(1-NO_inv));
 
 %Option for new RM investment
 %>=0 =fixed investment, -1=variable of optimization
-opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','form','full','val',0*(1-min_totCost_0));
+opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','form','full','val',0*(1-min_totCost_0)*(1-NO_inv));
 
 %Option for TES investment
 %>=0 =fixed investment, -1=variable of optimization
-opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',0*(1-min_totCost_0));
+opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',0*(1-min_totCost_0)*(1-NO_inv));
 
 %Option for Cold water basin CURRENTLY NOT IN USE
-warning('CURRENTLY CWB DATA IS SET IN GAMS')
-opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0));
-%must be set to 200
-opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0));
-opt_fx_inv_CWB_cap.uels={'O0007027'}; %OBS: Refers to bus 28
-%must be set to 100
-opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter','form','full','val',203.5*(1-min_totCost_0));
+opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_CWB_cap.uels={'O0007027'}; %OBS: DS is this correct? Refers to bus 28
+
+opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter','form','full','val',203.5*(1-min_totCost_0)*(1-NO_inv));
 opt_fx_inv_CWB_ch_max.uels=opt_fx_inv_CWB_cap.uels;
-opt_fx_inv_CWB_dis_max = struct('name','opt_fx_inv_CWB_dis_max','type','parameter','form','full','val',35*(1-min_totCost_0));
+opt_fx_inv_CWB_dis_max = struct('name','opt_fx_inv_CWB_dis_max','type','parameter','form','full','val',35*(1-min_totCost_0)*(1-NO_inv));
 opt_fx_inv_CWB_dis_max.uels=opt_fx_inv_CWB_cap.uels;
 
 
+
 %Option for BES investment
-opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',1*(1-min_totCost_0));
+opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
 %must be set to 200
-opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',200*(1-min_totCost_0));
+opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',200*(1-min_totCost_0)*(1-NO_inv));
 opt_fx_inv_BES_cap.uels={'O0007027'}; %OBS: Refers to bus 28
 %must be set to 100
-opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full','val',100*(1-min_totCost_0));
+opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full','val',100*(1-min_totCost_0)*(1-NO_inv));
 opt_fx_inv_BES_maxP.uels=opt_fx_inv_BES_cap.uels;
 
 %Option for BFCh investment  % Why is this battery investment separate?-ZN
-opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',1*(1-min_totCost_0));
+opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
 %must be set to 100
-opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full','val',100*(1-min_totCost_0));
+opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full','val',100*(1-min_totCost_0)*(1-NO_inv));
 opt_fx_inv_BFCh_cap.uels={'O0007028'}; %OBS: Refers to Bus 5
 %must be set to 50
-opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full','val',50*(1-min_totCost_0));
+opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full','val',50*(1-min_totCost_0)*(1-NO_inv));
 opt_fx_inv_BFCh_maxP.uels=opt_fx_inv_BFCh_cap.uels;
 
 %Option for Building Thermal Energy Storage solutions. Should be set to 1
 %for FED investments. If set to 0 no BTES will be used (Investment option
 %not implemented)
 % AK SHould 'O0007024' be included?
-opt_fx_inv_BAC = struct('name','opt_fx_inv_BAC','type','parameter','form','full','val',1*(1-min_totCost_0));
-opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','val',1*(1-min_totCost_0));
+opt_fx_inv_BAC = struct('name','opt_fx_inv_BAC','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
 
 BTES_BAC_uels = {'O0007006', 'O0007012', 'O0007017', 'O0007023', 'O0007026', 'O3060135', 'O3060133'}; %Buildings with Advanced Control (BAC) system
 BTES_PS_uels = {'O0011001', 'O0007888'}; % Buildings with Pump Stop (PS) capability
@@ -320,6 +328,10 @@ BTES_properties.uels={'BTES_Scap', 'BTES_Dcap', 'BTES_Esig', 'BTES_Sch_hc',...
 BTES_model = struct('name','BTES_model','type','parameter','form','full','val',BTES_param);
 BTES_model.uels={BTES_properties.uels,BID.uels};
 
+%Invstements in PVs
+%=1 = fixed investment, 0=no investments (neither existing!!!) -1=variable of optimization
+opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',1);
+
 %Placement of roof PVs (Existing)
 PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista p� anl�ggningar.xlsx" as well as the 3d shading model
 
@@ -337,7 +349,7 @@ PV_roof_cap_existing=[48 40]; % According to "solceller lista p� anl�ggninga
 %Capacity of roof PVs (Investments)
 %Note that these need to be set to zero if running the base case without PV investments.
 %PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]*(1-min_totCost_0); % According to solceller lista p� anl�ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
+PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]*(1-min_totCost_0)*(1-NO_inv); % According to solceller lista p� anl�ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
 %the project plan for FED according to AH hence that capacity being zero.
 
 %Merge all roof PV capacities and create struct for GAMS
@@ -483,7 +495,7 @@ for t=1:sim_length
     
     %Calculation of BAC savings factors
     BAC_savings_factor = fget_bac_savings_factor(h);
-    
+    BAC_savings_factors.uels=h.uels;
     %District heating network node transfer limits
     DH_Nodes_Transfer_Limits=fget_dh_transfer_limits(DH_Nodes, h, tout);
     
@@ -583,12 +595,12 @@ for t=1:sim_length
     %% Preparing input GDX file (MtoG) and RUN GAMS model
     % AK Change to BTES_EVI_D...
     % AK Add BTES_SO, BTES_PS
-    wgdx('MtoG.gdx', opt_fx_inv, opt_fx_inv_RMMC,...
+    wgdx('MtoG.gdx', opt_fx_inv, opt_fx_inv_PV, opt_fx_inv_RMMC,...
         opt_fx_inv_AbsCInv_cap,...
         opt_fx_inv_Boiler2,opt_fx_inv_TURB,opt_fx_inv_HP_cap,...
         opt_fx_inv_RMInv_cap,...
         opt_fx_inv_TES_cap,...
-        opt_fx_inv_CWB_init,...
+        opt_fx_inv_CWB, opt_fx_inv_CWB_cap, opt_fx_inv_CWB_ch_max, opt_fx_inv_CWB_dis_max, opt_fx_inv_CWB_init,...
         opt_fx_inv_BES, opt_fx_inv_BES_cap, h, BTES_BAC_Inv, BTES_SO_Inv,...
         CO2F_El, NREF_El, CO2F_DH, NREF_DH, marginalCost_DH,...
         CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2,...

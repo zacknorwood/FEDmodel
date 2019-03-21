@@ -701,6 +701,8 @@ eq_hbalance2(h)..
                                      + (sum(BID,SO_Sdis_to_grid(h,BID)) - sum(BID,SO_Sch_from_grid(h,BID)))
                                      + (sum(BID,h_BAC_savings(h,BID)))
                                      - h_AbsCInv(h);
+
+                                    
 eq_hbalance3(h)..
              h_imp_nonAH(h)=e=sum(BID_nonAH_h,h_demand_nonAH(h,BID_nonAH_h))
                        - (sum(BID_nonAH_h,BAC_Sdis(h,BID_nonAH_h))*BTES_dis_eff-sum(BID_nonAH_h,BAC_Sch(h,BID_nonAH_h))/BTES_chr_eff);
@@ -721,6 +723,9 @@ eq_ebalance3(h)..
                                  + el_PV(h) - el_HP(h) - el_RMInv(h)
                                  + sum(BID_AH_el,(BES_dis_to_grid(h,BID_AH_el) - BES_ch_from_grid(h,BID_AH_el))+(BFCh_dis_to_grid(h,BID_AH_el) - BFCh_ch_from_grid(h,BID_AH_el)))
                                  + el_TURB(h);
+
+
+                                 
 eq_ebalance4(h)..
         sum(BID_nonAH_el,el_demand(h,BID_nonAH_el)) =e= el_imp_nonAH(h);
 *

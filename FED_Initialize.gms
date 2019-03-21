@@ -13,7 +13,7 @@ set
 ************ the technical limit of import/export on heat and electricty is based on feedback from AH
 Parameter
         DH_max_cap  Maximum capacity of import from the external district heating system /12000/
-        exG_max_cap Maximum capacity of import from the external electricty system /10000/
+        el_imp_max_cap Maximum capacity of import and export from and to the external electricty system /10000/
 *DH_export_season(h) Season during which pricing for DH exports possible
 ;
 
@@ -50,20 +50,19 @@ Parameter
 *This data is imported from MATLAB and stored in MtoG
 Parameter
 *          h_P1(h)     Total heat output from P1
-          B1_eff      Effeciency of B1
-          B1_cap      Capacity of Boiler 1 in kW excluding flue gas condenser /8000/
+          B1_eff      Effeciency of B1 /0.9/
           B1_max      Maximum output from B1 /6000/
           B1_min      Minimum output from B1 /3000/
 ;
-B1_eff=0.9;
+***** CHECK: B1_min is currently not implemented -DS!!!!
 
 *---------------Flue gas condenser------------------------
 Parameters
-          FlueGasCondenser1_eff   Effeciency of flue gas condenser /0.4/
+          FlueGasCondenser1_eff   Effeciency of flue gas condenser /0.15/
           FlueGasCondenser1_cap   Capacity of flue gas condenser /1000/
-          FlueGasCondenser1_max   Maximum output from the flue gas condenser /1000/
           FlueGasCondenser1_min   Minimum output from the flue gas condenser /500/
 ;
+**** CHECK: changed FGC efficiency to 15% according to 4.1.3 minimum output is not integrated.
 
 *--------------VKA4 constants and parameters------------------------------------
 * Maximum electricty input and the coefficients for VKA1 and VKA4 corresponds to the 800 kW heating capacity for each machine
@@ -109,7 +108,6 @@ scalar
 *--------------Refrigerator Machines, cooling source----------------------------
 scalar
       RM_COP Coefficent of performance of RM /2/
-      RM_eff Coefficent of performance of RM /0.95/
 ;
 
 *--------------Cold water basin at maskin, cold storage-------------------------
