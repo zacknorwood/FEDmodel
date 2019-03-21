@@ -31,6 +31,14 @@ h_Boiler1_0(isnan(h_Boiler1_0))=0;
 h_FlueGasCondenser1_0=xlsread('Input_dispatch_model\Boiler1 2016-2017.xls',4,gen_range)*MWhtokWh;
 h_FlueGasCondenser1_0(isnan(h_FlueGasCondenser1_0))=0;
 
+%Measured heat input for VKA1
+h_VKA1_0=xlsread('Input_dispatch_model\varmepump VKA1.xls',2,strcat('C',int2str(sim_start+3),':C',int2str(sim_stop+3)));
+h_VKA1_0(isnan(h_VKA1_0))=0;
+
+%Measured heat input for VKA4
+h_VKA4_0=xlsread('Input_dispatch_model\varmepump VKA4.xls',2,strcat('C',int2str(sim_start+3),':C',int2str(sim_stop+3)));
+h_VKA4_0(isnan(h_VKA4_0))=0;
+
 %Measured el input for VKA1
 el_VKA1_0=xlsread('Input_dispatch_model\varmepump VKA1.xls',2,gen_range);
 el_VKA1_0(isnan(el_VKA1_0))=0;
@@ -72,13 +80,18 @@ h_price(isnan(h_price))=0;
 tout_measured=xlsread('Input_dispatch_model\measured_tout.xlsx',2,price_range);
 tout_measured(isnan(tout_measured))=0;
 
+%Historical import/export AH
+h_imp_AH_measured=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,strcat('C',int2str(sim_start+4),':C',int2str(sim_stop+4)))*MWhtokWh;
+h_exp_AH_measured=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,strcat('D',int2str(sim_start+4),':D',int2str(sim_stop+4)))*MWhtokWh;
+
 %el exgG slack bus data
 el_exG_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',1,strcat('F',int2str(sim_start+1),':F',int2str(sim_stop+1)));
 el_exG_slack(isnan(el_exG_slack))=0;
 
 %District heating slack bus data
-h_DH_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',2,strcat('P',int2str(sim_start+1),':P',int2str(sim_stop+1)));
-h_DH_slack(isnan(h_DH_slack))=0;
+net_prod = h_imp_AH_measured - h_exp_AH_measured + h_Boiler1_0 + h_FlueGasCondenser1_0 + h_VKA4_0 + h_VKA1_0;
+ah_demand = sum(h_demand(:,[1,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,29,31,32,33,34]), 2);
+h_DH_slack = net_prod - ah_demand;
 
 %District cooling slack bus data
 c_DC_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',3,strcat('N',int2str(sim_start+1),':N',int2str(sim_stop+1)));
@@ -88,8 +101,5 @@ c_DC_slack(isnan(c_DC_slack))=0;
 irradiance_measured_roof=xlsread('Input_dispatch_model\Irradiance_Arrays 20181119.xlsx',1,strcat('A',int2str(sim_start+1),':L',int2str(sim_stop+1)));
 irradiance_measured_facades=xlsread('Input_dispatch_model\Irradiance_Arrays 20181119.xlsx',1,strcat('M',int2str(sim_start+1),':M',int2str(sim_stop+1)));
 
-%Historical import/export AH
-h_imp_AH_measured=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,strcat('C',int2str(sim_start+4),':C',int2str(sim_stop+4)))*MWhtokWh;
-h_exp_AH_measured=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,strcat('D',int2str(sim_start+4),':D',int2str(sim_stop+4)))*MWhtokWh;
 end
 
