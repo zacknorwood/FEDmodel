@@ -33,8 +33,7 @@ c_demand=xlsread('Input_dispatch_model\measured_demand.xlsx',3,demand_range);
 if (length(c_demand)<data_length) || (any(isnan(c_demand),'all'))
     warning('Error: input file does not have complete data for simulation length');
 end
-c_demand(isnan(c_demand))=0;
-if length(c_demand)<(sim_stop-sim_start), warning('Length of c_demand differ'), end  
+c_demand(isnan(c_demand))=0; 
 
 gen_range=strcat('B',int2str(sim_start+3),':B',int2str(data_read_stop+3));
 %Measured HEAT GENERATION FROM THERMAL BOILER (B1) converted to kWh
