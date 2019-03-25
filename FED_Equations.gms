@@ -73,8 +73,7 @@ equation
            eq5_TURB     active-reactive power limits of turbine
            eq6_TURB     active-reactive power limits of turbine
            eq7_TURB     active-reactive power limits of turbine
-           eq8_TURB     enforcement of maximum power to heat ratio
-           eq9_TURB     Heat from turbine to grid
+           eq8_TURB     Heat from turbine to grid
 
            eq_HP1       heat production from HP
            eq_HP2       cooling production from HP
@@ -394,15 +393,15 @@ eq3_TURB(h)..
          el_TURB(h) =l= B_TURB * TURB_cap;
 
 
-eq9_TURB(h)..
+eq8_TURB(h)..
          h_from_turb(h) =l= (1-TURB_eff) * h_TURB(h);
 
 eq4_TURB(h)..el_TURB_reac(h)=l=0.4843*el_TURB(h);
 eq5_TURB(h)..el_TURB_reac(h)=g=-0.4843*el_TURB(h);
 eq6_TURB(h)..-0.58*el_TURB_reac(h)+el_TURB(h)=l=1.15*TURB_cap;
 eq7_TURB(h)..+0.58*el_TURB_reac(h)+el_TURB(h)=l=1.15*TURB_cap;
-eq8_TURB(h)..
-         el_TURB(h) =l= h_Boiler2(h) * B2_power_to_heat_ratio;
+
+
 
 *----------------HP equations --------------------------------------------------
 eq_HP1(h)..
