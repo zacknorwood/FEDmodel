@@ -12,7 +12,7 @@ set
 
 ************ the technical limit of import/export on heat and electricty is based on feedback from AH
 Parameter
-        DH_max_cap  Maximum capacity of import from the external district heating system /12000/
+        DH_max_cap  Maximum capacity of import from the external district heating system /8000/
         el_imp_max_cap Maximum capacity of import and export from and to the external electricty system /10000/
 *DH_export_season(h) Season during which pricing for DH exports possible
 ;
@@ -20,8 +20,10 @@ Parameter
 ************ Capacities of the units in the FED system
 Parameter
 *RM capacity at AH is set to 900kW which the capacity of RM at Kemi (2*450 kW)
+*The capacity for FGC is set separetely on line 63 ish
+*Only B1 absC, and RM are used but all are used to calculate the fixed costs -DS
          cap_sup_unit(sup_unit)   operational capacity of the existing units
-                     /PV 65, B1 8000, AbsC 2300, AAC 1000, RM 900, RMMC 4200, FGC1 1200/
+                     /PV 65, B1 8000, AbsC 2300, AAC 1000, RM 900, RMMC 4200, FGC1 1000/
 ;
 
 *************** different costs of the investment options
@@ -137,13 +139,14 @@ scalar
       B2_min                 Minimum output from B2 /1000/
       B2_hourly_ramprate     hourly maximum ramp rate /4000/
       B2_research_prod        Heat output during research /1500/
-      B2_power_to_heat_ratio power to heat ratio of B2 and turbine /0.2/
 ;
 
 *----------------Refurbished turbine for Boiler 2  ------------------------------
 scalar
-* turbine efficiency from Danish energy agency reports
-      TURB_eff Efficiency of turbine /0.25/
+* 25% turbine efficiency from Danish energy agency reports
+* 17% according to 4.1.3
+
+      TURB_eff Efficiency of turbine /0.17/
 * Max turbine output from AH WP4.2 report
       TURB_cap Maximum power output of turbine /800/
 ;
