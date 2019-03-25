@@ -1,4 +1,4 @@
-function [ CO2F_El, NREF_El, CO2F_DH, NREF_DH, marginalCost_DH, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors, sim_start, sim_stop)
+function [ CO2F_El, NREF_El, CO2F_DH, NREF_DH, marginalCost_DH, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors, sim_start, data_read_stop, data_length)
 %% Here, the CO2 factor and Energy factor of the external grids are calculated
 % The external grid production mix data read in is from the district
 % heating system (Göteborg Energi) and the Swedish electrical grid (Tomorrow / tmrow.com)
@@ -41,12 +41,18 @@ CO2F_Boiler2 = struct('name','CO2F_Boiler2','type','parameter','val',CO2intensit
 NREF_Boiler2 = struct('name','NREF_Boiler2','type','parameter','val',NREintensityProdMix_Heat(1));
 
 %Get Marginal cost DH (SEK / kWh)
-marginalCost_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('K',num2str(sim_start+1),':K',num2str(sim_stop+1)));
+marginalCost_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('K',num2str(sim_start+1),':K',num2str(data_read_stop+1)));
+if (length(marginalCost_DH)<data_length) || (any(isnan(marginalCost_DH),'all'))
+    error('Error: input file does not have complete data for simulation length');
+end
 
 if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are based on the marginal production unit/mix.
     %% Marginal CO2 and NRE factors of the external grid
     %Import marginal CO2 and PE factors
-    prodMix_El=xlsread('Input_dispatch_model\electricityMap - Marginal mix updated v2 - SE - 2016 - 2017.xlsx',1,strcat('B',num2str(sim_start+1),':M',num2str(sim_stop+1)));
+    prodMix_El=xlsread('Input_dispatch_model\electricityMap - Marginal mix updated v2 - SE - 2016 - 2017.xlsx',1,strcat('B',num2str(sim_start+1),':M',num2str(data_read_stop+1)));
+    if (length(prodMix_El)<data_length) || (any(isnan(prodMix_El),'all'))
+        error('Error: input file does not have complete data for simulation length');
+    end
     
     % Calculate the weighted CO2/NRE factors with the electric production mix.
     % Note: Hydro discharge is calculated as the weighted marginal CO2/NRE of the
@@ -56,8 +62,10 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     NREF_El = sum(prodMix_El(:,1:length(NREintensityProdMix_El)) .* NREintensityProdMix_El, 2);
     
     %Get Marginal units DH
-    marginalUnits_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('C',num2str(sim_start+1),':J',num2str(sim_stop+1)));
-    
+    marginalUnits_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('C',num2str(sim_start+1),':J',num2str(data_read_stop+1)));
+    if (length(marginalUnits_DH)<data_length) || (any(isnan(marginalUnits_DH),'all'))
+        error('Error: input file does not have complete data for simulation length');
+    end
     % Calculate the weighted CO2/NRE factors with the marginal district heating units.
     % For the times that the heatpump is on the margin, the production
     % factors are then calculated as the marginal electric mix divided by the COP of the heat pump (Rya).

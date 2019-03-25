@@ -25,17 +25,7 @@ ALL
 SOLVE total using MIP minimizing obj;
 
 parameter
-invCost_PV      investment cost of PV
-invCost_BEV     investment cost of battery storage
-invCost_TES     investment cost of thermal energy storage
-invCost_SO      investment cost of building inertia thermal energy storage with Setpoint Offset
-invCost_BAC     investment cost of building advanced control
-invCost_HP      investment cost of heat pump
-invCost_RMMC    investment cost of connecting MC2 RM
-invCost_AbsCInv     investment cost of absorption cooler
-invCost_Boiler2          investment cost of B2
-invCost_TURB        investment cost of turbine
-invCost_RMInv       investment cost of RMInv
+
 total_cap_PV_roof   total capacity in kW
 total_cap_PV_facade total capacity in kW
 h_demand_nonAH_sum  total demand for non AH buildings
@@ -46,17 +36,6 @@ order(h)=ord(h);
 order_BID(BID)=ord(BID);
 display order, order_BID;
 
-invCost_HP = HP_cap.l*cost_inv_opt('HP');
-invCost_PV = sum(PVID, PV_cap_roof.l(PVID)*cost_inv_opt('PV')) + sum(PVID, PV_cap_facade.l(PVID)*cost_inv_opt('PV'));
-invCost_BEV = sum(BID,BES_cap.l(BID)*cost_inv_opt('BES'));
-invCost_TES = (TES_cap.l*TES_vr_cost + TES_inv.l * TES_fx_cost);
-invCost_SO = cost_inv_opt('SO')*sum(BID,B_SO.l(BID));
-invCost_BAC = cost_inv_opt('BAC')*sum(BID,B_BAC.l(BID));
-invCost_RMMC = cost_inv_opt('RMMC')*RMMC_inv.l;
-invCost_Boiler2 = B_Boiler2.l * cost_inv_opt('B2');
-invCost_TURB = B_TURB.l * cost_inv_opt('TURB');
-invCost_AbsCInv = (AbsCInv_cap.l * cost_inv_opt('AbsCInv'));
-invCost_RMInv = RMInv_cap.l*cost_inv_opt('RMInv');
 h_demand_nonAH_sum(h) = sum(BID_nonAH_h, h_demand_nonAH(h,BID_nonAH_h));
 
 **********************Total operation cost of AH system *********************
@@ -282,7 +261,7 @@ execute_unload 'GtoM'  min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       el_imp_AH, el_exp_AH, el_imp_nonAH,AH_el_imp_tot, AH_el_exp_tot,
                       h_imp_AH, h_exp_AH, h_imp_nonAH, AH_h_imp_tot, AH_h_exp_tot,
                       h_demand_nonAH, h_demand, h_demand_nonAH_sum
-                      el_sell_price, el_price, h_price, tout, cool_demand,heat_demand,elec_demand
+                      el_sell_price, el_price, tout, cool_demand,heat_demand,elec_demand
                       BTES_model,
                       FED_PE, FED_CO2, FED_CO2_tot, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2, CO2F_El, NREF_El, CO2F_DH, NREF_DH,
                       h_Boiler1, h_FlueGasCondenser1, h_Boiler1_0, h_FlueGasCondenser1_0, fuel_Boiler1, B1_eff, tot_PE,
@@ -301,14 +280,13 @@ execute_unload 'GtoM'  min_totCost_0, min_totCost, min_totPE, min_totCO2,
 
                       h_BAC_savings, B_BAC, invCost_BAC, BAC_savings_period, BAC_savings_factor,
                       el_PV, PV_cap_roof,PV_cap_facade, invCost_PV,
-                      BES_en, BES_ch, BES_dis,BES_dis_to_grid, BES_ch_from_grid, BES_cap, invCost_BEV, BES_dis_eff, BES_chr_eff,
+                      BES_en, BES_ch, BES_dis,BES_dis_to_grid, BES_ch_from_grid, BES_cap, invCost_BES, BES_dis_eff, BES_chr_eff,
                       PT_exG, max_exG, PT_DH, mean_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
                       AH_PE, AH_CO2, nonAH_CO2,
                       DH_export_season, P1P2_dispatchable, inv_lim,
-                      c_RMInv, el_RMInv, RMInv_cap, invCost_RMInv,BFCh_en,BFCh_ch, BFCh_dis_to_grid, BFCh_ch_from_grid,
-                      BES_reac,BFCh_reac,BFCh_dis,el_TURB_reac,el_PV_reac_roof,el_PV_act_roof,el_TURB_reac,
+                      c_RMInv, el_RMInv, RMInv_cap, invCost_RMInv,
                       model_status,B_Heating_cost,B_Electricity_cost,B_Cooling_cost
                       tot_var_cost_AH, sim_PT_exG,PT_DH, tot_fixed_cost, fix_cost_existing_AH, fix_cost_new_AH, var_cost_existing_AH, var_cost_new_AH,
                       DH_node_flows, DC_node_flows, CWB_en, CWB_dis, CWB_ch,

@@ -203,8 +203,8 @@ PARAMETERS
             h_FlueGasCondenser1_0(h)         Heat out from FGC (Boiler1)
             el_VKA1_0(h)   el used by VKA1 in the base case
             el_VKA4_0(h)   el used by VKA4 in the base case
-            el_AAC_0(h)    el used by the AAC in the base case
-            h_AbsC_0(h)    heat used by the AbsC in the base case
+*            el_AAC_0(h)    el used by the AAC in the base case
+            c_AbsC_0(h)    cooling produced by the AbsC in the base case
 ;
 $GDXIN MtoG.gdx
 $LOAD h_Boiler1_0
@@ -212,7 +212,7 @@ $LOAD h_FlueGasCondenser1_0
 $LOAD el_VKA1_0
 $LOAD el_VKA4_0
 *$LOAD el_AAC_0
-$LOAD h_ABsC_0
+$LOAD c_AbsC_0
 $GDXIN
 
 *-----------forecasted Demand data from MATLAB-----------------------------------
@@ -233,12 +233,12 @@ $GDXIN
 PARAMETERS
            el_price(h)       ELECTRICTY PRICE IN THE EXTERNAL GRID
            el_certificate(h) Electricity certificate for selling renewable energy (SEK per kWh)
-           h_price(h)        Heat PRICE IN THE IN THE EXTERNAL DH SYSTEM
+*           h_price(h)        Heat PRICE IN THE IN THE EXTERNAL DH SYSTEM
 ;
 $GDXIN MtoG.gdx
 $LOAD el_price
 $LOAD el_certificate
-$LOAD h_price
+*$LOAD h_price
 $GDXIN
 
 *-----------forecasted outdoor temprature from MATLAB----------------------------
@@ -369,9 +369,10 @@ PARAMETERS
          opt_fx_inv_BES         options to fix investment in new BES
          opt_fx_inv_BES_cap     capacity of the new BES
          opt_fx_inv_BES_maxP    power factor limit of the new BES
-         opt_fx_inv_BFCh        options to fix investment in new BFCh
-         opt_fx_inv_BFCh_cap    capacity of the new BFCh
-         opt_fx_inv_BFCh_maxP   power factor limit of the new BFCh
+         BES_min_SOC            Battery minimum state of charge (fraction of capacity from 0 to 1)
+*         opt_fx_inv_BFCh        options to fix investment in new BFCh
+*         opt_fx_inv_BFCh_cap    capacity of the new BFCh
+*         opt_fx_inv_BFCh_maxP   power factor limit of the new BFCh
 ;
 $GDXIN MtoG.gdx
 $LOAD opt_fx_inv
@@ -384,10 +385,11 @@ $LOAD opt_fx_inv_RMInv_cap
 $LOAD opt_fx_inv_TES_cap
 $LOAD opt_fx_inv_BES
 $LOAD opt_fx_inv_BES_cap
-$LOAD opt_fx_inv_BFCh
-$LOAD opt_fx_inv_BFCh_cap
+*$LOAD opt_fx_inv_BFCh
+*$LOAD opt_fx_inv_BFCh_cap
 $LOAD opt_fx_inv_BES_maxP
-$load opt_fx_inv_BFCh_maxP
+$LOAD BES_min_SoC
+*$load opt_fx_inv_BFCh_maxP
 *$load opt_marg_factors
 $GDXIN
 
@@ -395,7 +397,7 @@ $GDXIN
 Parameters
       opt_fx_inv_CWB_init           Initial SOC CWB
       opt_fx_inv_BES_init(h,BID)    BES Init. energy level (SoC in kWh)
-      opt_fx_inv_BFCh_init(h,BID)   BFCh Init. energy level (SOC in kWh)
+*      opt_fx_inv_BFCh_init(h,BID)   BFCh Init. energy level (SOC in kWh)
 *      opt_fx_inv_TES_init    TES Init. SoC
       opt_fx_inv_BTES_BAC_D_init Initial energy storage for BAC Deep storage
       opt_fx_inv_BTES_BAC_S_init Initial energy storage for BAC Shallow storage
@@ -417,7 +419,7 @@ Parameters
 $GDXIN MtoG.gdx
 $load opt_fx_inv_CWB_init
 $load opt_fx_inv_BES_init
-$load opt_fx_inv_BFCh_init
+*$load opt_fx_inv_BFCh_init
 *$load opt_fx_inv_TES_init
 $load opt_fx_inv_BTES_BAC_D_init
 $load opt_fx_inv_BTES_BAC_S_init

@@ -61,7 +61,7 @@ positive variable
 c_AbsC.lo(h)$(DH_heating_season(h)=0 and min_totCost_0 = 0) = AbsC_min_prod;
 AbsC_cap.fx = cap_sup_unit('AbsC');
 *in BAU Abs chiller is used as balancing unit since the AAC is set to zero
-h_AbsC.lo(h)$(min_totCost_0 = 1)=h_AbsC_0(h);
+h_AbsC.lo(h)$(min_totCost_0 = 1) = c_AbsC_0(h) / AbsC_COP;
 
 *------------------Refrigerator Machine related---------------------------------
 positive variable
@@ -233,15 +233,15 @@ positive variables
          BES_ch_from_grid(h,BID) Useful charging energy from the grid
          BES_cap(BID)         Capacity of the battery at building BID
 
-         BFCh_en(h,BID)       Energy stored in the battery at time t and building BID
-         BFCh_ch(h,BID)       Battery charing at time t and building BID
-         BFCh_dis(h,BID)      Battery discharging at time t and building BID
-         BFCh_dis_to_grid(h,BID)  Useful discharging energy to the grid
-         BFCh_ch_from_grid(h,BID) Useful charging energy from the grid
-         BFCh_cap(BID)         Capacity of the battery at building BID
+*         BFCh_en(h,BID)       Energy stored in the battery at time t and building BID
+*         BFCh_ch(h,BID)       Battery charing at time t and building BID
+*         BFCh_dis(h,BID)      Battery discharging at time t and building BID
+*         BFCh_dis_to_grid(h,BID)  Useful discharging energy to the grid
+*         BFCh_ch_from_grid(h,BID) Useful charging energy from the grid
+*         BFCh_cap(BID)         Capacity of the battery at building BID
 ;
 BES_cap.fx(BID) $ (opt_fx_inv eq 1) = opt_fx_inv_BES_cap(BID)$(opt_fx_inv_BES eq 1)+ 0$(opt_fx_inv_BES eq 0);
-BFCh_cap.fx(BID) $ (opt_fx_inv eq 1) = opt_fx_inv_BFCh_cap(BID)$(opt_fx_inv_BFCh eq 1)+ 0$(opt_fx_inv_BFCh eq 0);
+*BFCh_cap.fx(BID) $ (opt_fx_inv eq 1) = opt_fx_inv_BFCh_cap(BID)$(opt_fx_inv_BFCh eq 1)+ 0$(opt_fx_inv_BFCh eq 0);
 
 *------------------Refrigeration machine investment related---------------------
 positive variable
@@ -264,8 +264,8 @@ V.up(h,BusID)=1.1;
 variable
         rel_imp_AH(h)        Imported reactive to the AH system
         delta(h,BusID)    Voltage angles of EL Grid
-        BES_reac(h,BID)       BES reactive power
-        BFCh_reac(h,BID)      BFCh reactive power
+*        BES_reac(h,BID)       BES reactive power
+*        BFCh_reac(h,BID)      BFCh reactive power
 ;
 *------------------Grid DH related----------------------------------------------
 positive variable
@@ -318,6 +318,17 @@ variable
          var_cost_new       total variable cost for new generation
          Ainv_cost          total annualized investment cost
          totCost            total cost
+         invCost_PV      investment cost of PV
+         invCost_BES     investment cost of battery storage
+         invCost_TES     investment cost of thermal energy storage
+         invCost_SO      investment cost of building inertia thermal energy storage with Setpoint Offset
+         invCost_BAC     investment cost of building advanced control
+         invCost_HP      investment cost of heat pump
+         invCost_RMMC    investment cost of connecting MC2 RM
+         invCost_AbsCInv     investment cost of absorption cooler
+         invCost_Boiler2     investment cost of B2
+         invCost_TURB        investment cost of turbine
+         invCost_RMInv       investment cost of refrigeration machines
          invCost            total investment cost
          FED_CO2_tot        total av. CO2 emissions from the FED system
          peak_CO2           CO2 peak
