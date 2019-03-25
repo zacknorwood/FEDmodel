@@ -9,6 +9,7 @@ xlRange = strcat('C',num2str(sim_start+1),':C',num2str(data_read_stop+1));
 %re-formulated
 %P1P2 dispatchability***********This could be replaced with code****
 P1P2_dispatch = xlsread('Input_dispatch_model\P1P2_dispatchable.xlsx', 1, xlRange);
+
 if (length(P1P2_dispatch)<data_length) || (any(isnan(P1P2_dispatch),'all'))
     error('Error: input file does not have complete data for simulation length');
 end

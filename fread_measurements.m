@@ -8,6 +8,8 @@ function [el_demand, h_demand, c_demand,...
 %This function is used to read measurment between the indicated indices
 
 MWhtokWh = 1000; %Conversion factor MWh to kWh
+COP_VKA1 = 3; %COP value used for calculating historical heat generation
+COP_VKA4 = 3; %COP value used for calculating historical heat generation
 
 demand_range=strcat('B',int2str(sim_start+1),':AJ',int2str(data_read_stop+1));
 %Measured electricity demand in kW
@@ -32,6 +34,7 @@ if (length(c_demand)<data_length) || (any(isnan(c_demand),'all'))
     warning('Error: input file does not have complete data for simulation length');
 end
 c_demand(isnan(c_demand))=0;
+if length(c_demand)<(sim_stop-sim_start), warning('Length of c_demand differ'), end  
 
 gen_range=strcat('B',int2str(sim_start+3),':B',int2str(data_read_stop+3));
 %Measured HEAT GENERATION FROM THERMAL BOILER (B1) converted to kWh
@@ -63,6 +66,7 @@ if (length(el_VKA4_0)<data_length) || (any(isnan(el_VKA4_0),'all'))
     warning('Error: input file does not have complete data for simulation length');
 end
 el_VKA4_0(isnan(el_VKA4_0))=0;
+
 %el_VKA4_measured=h_VKA4_measured/3; Removed by AK, previously h_VKA4 (col C) was
 %read and divided by COP to get approximate electricity use
 

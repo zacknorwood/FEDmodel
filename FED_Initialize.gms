@@ -12,16 +12,18 @@ set
 
 ************ the technical limit of import/export on heat and electricty is based on feedback from AH
 Parameter
-        DH_max_cap  Maximum capacity of import from the external district heating system /12000/
-        exG_max_cap Maximum capacity of import from the external electricty system /10000/
+        DH_max_cap  Maximum capacity of import from the external district heating system /8000/
+        el_imp_max_cap Maximum capacity of import and export from and to the external electricty system /10000/
 *DH_export_season(h) Season during which pricing for DH exports possible
 ;
 
 ************ Capacities of the units in the FED system
 Parameter
 *RM capacity at AH is set to 900kW which the capacity of RM at Kemi (2*450 kW)
+*The capacity for FGC is set separetely on line 63 ish
+*Only B1 absC, and RM are used but all are used to calculate the fixed costs -DS
          cap_sup_unit(sup_unit)   operational capacity of the existing units
-                     /PV 65, B1 8000, AbsC 2300, AAC 1000, RM 900, RMMC 4200, FGC1 1200/
+                     /PV 65, B1 8000, AbsC 2300, AAC 1000, RM 900, RMMC 4200, FGC1 1000/
 ;
 
 *************** different costs of the investment options
@@ -50,20 +52,19 @@ Parameter
 *This data is imported from MATLAB and stored in MtoG
 Parameter
 *          h_P1(h)     Total heat output from P1
-          B1_eff      Effeciency of B1
-          B1_cap      Capacity of Boiler 1 in kW excluding flue gas condenser /8000/
+          B1_eff      Effeciency of B1 /0.9/
           B1_max      Maximum output from B1 /6000/
           B1_min      Minimum output from B1 /3000/
 ;
-B1_eff=0.9;
+***** CHECK: B1_min is currently not implemented -DS!!!!
 
 *---------------Flue gas condenser------------------------
 Parameters
-          FlueGasCondenser1_eff   Effeciency of flue gas condenser /0.4/
+          FlueGasCondenser1_eff   Effeciency of flue gas condenser /0.15/
           FlueGasCondenser1_cap   Capacity of flue gas condenser /1000/
-          FlueGasCondenser1_max   Maximum output from the flue gas condenser /1000/
           FlueGasCondenser1_min   Minimum output from the flue gas condenser /500/
 ;
+**** CHECK: changed FGC efficiency to 15% according to 4.1.3 minimum output is not integrated.
 
 *--------------VKA4 constants and parameters------------------------------------
 * Maximum electricty input and the coefficients for VKA1 and VKA4 corresponds to the 800 kW heating capacity for each machine
@@ -109,7 +110,6 @@ scalar
 *--------------Refrigerator Machines, cooling source----------------------------
 scalar
       RM_COP Coefficent of performance of RM /2/
-      RM_eff Coefficent of performance of RM /0.95/
 ;
 
 *--------------Cold water basin at maskin, cold storage-------------------------
@@ -139,13 +139,14 @@ scalar
       B2_min                 Minimum output from B2 /1000/
       B2_hourly_ramprate     hourly maximum ramp rate /4000/
       B2_research_prod        Heat output during research /1500/
-      B2_power_to_heat_ratio power to heat ratio of B2 and turbine /0.2/
 ;
 
 *----------------Refurbished turbine for Boiler 2  ------------------------------
 scalar
-* turbine efficiency from Danish energy agency reports
-      TURB_eff Efficiency of turbine /0.25/
+* 25% turbine efficiency from Danish energy agency reports
+* 17% according to 4.1.3
+
+      TURB_eff Efficiency of turbine /0.17/
 * Max turbine output from AH WP4.2 report
       TURB_cap Maximum power output of turbine /800/
 ;
