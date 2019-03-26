@@ -47,7 +47,7 @@ data.el_slack_var=gdx2mat(gdxData,'el_slack_var',h_sim.uels);
 %prices
 data.el_sell_price=gdx2mat(gdxData,'el_sell_price',h_sim.uels);
 data.el_price=gdx2mat(gdxData,'el_price',h_sim.uels);
-data.h_price=gdx2mat(gdxData,'h_price',h_sim.uels);
+data.h_price=gdx2mat(gdxData,'marginalCost_DH',h_sim.uels);
 
 %Outdoor temprature
 data.tout=gdx2mat(gdxData,'tout',h_sim.uels);
