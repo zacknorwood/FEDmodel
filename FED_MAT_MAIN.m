@@ -31,9 +31,7 @@ sim_stop_h = 14;
 sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 
-
 forecast_horizon = 10;
-
 
 % DATA INDICES FOR INPUT DATA
 % data_read_stop is the last index of data needed for the simulation.
@@ -267,8 +265,6 @@ opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter'
 opt_fx_inv_CWB_ch_max.uels=opt_fx_inv_CWB_cap.uels;
 opt_fx_inv_CWB_dis_max = struct('name','opt_fx_inv_CWB_dis_max','type','parameter','form','full','val',35*(1-min_totCost_0)*(1-NO_inv));
 opt_fx_inv_CWB_dis_max.uels=opt_fx_inv_CWB_cap.uels;
-
-
 
 %Option for BES investment
 opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
@@ -589,7 +585,7 @@ for t=1:sim_length
         opt_fx_inv, opt_fx_inv_RMMC, opt_fx_inv_AbsCInv_cap, opt_fx_inv_PV,...
         opt_fx_inv_Boiler2, opt_fx_inv_TURB, opt_fx_inv_HP_cap,...
         opt_fx_inv_RMInv_cap, opt_fx_inv_TES_cap, opt_fx_inv_BES,...
-        opt_fx_inv_CWB, opt_fx_inv_CWB_cap, opt_fx_inv_CWB_ch_max, opt_fx_inv_CWB_dis_max, opt_fx_inv_CWB_init,...
+        opt_fx_inv_CWB, opt_fx_inv_CWB_cap, opt_fx_inv_CWB_ch_max, opt_fx_inv_CWB_dis_max,...
         opt_fx_inv_BES_cap, opt_fx_inv_BES_maxP, opt_fx_inv_SO, opt_fx_inv_BAC,...
         h, BTES_BAC_Inv, BTES_SO_Inv,...
         CO2F_El, NREF_El, CO2F_DH, NREF_DH, marginalCost_DH, CO2F_PV, NREF_PV,...
