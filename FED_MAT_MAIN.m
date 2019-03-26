@@ -52,7 +52,18 @@ data_length = data_read_stop - sim_start + 1;
 % Initialize Results cell array
 %Results=cell(data_length,1);
 
-%% Assigning buildings ID to the buildings in the FED system
+%% Assigning buildings ID to the buildings in the FED system and BIDs to the location of investments
+
+BES_BID_uels = {'O0007027', 'O0007028'}; %Buildings with Battery Energy Storage systems Note: Refers to bus 28, Refers to Bus 5; %
+CWB_BID_uels = {'O0007027'}; %Buildings with Cold Water Basin OBS: DS is this correct? Refers to bus 28
+
+% AK SHould 'O0007024' be included?
+BTES_BAC_BID_uels = {'O0007006', 'O0007012', 'O0007017', 'O0007023', 'O0007026', 'O3060135', 'O3060133'}; %Buildings with Advanced Control (BAC) system
+BTES_PS_BID_uels = {'O0011001', 'O0007888'}; % Buildings with Pump Stop (PS) capability
+BTES_SO_BID_uels = {'O0007028', 'O0007027', 'O0007024'}; % Buildings with Setpoint Offset (SO) capability, O0007024 (EDIT) included to represent O7:10, and O7:20 which are parts of EDIT
+
+warning('Pump Stop buildings currently running with Setpoint Offset model')
+BTES_SO_BID_uels = [BTES_PS_BID_uels, BTES_SO_BID_uels]; % Temporary: Combine PS into SO until PS is implemented properly.
 
 %Building IDs used to identify buildings in the FED system
 % DO NOT CHANGE THE ORDER OF THESE! The order is tied to the reading of
@@ -256,24 +267,6 @@ opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','
 %>=0 =fixed investment, -1=variable of optimization
 opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',0*(1-min_totCost_0)*(1-NO_inv));
 
-%Option for Cold water basin CURRENTLY NOT IN USE
-opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
-opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-NO_inv));
-opt_fx_inv_CWB_cap.uels={'O0007027'}; %OBS: DS is this correct? Refers to bus 28
-
-opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter','form','full','val',203.5*(1-min_totCost_0)*(1-NO_inv));
-opt_fx_inv_CWB_ch_max.uels=opt_fx_inv_CWB_cap.uels;
-opt_fx_inv_CWB_dis_max = struct('name','opt_fx_inv_CWB_dis_max','type','parameter','form','full','val',35*(1-min_totCost_0)*(1-NO_inv));
-opt_fx_inv_CWB_dis_max.uels=opt_fx_inv_CWB_cap.uels;
-
-%Option for BES investment
-opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
-opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',[200 100]*(1-min_totCost_0)*(1-NO_inv));
-opt_fx_inv_BES_cap.uels={'O0007027', 'O0007028'}; %Note: Refers to bus 28, Refers to Bus 5
-opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full','val',[100 50]*(1-min_totCost_0)*(1-NO_inv));
-opt_fx_inv_BES_maxP.uels=opt_fx_inv_BES_cap.uels;
-BES_min_SoC = struct('name','BES_min_SoC','type','parameter','form','full','val',BES_min_SoC);
-
 %Option for BFCh investment  % Why is this battery investment separate?-ZN
 %opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
 %must be set to 100
@@ -283,31 +276,40 @@ BES_min_SoC = struct('name','BES_min_SoC','type','parameter','form','full','val'
 %opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full','val',50*(1-min_totCost_0)*(1-NO_inv));
 %opt_fx_inv_BFCh_maxP.uels=opt_fx_inv_BFCh_cap.uels;
 
-%Option for Building Thermal Energy Storage solutions. Should be set to 1
-%for FED investments. If set to 0 no BTES will be used (Investment option
-%not implemented)
-% AK SHould 'O0007024' be included?
 opt_fx_inv_BAC = struct('name','opt_fx_inv_BAC','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
 opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
 
-BTES_BAC_uels = {'O0007006', 'O0007012', 'O0007017', 'O0007023', 'O0007026', 'O3060135', 'O3060133'}; %Buildings with Advanced Control (BAC) system
-BTES_PS_uels = {'O0011001', 'O0007888'}; % Buildings with Pump Stop (PS) capability
-BTES_SO_uels = {'O0007028', 'O0007027', 'O0007024'}; % Buildings with Setpoint Offset (SO) capability, O0007024 (EDIT) included to represent O7:10, and O7:20 which are parts of EDIT
-warning('Pump Stop buildings currently running with Setpoint Offset model')
-BTES_SO_uels = [BTES_PS_uels, BTES_SO_uels]; % Temporary: Combine PS into SO until PS is implemented properly.
+%Option for Cold water basin
+opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_CWB_cap.uels = CWB_BID_uels; 
+
+opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter','form','full','val',203.5*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_CWB_ch_max.uels= CWB_BID_uels;
+opt_fx_inv_CWB_dis_max = struct('name','opt_fx_inv_CWB_dis_max','type','parameter','form','full','val',35*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_CWB_dis_max.uels=opt_fx_inv_CWB_cap.uels;
+
+%Option for BES investment
+opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',[200 100]*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_BES_cap.uels = BES_BID_uels; 
+opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full','val',[100 50]*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_BES_maxP.uels = BES_BID_uels;
+BES_min_SoC = struct('name','BES_min_SoC','type','parameter','form','full','val',BES_min_SoC);
+
+
 BTES_BAC_Inv.name = 'BTES_BAC_Inv';
-BTES_BAC_Inv.uels = BTES_BAC_uels;
+BTES_BAC_Inv.uels = BTES_BAC_BID_uels;
 
 BTES_SO_Inv.name = 'BTES_SO_Inv';
-BTES_SO_Inv.uels = BTES_SO_uels;
+BTES_SO_Inv.uels = BTES_SO_BID_uels;
 % Maximum charging/discharging power available for building setpoint
 % offsets according to power charts attatched to Building agent
 % descriptions. Calculated assuming 10�C offset available.
 BTES_SO_max_power = struct('name', 'BTES_SO_max_power', 'type', 'parameter', 'form', 'full');
-BTES_SO_max_power.uels = BTES_SO_uels;
+BTES_SO_max_power.uels = BTES_SO_BID_uels;
 BTES_SO_max_power.val = [45, 20, 90, 76, 11]; % kWh/h, Requires ordering of BTES_SO_UELS to be O11:01, O7:888, O7:28, O7, 27, O7:24
 BTES_SO_EDIT_Correction_Factor = 0.19; % Correction factor for O7:10, O7:20 as they are only part of O7:24, used below for correcting BTES_model
-
 
 %Building thermal energy storage properties
 % AK Change to EVI  * Why is the .val never set for this parameter? - ZN
@@ -319,7 +321,7 @@ BTES_properties.uels={'BTES_Scap', 'BTES_Dcap', 'BTES_Esig', 'BTES_Sch_hc',...
 BTES_model = struct('name','BTES_model','type','parameter','form','full','val',BTES_model);
 BTES_model.uels={BTES_properties.uels,BID.uels};
 
-%Invstements in PVs
+%Investments in PVs
 %=1 = fixed investment, 0=no investments (neither existing!!!) -1=variable of optimization
 opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',1);
 
@@ -483,7 +485,7 @@ for t=1:sim_length
     
     %Calculation of BAC savings factors
     BAC_savings_factor = fget_bac_savings_factor(h);
-    BAC_savings_factors.uels=h.uels;
+    BAC_savings_factor.uels=h.uels;
     %District heating network node transfer limits
     DH_Nodes_Transfer_Limits=fget_dh_transfer_limits(DH_Nodes, h, tout);
     
@@ -522,35 +524,34 @@ for t=1:sim_length
     c_DC_slack = struct('name','c_DC_slack','type','parameter','form','full','val',c_DC_slack_full(t:forecast_end,:));
     c_DC_slack.uels=h.uels;
     
-    %Uels for Battery Energy Storage systems
-    BES_BID_uels = opt_fx_inv_BES_cap.uels;
+
     %BFCh_BID_uels = opt_fx_inv_BFCh_cap.uels;
     
     if t==1
         % Set initial state of BAC Buildings to empty
-        opt_fx_inv_BTES_BAC_D_init = struct('name','opt_fx_inv_BTES_BAC_D_init','type','parameter','form','full','val',zeros(1,length(BTES_BAC_uels)));
-        opt_fx_inv_BTES_BAC_S_init = struct('name','opt_fx_inv_BTES_BAC_S_init','type','parameter','form','full','val',zeros(1,length(BTES_BAC_uels)));
+        opt_fx_inv_BTES_BAC_D_init = struct('name','opt_fx_inv_BTES_BAC_D_init','type','parameter','form','full','val',zeros(1,length(BTES_BAC_BID_uels)));
+        opt_fx_inv_BTES_BAC_S_init = struct('name','opt_fx_inv_BTES_BAC_S_init','type','parameter','form','full','val',zeros(1,length(BTES_BAC_BID_uels)));
         
         % Set initial state of SO Buildings to empty
-        opt_fx_inv_BTES_SO_D_init = struct('name','opt_fx_inv_BTES_SO_D_init','type','parameter','form','full','val',zeros(1,length(BTES_SO_uels)));
-        opt_fx_inv_BTES_SO_S_init = struct('name','opt_fx_inv_BTES_SO_S_init','type','parameter','form','full','val',zeros(1,length(BTES_SO_uels)));
+        opt_fx_inv_BTES_SO_D_init = struct('name','opt_fx_inv_BTES_SO_D_init','type','parameter','form','full','val',zeros(1,length(BTES_SO_BID_uels)));
+        opt_fx_inv_BTES_SO_S_init = struct('name','opt_fx_inv_BTES_SO_S_init','type','parameter','form','full','val',zeros(1,length(BTES_SO_BID_uels)));
         
         % Set inital state of PS Buildings
         % AK How to implement?
         %opt_fx_inv_BTES_PS_init = struct('name','opt_fx_inv_BTES_PS_init','type','parameter','form','full','val',zeros(1,length(BTES_PS_uels)));
         %opt_fx_inv_BTES_PS_init.uels = {num2cell(t), BTES_PS_uels};
         
-        % Set initial SoC for battery energy storage to be passed from Matlab to GAMS
+        % Set initial SoC for Cold water basin and battery energy storage to be passed from Matlab to GAMS
+        opt_fx_inv_CWB_init = struct('name','opt_fx_inv_CWB_init','type','parameter','form','full','val',0);
         opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',BES_min_SoC.val.*opt_fx_inv_BES_cap.val);
         %opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',ones(1,length(BFCh_BID_uels))*0.20*opt_fx_inv_BFCh_cap.val);
         Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',0);
         Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',0);
-        opt_fx_inv_CWB_init = struct('name','opt_fx_inv_CWB_init','type','parameter','form','full','val',0);
         
     else
         % The initial conditions for t-1 are read in from ReadGtoM.
         % Note only the .value fields of the rgdx GAMS structures are passed in here.
-        [CWB_init, BTES_BAC_D_init, BTES_BAC_S_init, BTES_SO_S_init, BTES_SO_D_init, BES_init, Boiler1_init, Boiler2_init] = readGtoM(t-1, BTES_BAC_uels, BTES_SO_uels, BES_BID_uels);
+        [CWB_init, BTES_BAC_D_init, BTES_BAC_S_init, BTES_SO_S_init, BTES_SO_D_init, BES_init, Boiler1_init, Boiler2_init] = readGtoM(t-1, BTES_BAC_BID_uels, BTES_SO_BID_uels, BES_BID_uels);
         
         % Here the values are restructured to be written to GAMS. Note that
         % the BTES structures need to have uels to specify what buildings,
@@ -572,12 +573,14 @@ for t=1:sim_length
         Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',Boiler2_init);
     end
     
-    % Set uels for state of Charge (SoC) for BAC, BTES, BES, BFCh
-    opt_fx_inv_BTES_BAC_D_init.uels = {num2cell(t), BTES_BAC_uels};
-    opt_fx_inv_BTES_BAC_S_init.uels = {num2cell(t), BTES_BAC_uels};
-    opt_fx_inv_BTES_SO_D_init.uels = {num2cell(t), BTES_SO_uels};
-    opt_fx_inv_BTES_SO_S_init.uels = {num2cell(t), BTES_SO_uels};
+    % Set uels for state of Charge (SoC) for BAC, BTES, BES, BFCh, and CWB
+    opt_fx_inv_BTES_BAC_D_init.uels = {num2cell(t), BTES_BAC_BID_uels};
+    opt_fx_inv_BTES_BAC_S_init.uels = {num2cell(t), BTES_BAC_BID_uels};
+    opt_fx_inv_BTES_SO_D_init.uels = {num2cell(t), BTES_SO_BID_uels};
+    opt_fx_inv_BTES_SO_S_init.uels = {num2cell(t), BTES_SO_BID_uels};
     opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
+    opt_fx_inv_CWB_init.uels = {num2cell(t), CWB_BID_uels};
+    
     %opt_fx_inv_BFCh_init.uels = {num2cell(t), BFCh_BID_uels};
     
     %% Preparing input GDX file (MtoG) and RUN GAMS model
