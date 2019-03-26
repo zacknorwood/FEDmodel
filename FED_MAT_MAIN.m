@@ -233,39 +233,34 @@ FED_Inv_lim = struct('name','inv_lim','type','parameter','val',68570065);
 %This is not used, it is set individually!!!
 opt_fx_inv = struct('name','opt_fx_inv','type','parameter','form','full','val',1);
 
-%Investment for synthetic baseline 
-% NO_inv=1 all investments are set to 0, NO_inv =0, all investments are
-% set to the assigned value
-NO_inv=0;
-
 %Option for RMMC investment
 %0=no investment, 1=fixed investment, -1=variable of optimization
 % For FED run =1
-opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_RMMC = struct('name','opt_fx_inv_RMMC','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
 
 %Option for new AbsChiller investment
 %>=0-XX=fixed investment with capacity 0 or XX, -1=variable of optimization
-opt_fx_inv_AbsCInv_cap = struct('name','opt_fx_inv_AbsCInv_cap','type','parameter','form','full','val',0*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_AbsCInv_cap = struct('name','opt_fx_inv_AbsCInv_cap','type','parameter','form','full','val',0*(1-min_totCost_0)*(1-synth_baseline));
 
 %Option for P2 investment
 %0=no investment, 1=fixed investment, -1=variable of optimization
-opt_fx_inv_Boiler2 = struct('name','opt_fx_inv_Boiler2','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_Boiler2 = struct('name','opt_fx_inv_Boiler2','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
 
 %Option for Turbine investment
 %0=no investment, 1=fixed investment, -1=variable of optimization
-opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
 
 %Option for new HP investment
 %>=0 =fixed investment, -1=variable of optimization; 630 kw is heating capacity of the HP invested in
-opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',630*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',630*(1-min_totCost_0)*(1-synth_baseline));
 
 %Option for new RM investment
 %>=0 =fixed investment, -1=variable of optimization
-opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','form','full','val',0*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','form','full','val',0*(1-min_totCost_0)*(1-synth_baseline));
 
 %Option for TES investment
 %>=0 =fixed investment, -1=variable of optimization
-opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',0*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',0*(1-min_totCost_0)*(1-synth_baseline));
 
 %Option for BFCh investment  % Why is this battery investment separate?-ZN
 %opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
@@ -276,24 +271,24 @@ opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form
 %opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full','val',50*(1-min_totCost_0)*(1-NO_inv));
 %opt_fx_inv_BFCh_maxP.uels=opt_fx_inv_BFCh_cap.uels;
 
-opt_fx_inv_BAC = struct('name','opt_fx_inv_BAC','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
-opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_BAC = struct('name','opt_fx_inv_BAC','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
+opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
 
 %Option for Cold water basin
-opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
-opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
+opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-synth_baseline));
 opt_fx_inv_CWB_cap.uels = CWB_BID_uels; 
 
-opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter','form','full','val',203.5*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter','form','full','val',203.5*(1-min_totCost_0)*(1-synth_baseline));
 opt_fx_inv_CWB_ch_max.uels= CWB_BID_uels;
-opt_fx_inv_CWB_dis_max = struct('name','opt_fx_inv_CWB_dis_max','type','parameter','form','full','val',35*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_CWB_dis_max = struct('name','opt_fx_inv_CWB_dis_max','type','parameter','form','full','val',35*(1-min_totCost_0)*(1-synth_baseline));
 opt_fx_inv_CWB_dis_max.uels=opt_fx_inv_CWB_cap.uels;
 
 %Option for BES investment
-opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
-opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',[200 100]*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
+opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',[200 100]*(1-min_totCost_0)*(1-synth_baseline));
 opt_fx_inv_BES_cap.uels = BES_BID_uels; 
-opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full','val',[100 50]*(1-min_totCost_0)*(1-NO_inv));
+opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full','val',[100 50]*(1-min_totCost_0)*(1-synth_baseline));
 opt_fx_inv_BES_maxP.uels = BES_BID_uels;
 BES_min_SoC = struct('name','BES_min_SoC','type','parameter','form','full','val',BES_min_SoC);
 
@@ -311,8 +306,7 @@ BTES_SO_max_power.uels = BTES_SO_BID_uels;
 BTES_SO_max_power.val = [45, 20, 90, 76, 11]; % kWh/h, Requires ordering of BTES_SO_UELS to be O11:01, O7:888, O7:28, O7, 27, O7:24
 BTES_SO_EDIT_Correction_Factor = 0.19; % Correction factor for O7:10, O7:20 as they are only part of O7:24, used below for correcting BTES_model
 
-%Building thermal energy storage properties
-% AK Change to EVI  * Why is the .val never set for this parameter? - ZN
+%Building thermal energy storage properties 
 BTES_properties=struct('name','BTES_properties','type','set','form','full');
 BTES_properties.uels={'BTES_Scap', 'BTES_Dcap', 'BTES_Esig', 'BTES_Sch_hc',...
     'BTES_Sdis_hc', 'kloss_Sday', 'kloss_Snight', 'kloss_D', 'K_BS_BD'};
@@ -342,7 +336,7 @@ PV_roof_cap_existing=[48 40]; % According to "solceller lista p� anl�ggninga
 %Capacity of roof PVs (Investments)
 %Note that these need to be set to zero if running the base case without PV investments.
 %PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]*(1-min_totCost_0)*(1-NO_inv); % According to solceller lista p� anl�ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
+PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]*(1-min_totCost_0)*(1-synth_baseline); % According to solceller lista p� anl�ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
 %the project plan for FED according to AH hence that capacity being zero.
 
 %Merge all roof PV capacities and create struct for GAMS
