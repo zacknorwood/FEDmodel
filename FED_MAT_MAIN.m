@@ -292,7 +292,6 @@ opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','fo
 opt_fx_inv_BES_maxP.uels = BES_BID_uels;
 BES_min_SoC = struct('name','BES_min_SoC','type','parameter','form','full','val',BES_min_SoC);
 
-
 BTES_BAC_Inv.name = 'BTES_BAC_Inv';
 BTES_BAC_Inv.uels = BTES_BAC_BID_uels;
 
@@ -518,9 +517,6 @@ for t=1:sim_length
     c_DC_slack = struct('name','c_DC_slack','type','parameter','form','full','val',c_DC_slack_full(t:forecast_end,:));
     c_DC_slack.uels=h.uels;
     
-
-    %BFCh_BID_uels = opt_fx_inv_BFCh_cap.uels;
-    
     if t==1
         % Set initial state of BAC Buildings to empty
         opt_fx_inv_BTES_BAC_D_init = struct('name','opt_fx_inv_BTES_BAC_D_init','type','parameter','form','full','val',zeros(1,length(BTES_BAC_BID_uels)));
@@ -607,7 +603,6 @@ for t=1:sim_length
     
     [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
 end
-%tic
 xlswrite('result_temp.xlsx',to_excel_el,'Electricity','A3');
 xlswrite('result_temp.xlsx',to_excel_heat,'Heat','A3');
 xlswrite('result_temp.xlsx',to_excel_cool,'Cooling','A3');
