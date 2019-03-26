@@ -447,8 +447,9 @@ eq_TESinv(h)..
 *             TES_cap =G= sw_TES*TES_inv * 100;
 
 *----------Cold Water Basin equations (cold storage)----------------------------
+* If we want to use the CWB for different buildings in future we need to specify CWB_dis etc with a BID -DS
 eq_CWB_en_init(h)$(ord(h) eq 1)..
-         CWB_en(h) =e= opt_fx_inv_CWB_init+CWB_ch(h)-CWB_dis(h);
+         CWB_en(h) =e= sum(BID,opt_fx_inv_CWB_init(h,BID)+CWB_ch(h)-CWB_dis(h));
 eq_CWB_en(h)$(ord(h) gt 1)..
          CWB_en(h) =e= CWB_en(h-1)+CWB_ch(h)-CWB_dis(h);
 
