@@ -47,7 +47,7 @@ data.el_slack_var=gdx2mat(gdxData,'el_slack_var',h_sim.uels);
 %prices
 data.el_sell_price=gdx2mat(gdxData,'el_sell_price',h_sim.uels);
 data.el_price=gdx2mat(gdxData,'el_price',h_sim.uels);
-data.h_price=gdx2mat(gdxData,'h_price',h_sim.uels);
+data.h_price=gdx2mat(gdxData,'marginalCost_DH',h_sim.uels);
 
 %Outdoor temprature
 data.tout=gdx2mat(gdxData,'tout',h_sim.uels);
@@ -123,11 +123,11 @@ data.CWB_dis=gdx2mat(gdxData,'CWB_dis',{h_sim.uels});
 data.BES_en=gdx2mat(gdxData,'BES_en',{h_sim.uels,BID.uels});
 data.BES_ch=gdx2mat(gdxData,'BES_ch_from_grid',{h_sim.uels,BID.uels});
 data.BES_dis=gdx2mat(gdxData,'BES_dis_to_grid',{h_sim.uels,BID.uels});
-data.BES_reac=gdx2mat(gdxData,'BES_reac',{h_sim.uels,BID.uels});
-data.BFCh_en=gdx2mat(gdxData,'BFCh_en',{h_sim.uels,BID.uels});
-data.BFCh_ch=gdx2mat(gdxData,'BFCh_ch_from_grid',{h_sim.uels,BID.uels});
-data.BFCh_dis=gdx2mat(gdxData,'BFCh_dis_to_grid',{h_sim.uels,BID.uels});
-data.BFCh_reac=gdx2mat(gdxData,'BFCh_reac',{h_sim.uels,BID.uels});
+%data.BES_reac=gdx2mat(gdxData,'BES_reac',{h_sim.uels,BID.uels});
+%data.BFCh_en=gdx2mat(gdxData,'BFCh_en',{h_sim.uels,BID.uels});
+%data.BFCh_ch=gdx2mat(gdxData,'BFCh_ch_from_grid',{h_sim.uels,BID.uels});
+%data.BFCh_dis=gdx2mat(gdxData,'BFCh_dis_to_grid',{h_sim.uels,BID.uels});
+%data.BFCh_reac=gdx2mat(gdxData,'BFCh_reac',{h_sim.uels,BID.uels});
 data.TES_ch=gdx2mat(gdxData,'TES_ch',h_sim.uels);
 data.TES_dis=gdx2mat(gdxData,'TES_dis',h_sim.uels);
 data.TES_en=gdx2mat(gdxData,'TES_en',h_sim.uels);
