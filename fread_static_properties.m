@@ -45,7 +45,9 @@ end
 
 %BTES parameters
 BTES_model=xlsread('Input_dispatch_model\UFO_TES.xlsx',2,'B2:AJ10');
-
-%BTES_param(isnan(BTES_param)) = 0;
+if (any(isnan(BTES_model),'all'))
+    warning('Error: input file does not have complete data for simulation length');
+end
+BTES_model(isnan(BTES_model)) = 0;
 end
 
