@@ -78,6 +78,7 @@ equation
            eq_HP1       heat production from HP
            eq_HP2       cooling production from HP
            eq_HP3       for determining capacity of HP
+           eq_HP4       Set minimum output from HP under wintermode
 
            eq_TESen0    initial energy content of the TES
            eq_TESen1    initial energy content of the TES
@@ -246,7 +247,8 @@ eq_VKA11(h)..
 eq_VKA12(h)..
         c_VKA1(h) =e= VKA1_C_COP*el_VKA1(h);
 eq_VKA13(h) $(min_totCost_0 eq 0)..
-        el_VKA1(h) =l= VKA1_el_cap;
+        el_VKA1(h) =l= VKA1_el_cap*(1-DH_heating_season(h));
+* Only run VKA1 during summer -DS
 
 *Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN.
 * These equations are wrong, it sets the ramp rate of the heatpumps to 1kW per hour which is entirely unreasonable - ZN
@@ -268,7 +270,8 @@ eq_VKA41(h)..
 eq_VKA42(h)..
         c_VKA4(h) =e= VKA4_C_COP*el_VKA4(h);
 eq_VKA43(h) $ (min_totCost_0 eq 0)..
-        el_VKA4(h) =l= VKA4_el_cap;
+        el_VKA4(h) =l= VKA4_el_cap*DH_heating_season(h);
+* Only run VKA4 during Winter -DS
 
 *Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN.  Ramp rate is also only 1kW which is unreasonable.
 *eq_VKA44(h)$(ord(h) gt 1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
@@ -359,10 +362,11 @@ eq_RM2(h)..
 *----------MC2 Heat pump equations (electricity => heating + cooling)-----------
 eq_RMMC1(h)..
          h_RMMC(h) =l= RMCC_H_COP * el_RMMC(h);
+
 eq_RMMC2(h)..
-         c_RMMC(h) =e= RMCC_C_COP * el_RMMC(h);
-* Needs to be limited even when we do not have RMMC, DS
-*eq_RMMC3(h) $ (opt_fx_inv_RMMC ne 0)..
+         c_RMMC(h) =e= RMCC_C_COP * el_RMMC(h)*DH_heating_season(h);
+* Assuming DH_heating_season equal "wintermode" -DS
+
 eq_RMMC3(h)..
          c_RMMC(h) =l= RMMC_inv * RMMC_cap;
 
@@ -420,7 +424,12 @@ eq_HP1(h)..
 eq_HP2(h)..
              c_HP(h) =l= HP_C_COP*el_HP(h);
 eq_HP3(h)..
-             h_HP(h) =l= HP_cap;
+             h_HP(h) =l= HP_cap*DH_heating_season(h);
+*Limit heat to be produce during winter mode -DS
+         
+eq_HP4(h)..
+            h_hp(h)=g=opt_fx_inv_HP_min*DH_heating_season(h);
+
 
 *------------------TES equations------------------------------------------------
 eq_TESen0(h,BID)$(ord(h) eq 1)..

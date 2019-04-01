@@ -64,7 +64,7 @@ Parameters
           FlueGasCondenser1_cap   Capacity of flue gas condenser /1000/
           FlueGasCondenser1_min   Minimum output from the flue gas condenser /500/
 ;
-**** CHECK: changed FGC efficiency to 15% according to 4.1.3 minimum output is not integrated.
+**** Changed FGC efficiency to 15% according to 4.1.3 minimum output is not integrated. -DS
 
 *--------------VKA4 constants and parameters------------------------------------
 * Maximum electricty input and the coefficients for VKA1 and VKA4 corresponds to the 800 kW heating capacity for each machine
@@ -76,9 +76,10 @@ Parameters
 scalar
          VKA1_H_COP            Heating coefficient of performance for VKA1/3/
          VKA1_C_COP            Cooling coefficient of performance for VKA1/1.8/
-         VKA1_el_cap           Maximum electricity usage by VKA1/266/
+         VKA1_el_cap           Maximum electricity usage by VKA1/216/
 ;
 
+******* Changed el Cap to 216 (from 266) to get max heat to 650 kW according to historical data -DS
 *--------------VKA4 constants and parameters------------------------------------
 *COP calculated from historical data (on dropbox) max heating capacity
 *(800kW) from BDAB "Utredning ackumulatortank KC 4.0", in model max heat generation is 780kW
@@ -96,7 +97,8 @@ scalar
 scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
          AbsC_el_COP Electrical Coefficient of Performance of AbsC /22/
-         AbsC_min_prod Minimum production while on of AbsC /290/
+         AbsC_min_prod Minimum production while on of AbsC /200/
+*290 previous changed to 200 based on Pers mail 20190325
 ;
 
 *--------------AAC(Ambient Air Cooler), cooling source--------------------------
@@ -109,8 +111,10 @@ scalar
 
 *--------------Refrigerator Machines, cooling source----------------------------
 scalar
-      RM_COP Coefficent of performance of RM /2/
+      RM_COP Coefficent of performance of RM /1.7/
 ;
+
+*********** CHECK: i reduced this COP to 1.7 (from 2) since i dont think they are operated more than in "emergency", -DS
 
 *--------------Cold water basin at maskin, cold storage-------------------------
 * Source communications with Per

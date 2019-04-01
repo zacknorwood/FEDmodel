@@ -53,7 +53,7 @@ positive variable
          h_AbsC(h)           heat demand for Absorption Chiller
          c_AbsC(h)           cooling power available in AbsC
          el_AbsC(h)          electricity demand of Absorption chiller
-         AbsC_cap            capacity of AbsC
+         AbsC_cap            capacity of AbsC *Why do we have this as a variable -DS?
 ;
 * Assumes that the cooling season is the inverse of the heating season
 * So when its not the heating season the absorption chillers are switched on

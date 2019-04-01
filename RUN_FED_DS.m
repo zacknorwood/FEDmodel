@@ -6,7 +6,7 @@ opt_marg_factors=1;
 synth_baseline=0;
 IPCC_factors=1; %Change to the new factors for CO2 and PE
 for IPCC_factors=[1]
-for i=2
+for i=1:6
     
 copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx')
     disp(['Case no ' num2str(i)])
@@ -53,7 +53,7 @@ copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx')
 
 
 % Save result files
-filename=['Results_20190321_BAU=' num2str(min_totCost_0) '_MTC=' num2str(min_totCost) '_MCO2=' num2str(min_totCO2) '_MPE=' num2str(min_totPE) '_IPCC=' num2str(IPCC_factors) '_time=' num2str(length(Results)) 'h'];
+filename=['Results_20190328_BAU=' num2str(min_totCost_0) '_MTC=' num2str(min_totCost) '_MCO2=' num2str(min_totCO2) '_MPE=' num2str(min_totPE) '_IPCC=' num2str(IPCC_factors) '_time=' num2str(length(Results)) 'h'];
 save(filename,'Results')
 filenamexls=[filename '.xlsx'];
 copyfile('result_temp.xlsx', filenamexls)
