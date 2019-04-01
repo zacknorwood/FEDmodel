@@ -14,7 +14,6 @@ set
 Parameter
         DH_max_cap  Maximum capacity of import from the external district heating system /8000/
         el_imp_max_cap Maximum capacity of import and export from and to the external electricty system /10000/
-*DH_export_season(h) Season during which pricing for DH exports possible
 ;
 
 ************ Capacities of the units in the FED system

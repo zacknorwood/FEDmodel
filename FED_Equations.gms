@@ -788,7 +788,7 @@ $offtext
 eq_PE(h)..
         FED_PE(h)=e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*NREF_El(h)
                      + el_PV(h)*NREF_PV
-                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*NREF_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*NREF_Boiler1
+                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h) + h_imp_nonAH(h))*NREF_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*NREF_Boiler1
                      + fuel_Boiler2(h)*NREF_Boiler2
                      + h_DH_slack_var(h)*1000000000
                       + C_DC_slack_var(h)*1000000000
@@ -802,7 +802,7 @@ eq_totPE..
 eq_AH_CO2(h)..
          AH_CO2(h) =e= (el_imp_AH(h)-el_exp_AH(h))*CO2F_El(h)
                        + el_PV(h)*CO2F_PV
-                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h))*CO2F_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*CO2F_Boiler1
+                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h))*CO2F_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*CO2F_Boiler1
                        + fuel_Boiler2(h) * CO2F_Boiler2;
 
 eq_nonAH_CO2(h)..

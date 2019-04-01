@@ -75,7 +75,7 @@ var_cost_existing_AH(h) =      el_imp_AH.l(h)*utot_cost('exG',h)
                                -el_exp_AH.l(h)*el_sell_price(h)
                                + (h_imp_AH.l(h))*utot_cost('DH',h)
                                - h_exp_AH.l(h) * (utot_cost('DH',h)/(1+DH_margin))
-*                               - sum(m,(h_exp_AH.l(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12)))
+*                               - sum(m,(h_exp_AH.l(h)*DH_heating_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12)))
                                + h_Boiler1.l(h)*utot_cost('B1',h)
                                + h_VKA1.l(h)*utot_cost('HP',h)
                                + h_VKA4.l(h)*utot_cost('HP',h)
@@ -203,14 +203,14 @@ AH_PE_tot      AH total PE average
 *-----------------AH average and margional PE use-------------------------------
 AH_PE(h)= ( el_imp_AH.l(h)-el_exp_AH.l(h))*NREF_El(h)
             + el_PV.l(h)*NREF_PV
-            + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*NREF_DH(h) + ((h_Boiler1.l(h)+h_FlueGasCondenser1.l(h))/B1_eff)*NREF_Boiler1
+            + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_heating_season(h))*NREF_DH(h) + ((h_Boiler1.l(h)+h_FlueGasCondenser1.l(h))/B1_eff)*NREF_Boiler1
                      + fuel_Boiler2.l(h)*NREF_Boiler2;
 
 
 $ontext
 MA_AH_PE(h)= (el_imp_AH.l(h)-el_exp_AH.l(h))*MA_PEF_exG(h)
               + el_PV.l(h)*PEF_PV
-              + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*MA_PEF_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*PEF_P1
+              + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_heating_season(h))*MA_PEF_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*PEF_P1
               + fuel_P2.l(h)*PEF_P2;
 $offtext
 
@@ -219,7 +219,7 @@ AH_PE_tot=sum(h,AH_PE(h));
 
 * MA_AH_CO2(h) = (el_imp_AH.l(h)-el_exp_AH.l(h))*MA_CO2F_exG(h)
 *                + el_PV.l(h)*CO2F_PV
-*                + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*MA_CO2F_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*CO2F_P1
+*                + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_heating_season(h))*MA_CO2F_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*CO2F_P1
 *                + fuel_P2.l(h) * CO2F_P2;
 
 *MA_AH_CO2_tot = sum(h, MA_AH_CO2(h));
@@ -285,7 +285,7 @@ execute_unload 'GtoM'  min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
                       AH_PE, AH_CO2, nonAH_CO2,
-                      DH_export_season, P1P2_dispatchable, inv_lim,
+                      DH_heating_season, P1P2_dispatchable, inv_lim,
                       c_RMInv, el_RMInv, RMInv_cap, invCost_RMInv,
                       model_status,B_Heating_cost,B_Electricity_cost,B_Cooling_cost
                       tot_var_cost_AH, sim_PT_exG,PT_DH, tot_fixed_cost, fix_cost_existing_AH, fix_cost_new_AH, var_cost_existing_AH, var_cost_new_AH,
