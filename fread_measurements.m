@@ -118,11 +118,9 @@ end
 %el_exG_slack(isnan(el_exG_slack))=0;
 
 %District heating slack bus data
-h_DH_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',2,strcat('P',int2str(sim_start+1),':P',int2str(data_read_stop+1)));
-if (length(h_DH_slack)<data_length) || (any(isnan(h_DH_slack),'all'))
-    error('Error: input file does not have complete data for simulation length');
-end
-%h_DH_slack(isnan(h_DH_slack))=0;
+net_prod = h_imp_AH_measured - h_exp_AH_measured + h_Boiler1_0 + h_FlueGasCondenser1_0 + el_VKA1_0*COP_VKA1 + el_VKA4_0*COP_VKA4;
+ah_demand = sum(h_demand(:,[1,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,29,31,32,33,34]), 2);
+h_DH_slack = net_prod - ah_demand;
 
 %District cooling slack bus data
 c_DC_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',3,strcat('N',int2str(sim_start+1),':N',int2str(data_read_stop+1)));
