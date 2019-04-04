@@ -10,6 +10,8 @@ function [el_demand, h_demand, c_demand,...
 MWhtokWh = 1000; %Conversion factor MWh to kWh
 COP_VKA1 = 3; %COP value used for calculating historical heat generation
 COP_VKA4 = 3; %COP value used for calculating historical heat generation
+c_COP_VKA1 = 1.8; %COP value used for calculating historical heat generation
+c_COP_VKA4 = 1.8; %COP value used for calculating historical heat generation
 
 demand_range=strcat('B',int2str(sim_start+1),':AJ',int2str(data_read_stop+1));
 %Measured electricity demand in kW
@@ -34,6 +36,22 @@ if (length(c_demand)<data_length) || (any(isnan(c_demand),'all'))
     warning('Error: input file does not have complete data for simulation length');
 end
 c_demand(isnan(c_demand))=0; 
+
+% set nonAH building demand to 0;
+% this option should be taken as input from inital set up, also the BID
+% could be implemented more elegant -DS
+NonAH_excluded=1
+if NonAH_excluded==1
+NonAH_el_BID=[2,3,4,7,28,29,30,35]
+el_demand(:,NonAH_el_BID)=0;
+
+NonAH_h_BID=[2,3,4,5,15,28,30,35]
+h_demand(:,NonAH_h_BID)=0;
+
+NonAH_c_BID=[2,3,4,5,7,9,14,15,24,28,30,35]
+c_demand(:,NonAH_c_BID)=0;
+end
+
 
 gen_range=strcat('B',int2str(sim_start+3),':B',int2str(data_read_stop+3));
 %Measured HEAT GENERATION FROM THERMAL BOILER (B1) converted to kWh
@@ -110,24 +128,7 @@ if (length(tout)<data_length) || (any(isnan(tout),'all'))
 end
 %tout(isnan(tout))=0;
 
-%el exgG slack bus data
-el_exG_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',1,strcat('F',int2str(sim_start+1),':F',int2str(data_read_stop+1)));
-if (length(el_exG_slack)<data_length) || (any(isnan(el_exG_slack),'all'))
-    error('Error: input file does not have complete data for simulation length');
-end
-%el_exG_slack(isnan(el_exG_slack))=0;
 
-%District heating slack bus data
-net_prod = h_imp_AH_measured - h_exp_AH_measured + h_Boiler1_0 + h_FlueGasCondenser1_0 + el_VKA1_0*COP_VKA1 + el_VKA4_0*COP_VKA4;
-ah_demand = sum(h_demand(:,[1,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,29,31,32,33,34]), 2);
-h_DH_slack = net_prod - ah_demand;
-
-%District cooling slack bus data
-c_DC_slack=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',3,strcat('N',int2str(sim_start+1),':N',int2str(data_read_stop+1)));
-if (length(c_DC_slack)<data_length) || (any(isnan(c_DC_slack),'all'))
-    error('Error: input file does not have complete data for simulation length');
-end
-%c_DC_slack(isnan(c_DC_slack))=0;
 
 %Irradiance on roof and facade solar PV arrays
 irradiance_measured_roof=xlsread('Input_dispatch_model\Irradiance_Arrays 20181119.xlsx',1,strcat('A',int2str(sim_start+1),':L',int2str(data_read_stop+1)));
@@ -149,6 +150,48 @@ end
 h_exp_AH_measured=xlsread('Input_dispatch_model\AH_h_import_exp.xlsx',2,strcat('D',int2str(sim_start+4),':D',int2str(data_read_stop+4)))*MWhtokWh;
 if (length(h_exp_AH_measured)<data_length) || (any(isnan(h_exp_AH_measured),'all'))
     error('Error: input file does not have complete data for simulation length');
+end    
+    
+h_DH_slack1=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',2,strcat('P',int2str(sim_start+1),':P',int2str(data_read_stop+1)));
+if (length(h_DH_slack1)<data_length) || (any(isnan(h_DH_slack1),'all'))
+    error('Error: input file does not have complete data for simulation length');
 end
+%h_DH_slack(isnan(h_DH_slack))=0;
+
+%District heating slack bus data
+net_h_prod = h_imp_AH_measured - h_exp_AH_measured + h_Boiler1_0 + h_FlueGasCondenser1_0 + el_VKA1_0*COP_VKA1 + el_VKA4_0*COP_VKA4;
+ah_h_demand = sum(h_demand(:,[1,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,29,31,32,33,34]), 2);
+h_DH_slack = ah_h_demand - net_h_prod;
+diff_h=h_DH_slack-h_DH_slack1;
+
+%District cooling slack bus data
+c_DC_slack1=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',3,strcat('N',int2str(sim_start+1),':N',int2str(data_read_stop+1)));
+if (length(c_DC_slack1)<data_length) || (any(isnan(c_DC_slack1),'all'))
+    error('Error: input file does not have complete data for simulation length');
+%c_DC_slack(isnan(c_DC_slack))=0;
+end
+
+%District cooling slack bus data
+net_c_prod = c_AbsC_0 + el_VKA1_0*c_COP_VKA1 + el_VKA4_0*c_COP_VKA4;
+ah_c_demand = sum(c_demand(:,[1,6,8,10,11,12,13,16,17,18,19,20,21,22,23,25,26,27,29,31,32,33,34]), 2);
+c_DC_slack = ah_c_demand - net_c_prod;
+diff_c=c_DC_slack-c_DC_slack1;
+
+
+%el exgG slack bus data
+el_exG_slack1=xlsread('Input_dispatch_model\supply_demand_balance.xlsx',1,strcat('F',int2str(sim_start+1),':F',int2str(data_read_stop+1)));
+if (length(el_exG_slack1)<data_length) || (any(isnan(el_exG_slack1),'all'))
+    error('Error: input file does not have complete data for simulation length');
+end
+%el_exG_slack(isnan(el_exG_slack))=0;
+
+%electricity slack bus data
+% net_e_prod = c_AbsC_0 + el_VKA1_0*c_COP_VKA1 + el_VKA4_0*c_COP_VKA4;
+% ah_e_demand = sum(c_demand(:,[1,6,8,10,11,12,13,16,17,18,19,20,21,22,23,25,26,27,31,32,33,34]), 2);
+% el_exG_slack = ah_e_demand - net_e_prod;
+% diff_e=el_exG_slack-el_exG_slack1;
+el_exG_slack=el_exG_slack1;
+
+
 end
 

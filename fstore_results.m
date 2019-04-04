@@ -149,10 +149,10 @@ data.BAC_Sloss=gdx2mat(gdxData,'BAC_Sloss',{h_sim.uels,BTES_properties.uels});
 data.BAC_Dloss=gdx2mat(gdxData,'BAC_Dloss',{h_sim.uels,BTES_properties.uels});
 data.BAC_link_BS_BD=gdx2mat(gdxData,'BAC_link_BS_BD',{h_sim.uels,BTES_properties.uels});
 data.BTES_dis_eff=gdx2mat(gdxData,'BTES_dis_eff');
-data.B_BAC=gdx2mat(gdxData,'B_BAC',BTES_properties.uels);
+data.B_BAC=gdx2mat(gdxData,'B_BAC',BID.uels);
 
 data.invCost_BAC=gdx2mat(gdxData,'invCost_BAC');
-data.h_BAC_savings=gdx2mat(gdxData,'h_BAC_savings',{h_sim.uels,BTES_properties.uels});
+data.h_BAC_savings=gdx2mat(gdxData,'h_BAC_savings',{h_sim.uels,BID.uels});
 data.BAC_savings_period=gdx2mat(gdxData,'BAC_savings_period',h_sim.uels);
 
 %Setpoint Offset

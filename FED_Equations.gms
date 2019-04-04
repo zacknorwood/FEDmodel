@@ -25,7 +25,7 @@ equation
            eq3_h_Boiler1           ramp constraint set to 1MW
            eq4_h_Boiler1           ramp constraint set to 1MW
            eq5_h_Boiler1           ramp constraint set to 1MW
-*           eq6_h_Boiler1           fixed Boiler1 for synth baseline
+           eq6_h_Boiler1           fuel use for Boiler1
            eq_h_Boiler1_dispatch  Equation determining when Boiler1 is dispatchable
 
            eq_h_FlueGasCondenser11            Equation related to flue gas heat production
@@ -287,6 +287,7 @@ eq_VKA43(h) $ (min_totCost_0 eq 0)..
 *             VKA1_prev_disp- h_VKA4(h)=g=-1;
 
 *------------------Boiler1 equation(when dispachable)----------------------------
+
 eq1_h_Boiler1(h) $ (min_totCost_0 eq 0)..
         h_Boiler1(h)=l=Boiler1_cap;
 
@@ -302,6 +303,8 @@ eq4_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0
 eq5_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
              Boiler1_prev_disp- h_Boiler1(h)=g=-1000;
 
+eq6_h_Boiler1(h)..
+         h_Boiler1(h) =e= fuel_Boiler1(h) * B1_eff;
 *Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN.
 *eq6_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
 *            h_Boiler1(h)=e= Boiler1(h);

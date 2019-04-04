@@ -24,6 +24,7 @@ ALL
 
 SOLVE total using MIP minimizing obj;
 
+display B_BAC.l, h_BAC_savings.l;
 parameter
 
 total_cap_PV_roof   total capacity in kW
@@ -231,7 +232,7 @@ AH_PE_tot=sum(h,AH_PE(h));
 parameter
 *FED_PE_ft(h)  Primary energy as a function of time
           model_status  Model status
-          fuel_Boiler1(h)  Fuel input to B1
+*          fuel_Boiler1(h)  Fuel input to B1
           AH_el_imp_tot
           AH_el_exp_tot
           AH_h_imp_tot
@@ -239,7 +240,7 @@ parameter
           sum_temp_slack(h, DH_Node_ID)
 ;
 
-fuel_Boiler1(h)=h_Boiler1.l(h)/B1_eff;
+*fuel_Boiler1(h)=h_Boiler1.l(h)/B1_eff;
 model_status=total.modelstat;
 AH_el_imp_tot=sum(h,el_imp_AH.l(h));
 AH_el_exp_tot=sum(h,el_exp_AH.l(h));
@@ -256,7 +257,7 @@ B_Cooling_cost(h,BID_AH_c)=abs(eq_cbalance.M(h))*c_demand_AH(h,BID_AH_c);
 *Not used in rolling time horizon - ZN
 *max_exG_prev=sum(m, max_exG.l(m));
 option gdxuels = full;
-execute_unload 'GtoM'  min_totCost_0, min_totCost, min_totPE, min_totCO2,
+execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       el_demand, el_demand_nonAH, h_demand, c_demand, c_demand_AH,
                       el_imp_AH, el_exp_AH, el_imp_nonAH,AH_el_imp_tot, AH_el_exp_tot,
                       h_imp_AH, h_exp_AH, h_imp_nonAH, AH_h_imp_tot, AH_h_exp_tot,

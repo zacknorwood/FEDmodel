@@ -31,6 +31,7 @@ sim_stop_h = 14;
 sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 
+%sim_stop=sim_start+48;
 forecast_horizon = 10;
 
 % DATA INDICES FOR INPUT DATA
