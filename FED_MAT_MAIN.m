@@ -31,6 +31,7 @@ sim_stop_h = 14;
 sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 
+%sim_stop=sim_start+48;
 forecast_horizon = 10;
 
 % DATA INDICES FOR INPUT DATA
@@ -196,7 +197,7 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 %Read static properties of the model
 % AK Change BAC, and BTES namings
-[P1P2_dispatchable_full, DH_export_season_full, DH_heating_season_full, BAC_savings_period_full, BTES_model, BES_min_SoC] = fread_static_properties(sim_start,data_read_stop,data_length);
+[P1P2_dispatchable_full, DH_heating_season_full, BAC_savings_period_full, BTES_model, BES_min_SoC] = fread_static_properties(sim_start,data_read_stop,data_length);
 
 %Read variable/measured input data
 [el_demand_full, h_demand_full, c_demand_full,h_Boiler1_0_full,...
@@ -466,9 +467,9 @@ for t=1:sim_length
     P1P2_dispatchable = struct('name','P1P2_dispatchable','type','parameter','form','full','val',P1P2_dispatchable_full(t:forecast_end,:));
     P1P2_dispatchable.uels=h.uels;
     
-    %Heat export season
-    DH_export_season = struct('name','DH_export_season','type','parameter','form','full','val',DH_export_season_full(t:forecast_end,:));
-    DH_export_season.uels=h.uels;
+    %Heat export season - Replaced by DH_heating_season -DS
+    %DH_export_season = struct('name','DH_export_season','type','parameter','form','full','val',DH_export_season_full(t:forecast_end,:));
+    %DH_export_season.uels=h.uels;
     
     %DH heating season
     DH_heating_season = struct('name','DH_heating_season','type','parameter','form','full','val',DH_heating_season_full(t:forecast_end,:));
@@ -588,7 +589,7 @@ for t=1:sim_length
         BID, BID_AH_el, BID_nonAH_el, BID_AH_h, BID_nonAH_h, BID_AH_c, BID_nonAH_c, BID_nonBTES,...
         el_demand, h_demand, c_demand, h_Boiler1_0, h_FlueGasCondenser1_0,...
         el_VKA1_0, el_VKA4_0, c_AbsC_0, G_roof, G_facade,...
-        BES_min_SoC, BTES_properties, BTES_model, P1P2_dispatchable, DH_export_season, DH_heating_season, BAC_savings_period,...
+        BES_min_SoC, BTES_properties, BTES_model, P1P2_dispatchable, DH_heating_season, BAC_savings_period,...
         PVID, PVID_roof, PV_roof_cap, PVID_facade, PV_facade_cap,...
         el_price, el_certificate, tout, BAC_savings_factor, FED_Inv_lim, BusID,...
         opt_fx_inv_BTES_BAC_D_init, opt_fx_inv_BTES_BAC_S_init, opt_fx_inv_BTES_SO_D_init,...

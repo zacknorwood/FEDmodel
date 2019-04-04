@@ -24,6 +24,7 @@ ALL
 
 SOLVE total using MIP minimizing obj;
 
+display B_BAC.l, h_BAC_savings.l;
 parameter
 
 total_cap_PV_roof   total capacity in kW
@@ -75,7 +76,7 @@ var_cost_existing_AH(h) =      el_imp_AH.l(h)*utot_cost('exG',h)
                                -el_exp_AH.l(h)*el_sell_price(h)
                                + (h_imp_AH.l(h))*utot_cost('DH',h)
                                - h_exp_AH.l(h) * (utot_cost('DH',h)/(1+DH_margin))
-*                               - sum(m,(h_exp_AH.l(h)*DH_export_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12)))
+*                               - sum(m,(h_exp_AH.l(h)*DH_heating_season(h)*0.3*HoM(h,m))$((ord(m) <= 3) or (ord(m) >=12)))
                                + h_Boiler1.l(h)*utot_cost('B1',h)
                                + h_VKA1.l(h)*utot_cost('HP',h)
                                + h_VKA4.l(h)*utot_cost('HP',h)
@@ -203,14 +204,14 @@ AH_PE_tot      AH total PE average
 *-----------------AH average and margional PE use-------------------------------
 AH_PE(h)= ( el_imp_AH.l(h)-el_exp_AH.l(h))*NREF_El(h)
             + el_PV.l(h)*NREF_PV
-            + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*NREF_DH(h) + ((h_Boiler1.l(h)+h_FlueGasCondenser1.l(h))/B1_eff)*NREF_Boiler1
+            + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_heating_season(h))*NREF_DH(h) + ((h_Boiler1.l(h)+h_FlueGasCondenser1.l(h))/B1_eff)*NREF_Boiler1
                      + fuel_Boiler2.l(h)*NREF_Boiler2;
 
 
 $ontext
 MA_AH_PE(h)= (el_imp_AH.l(h)-el_exp_AH.l(h))*MA_PEF_exG(h)
               + el_PV.l(h)*PEF_PV
-              + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*MA_PEF_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*PEF_P1
+              + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_heating_season(h))*MA_PEF_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*PEF_P1
               + fuel_P2.l(h)*PEF_P2;
 $offtext
 
@@ -219,7 +220,7 @@ AH_PE_tot=sum(h,AH_PE(h));
 
 * MA_AH_CO2(h) = (el_imp_AH.l(h)-el_exp_AH.l(h))*MA_CO2F_exG(h)
 *                + el_PV.l(h)*CO2F_PV
-*                + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_export_season(h))*MA_CO2F_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*CO2F_P1
+*                + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_heating_season(h))*MA_CO2F_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*CO2F_P1
 *                + fuel_P2.l(h) * CO2F_P2;
 
 *MA_AH_CO2_tot = sum(h, MA_AH_CO2(h));
@@ -231,7 +232,7 @@ AH_PE_tot=sum(h,AH_PE(h));
 parameter
 *FED_PE_ft(h)  Primary energy as a function of time
           model_status  Model status
-          fuel_Boiler1(h)  Fuel input to B1
+*          fuel_Boiler1(h)  Fuel input to B1
           AH_el_imp_tot
           AH_el_exp_tot
           AH_h_imp_tot
@@ -239,7 +240,7 @@ parameter
           sum_temp_slack(h, DH_Node_ID)
 ;
 
-fuel_Boiler1(h)=h_Boiler1.l(h)/B1_eff;
+*fuel_Boiler1(h)=h_Boiler1.l(h)/B1_eff;
 model_status=total.modelstat;
 AH_el_imp_tot=sum(h,el_imp_AH.l(h));
 AH_el_exp_tot=sum(h,el_exp_AH.l(h));
@@ -256,7 +257,7 @@ B_Cooling_cost(h,BID_AH_c)=abs(eq_cbalance.M(h))*c_demand_AH(h,BID_AH_c);
 *Not used in rolling time horizon - ZN
 *max_exG_prev=sum(m, max_exG.l(m));
 option gdxuels = full;
-execute_unload 'GtoM'  min_totCost_0, min_totCost, min_totPE, min_totCO2,
+execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       el_demand, el_demand_nonAH, h_demand, c_demand, c_demand_AH,
                       el_imp_AH, el_exp_AH, el_imp_nonAH,AH_el_imp_tot, AH_el_exp_tot,
                       h_imp_AH, h_exp_AH, h_imp_nonAH, AH_h_imp_tot, AH_h_exp_tot,
@@ -285,7 +286,7 @@ execute_unload 'GtoM'  min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
                       AH_PE, AH_CO2, nonAH_CO2,
-                      DH_export_season, P1P2_dispatchable, inv_lim,
+                      DH_heating_season, P1P2_dispatchable, inv_lim,
                       c_RMInv, el_RMInv, RMInv_cap, invCost_RMInv,
                       model_status,B_Heating_cost,B_Electricity_cost,B_Cooling_cost
                       tot_var_cost_AH, sim_PT_exG,PT_DH, tot_fixed_cost, fix_cost_existing_AH, fix_cost_new_AH, var_cost_existing_AH, var_cost_new_AH,

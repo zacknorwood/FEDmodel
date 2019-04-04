@@ -25,7 +25,7 @@ equation
            eq3_h_Boiler1           ramp constraint set to 1MW
            eq4_h_Boiler1           ramp constraint set to 1MW
            eq5_h_Boiler1           ramp constraint set to 1MW
-*           eq6_h_Boiler1           fixed Boiler1 for synth baseline
+           eq6_h_Boiler1           fuel use for Boiler1
            eq_h_Boiler1_dispatch  Equation determining when Boiler1 is dispatchable
 
            eq_h_FlueGasCondenser11            Equation related to flue gas heat production
@@ -287,6 +287,7 @@ eq_VKA43(h) $ (min_totCost_0 eq 0)..
 *             VKA1_prev_disp- h_VKA4(h)=g=-1;
 
 *------------------Boiler1 equation(when dispachable)----------------------------
+
 eq1_h_Boiler1(h) $ (min_totCost_0 eq 0)..
         h_Boiler1(h)=l=Boiler1_cap;
 
@@ -302,6 +303,8 @@ eq4_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0
 eq5_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
              Boiler1_prev_disp- h_Boiler1(h)=g=-1000;
 
+eq6_h_Boiler1(h)..
+         h_Boiler1(h) =e= fuel_Boiler1(h) * B1_eff;
 *Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN.
 *eq6_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
 *            h_Boiler1(h)=e= Boiler1(h);
@@ -788,7 +791,7 @@ $offtext
 eq_PE(h)..
         FED_PE(h)=e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*NREF_El(h)
                      + el_PV(h)*NREF_PV
-                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*NREF_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*NREF_Boiler1
+                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h) + h_imp_nonAH(h))*NREF_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*NREF_Boiler1
                      + fuel_Boiler2(h)*NREF_Boiler2
                      + h_DH_slack_var(h)*1000000000
                       + C_DC_slack_var(h)*1000000000
@@ -802,7 +805,7 @@ eq_totPE..
 eq_AH_CO2(h)..
          AH_CO2(h) =e= (el_imp_AH(h)-el_exp_AH(h))*CO2F_El(h)
                        + el_PV(h)*CO2F_PV
-                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h))*CO2F_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*CO2F_Boiler1
+                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h))*CO2F_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*CO2F_Boiler1
                        + fuel_Boiler2(h) * CO2F_Boiler2;
 
 eq_nonAH_CO2(h)..

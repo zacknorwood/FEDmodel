@@ -53,7 +53,9 @@ copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx')
 
 
 % Save result files
-filename=['Results_20190328_BAU=' num2str(min_totCost_0) '_MTC=' num2str(min_totCost) '_MCO2=' num2str(min_totCO2) '_MPE=' num2str(min_totPE) '_IPCC=' num2str(IPCC_factors) '_time=' num2str(length(Results)) 'h'];
+result_path = ([cd '\results\' date '\']);
+mkdir (result_path);
+filename=[result_path 'Results_BAU=' num2str(min_totCost_0) '_MTC=' num2str(min_totCost) '_MCO2=' num2str(min_totCO2) '_MPE=' num2str(min_totPE) '_IPCC=' num2str(IPCC_factors) '_time=' num2str(length(Results)) 'h'];
 save(filename,'Results')
 filenamexls=[filename '.xlsx'];
 copyfile('result_temp.xlsx', filenamexls)

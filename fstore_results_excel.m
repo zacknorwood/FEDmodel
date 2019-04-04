@@ -29,8 +29,9 @@ to_excel_el(t,24)=Results(t).dispatch.BES_en(find(Results(t).dispatch.BES_en(:,2
 % find the energy storage at node/BID 33 and the first value(e.g. first hour), column 3 is for the energy/power level.
 to_excel_el(t,25)=-Results(t).dispatch.BES_ch(find(Results(t).dispatch.BES_ch(:,2)==33,1),3);
 to_excel_el(t,26)=Results(t).dispatch.BES_dis(find(Results(t).dispatch.BES_dis(:,2)==33,1),3);
-to_excel_el(t,27)=Results(t).dispatch.BES_dis(find(Results(t).dispatch.BES_dis(:,2)==20,1),3);
-to_excel_el(t,28)=-Results(t).dispatch.BES_dis(find(Results(t).dispatch.BES_dis(:,2)==20,1),3);
+
+to_excel_el(t,27)=Results(t).dispatch.BES_en(find(Results(t).dispatch.BES_en(:,2)==20,1),3);
+to_excel_el(t,28)=-Results(t).dispatch.BES_ch(find(Results(t).dispatch.BES_ch(:,2)==20,1),3);
 to_excel_el(t,29)=Results(t).dispatch.BES_dis(find(Results(t).dispatch.BES_dis(:,2)==20,1),3);
 
 

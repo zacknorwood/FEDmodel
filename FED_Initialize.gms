@@ -14,7 +14,6 @@ set
 Parameter
         DH_max_cap  Maximum capacity of import from the external district heating system /8000/
         el_imp_max_cap Maximum capacity of import and export from and to the external electricty system /10000/
-*DH_export_season(h) Season during which pricing for DH exports possible
 ;
 
 ************ Capacities of the units in the FED system
@@ -88,8 +87,9 @@ scalar
 scalar
          VKA4_H_COP            Heating coefficient of performance for VKA4/3/
          VKA4_C_COP            Cooling coefficient of performance for VKA4/1.8/
-         VKA4_el_cap           Maximum electricity usage by VKA4/266/
+         VKA4_el_cap           Maximum electricity usage by VKA4/216/
 ;
+******* Changed el Cap to 216 (from 266) to get max heat to 650 kW according to historical data -DS
 
 *--------------AbsC(Absorbition Refrigerator), cooling source-------------------
 * The AbsC_COP is from which source?
@@ -98,7 +98,7 @@ scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
          AbsC_el_COP Electrical Coefficient of Performance of AbsC /22/
          AbsC_min_prod Minimum production while on of AbsC /200/
-*290 previous changed to 200 based on Pers mail 20190325
+* changed to 200 (from 290) based on Pers mail 20190325 -DS
 ;
 
 *--------------AAC(Ambient Air Cooler), cooling source--------------------------
