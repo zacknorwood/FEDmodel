@@ -188,7 +188,7 @@ binary variable
 *0 is used in case there is no investment ,
 B_BAC.fx(BID) $ (opt_fx_inv_BAC gt -1)=0;
 B_BAC.fx(BTES_BAC_Inv) $ (opt_fx_inv_BAC eq 1)=1;
-display B_BAC.fx;
+*display B_BAC;
 *------------------Building Setpoint Offset related----------------------
 positive variable
          SO_Sch(h,BID)    charing rate of shallow section of the building
