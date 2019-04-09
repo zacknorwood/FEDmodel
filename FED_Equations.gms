@@ -304,7 +304,7 @@ eq5_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0
              Boiler1_prev_disp- h_Boiler1(h)=g=-1000;
 
 eq6_h_Boiler1(h)..
-         h_Boiler1(h) =e= fuel_Boiler1(h) * B1_eff;
+          fuel_Boiler1(h) =e= ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff);
 *Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN.
 *eq6_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
 *            h_Boiler1(h)=e= Boiler1(h);
@@ -791,7 +791,7 @@ $offtext
 eq_PE(h)..
         FED_PE(h)=e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*NREF_El(h)
                      + el_PV(h)*NREF_PV
-                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h) + h_imp_nonAH(h))*NREF_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*NREF_Boiler1
+                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h) + h_imp_nonAH(h))*NREF_DH(h) + fuel_Boiler1(h)*NREF_Boiler1
                      + fuel_Boiler2(h)*NREF_Boiler2
                      + h_DH_slack_var(h)*1000000000
                       + C_DC_slack_var(h)*1000000000
@@ -800,12 +800,12 @@ eq_PE(h)..
 **********************Total PE use in the FED system****************************
 eq_totPE..
          tot_PE=e=sum(h,FED_PE(h));
-
+((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)
 *---------------FED CO2 emission------------------------------------------------
 eq_AH_CO2(h)..
          AH_CO2(h) =e= (el_imp_AH(h)-el_exp_AH(h))*CO2F_El(h)
                        + el_PV(h)*CO2F_PV
-                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h))*CO2F_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*CO2F_Boiler1
+                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h))*CO2F_DH(h) + fuel_Boiler1(h)*CO2F_Boiler1
                        + fuel_Boiler2(h) * CO2F_Boiler2;
 
 eq_nonAH_CO2(h)..
@@ -873,7 +873,9 @@ eq_var_cost_existing..
                                + sum(h,el_AbsC(h) * utot_cost('exG',h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h)) * utot_cost('DH',h))
                                - sum(h,h_exp_AH(h) * (utot_cost('DH',h)/(1+DH_margin)))
-                               + sum(h,h_Boiler1(h) * utot_cost('B1',h))
+                               + sum(h,h_Boiler1(h) * var_cost('B1',h)+fuel_Boiler1(h)*fuel_cost('B1',h))
+*Changed B1 cost to reflect the fueal use and heat output -DS
+*                               + sum(h,h_Boiler1(h) * utot_cost('B1',h))
                                + sum(h,h_VKA1(h) * utot_cost('HP',h))
                                + sum(h,h_VKA4(h) * utot_cost('HP',h))
                                + sum(h,c_AbsC(h) * utot_cost('AbsC',h))
@@ -892,7 +894,9 @@ eq_var_cost_new..
                            + sum(h,TES_dis(h)*utot_cost('TES',h))
                            + sum((h,BID),BAC_Sch(h,BID)*utot_cost('BAC',h))
                            + sum((h,BID),SO_Sch(h,BID)*utot_cost('SO',h))
-                           + sum(h,h_Boiler2(h)*utot_cost('B2',h))
+                           + sum(h,h_Boiler2(h) * var_cost('B2',h)+fuel_Boiler2(h)*fuel_cost('B2',h))
+*Changed B1 cost to reflect the fueal use and heat output -DS
+*                           + sum(h,h_Boiler2(h)*utot_cost('B2',h))
                            + sum(h,el_TURB(h)*utot_cost('TURB',h))
                            + sum(h,c_AbsCInv(h)*utot_cost('AbsCInv',h));
 
