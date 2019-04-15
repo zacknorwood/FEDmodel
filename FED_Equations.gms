@@ -35,6 +35,7 @@ equation
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
            eq_AbsC3     Absorption chiller electricity usage
+           eq_AbsC4     Minimum production of AbsC during cooling season
 
            eq_RM1       Refrigerator equation
            eq_RM2       Refrigerator equation
@@ -326,6 +327,10 @@ eq_AbsC2(h) $ (min_totCost_0 eq 0)..
 
 eq_AbsC3(h)..
              el_AbsC(h) =e= c_AbsC(h) / AbsC_el_COP;
+
+*Minimum production of AC durign cooling season according to AH
+eq_AbsC4(h)$(DC_cooling_season(h) eq 1)..
+             c_AbsC(h) =g= 200
 
 *----------Refrigerator Machine equations (electricity => cooling)--------------
 eq_RM1(h)..
