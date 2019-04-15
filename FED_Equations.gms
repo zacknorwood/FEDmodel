@@ -212,6 +212,8 @@ equation
            eq_fix_cost_new      total fixed cost for new units
            eq_var_cost_existing total variable cost for existing units
            eq_var_cost_new      total variable cost for new units
+           eq_var_cost_existing_AH hourly variable cost for existing units AH
+           eq_var_cost_new_AH      hourly variable cost for new units AH
            eq_Ainv_cost  total annualized investment cost
          eq_invCost_PV      investment cost of PV
          eq_invCost_BES     investment cost of battery storage
@@ -429,7 +431,7 @@ eq_HP2(h)..
 eq_HP3(h)..
              h_HP(h) =l= HP_cap*DH_heating_season(h);
 *Limit heat to be produce during winter mode -DS
-         
+
 eq_HP4(h)..
             h_hp(h)=g=opt_fx_inv_HP_min*DH_heating_season(h);
 
@@ -800,7 +802,6 @@ eq_PE(h)..
 **********************Total PE use in the FED system****************************
 eq_totPE..
          tot_PE=e=sum(h,FED_PE(h));
-((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)
 *---------------FED CO2 emission------------------------------------------------
 eq_AH_CO2(h)..
          AH_CO2(h) =e= (el_imp_AH(h)-el_exp_AH(h))*CO2F_El(h)
@@ -866,6 +867,7 @@ eq_fix_cost_new..
                            + B_Boiler2 * fix_cost('B2')
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
+
 eq_var_cost_existing..
 *Peak power tariffs for both electricty? and heating are supposed to be included in prices?
          var_cost_existing =e= sum(h,(el_imp_AH(h) + el_imp_nonAH(h)) * utot_cost('exG',h))
@@ -873,7 +875,7 @@ eq_var_cost_existing..
                                + sum(h,el_AbsC(h) * utot_cost('exG',h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h)) * utot_cost('DH',h))
                                - sum(h,h_exp_AH(h) * (utot_cost('DH',h)/(1+DH_margin)))
-                               + sum(h,h_Boiler1(h) * var_cost('B1',h)+fuel_Boiler1(h)*fuel_cost('B1',h))
+                               + sum(h,(h_Boiler1(h)+h_FlueGasCondenser1(h)) * var_cost('B1',h)+fuel_Boiler1(h)*fuel_cost('B1',h))
 *Changed B1 cost to reflect the fueal use and heat output -DS
 *                               + sum(h,h_Boiler1(h) * utot_cost('B1',h))
                                + sum(h,h_VKA1(h) * utot_cost('HP',h))
@@ -899,6 +901,46 @@ eq_var_cost_new..
 *                           + sum(h,h_Boiler2(h)*utot_cost('B2',h))
                            + sum(h,el_TURB(h)*utot_cost('TURB',h))
                            + sum(h,c_AbsCInv(h)*utot_cost('AbsCInv',h));
+
+
+
+*************** Variable cost for AH ***********************
+* NOTE: cost for absC are include in AH costs, both Cooling, heat (fuel cost) and electricity cost
+* For electricity all solar PVs are included in AHs cost, however var cost are currently assumed to be zero. -DS
+
+eq_var_cost_existing_AH(h)..
+var_cost_existing_AH(h) =e=      (el_imp_AH(h) * utot_cost('exG',h))
+                               - el_exp_AH(h) * el_sell_price(h)
+                               + el_AbsC(h) * utot_cost('exG',h)
+                               + h_imp_AH(h) * utot_cost('DH',h)
+                               - h_exp_AH(h) * (utot_cost('DH',h)/(1+DH_margin))
+                               + (h_Boiler1(h)+h_FlueGasCondenser1(h)) * var_cost('B1',h)+fuel_Boiler1(h)*fuel_cost('B1',h)
+*Changed B1 cost to reflect the fueal use and heat output -DS
+*                               + sum(h,h_Boiler1(h) * utot_cost('B1',h))
+                               + h_VKA1(h) * utot_cost('HP',h)
+                               + h_VKA4(h) * utot_cost('HP',h)
+                               + c_AbsC(h) * utot_cost('AbsC',h)
+                               + c_RM(h) * utot_cost('RM',h)
+                               + c_RMMC(h) * utot_cost('RM',h)
+                               + h_AbsC(h) * utot_cost('DH',h);
+
+
+* AK Check BAC/SO Costs
+eq_var_cost_new_AH(h)..
+var_cost_new_AH(h)   =e=     el_PV(h)*utot_cost('PV',h)
+                           + h_HP(h)*utot_cost('HP',h)
+                           + c_RMInv(h)*utot_cost('RMInv',h)
+                           + sum(BID,BES_dis(h,BID)*utot_cost('BES',h))
+                           + TES_dis(h)*utot_cost('TES',h)
+                           + sum(BID,BAC_Sch(h,BID)*utot_cost('BAC',h))
+                           + sum(BID,SO_Sch(h,BID)*utot_cost('SO',h))
+                           + h_Boiler2(h) * var_cost('B2',h)+fuel_Boiler2(h)*fuel_cost('B2',h)
+*Changed B1 cost to reflect the fueal use and heat output -DS
+*                           + sum(h,h_Boiler2(h)*utot_cost('B2',h))
+                           + el_TURB(h)*utot_cost('TURB',h)
+                           + c_AbsCInv(h)*utot_cost('AbsCInv',h);
+
+******************************************************
 
 eq_Ainv_cost..
           Ainv_cost =e=

@@ -215,9 +215,7 @@ PARAMETERS
            el_demand(h,BID)    ELECTRICITY DEMAND IN THE FED BUILDINGS
            h_demand(h,BID)     Heating DEMAND IN THE FED BUILDINGS
            c_demand(h,BID)     Cooling DEMAND IN THE FED BUILDINGS
-           cool_demand(h)       Total cooling demand
-           heat_demand(h)       Total heat demand
-           elec_demand(h)       Total elec. demand
+
 ;
 $GDXIN MtoG.gdx
 $LOAD el_demand
@@ -439,11 +437,7 @@ $load Boiler2_prev_disp
 $GDXIN
 *the combination is used to comment out sections codes inside
 
-parameters
-B_Heating_cost(h,BID)             heating cost of buildings
-B_Electricity_cost(h,BID_AH_el)   electricity cost of building
-B_Cooling_cost(h,BID_AH_c)        cooling cost of buildings
-;
+
 
 
 

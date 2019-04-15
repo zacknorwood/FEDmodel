@@ -51,7 +51,7 @@ sim_length = sim_stop - sim_start + 1;
 data_length = data_read_stop - sim_start + 1;
 
 % Initialize Results cell array
-%Results=cell(data_length,1);
+Results=cell(data_length,1);
 
 %% Assigning buildings ID to the buildings in the FED system and BIDs to the location of investments
 

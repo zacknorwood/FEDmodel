@@ -319,8 +319,6 @@ variable
          fix_cost_new       total fixed cost for new generation
          var_cost_existing  total variable cost for existing generation
          var_cost_new       total variable cost for new generation
-         var_cost_existing_AH(h)  total variable cost for existing generation
-         var_cost_new_AH(h)       total variable cost for new generation
          Ainv_cost          total annualized investment cost
          totCost            total cost
          invCost_PV      investment cost of PV
