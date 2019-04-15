@@ -32,6 +32,17 @@ sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 
 forecast_horizon = 10;
+% Cooling season start stop
+DC_cooling_season_full = zeros(sim_stop,1);
+cooling_year = sim_start_y;
+while cooling_year <=sim_stop_y
+    % Main cooling season between may and september
+    cooling_season_start = HoS(cooling_year,5,1,1);
+    cooling_season_end = HoS(cooling_year,10,1,1);
+
+    DC_cooling_season_full(cooling_season_start:cooling_season_end) = 1;
+    cooling_year = cooling_year + 1;
+end
 
 % DATA INDICES FOR INPUT DATA
 % data_read_stop is the last index of data needed for the simulation.
@@ -476,6 +487,8 @@ for t=1:sim_length
     BAC_savings_period = struct('name','BAC_savings_period','type','parameter','form','full','val',BAC_savings_period_full(t:forecast_end,:));
     BAC_savings_period.uels=h.uels;
     
+    DC_cooling_season = struct('name','DC_cooling_season','type','parameter','form','full','val',DC_cooling_season_full(t:forecast_end,:));
+    DC_cooling_season = h.uels;
     %Calculation of BAC savings factors
     BAC_savings_factor = fget_bac_savings_factor(h);
     BAC_savings_factor.uels=h.uels;
@@ -586,7 +599,7 @@ for t=1:sim_length
         BID, BID_AH_el, BID_nonAH_el, BID_AH_h, BID_nonAH_h, BID_AH_c, BID_nonAH_c, BID_nonBTES,...
         el_demand, h_demand, c_demand, h_Boiler1_0, h_FlueGasCondenser1_0,...
         el_VKA1_0, el_VKA4_0, c_AbsC_0, G_roof, G_facade,...
-        BES_min_SoC, BTES_properties, BTES_model, P1P2_dispatchable, DH_export_season, DH_heating_season, BAC_savings_period,...
+        BES_min_SoC, BTES_properties, BTES_model, P1P2_dispatchable, DH_export_season, DH_heating_season,DC_cooling_season_full, BAC_savings_period,...
         PVID, PVID_roof, PV_roof_cap, PVID_facade, PV_facade_cap,...
         el_price, el_certificate, tout, BAC_savings_factor, FED_Inv_lim, BusID,...
         opt_fx_inv_BTES_BAC_D_init, opt_fx_inv_BTES_BAC_S_init, opt_fx_inv_BTES_SO_D_init,...
