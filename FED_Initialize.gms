@@ -54,6 +54,7 @@ Parameter
           B1_eff      Effeciency of B1 /0.9/
           B1_max      Maximum output from B1 /6000/
           B1_min      Minimum output from B1 /3000/
+          B1_hourly_ramprate     hourly maximum ramp rate /1000/
 ;
 ***** CHECK: B1_min is currently not implemented -DS!!!!
 
@@ -111,10 +112,10 @@ scalar
 
 *--------------Refrigerator Machines, cooling source----------------------------
 scalar
-      RM_COP Coefficent of performance of RM /1.7/
+      RM_COP Coefficent of performance of RM /0.2/
 ;
 
-*********** CHECK: i reduced this COP to 1.7 (from 2) since i dont think they are operated more than in "emergency", -DS
+*********** CHECK: i reduced this COP to 0.2 (from 2) since i dont think they are operated more than in "emergency", -DS
 
 *--------------Cold water basin at maskin, cold storage-------------------------
 * Source communications with Per
@@ -141,7 +142,7 @@ scalar
       B2_cap                 Capacity of B2 /6000/
       B2_max                 Maximum output from B2 /6000/
       B2_min                 Minimum output from B2 /1000/
-      B2_hourly_ramprate     hourly maximum ramp rate /4000/
+      B2_hourly_ramprate     hourly maximum ramp rate /1000/
       B2_research_prod        Heat output during research /1500/
 ;
 

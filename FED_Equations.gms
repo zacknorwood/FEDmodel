@@ -63,6 +63,8 @@ equation
            eq2_Boiler2                investment equation for B2
            eq3_Boiler2                maximum ramp up constraint
            eq4_Boiler2                maximum ramp down constraint
+           eq5_h_Boiler2              maximum ramp up constraint
+           eq6_h_Boiler2              maximum ramp down constraint
            eq_h_Boiler2_research  B2 production constraint during research
 
 
@@ -293,17 +295,17 @@ eq_VKA43(h) $ (min_totCost_0 eq 0)..
 eq1_h_Boiler1(h) $ (min_totCost_0 eq 0)..
         h_Boiler1(h)=l=Boiler1_cap;
 
-eq2_h_Boiler1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
-        h_Boiler1(h-1)- h_Boiler1(h)=g=-1000;
+eq2_h_Boiler1(h)$(ord(h) gt 1 and (P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1) and synth_baseline eq 0 and min_totCost_0 eq 0)..
+        h_Boiler1(h-1)- h_Boiler1(h)=g=-B1_hourly_ramprate;
 
-eq3_h_Boiler1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
-        h_Boiler1(h-1)- h_Boiler1(h)=l=1000;
+eq3_h_Boiler1(h)$(ord(h) gt 1 and (P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1)  and synth_baseline eq 0 and min_totCost_0 eq 0)..
+        h_Boiler1(h-1)- h_Boiler1(h)=l=B1_hourly_ramprate;
 
 eq4_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
-             Boiler1_prev_disp- h_Boiler1(h)=l=1000;
+             Boiler1_prev_disp- h_Boiler1(h)=l=B1_hourly_ramprate;
 
 eq5_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
-             Boiler1_prev_disp- h_Boiler1(h)=g=-1000;
+             Boiler1_prev_disp- h_Boiler1(h)=g=-B1_hourly_ramprate;
 
 eq6_h_Boiler1(h)..
           fuel_Boiler1(h) =e= ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff);
@@ -391,11 +393,17 @@ eq1_Boiler2(h)..
 eq2_Boiler2(h)..
          h_Boiler2(h) =l= B_Boiler2 * B2_cap;
 
-eq3_Boiler2(h)$(P1P2_dispatchable(h)=1 and P1P2_dispatchable(h-1)=1  and ord(h) gt 1)..
+eq3_Boiler2(h)$((P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1)  and ord(h) gt 1)..
          h_Boiler2(h)-h_Boiler2(h-1) =l= B2_hourly_ramprate;
 
-eq4_Boiler2(h)$(P1P2_dispatchable(h)=1  and P1P2_dispatchable(h-1)=1 and ord(h) gt 1)..
+eq4_Boiler2(h)$((P1P2_dispatchable(h)=1  or P1P2_dispatchable(h-1)=1) and ord(h) gt 1)..
          h_Boiler2(h) - h_Boiler2(h-1) =g= -B2_hourly_ramprate;
+
+eq5_h_Boiler2(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
+             Boiler2_prev_disp- h_Boiler2(h)=l=B2_hourly_ramprate;
+
+eq6_h_Boiler2(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
+             Boiler2_prev_disp- h_Boiler2(h)=g=-B2_hourly_ramprate;
 
 eq_h_Boiler2_research(h)$(P1P2_dispatchable(h)=0)..
          h_Boiler2(h) =e= B_Boiler2 * B2_research_prod;
