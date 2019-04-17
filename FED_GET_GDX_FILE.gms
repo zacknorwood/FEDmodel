@@ -284,6 +284,14 @@ $GDXIN MtoG.gdx
 $LOAD DH_heating_season
 $GDXIN
 
+*-----------DC cooling season from MATLAB---------------------------------------
+PARAMETERS
+            DC_cooling_season(h)           Period in which DH exports are payed for
+;
+$GDXIN MtoG.gdx
+$LOAD DC_cooling_season
+$GDXIN
+
 
 *---------Simulation option settings--------------------------------------------
 PARAMETERS

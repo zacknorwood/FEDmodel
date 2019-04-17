@@ -35,6 +35,7 @@ equation
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
            eq_AbsC3     Absorption chiller electricity usage
+           eq_AbsC4     Minimum production of AbsC during cooling season
 
            eq_RM1       Refrigerator equation
            eq_RM2       Refrigerator equation
@@ -100,6 +101,7 @@ equation
            eq_BAC_D_change  hourly change in energy stored in deep storage of BAC
            eq_BAC_link      hourly flow between shallow and deep storage of BAC
            eq_BAC_savings   hourly energy savings of BAC
+           eq_BAC_cooling_savings hourly savings in cooling of BAC
            eq_BAC_S_loss    losses from shallow storage of BAC
            eq_BAC_D_loss    losses from deep storage of BAC
 
@@ -340,6 +342,10 @@ eq_AbsC2(h) $ (min_totCost_0 eq 0)..
 eq_AbsC3(h)..
              el_AbsC(h) =e= c_AbsC(h) / AbsC_el_COP;
 
+*Minimum production of AC durign cooling season according to AH
+eq_AbsC4(h)$(DC_cooling_season(h) eq 1)..
+             c_AbsC(h) =g= 200;
+
 *----------Refrigerator Machine equations (electricity => cooling)--------------
 eq_RM1(h)..
              c_RM(h) =e= RM_COP*el_RM(h)*(1-min_totCost_0);
@@ -519,6 +525,9 @@ eq_BAC_link(h,BID) $ (BTES_model('BTES_Scap',BID) ne 0)..
 
 eq_BAC_savings(h,BID)..
           h_BAC_savings(h,BID) =e= BAC_savings_factor(h)*B_BAC(BID)*h_demand(h,BID);
+
+eq_BAC_cooling_savings(h, BID)..
+          c_BAC_savings(h,BID) =e= BAC_cooling_savings_factor * B_BAC(BID)*c_demand(h,BID)*DC_cooling_season(h);
 
 eq_BAC_S_loss(h,BID)..
          BAC_Sloss(h,BID) =e= BTES_kSloss(BID)*BAC_Sen(h-1,BID);
