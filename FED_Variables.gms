@@ -300,8 +300,14 @@ variable
          nonAH_CO2(h)   Hourly CO2 emissions from the non-Akademiska Hus FED network
          FED_CO2(h)     Hourly CO2 emissions in the FED system
          tot_CO2        Total CO2 emissions of the FED system
+         AH_PE(h)
+         nonAH_PE(h)
          FED_PE(h)      Hourly PE use in the FED system
          tot_PE         Total PE use in the FED system
+         AH_NREF(h)     Hourly NREF use in AH Buildings
+         nonAH_NREF(h)  Hourly NREF use in nonAH buildings
+         FED_NREF(h)    Hourly NREF use in the FED system
+         tot_NREF        Total NREF used in the FED System
 ;
 
 *-------------------- Power tariffs --------------------------------------------

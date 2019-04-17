@@ -52,6 +52,11 @@ data.h_price=gdx2mat(gdxData,'marginalCost_DH',h_sim.uels);
 %Outdoor temprature
 data.tout=gdx2mat(gdxData,'tout',h_sim.uels);
 
+%NREF
+data.AH_NREF=gdx2mat(gdxData,'AH_NREF',h_sim.uels);
+data.nonAH_NREF=gdx2mat(gdxData,'nonAH_NREF',h_sim.uels);
+data.FED_NREF=gdx2mat(gdxData,'FED_NREF',h_sim.uels);
+
 %FED PE
 data.FED_PE=gdx2mat(gdxData,'FED_PE',h_sim.uels);
 data.tot_PE=gdx2mat(gdxData,'tot_PE');

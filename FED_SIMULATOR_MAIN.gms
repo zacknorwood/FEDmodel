@@ -60,21 +60,9 @@ tot_var_cost_AH(h)= var_cost_existing_AH.l(h)+var_cost_new_AH.l(h);
 tot_fixed_cost=fix_cost_existing_AH + fix_cost_new_AH;
 
 ************AH PE use and CO2 emission*************************************
-Parameters
-    AH_PE(h)     AH PE use
-    AH_PE_tot    AH total PE average
-;
 
 
 
-
-*-----------------AH average and margional PE use-------------------------------
-AH_PE(h)= ( el_imp_AH.l(h)-el_exp_AH.l(h))*NREF_El(h)
-            + el_PV.l(h)*NREF_PV
-            + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_heating_season(h))*NREF_DH(h) + ((h_Boiler1.l(h)+h_FlueGasCondenser1.l(h))/B1_eff)*NREF_Boiler1
-                     + fuel_Boiler2.l(h)*NREF_Boiler2;
-
-AH_PE_tot=sum(h,AH_PE(h));
 
 
 ********************Output data from GAMS to MATLAB*********************
@@ -209,7 +197,7 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       PT_exG, max_exG, PT_DH, mean_DH, invCost,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
-                      AH_PE, AH_CO2, nonAH_CO2,
+                      AH_PE, AH_CO2, nonAH_CO2, AH_NREF, nonAH_NREF, FED_NREF,
                       DH_heating_season, P1P2_dispatchable, inv_lim,
                       c_RMInv, el_RMInv, RMInv_cap, invCost_RMInv,
                       model_status,B_Heating_cost,B_Electricity_cost,B_Cooling_cost

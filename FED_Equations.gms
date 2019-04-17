@@ -166,7 +166,7 @@ equation
            eq_hbalance1  maximum heating export from AH system
            eq_hbalance2  heating supply-demand balance excluding AH buildings
            eq_hbalance3  heating supply-demand balance excluding nonAH buildings
-
+           eq_hbalance4  Limit AH heat import to 0 during summer mode
 *           eq_dhn_constraint District heating network transfer limit
 *           eq_dh_node_flows Summing of flows in district heating network
 *           eq_dcn_constraint District cooling network transfer limit
@@ -188,14 +188,18 @@ equation
 *           eq_dcpowerflow10  line limits equations
 *           eq_dcpowerflow11  slack angle constraint
 *           eq_dcpowerflow12  slack voltage constraint
-
+           eq_AH_NREF    NREF use in AH buildings
+           eq_nonAH_NREF NREF use in nonAH buildings
+           eq_NREF       NREF use in the FED system
+           eq_totNREF    total NREF used in the FED system
+           eq_AH_PE
+           eq_nonAH_PE
            eq_PE         PE use in the FED system (marginal or average depending on which factors are used)
            eq_totPE      Total PE use in the FED system (marginal or average depending on which factors are used)
            eq_CO2        FED CO2 emissions (marginal or average depending on which factors are used)
            eq_AH_CO2     FED CO2 emissions (marginal or average depending on which factors are used) for AH system
            eq_nonAH_CO2  FED CO2 emissions (marginal or average depending on which factors are used) for non-AH system
            eq_totCO2     Total CO2 emissions during the modelled period.
-
            eq_max_exG1 maximum monthly peak demand
 * Not used in rolling time horizon - ZN
 *           eq_max_exG2 maximum monthly peak demand
@@ -744,6 +748,8 @@ eq_hbalance3(h)..
              h_imp_nonAH(h)=e=sum(BID_nonAH_h,h_demand_nonAH(h,BID_nonAH_h))
                        - (sum(BID_nonAH_h,BAC_Sdis(h,BID_nonAH_h))*BTES_dis_eff-sum(BID_nonAH_h,BAC_Sch(h,BID_nonAH_h))/BTES_chr_eff);
 
+eq_hbalance4(h)$(DH_heating_season(h) eq 0)..
+            h_imp_AH(h) =e= 0;
 
 
 *-------------- Demand supply balance for cooling ------------------------------
@@ -797,9 +803,19 @@ $ontext
 1)el_RM(h),e_RMMC(h),e_AAC(h), e_HP(h),e_RMInv(h) are set to KC
 2)inverter of FBch is the same with the pv additional constraints must be added
 $offtext
-*--------------FED Primary energy use-------------------------------------------
-eq_PE(h)..
-        FED_PE(h)=e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*NREF_El(h)
+*-------------- FED NREF use ------------------------
+eq_AH_NREF(h)..
+         AH_NREF(h) =e= (el_imp_AH(h)-el_exp_AH(h))*NREF_El(h)
+                       + el_PV(h)*NREF_PV
+                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h))*NREF_DH(h) + fuel_Boiler1(h)*NREF_Boiler1
+                       + fuel_Boiler2(h) * NREF_Boiler2;
+
+eq_nonAH_NREF(h)..
+         nonAH_NREF(h) =e= el_imp_nonAH(h) * NREF_El(h)
+                       + h_imp_nonAH(h) * NREF_DH(h);
+
+eq_NREF(h)..
+        FED_NREF(h)=e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*NREF_El(h)
                      + el_PV(h)*NREF_PV
                      + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h) + h_imp_nonAH(h))*NREF_DH(h) + fuel_Boiler1(h)*NREF_Boiler1
                      + fuel_Boiler2(h)*NREF_Boiler2
@@ -807,7 +823,31 @@ eq_PE(h)..
                       + C_DC_slack_var(h)*1000000000
                       + el_slack_var(h)*1000000000;
 
+eq_totNREF..
+         tot_NREF=e=sum(h,FED_NREF(h));
+
+*--------------Primary energy use-------------------------------------------
+
 **********************Total PE use in the FED system****************************
+
+eq_AH_PE(h)..
+         AH_PE(h) =e= (el_imp_AH(h)-el_exp_AH(h))*PE_El(h)
+                       + el_PV(h)*PE_PV
+                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h))*PE_DH(h) + fuel_Boiler1(h) * PE_Boiler1
+                       + fuel_Boiler2(h) * PE_Boiler2;
+
+eq_nonAH_PE(h)..
+         nonAH_PE(h) =e= el_imp_nonAH(h) * PE_El(h)
+                       + h_imp_nonAH(h) * PE_DH(h);
+
+eq_PE(h)..
+        FED_PE(h)=e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h)) * PE_El(h)
+                     + el_PV(h)*PE_PV
+                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h) + h_imp_nonAH(h))*PE_DH(h) + fuel_Boiler1(h)*PE_Boiler1
+                     + fuel_Boiler2(h)*PE_Boiler2
+                     + h_DH_slack_var(h)*1000000000
+                      + C_DC_slack_var(h)*1000000000
+                      + el_slack_var(h)*1000000000;
 eq_totPE..
          tot_PE=e=sum(h,FED_PE(h));
 *---------------FED CO2 emission------------------------------------------------

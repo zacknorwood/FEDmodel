@@ -31,7 +31,8 @@ sim_stop_h = 14;
 sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 
-%sim_stop=sim_start+48;
+%sim_start=6480;
+sim_stop=sim_start+47;
 forecast_horizon = 10;
 
 % DATA INDICES FOR INPUT DATA
@@ -220,7 +221,7 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 %     load('Input_dispatch_model\Heating_ANN');
 
 %% INPUT NRE and CO2 FACTORS
-[CO2F_El_full, NREF_El_full, CO2F_DH_full, NREF_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop,data_length);
+[CO2F_El_full, NREF_El_full, PE_El_full, CO2F_DH_full, NREF_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop,data_length);
 
 %% Initialize FED INVESTMENT OPTIONS
 % If min_totCost_O=1, i.e. base case simulation, then all investment options
@@ -496,6 +497,10 @@ for t=1:sim_length
     NREF_El = struct('name','NREF_El','type','parameter','form','full','val',NREF_El_full(t:forecast_end,:));
     NREF_El.uels=h.uels;
     
+    %PE factors of the external el grid
+    PE_El = struct('name','PE_El','type','parameter','form','full','val',PE_El_full(t:forecast_end,:));
+    PE_El.uels=h.uels;
+    
     %CO2 factors of the external DH grid (AVERAGE AND MARGINAL) & marginal
     %DH cost
     marginalCost_DH = struct('name','marginalCost_DH','type','parameter','form','full','val',marginalCost_DH_full(t:forecast_end,:));
@@ -507,7 +512,11 @@ for t=1:sim_length
     %NRE factors of the external DH grid
     NREF_DH = struct('name','NREF_DH','type','parameter','form','full','val',NREF_DH_full(t:forecast_end,:));
     NREF_DH.uels=h.uels;
-    
+
+    %PE factors of the external DH grid
+    PE_DH = struct('name','PE_DH','type','parameter','form','full','val',PE_DH_full(t:forecast_end,:));
+    PE_DH.uels=h.uels;
+
     %el exG slack bus data
     el_exG_slack = struct('name','el_exG_slack','type','parameter','form','full','val',el_exG_slack_full(t:forecast_end,:));
     el_exG_slack.uels=h.uels;
@@ -584,8 +593,8 @@ for t=1:sim_length
         opt_fx_inv_CWB, opt_fx_inv_CWB_cap, opt_fx_inv_CWB_ch_max, opt_fx_inv_CWB_dis_max,...
         opt_fx_inv_BES_cap, opt_fx_inv_BES_maxP, opt_fx_inv_SO, opt_fx_inv_BAC,...
         h, BTES_BAC_Inv, BTES_SO_Inv,...
-        CO2F_El, NREF_El, CO2F_DH, NREF_DH, marginalCost_DH, CO2F_PV, NREF_PV,...
-        CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2,...
+        CO2F_El, NREF_El, PE_El, CO2F_DH, NREF_DH, PE_DH, marginalCost_DH, CO2F_PV, NREF_PV, PE_PV,...
+        CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2,...
         BID, BID_AH_el, BID_nonAH_el, BID_AH_h, BID_nonAH_h, BID_AH_c, BID_nonAH_c, BID_nonBTES,...
         el_demand, h_demand, c_demand, h_Boiler1_0, h_FlueGasCondenser1_0,...
         el_VKA1_0, el_VKA4_0, c_AbsC_0, G_roof, G_facade,...

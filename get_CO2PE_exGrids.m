@@ -1,4 +1,6 @@
-function [ CO2F_El, NREF_El, CO2F_DH, NREF_DH, marginalCost_DH, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors, sim_start, data_read_stop, data_length)
+function [ CO2F_El, NREF_El, PE_El, CO2F_DH, NREF_DH, PE_DH, marginalCost_DH, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors, sim_start, data_read_stop, data_length)
+% NEW: CO2F_El_full, NREF_El_full, PE_el_full, CO2F_DH_full, NREF_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2
+% Old: CO2F_El, NREF_El, CO2F_DH, NREF_DH, marginalCost_DH, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2
 %% Here, the CO2 factor and Energy factor of the external grids are calculated
 % The external grid production mix data read in is from the district
 % heating system (Göteborg Energi) and the Swedish electrical grid (Tomorrow / tmrow.com)
@@ -22,23 +24,31 @@ NREintensityProdMix_Heat = [0 0 1 1 1 1 0.08];
 
 %Old values based on D7.1.1. Note we have no primary energy factor for hydro-discharge so assuming the
 %same as hydro here.
-%PEintensityProdMix_El = [2.99 2.45 1.93 1.01 3.29 2.75 1.25 1.03 1.02 2.47 1.01 0];
+PEintensityProdMix_El = [2.99 2.45 1.93 1.01 3.29 2.75 1.25 1.03 1.02 2.47 1.01 0];
+
+%%%%%%%%%%%%%%%%%% PLEASE CHECK THESE VALUES -DS %%%%%%%%%%%%
+% Heat order: [Biomass-HOB Biomass-CHP Gas-HOB Gas-CHP Oil-HOB RefineryHeat WasteIncineration-CHP]
+PEintensityProdMix_Heat = [1.33 0.76 1.09 0.78 1.31 0.03 0.03];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %CO2 and PE factors for local generation units
 %CO2 and PE emissions intensity factors for solar PV
 CO2F_PV = struct('name','CO2F_PV','type','parameter','val',CO2intensityProdMix_El(7));
 NREF_PV = struct('name','NREF_PV','type','parameter','val',NREintensityProdMix_El(7));
+PE_PV = struct('name','PE_PV','type','parameter','val',PEintensityProdMix_El(7));
 
 %CO2 and PE emissions intensity factors for boiler 1. Depends on the type
 %of fuel used(assume biomass now). Note that the Biomass-HOB factor is used for
 %Boiler 1. This factor should be applied to the output of Boiler 1 before heat goes to the turbine.
 CO2F_Boiler1 = struct('name','CO2F_Boiler1','type','parameter','val',CO2intensityProdMix_Heat(1));
 NREF_Boiler1 = struct('name','NREF_Boiler1','type','parameter','val',NREintensityProdMix_Heat(1));
+PE_Boiler1 = struct('name','PE_Boiler1','type','parameter','val',PEintensityProdMix_Heat(1));
 
 %CO2 and PE emissions intensity factors for boiler 2. Depends on the type
 %of fuel used (assume biomass now).
 CO2F_Boiler2 = struct('name','CO2F_Boiler2','type','parameter','val',CO2intensityProdMix_Heat(1));
 NREF_Boiler2 = struct('name','NREF_Boiler2','type','parameter','val',NREintensityProdMix_Heat(1));
+PE_Boiler2 = struct('name','PE_Boiler2','type','parameter','val',PEintensityProdMix_Heat(1));
 
 %Get Marginal cost DH (SEK / kWh)
 marginalCost_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('K',num2str(sim_start+1),':K',num2str(data_read_stop+1)));
@@ -60,6 +70,7 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     % have zero CO2/NRE effect, and round cycle efficieny is assumed to be 100%.
     CO2F_El = sum(prodMix_El(:,1:length(CO2intensityProdMix_El)) .* CO2intensityProdMix_El, 2);
     NREF_El = sum(prodMix_El(:,1:length(NREintensityProdMix_El)) .* NREintensityProdMix_El, 2);
+    PE_El = sum(prodMix_El(:,1:length(PEintensityProdMix_El)) .* PEintensityProdMix_El, 2);
     
     %Get Marginal units DH
     marginalUnits_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('C',num2str(sim_start+1),':J',num2str(data_read_stop+1)));
@@ -71,6 +82,7 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     % factors are then calculated as the marginal electric mix divided by the COP of the heat pump (Rya).
     CO2F_DH = marginalUnits_DH(:,1:size(marginalUnits_DH,2)-1) * CO2intensityProdMix_Heat' + marginalUnits_DH(:,size(marginalUnits_DH,2)) .* CO2F_El./COP_HP_DH;
     NREF_DH = marginalUnits_DH(:,1:size(marginalUnits_DH,2)-1) * NREintensityProdMix_Heat' + marginalUnits_DH(:,size(marginalUnits_DH,2)) .* NREF_El./COP_HP_DH;
+    PE_DH = marginalUnits_DH(:,1:size(marginalUnits_DH,2)-1) * PEintensityProdMix_Heat' + marginalUnits_DH(:,size(marginalUnits_DH,2)) .* PE_El./COP_HP_DH;
     
 else
     error('Average emissions/price option is not currently implemented, set opt_marg_factors to 1');
