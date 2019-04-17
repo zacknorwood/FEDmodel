@@ -272,7 +272,10 @@ BTES_kSloss(BID)= BTES_model('kloss_Sday',BID);
 BTES_kDloss(BID)= BTES_model('kloss_D',BID);
 
 *--------------BAC parameters---------------------------------------------------
-
+*Savings factor based on calculations for a yearly savings of 4.4% as per the BAC datasheet
+scalar
+BAC_cooling_savings_factor Savings factor during cooling season /0.0037/
+;
 
 *--------------Battery storage characteristics----------------------------------
 scalar

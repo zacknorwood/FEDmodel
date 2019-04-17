@@ -174,6 +174,7 @@ positive variable
          BAC_Sloss(h,BID)  heat loss from the shallow section of the building
          BAC_Dloss(h,BID)  heat loss from the deep section of the building
          h_BAC_savings(h,BID) hourly heat consumption savings per building attributable to BAC investment
+         c_BAC_savings(h,BID) hourly cooling consumption savings per building attributable to BAC investment
 
 ;
 BAC_Sen.up(h,BID)=1000*BTES_model('BTES_Scap',BID);
