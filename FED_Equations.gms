@@ -25,7 +25,7 @@ equation
            eq3_h_Boiler1           ramp constraint set to 1MW
            eq4_h_Boiler1           ramp constraint set to 1MW
            eq5_h_Boiler1           ramp constraint set to 1MW
-*           eq6_h_Boiler1           fixed Boiler1 for synth baseline
+           eq6_h_Boiler1           fuel use for Boiler1
            eq_h_Boiler1_dispatch  Equation determining when Boiler1 is dispatchable
 
            eq_h_FlueGasCondenser11            Equation related to flue gas heat production
@@ -64,6 +64,8 @@ equation
            eq2_Boiler2                investment equation for B2
            eq3_Boiler2                maximum ramp up constraint
            eq4_Boiler2                maximum ramp down constraint
+           eq5_h_Boiler2              maximum ramp up constraint
+           eq6_h_Boiler2              maximum ramp down constraint
            eq_h_Boiler2_research  B2 production constraint during research
 
 
@@ -79,6 +81,7 @@ equation
            eq_HP1       heat production from HP
            eq_HP2       cooling production from HP
            eq_HP3       for determining capacity of HP
+           eq_HP4       Set minimum output from HP under wintermode
 
            eq_TESen0    initial energy content of the TES
            eq_TESen1    initial energy content of the TES
@@ -213,6 +216,8 @@ equation
            eq_fix_cost_new      total fixed cost for new units
            eq_var_cost_existing total variable cost for existing units
            eq_var_cost_new      total variable cost for new units
+           eq_var_cost_existing_AH hourly variable cost for existing units AH
+           eq_var_cost_new_AH      hourly variable cost for new units AH
            eq_Ainv_cost  total annualized investment cost
          eq_invCost_PV      investment cost of PV
          eq_invCost_BES     investment cost of battery storage
@@ -248,7 +253,8 @@ eq_VKA11(h)..
 eq_VKA12(h)..
         c_VKA1(h) =e= VKA1_C_COP*el_VKA1(h);
 eq_VKA13(h) $(min_totCost_0 eq 0)..
-        el_VKA1(h) =l= VKA1_el_cap;
+        el_VKA1(h) =l= VKA1_el_cap*(1-DH_heating_season(h));
+* Only run VKA1 during summer -DS
 
 *Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN.
 * These equations are wrong, it sets the ramp rate of the heatpumps to 1kW per hour which is entirely unreasonable - ZN
@@ -270,7 +276,8 @@ eq_VKA41(h)..
 eq_VKA42(h)..
         c_VKA4(h) =e= VKA4_C_COP*el_VKA4(h);
 eq_VKA43(h) $ (min_totCost_0 eq 0)..
-        el_VKA4(h) =l= VKA4_el_cap;
+        el_VKA4(h) =l= VKA4_el_cap*DH_heating_season(h);
+* Only run VKA4 during Winter -DS
 
 *Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN.  Ramp rate is also only 1kW which is unreasonable.
 *eq_VKA44(h)$(ord(h) gt 1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
@@ -286,21 +293,24 @@ eq_VKA43(h) $ (min_totCost_0 eq 0)..
 *             VKA1_prev_disp- h_VKA4(h)=g=-1;
 
 *------------------Boiler1 equation(when dispachable)----------------------------
+
 eq1_h_Boiler1(h) $ (min_totCost_0 eq 0)..
         h_Boiler1(h)=l=Boiler1_cap;
 
-eq2_h_Boiler1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
-        h_Boiler1(h-1)- h_Boiler1(h)=g=-1000;
+eq2_h_Boiler1(h)$(ord(h) gt 1 and (P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1) and synth_baseline eq 0 and min_totCost_0 eq 0)..
+        h_Boiler1(h-1)- h_Boiler1(h)=g=-B1_hourly_ramprate;
 
-eq3_h_Boiler1(h)$(ord(h) gt 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
-        h_Boiler1(h-1)- h_Boiler1(h)=l=1000;
+eq3_h_Boiler1(h)$(ord(h) gt 1 and (P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1)  and synth_baseline eq 0 and min_totCost_0 eq 0)..
+        h_Boiler1(h-1)- h_Boiler1(h)=l=B1_hourly_ramprate;
 
 eq4_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
-             Boiler1_prev_disp- h_Boiler1(h)=l=1000;
+             Boiler1_prev_disp- h_Boiler1(h)=l=B1_hourly_ramprate;
 
 eq5_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
-             Boiler1_prev_disp- h_Boiler1(h)=g=-1000;
+             Boiler1_prev_disp- h_Boiler1(h)=g=-B1_hourly_ramprate;
 
+eq6_h_Boiler1(h)..
+          fuel_Boiler1(h) =e= ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff);
 *Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN.
 *eq6_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
 *            h_Boiler1(h)=e= Boiler1(h);
@@ -365,10 +375,11 @@ eq_RM2(h)..
 *----------MC2 Heat pump equations (electricity => heating + cooling)-----------
 eq_RMMC1(h)..
          h_RMMC(h) =l= RMCC_H_COP * el_RMMC(h);
+
 eq_RMMC2(h)..
-         c_RMMC(h) =e= RMCC_C_COP * el_RMMC(h);
-* Needs to be limited even when we do not have RMMC, DS
-*eq_RMMC3(h) $ (opt_fx_inv_RMMC ne 0)..
+         c_RMMC(h) =e= RMCC_C_COP * el_RMMC(h)*DH_heating_season(h);
+* Assuming DH_heating_season equal "wintermode" -DS
+
 eq_RMMC3(h)..
          c_RMMC(h) =l= RMMC_inv * RMMC_cap;
 
@@ -388,11 +399,17 @@ eq1_Boiler2(h)..
 eq2_Boiler2(h)..
          h_Boiler2(h) =l= B_Boiler2 * B2_cap;
 
-eq3_Boiler2(h)$(P1P2_dispatchable(h)=1 and P1P2_dispatchable(h-1)=1  and ord(h) gt 1)..
+eq3_Boiler2(h)$((P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1)  and ord(h) gt 1)..
          h_Boiler2(h)-h_Boiler2(h-1) =l= B2_hourly_ramprate;
 
-eq4_Boiler2(h)$(P1P2_dispatchable(h)=1  and P1P2_dispatchable(h-1)=1 and ord(h) gt 1)..
+eq4_Boiler2(h)$((P1P2_dispatchable(h)=1  or P1P2_dispatchable(h-1)=1) and ord(h) gt 1)..
          h_Boiler2(h) - h_Boiler2(h-1) =g= -B2_hourly_ramprate;
+
+eq5_h_Boiler2(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
+             Boiler2_prev_disp- h_Boiler2(h)=l=B2_hourly_ramprate;
+
+eq6_h_Boiler2(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
+             Boiler2_prev_disp- h_Boiler2(h)=g=-B2_hourly_ramprate;
 
 eq_h_Boiler2_research(h)$(P1P2_dispatchable(h)=0)..
          h_Boiler2(h) =e= B_Boiler2 * B2_research_prod;
@@ -426,7 +443,12 @@ eq_HP1(h)..
 eq_HP2(h)..
              c_HP(h) =l= HP_C_COP*el_HP(h);
 eq_HP3(h)..
-             h_HP(h) =l= HP_cap;
+             h_HP(h) =l= HP_cap*DH_heating_season(h);
+*Limit heat to be produce during winter mode -DS
+
+eq_HP4(h)..
+            h_hp(h)=g=opt_fx_inv_HP_min*DH_heating_season(h);
+
 
 *------------------TES equations------------------------------------------------
 eq_TESen0(h,BID)$(ord(h) eq 1)..
@@ -788,7 +810,7 @@ $offtext
 eq_PE(h)..
         FED_PE(h)=e= (el_imp_AH(h)-el_exp_AH(h) + el_imp_nonAH(h))*NREF_El(h)
                      + el_PV(h)*NREF_PV
-                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h) + h_imp_nonAH(h))*NREF_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*NREF_Boiler1
+                     + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h) + h_imp_nonAH(h))*NREF_DH(h) + fuel_Boiler1(h)*NREF_Boiler1
                      + fuel_Boiler2(h)*NREF_Boiler2
                      + h_DH_slack_var(h)*1000000000
                       + C_DC_slack_var(h)*1000000000
@@ -797,12 +819,11 @@ eq_PE(h)..
 **********************Total PE use in the FED system****************************
 eq_totPE..
          tot_PE=e=sum(h,FED_PE(h));
-
 *---------------FED CO2 emission------------------------------------------------
 eq_AH_CO2(h)..
          AH_CO2(h) =e= (el_imp_AH(h)-el_exp_AH(h))*CO2F_El(h)
                        + el_PV(h)*CO2F_PV
-                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_export_season(h))*CO2F_DH(h) + ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff)*CO2F_Boiler1
+                       + (h_AbsC(h)+h_imp_AH(h)-h_exp_AH(h)*DH_heating_season(h))*CO2F_DH(h) + fuel_Boiler1(h)*CO2F_Boiler1
                        + fuel_Boiler2(h) * CO2F_Boiler2;
 
 eq_nonAH_CO2(h)..
@@ -863,6 +884,7 @@ eq_fix_cost_new..
                            + B_Boiler2 * fix_cost('B2')
                            + B_TURB * fix_cost('TURB')
                            + fix_cost('AbsCInv');
+
 eq_var_cost_existing..
 *Peak power tariffs for both electricty? and heating are supposed to be included in prices?
          var_cost_existing =e= sum(h,(el_imp_AH(h) + el_imp_nonAH(h)) * utot_cost('exG',h))
@@ -870,7 +892,9 @@ eq_var_cost_existing..
                                + sum(h,el_AbsC(h) * utot_cost('exG',h))
                                + sum(h,(h_imp_AH(h) + h_imp_nonAH(h)) * utot_cost('DH',h))
                                - sum(h,h_exp_AH(h) * (utot_cost('DH',h)/(1+DH_margin)))
-                               + sum(h,h_Boiler1(h) * utot_cost('B1',h))
+                               + sum(h,(h_Boiler1(h)+h_FlueGasCondenser1(h)) * var_cost('B1',h)+fuel_Boiler1(h)*fuel_cost('B1',h))
+*Changed B1 cost to reflect the fueal use and heat output -DS
+*                               + sum(h,h_Boiler1(h) * utot_cost('B1',h))
                                + sum(h,h_VKA1(h) * utot_cost('HP',h))
                                + sum(h,h_VKA4(h) * utot_cost('HP',h))
                                + sum(h,c_AbsC(h) * utot_cost('AbsC',h))
@@ -889,9 +913,51 @@ eq_var_cost_new..
                            + sum(h,TES_dis(h)*utot_cost('TES',h))
                            + sum((h,BID),BAC_Sch(h,BID)*utot_cost('BAC',h))
                            + sum((h,BID),SO_Sch(h,BID)*utot_cost('SO',h))
-                           + sum(h,h_Boiler2(h)*utot_cost('B2',h))
+                           + sum(h,h_Boiler2(h) * var_cost('B2',h)+fuel_Boiler2(h)*fuel_cost('B2',h))
+*Changed B1 cost to reflect the fueal use and heat output -DS
+*                           + sum(h,h_Boiler2(h)*utot_cost('B2',h))
                            + sum(h,el_TURB(h)*utot_cost('TURB',h))
                            + sum(h,c_AbsCInv(h)*utot_cost('AbsCInv',h));
+
+
+
+*************** Variable cost for AH ***********************
+* NOTE: cost for absC are include in AH costs, both Cooling, heat (fuel cost) and electricity cost
+* For electricity all solar PVs are included in AHs cost, however var cost are currently assumed to be zero. -DS
+
+eq_var_cost_existing_AH(h)..
+var_cost_existing_AH(h) =e=      (el_imp_AH(h) * utot_cost('exG',h))
+                               - el_exp_AH(h) * el_sell_price(h)
+                               + el_AbsC(h) * utot_cost('exG',h)
+                               + h_imp_AH(h) * utot_cost('DH',h)
+                               - h_exp_AH(h) * (utot_cost('DH',h)/(1+DH_margin))
+                               + (h_Boiler1(h)+h_FlueGasCondenser1(h)) * var_cost('B1',h)+fuel_Boiler1(h)*fuel_cost('B1',h)
+*Changed B1 cost to reflect the fueal use and heat output -DS
+*                               + sum(h,h_Boiler1(h) * utot_cost('B1',h))
+                               + h_VKA1(h) * utot_cost('HP',h)
+                               + h_VKA4(h) * utot_cost('HP',h)
+                               + c_AbsC(h) * utot_cost('AbsC',h)
+                               + c_RM(h) * utot_cost('RM',h)
+                               + c_RMMC(h) * utot_cost('RM',h)
+                               + h_AbsC(h) * utot_cost('DH',h);
+
+
+* AK Check BAC/SO Costs
+eq_var_cost_new_AH(h)..
+var_cost_new_AH(h)   =e=     el_PV(h)*utot_cost('PV',h)
+                           + h_HP(h)*utot_cost('HP',h)
+                           + c_RMInv(h)*utot_cost('RMInv',h)
+                           + sum(BID,BES_dis(h,BID)*utot_cost('BES',h))
+                           + TES_dis(h)*utot_cost('TES',h)
+                           + sum(BID,BAC_Sch(h,BID)*utot_cost('BAC',h))
+                           + sum(BID,SO_Sch(h,BID)*utot_cost('SO',h))
+                           + h_Boiler2(h) * var_cost('B2',h)+fuel_Boiler2(h)*fuel_cost('B2',h)
+*Changed B1 cost to reflect the fueal use and heat output -DS
+*                           + sum(h,h_Boiler2(h)*utot_cost('B2',h))
+                           + el_TURB(h)*utot_cost('TURB',h)
+                           + c_AbsCInv(h)*utot_cost('AbsCInv',h);
+
+******************************************************
 
 eq_Ainv_cost..
           Ainv_cost =e=

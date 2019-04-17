@@ -215,9 +215,7 @@ PARAMETERS
            el_demand(h,BID)    ELECTRICITY DEMAND IN THE FED BUILDINGS
            h_demand(h,BID)     Heating DEMAND IN THE FED BUILDINGS
            c_demand(h,BID)     Cooling DEMAND IN THE FED BUILDINGS
-           cool_demand(h)       Total cooling demand
-           heat_demand(h)       Total heat demand
-           elec_demand(h)       Total elec. demand
+
 ;
 $GDXIN MtoG.gdx
 $LOAD el_demand
@@ -276,14 +274,6 @@ Parameters
 ;
 $GDXIN MtoG.gdx
 $LOAD BTES_SO_max_power
-$GDXIN
-
-*-----------DH export season from MATLAB----------------------------------------
-PARAMETERS
-            DH_export_season(h)           Period in which DH exports are payed for
-;
-$GDXIN MtoG.gdx
-$LOAD DH_export_season
 $GDXIN
 
 *-----------DH heating season from MATLAB---------------------------------------
@@ -368,6 +358,7 @@ PARAMETERS
          opt_fx_inv_Boiler2          options to fix the B2 investment
          opt_fx_inv_TURB        options to fix the TURB investment
          opt_fx_inv_HP_cap      Capacity of the fixed new HP
+         opt_fx_inv_HP_min      Minimum production from HP in kW heat
          opt_fx_inv_RMInv_cap   Capacity of the fixed new RM
          opt_fx_inv_TES_cap     capacity of the new TES
          opt_fx_inv_BES         options to fix investment in new BES
@@ -391,6 +382,7 @@ $LOAD opt_fx_inv_AbsCInv_cap
 $LOAD opt_fx_inv_Boiler2
 $LOAD opt_fx_inv_TURB
 $LOAD opt_fx_inv_HP_cap
+$LOAD opt_fx_inv_HP_min
 $LOAD opt_fx_inv_RMInv_cap
 $LOAD opt_fx_inv_TES_cap
 $LOAD opt_fx_inv_BES
@@ -453,11 +445,7 @@ $load Boiler2_prev_disp
 $GDXIN
 *the combination is used to comment out sections codes inside
 
-parameters
-B_Heating_cost(h,BID)             heating cost of buildings
-B_Electricity_cost(h,BID_AH_el)   electricity cost of building
-B_Cooling_cost(h,BID_AH_c)        cooling cost of buildings
-;
+
 
 
 

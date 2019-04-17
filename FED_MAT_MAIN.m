@@ -31,6 +31,7 @@ sim_stop_h = 14;
 sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 
+%sim_stop=sim_start+48;
 forecast_horizon = 10;
 % Cooling season start stop
 DC_cooling_season_full = zeros(sim_stop,1);
@@ -113,8 +114,8 @@ BID_AH_h.uels={'O3060132', 'O0007017',...
     'Karhus_CFAB', 'O0007019', 'O0007040',...
     'O0007022', 'O0007025', 'O0007012', 'O0007021', 'O0007028','O0007001',...
     'O3060133', 'O0007024', 'O0007005', 'O0013001','O0011001',...
-    'O0007018','O0007023', 'O0007026', 'O0007027',...
-    'Karhuset', 'Karhus_studenter'};
+    'O0007018','Karhuset','O0007023', 'O0007026', 'O0007027',...
+     'Karhus_studenter'};
 
 %Subset of buildings in the FED system not connected to AH's local heat distribution network, buildings heat demand is hence supplied from GE's external DH system
 BID_nonAH_h.name='BID_nonAH_h';
@@ -207,7 +208,7 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 %Read static properties of the model
 % AK Change BAC, and BTES namings
-[P1P2_dispatchable_full, DH_export_season_full, DH_heating_season_full, BAC_savings_period_full, BTES_model, BES_min_SoC] = fread_static_properties(sim_start,data_read_stop,data_length);
+[P1P2_dispatchable_full, DH_heating_season_full, BAC_savings_period_full, BTES_model, BES_min_SoC] = fread_static_properties(sim_start,data_read_stop,data_length);
 
 %Read variable/measured input data
 [el_demand_full, h_demand_full, c_demand_full,h_Boiler1_0_full,...
@@ -264,6 +265,8 @@ opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','ful
 %Option for new HP investment
 %>=0 =fixed investment, -1=variable of optimization; 630 kw is heating capacity of the HP invested in
 opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',630*(1-min_totCost_0)*(1-synth_baseline));
+% minimum heat output from HP during wintermode in kW heat 
+opt_fx_inv_HP_min= struct('name','opt_fx_inv_HP_min','type','parameter','form','full','val',100*(1-min_totCost_0)*(1-synth_baseline));
 
 %Option for new RM investment
 %>=0 =fixed investment, -1=variable of optimization
@@ -475,9 +478,9 @@ for t=1:sim_length
     P1P2_dispatchable = struct('name','P1P2_dispatchable','type','parameter','form','full','val',P1P2_dispatchable_full(t:forecast_end,:));
     P1P2_dispatchable.uels=h.uels;
     
-    %Heat export season
-    DH_export_season = struct('name','DH_export_season','type','parameter','form','full','val',DH_export_season_full(t:forecast_end,:));
-    DH_export_season.uels=h.uels;
+    %Heat export season - Replaced by DH_heating_season -DS
+    %DH_export_season = struct('name','DH_export_season','type','parameter','form','full','val',DH_export_season_full(t:forecast_end,:));
+    %DH_export_season.uels=h.uels;
     
     %DH heating season
     DH_heating_season = struct('name','DH_heating_season','type','parameter','form','full','val',DH_heating_season_full(t:forecast_end,:));
@@ -589,7 +592,7 @@ for t=1:sim_length
     %% Preparing input GDX file (MtoG) and RUN GAMS model
     wgdx('MtoG.gdx', min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline,...
         opt_fx_inv, opt_fx_inv_RMMC, opt_fx_inv_AbsCInv_cap, opt_fx_inv_PV,...
-        opt_fx_inv_Boiler2, opt_fx_inv_TURB, opt_fx_inv_HP_cap,...
+        opt_fx_inv_Boiler2, opt_fx_inv_TURB, opt_fx_inv_HP_cap, opt_fx_inv_HP_min,...
         opt_fx_inv_RMInv_cap, opt_fx_inv_TES_cap, opt_fx_inv_BES,...
         opt_fx_inv_CWB, opt_fx_inv_CWB_cap, opt_fx_inv_CWB_ch_max, opt_fx_inv_CWB_dis_max,...
         opt_fx_inv_BES_cap, opt_fx_inv_BES_maxP, opt_fx_inv_SO, opt_fx_inv_BAC,...

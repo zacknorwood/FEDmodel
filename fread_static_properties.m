@@ -1,4 +1,4 @@
-function [P1P2_dispatch, DH_export_season, DH_heating_season, BAC_savings_period, BTES_model, BES_min_SoC] = fread_static_properties(sim_start, data_read_stop, data_length)
+function [P1P2_dispatch, DH_heating_season, BAC_savings_period, BTES_model, BES_min_SoC] = fread_static_properties(sim_start, data_read_stop, data_length)
 %This function reads static properties of model input parameters
 
 % Set the minimum state of charge for the batteries.
@@ -15,11 +15,11 @@ if (length(P1P2_dispatch)<data_length) || (any(isnan(P1P2_dispatch),'all'))
 end
 %P1P2_dispatch(isnan(P1P2_dispatch))=0;
 
-%DH export season
-DH_export_season = xlsread('Input_dispatch_model\DH_export_season.xlsx', 1, xlRange);
-if (length(DH_export_season)<data_length) || (any(isnan(DH_export_season),'all'))
-    error('Error: input file does not have complete data for simulation length');
-end
+%DH export season -This is replaced by DH_heating_season -DS
+%DH_export_season = xlsread('Input_dispatch_model\DH_export_season.xlsx', 1, xlRange);
+%if (length(DH_export_season)<data_length) || (any(isnan(DH_export_season),'all'))
+%    error('Error: input file does not have complete data for simulation length');
+%end
 
 %DH heating season
 DH_heating_season = xlsread('Input_dispatch_model\DH_heating_season.xlsx', 1, xlRange);
