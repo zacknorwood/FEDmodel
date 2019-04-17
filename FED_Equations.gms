@@ -340,7 +340,7 @@ eq_AbsC3(h)..
 
 *Minimum production of AC durign cooling season according to AH
 eq_AbsC4(h)$(DC_cooling_season(h) eq 1)..
-             c_AbsC(h) =g= 200
+             c_AbsC(h) =g= 200;
 
 *----------Refrigerator Machine equations (electricity => cooling)--------------
 eq_RM1(h)..
