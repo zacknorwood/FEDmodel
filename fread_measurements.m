@@ -40,6 +40,7 @@ c_demand(isnan(c_demand))=0;
 % set nonAH building demand to 0;
 % this option should be taken as input from inital set up, also the BID
 % could be implemented more elegant -DS
+% el_exG_slack below relies on el_demand representing only AH buildings -AK
 NonAH_excluded=1;
 if NonAH_excluded==1
 NonAH_el_BID=[2,3,4,7,28,29,30,35];
@@ -185,11 +186,17 @@ if (length(el_exG_slack1)<data_length) || (any(isnan(el_exG_slack1),'all'))
 end
 %el_exG_slack(isnan(el_exG_slack))=0;
 
+%electricity imports
+e_imp_AH_measured=xlsread('Input_dispatch_model\AH_el_import.xlsx',1,strcat('C',int2str(sim_start+1),':C',int2str(data_read_stop+1)));
+if (length(e_imp_AH_measured)<data_length) || (any(isnan(e_imp_AH_measured),'all'))
+    error('Error: input file does not have complete data for simulation length');
+end
+
 %electricity slack bus data
-% net_e_prod = c_AbsC_0 + el_VKA1_0*c_COP_VKA1 + el_VKA4_0*c_COP_VKA4;
-% ah_e_demand = sum(c_demand(:,[1,6,8,10,11,12,13,16,17,18,19,20,21,22,23,25,26,27,31,32,33,34]), 2);
-% el_exG_slack = ah_e_demand - net_e_prod;
-% diff_e=el_exG_slack-el_exG_slack1;
+net_e_prod = e_imp_AH_measured;
+ah_e_demand = sum(el_demand(:,:), 2);
+el_exG_slack_new = ah_e_demand - net_e_prod;
+diff_e=el_exG_slack_new-el_exG_slack1;
 el_exG_slack=el_exG_slack1;
 
 
