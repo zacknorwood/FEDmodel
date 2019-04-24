@@ -40,6 +40,7 @@ c_demand(isnan(c_demand))=0;
 % set nonAH building demand to 0;
 % this option should be taken as input from inital set up, also the BID
 % could be implemented more elegant -DS
+% el_exG_slack below relies on el_demand representing only AH buildings -AK
 NonAH_excluded=1;
 if NonAH_excluded==1
 NonAH_el_BID=[2,3,4,7,28,29,30,35];
