@@ -35,7 +35,6 @@ equation
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
            eq_AbsC3     Absorption chiller electricity usage
-           eq_AbsC4     Minimum production of AbsC during cooling season
 
            eq_RM1       Refrigerator equation
            eq_RM2       Refrigerator equation
@@ -252,6 +251,10 @@ equation
 *        h_exp_AH(h) =e= export(h);
 ***************For Existing units***********************************************
 *-----------------VKA1 equations------------------------------------------------
+
+
+el_VKA1.fx(h) $ (min_totCost_0 = 1) = el_VKA1_0(h);
+
 eq_VKA11(h)..
         h_VKA1(h) =e= VKA1_H_COP*el_VKA1(h);
 eq_VKA12(h)..
@@ -275,6 +278,9 @@ eq_VKA13(h) $(min_totCost_0 eq 0)..
 *             VKA1_prev_disp- h_VKA1(h)=g=-1;
 
 *-----------------VKA4 equations------------------------------------------------
+
+el_VKA4.fx(h) $ (min_totCost_0 = 1) = el_VKA4_0(h);
+
 eq_VKA41(h)..
         h_VKA4(h) =e= VKA4_H_COP*el_VKA4(h);
 eq_VKA42(h)..
@@ -298,6 +304,10 @@ eq_VKA43(h) $ (min_totCost_0 eq 0)..
 
 *------------------Boiler1 equation(when dispachable)----------------------------
 
+Boiler1_cap.fx=cap_sup_unit('B1');
+h_Boiler1.up(h)$(P1P2_dispatchable(h)=1 and min_totCost_0 = 0)=B1_max;
+h_Boiler1.fx(h)$(min_totCost_0 = 1) = h_Boiler1_0(h);
+
 eq1_h_Boiler1(h) $ (min_totCost_0 eq 0)..
         h_Boiler1(h)=l=Boiler1_cap;
 
@@ -319,8 +329,15 @@ eq6_h_Boiler1(h)..
 *eq6_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
 *            h_Boiler1(h)=e= Boiler1(h);
 
-eq_h_Boiler1_dispatch(h)$(P1P2_dispatchable(h)=0 and min_totCost_0 eq 0)..
+eq_h_Boiler1_dispatch(h)$(P1P2_dispatchable(h) eq 0 and min_totCost_0 eq 0)..
         h_Boiler1(h) =e= h_Boiler1_0(h);
+
+
+*--------------------Flue gas condenser-------------------------------------
+
+h_FlueGasCondenser1.up(h)$(P1P2_dispatchable(h)=1 and min_totCost_0 = 0)=FlueGasCondenser1_cap;
+h_FlueGasCondenser1.fx(h)$(min_totCost_0 = 1)=h_FlueGasCondenser1_0(h);
+
 
 eq_h_FlueGasCondenser11(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
         h_FlueGasCondenser1(h)=l=h_Boiler1(h)*FlueGasCondenser1_eff;
@@ -333,6 +350,14 @@ eq_h_FlueGasCondenser1_dispatch(h)$(P1P2_dispatchable(h)=0 and min_totCost_0 eq 
         h_FlueGasCondenser1(h) =e= h_FlueGasCondenser1_0(h);
 
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
+
+* When its not the cooling season the absorption chillers are switched on
+* and thus have a minimum production.
+c_AbsC.lo(h)$(DC_cooling_season(h)=1 and min_totCost_0 = 0) = AbsC_min_prod;
+AbsC_cap.fx = cap_sup_unit('AbsC');
+*in BAU Abs chiller is used as balancing unit since the AAC is set to zero
+h_AbsC.lo(h)$(min_totCost_0 = 1) = c_AbsC_0(h) / AbsC_COP;
+
 eq_AbsC1(h)..
              c_AbsC(h) =e= AbsC_COP*h_AbsC(h);
 
@@ -342,11 +367,12 @@ eq_AbsC2(h) $ (min_totCost_0 eq 0)..
 eq_AbsC3(h)..
              el_AbsC(h) =e= c_AbsC(h) / AbsC_el_COP;
 
-*Minimum production of AC durign cooling season according to AH
-eq_AbsC4(h)$(DC_cooling_season(h) eq 1)..
-             c_AbsC(h) =g= 200;
 
+                                                                        
 *----------Refrigerator Machine equations (electricity => cooling)--------------
+*this is the aggregated capacity of five exisiting RM Units
+RM_cap.fx =cap_sup_unit('RM');
+
 eq_RM1(h)..
              c_RM(h) =e= RM_COP*el_RM(h)*(1-min_totCost_0);
 eq_RM2(h)..
@@ -377,6 +403,10 @@ eq_RM2(h)..
 
 *****************For new investment optons--------------------------------------
 *----------MC2 Heat pump equations (electricity => heating + cooling)-----------
+
+el_RMMC.fx(h) $ (min_totCost_0 = 1)=0;
+RMMC_inv.fx $ (opt_fx_inv_RMMC gt -1) = opt_fx_inv_RMMC;
+
 eq_RMMC1(h)..
          h_RMMC(h) =l= RMCC_H_COP * el_RMMC(h);
 
@@ -391,6 +421,8 @@ eq_RMMC4(h)..
          h_RMMC(h) =l= h_demand(h,'O3060133');
 
 *----------------Absorption Chiller Investment----------------------------------
+AbsCInv_cap.fx $ (opt_fx_inv_AbsCInv_cap gt -1) = opt_fx_inv_AbsCInv_cap;
+
 eq1_AbsCInv(h)..
              c_AbsCInv(h) =e= AbsCInv_COP*h_AbsCInv(h);
 *AbsC_eff;
@@ -398,6 +430,10 @@ eq2_AbsCInv(h)..
              c_AbsCInv(h) =l= AbsCInv_cap;
 
 *----------------Boiler 2 equations ---------------------------------------------
+
+h_Boiler2.up(h)=B2_max;
+B_Boiler2.fx $ (opt_fx_inv_Boiler2 gt -1) = opt_fx_inv_Boiler2;
+
 eq1_Boiler2(h)..
          h_Boiler2(h) =e= fuel_Boiler2(h) * B2_eff;
 eq2_Boiler2(h)..
@@ -419,6 +455,8 @@ eq_h_Boiler2_research(h)$(P1P2_dispatchable(h)=0)..
          h_Boiler2(h) =e= B_Boiler2 * B2_research_prod;
 
 *----------------Refurb turbine equations --------------------------------------
+B_TURB.fx $ (opt_fx_inv_TURB gt -1) = opt_fx_inv_TURB;
+
 eq1_TURB(h)..
          el_TURB(h) =e= TURB_eff * h_TURB(h);
 
@@ -442,6 +480,8 @@ eq7_TURB(h)..+0.58*el_TURB_reac(h)+el_TURB(h)=l=1.15*TURB_cap;
 
 
 *----------------HP equations --------------------------------------------------
+HP_cap.fx $ (opt_fx_inv_HP_cap gt -1) = opt_fx_inv_HP_cap;
+
 eq_HP1(h)..
              h_HP(h) =e= HP_H_COP*el_HP(h);
 eq_HP2(h)..
@@ -455,6 +495,9 @@ eq_HP4(h)..
 
 
 *------------------TES equations------------------------------------------------
+TES_inv.fx $ (opt_fx_inv_TES_cap gt -1) = 0 $ (opt_fx_inv_TES_cap eq 0) + 1 $ (opt_fx_inv_TES_cap gt 0);
+TES_cap.fx $ (opt_fx_inv_TES_cap gt -1) = opt_fx_inv_TES_cap;
+
 eq_TESen0(h,BID)$(ord(h) eq 1)..
              TES_en(h) =e= TES_hourly_loss_fac*(TES_en(h-1)+TES_ch(h)-TES_dis(h));
 * This should be implemented if we are to use TES
@@ -479,6 +522,10 @@ eq_TESinv(h)..
 *             TES_cap =G= sw_TES*TES_inv * 100;
 
 *----------Cold Water Basin equations (cold storage)----------------------------
+CWB_en.up(h) = sum(BID,opt_fx_inv_CWB_cap(BID))$(min_totCost_0 = 0)+0$(min_totCost_0 = 1);
+CWB_ch.up(h) = sum(BID,opt_fx_inv_CWB_ch_max(BID));
+CWB_dis.up(h) = sum(BID,opt_fx_inv_CWB_dis_max(BID));
+
 * If we want to use the CWB for different buildings in future we need to specify CWB_dis etc with a BID -DS
 eq_CWB_en_init(h)$(ord(h) eq 1)..
          CWB_en(h) =e= sum(BID,opt_fx_inv_CWB_init(h,BID)+CWB_ch(h)-CWB_dis(h));
@@ -489,6 +536,12 @@ eq_CWB_discharge(h)..
          CWB_dis(h) =l= c_demand(h,'O0007028');
 
 *------------------Building Advanced Control equations--------------------------
+BAC_Sen.up(h,BID)=1000*BTES_model('BTES_Scap',BID);
+BAC_Den.up(h,BID)=1000*BTES_model('BTES_Dcap',BID);
+*0 is used in case there is no investment ,
+B_BAC.fx(BID) $ (opt_fx_inv_BAC gt -1)=0;
+B_BAC.fx(BTES_BAC_Inv) $ (opt_fx_inv_BAC eq 1)=1;
+
 
 eq_BAC_S_init(h,BID) $ (ord(h) eq 1)..
          BAC_Sen(h,BID) =e= (BTES_kSloss(BID)*opt_fx_inv_BTES_BAC_S_init(h,BID) - BAC_Sdis(h,BID)/BTES_Sdis_eff
@@ -536,6 +589,11 @@ eq_BAC_D_loss(h,BID)..
          BAC_Dloss(h,BID) =e= BTES_kDloss(BID)*BAC_Den(h-1,BID);
 
 *------------------Building Setpoint Offset equations---------------------------
+SO_Sen.up(h,BID)=1000*BTES_model('BTES_Scap',BID);
+SO_Den.up(h,BID)=1000*BTES_model('BTES_Dcap',BID);
+*0 is used in case there is no investment ,
+B_SO.fx(BID) $ (opt_fx_inv_SO gt -1)=0;
+B_SO.fx(BTES_SO_Inv) $ (opt_fx_inv_SO eq 1)=1;
 
 eq_SO_S_init(h,BID) $ (ord(h) eq 1)..
          SO_Sen(h,BID) =e= (BTES_kSloss(BID)*opt_fx_inv_BTES_SO_S_init(h,BID) - SO_Sdis(h,BID)/BTES_Sdis_eff
@@ -579,6 +637,8 @@ eq_maximum_BTES_investments(BID)..
 
 
 *-----------------Battery constraints-------------------------------------------
+BES_cap.fx(BID) $ (opt_fx_inv_BES gt -1) = opt_fx_inv_BES_cap(BID)$(opt_fx_inv_BES eq 1)+ 0$(opt_fx_inv_BES eq 0);
+
 eq_BES1(h,BID) $ (ord(h) eq 1)..
              BES_en(h,BID)=e= (opt_fx_inv_BES_init(h,BID)+BES_ch(h,BID)-BES_dis(h,BID));
 
@@ -653,6 +713,12 @@ $offtext
 
 
 *-----------------Solar PV equations--------------------------------------------
+PV_cap_roof.fx(PVID) $ (opt_fx_inv_PV gt -1)=0;
+PV_cap_facade.fx(PVID) $ (opt_fx_inv_PV gt - 1)=0;
+PV_cap_roof.fx(PVID_roof) $ (opt_fx_inv_PV eq 1) = PV_roof_cap(PVID_roof);
+PV_cap_facade.fx(PVID_facade) $ (opt_fx_inv_PV eq 1) = PV_facade_cap(PVID_facade);
+
+
 ** Original Matlab Code (P is per WattPeak of Solar PV)
 *P(index)=
 *Gekv(index).*(1 + coef(1).*log(Gekv(index))
@@ -661,6 +727,7 @@ $offtext
 *+ coef(4).*Tekv(index).*log(Gekv(index))
 *+ coef(5).*Tekv(index).*log(Gekv(index)).^2
 *+ coef(6).*Tekv(index).^2);
+
 eq_PV(h)..
              el_PV(h) =e= eta_Inverter * (sum(PVID, PV_roof_cap(PVID) * PV_power_roof(h,PVID))
                                               + sum(PVID, PV_facade_cap(PVID) * PV_power_facade(h,PVID)));
@@ -679,6 +746,8 @@ eq_PV(h)..
 *eq_PV_reactive4(h,PVID)..0.58*e_PV_reac_roof(h,PVID)+e_PV_act_roof(h,PVID)=l=1.15*PV_roof_cap_Inv(PVID);
 
 *-----------------Refrigeration machine investment equations--------------------
+RMInv_cap.fx $ (opt_fx_inv_RMInv_cap gt -1) = opt_fx_inv_RMInv_cap;
+
 eq_RMInv1(h)..
              c_RMInv(h) =e= RMInv_COP*el_RMInv(h);
 eq_RMInv2(h)..
@@ -741,6 +810,13 @@ eq_DC_node_flows(h, DC_Node_ID)..
 $offtext
 **************************Demand Supply constraints*****************************
 *---------------- Demand supply balance for heating ----------------------------
+* Set maximum import and export to the grid.
+h_imp_AH.up(h)$(min_totCost_0 ne 1)=  DH_max_cap;
+h_exp_AH.up(h)$(min_totCost_0 ne 1)=DH_max_cap;
+
+h_exp_AH.fx(h)$(min_totCost_0 eq 1)= h_exp_AH_hist(h);
+h_imp_AH.lo(h)$(min_totCost_0 eq 1)= h_imp_AH_hist(h);
+
 eq_hbalance1(h)..
              h_exp_AH(h) =l= h_Boiler1(h) + h_DH_slack_var(h);
 * Change to equal to test the slack variable
@@ -757,7 +833,7 @@ eq_hbalance3(h)..
              h_imp_nonAH(h)=e=sum(BID_nonAH_h,h_demand_nonAH(h,BID_nonAH_h))
                        - (sum(BID_nonAH_h,BAC_Sdis(h,BID_nonAH_h))*BTES_dis_eff-sum(BID_nonAH_h,BAC_Sch(h,BID_nonAH_h))/BTES_chr_eff);
 
-eq_hbalance4(h)$(DH_heating_season(h) eq 0)..
+eq_hbalance4(h)$((no_imp_h_season(h)) = 1 and (min_totCost_0 = 0))..
             h_imp_AH(h) =e= 0;
 
 
@@ -770,6 +846,10 @@ eq_cbalance(h)..
                                 + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
 
 *--------------Demand supply balance for electricity ---------------------------
+el_imp_AH.up(h)=el_imp_max_cap;
+el_exp_AH.up(h)=el_imp_max_cap;
+V.up(h,BusID)=1.1;
+
 eq_ebalance3(h)..
         sum(BID,el_demand(h,BID)) =l= el_imp_AH(h) + el_imp_nonAH(h)+ el_slack_var(h) + el_exG_slack(h) - el_exp_AH(h) - el_VKA1(h) - el_VKA4(h) - el_RM(h) - el_RMMC(h)
                                  + el_PV(h) - el_HP(h) - el_RMInv(h)
