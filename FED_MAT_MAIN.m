@@ -318,7 +318,6 @@ BTES_SO_Inv.uels = BTES_SO_BID_uels;
 BTES_SO_max_power = struct('name', 'BTES_SO_max_power', 'type', 'parameter', 'form', 'full');
 BTES_SO_max_power.uels = BTES_SO_BID_uels;
 BTES_SO_max_power.val = [45, 20, 90, 76, 11]; % kWh/h, Requires ordering of BTES_SO_UELS to be O11:01, O7:888, O7:28, O7, 27, O7:24
-BTES_SO_EDIT_Correction_Factor = 0.19; % Correction factor for O7:10, O7:20 as they are only part of O7:24, used below for correcting BTES_model
 
 %Building thermal energy storage properties 
 BTES_properties=struct('name','BTES_properties','type','set','form','full');
@@ -328,6 +327,15 @@ BTES_properties.uels={'BTES_Scap', 'BTES_Dcap', 'BTES_Esig', 'BTES_Sch_hc',...
 %BTES model
 BTES_model = struct('name','BTES_model','type','parameter','form','full','val',BTES_model);
 BTES_model.uels={BTES_properties.uels,BID.uels};
+
+%Adjust O7:24 in BTES model 
+BTES_SO_EDIT_Correction_Factor = 0.19; % Correction factor for O7:10, O7:20 as they are only part of O7:24, used below for correcting BTES_model
+O724_index = find(strcmp(BTES_model.uels{1,2}, 'O0007024'));
+Scap_index = find(strcmp(BTES_model.uels{1,1}, 'BTES_Scap'));
+Dcap_index = find(strcmp(BTES_model.uels{1,1}, 'BTES_Dcap'));
+
+BTES_model.val(Scap_index, O724_index) = BTES_model.val(Scap_index, O724_index) * BTES_SO_EDIT_Correction_Factor
+BTES_model.val(Dcap_index, O724_index) = BTES_model.val(Dcap_index, O724_index) * BTES_SO_EDIT_Correction_Factor
 
 %Investments in PVs
 %=1 = fixed investment, 0=no investments (neither existing!!!) -1=variable of optimization
