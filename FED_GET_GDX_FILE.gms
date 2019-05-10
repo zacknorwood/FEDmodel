@@ -286,10 +286,12 @@ $GDXIN
 
 *-----------DC cooling season from MATLAB---------------------------------------
 PARAMETERS
-            DC_cooling_season(h)           Period in which DH exports are payed for
+            DC_cooling_season(h)           Period wher FED is running in summermode
+            no_imp_h_season(h)             Period where DH import is not allowed
 ;
 $GDXIN MtoG.gdx
 $LOAD DC_cooling_season
+$LOAD no_imp_h_season
 $GDXIN
 
 

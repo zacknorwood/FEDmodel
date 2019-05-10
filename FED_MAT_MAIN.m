@@ -36,31 +36,30 @@ sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 forecast_horizon = 10;
 % Cooling season start stop
 DC_cooling_season_full = zeros(sim_stop,1);
-current_year = sim_start_y;
-while current_year <=sim_stop_y
-    % Main cooling season between may and september
-    cooling_season_start = HoS(current_year,5,1,1);
-    cooling_season_end = HoS(current_year,10,1,1);
+no_imp_h_season_full = zeros(sim_stop,1);
+DH_heating_season_full = ones(sim_stop,1);
 
+cooling_year = sim_start_y;
+while cooling_year <=sim_stop_y
+    % Main cooling season between April and end october
+    cooling_season_start = HoS(cooling_year,4,1,1);
+    cooling_season_end = HoS(cooling_year,10,31,24);
+    % no heat import from GE between 15/5 to 15/9
+    no_h_imp_season_start = HoS(cooling_year,5,15,1);
+    no_h_imp_season_end = HoS(cooling_year,9,15,24);
+    
+    % Time when no Heat export are allowed 1/11 to 31/3 note that we set
+    % this to zero during the non export season
+    DH_heating_season_start = HoS(cooling_year,10,31,24);
+    DH_heating_season_stop = HoS(cooling_year,4,1,1);
+    
     DC_cooling_season_full(cooling_season_start:cooling_season_end) = 1;
-    current_year = current_year + 1;
+    no_imp_h_season_full(no_h_imp_season_start:no_h_imp_season_end) = 1;
+    DH_heating_season_full(DH_heating_season_stop:DH_heating_season_start) = 0;
+    
+    cooling_year = cooling_year + 1;
 end
 
-%Heating season
-DH_heating_season_full = zeros(sim_stop,1);
-current_year = sim_start_y;
-while current_year <= sim_stop_y
-   % Heating season between first of november and end of april 
-   year_start = HoS(current_year,1,1,1);
-   heating_season_end = HoS(current_year,4,1,1)
-   heating_season_start = HoS(current_year,11,1,1)
-   year_end = HoS(current_year,12,31,23)
-   
-   DH_heating_season_full(year_start:heating_season_end) = 1;
-   DH_heating_season_full(heating_season_start:year_end) = 1;
-   
-   current_year = current_year +1
-end
 % BAC_savings_period_full
 BAC_savings_period_full = zeros(sim_stop,1);
 current_year = sim_start_y;
@@ -248,11 +247,8 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 %Read static properties of the model
-% AK Change BAC, and BTES namings
-% AK removed DH_heating_season_full, BAC_savings_period_full calculated above
-% [P1P2_dispatchable_full,DH_heating_season_full, BAC_savings_period_full, BTES_model, BES_min_SoC]
-[P1P2_dispatchable_full, ~ , ~, BTES_model, BES_min_SoC] = fread_static_properties(sim_start,data_read_stop,data_length);
-
+% AK Removed BAC_savings_period as this is calculated above
+[P1P2_dispatchable_full, ~, BTES_model, BES_min_SoC] = fread_static_properties(sim_start,data_read_stop,data_length);
 %Read variable/measured input data
 [el_demand_full, h_demand_full, c_demand_full,h_Boiler1_0_full,...
     h_FlueGasCondenser1_0_full, el_VKA1_0_full, el_VKA4_0_full,...
@@ -543,6 +539,10 @@ for t=1:sim_length
     
     DC_cooling_season = struct('name','DC_cooling_season','type','parameter','form','full','val',DC_cooling_season_full(t:forecast_end,:));
     DC_cooling_season.uels = h.uels;
+
+    no_imp_h_season = struct('name','no_imp_h_season','type','parameter','form','full','val',no_imp_h_season_full(t:forecast_end,:));
+    no_imp_h_season.uels = h.uels;
+    
     %Calculation of BAC savings factors
     BAC_savings_factor = fget_bac_savings_factor(h);
     BAC_savings_factor.uels=h.uels;
@@ -661,7 +661,7 @@ for t=1:sim_length
         BID, BID_AH_el, BID_nonAH_el, BID_AH_h, BID_nonAH_h, BID_AH_c, BID_nonAH_c, BID_nonBTES,...
         el_demand, h_demand, c_demand, h_Boiler1_0, h_FlueGasCondenser1_0,...
         el_VKA1_0, el_VKA4_0, c_AbsC_0, G_roof, G_facade,...
-        BES_min_SoC, BTES_properties, BTES_model, P1P2_dispatchable, DH_heating_season,DC_cooling_season, BAC_savings_period,...
+        BES_min_SoC, BTES_properties, BTES_model, P1P2_dispatchable, DH_heating_season,DC_cooling_season, no_imp_h_season, BAC_savings_period,...
         PVID, PVID_roof, PV_roof_cap, PVID_facade, PV_facade_cap,...
         el_price, el_certificate, tout, BAC_savings_factor, FED_Inv_lim, BusID,...
         opt_fx_inv_BTES_BAC_D_init, opt_fx_inv_BTES_BAC_S_init, opt_fx_inv_BTES_SO_D_init,...
