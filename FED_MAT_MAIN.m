@@ -32,19 +32,59 @@ sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 
 %sim_start=6480;
-sim_stop=sim_start+47;
+%sim_stop=sim_start+47;
 forecast_horizon = 10;
 % Cooling season start stop
 DC_cooling_season_full = zeros(sim_stop,1);
-cooling_year = sim_start_y;
-while cooling_year <=sim_stop_y
+current_year = sim_start_y;
+while current_year <=sim_stop_y
     % Main cooling season between may and september
-    cooling_season_start = HoS(cooling_year,5,1,1);
-    cooling_season_end = HoS(cooling_year,10,1,1);
+    cooling_season_start = HoS(current_year,5,1,1);
+    cooling_season_end = HoS(current_year,10,1,1);
 
     DC_cooling_season_full(cooling_season_start:cooling_season_end) = 1;
-    cooling_year = cooling_year + 1;
+    current_year = current_year + 1;
 end
+
+%Heating season
+DH_heating_season_full = zeros(sim_stop,1);
+current_year = sim_start_y;
+while current_year <= sim_stop_y
+   % Heating season between first of november and end of april 
+   year_start = HoS(current_year,1,1,1);
+   heating_season_end = HoS(current_year,4,1,1)
+   heating_season_start = HoS(current_year,11,1,1)
+   year_end = HoS(current_year,12,31,23)
+   
+   DH_heating_season_full(year_start:heating_season_end) = 1;
+   DH_heating_season_full(heating_season_start:year_end) = 1;
+   
+   current_year = current_year +1
+end
+% BAC_savings_period_full
+BAC_savings_period_full = zeros(sim_stop,1);
+current_year = sim_start_y;
+while current_year <= sim_stop_y
+    year_start = HoS(current_year,1,1,1);
+    BAC_savings_end =  HoS(current_year,4,1,1);
+    BAC_savings_start = HoS(current_year,10,1,1);
+    year_end = HoS(current_year,12,31,23);
+
+   BAC_savings_period_full(year_start:BAC_savings_end) = 1;
+   BAC_savings_period_full(BAC_savings_start:year_end) = 1;
+    
+   current_year = current_year +1;
+end
+% P1 and P2 dispatchability
+% Get a series of ordinary working days
+
+
+%P1P2_dispatchable_test = zeros(sim_stop,1);
+%current_year = sim_start_y
+%while current_year <= sim_stop_y
+    
+    
+%end
 
 % DATA INDICES FOR INPUT DATA
 % data_read_stop is the last index of data needed for the simulation.
@@ -209,7 +249,9 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 %Read static properties of the model
 % AK Change BAC, and BTES namings
-[P1P2_dispatchable_full, DH_heating_season_full, BAC_savings_period_full, BTES_model, BES_min_SoC] = fread_static_properties(sim_start,data_read_stop,data_length);
+% AK removed DH_heating_season_full, BAC_savings_period_full calculated above
+% [P1P2_dispatchable_full,DH_heating_season_full, BAC_savings_period_full, BTES_model, BES_min_SoC]
+[P1P2_dispatchable_full, ~ , ~, BTES_model, BES_min_SoC] = fread_static_properties(sim_start,data_read_stop,data_length);
 
 %Read variable/measured input data
 [el_demand_full, h_demand_full, c_demand_full,h_Boiler1_0_full,...
