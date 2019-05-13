@@ -411,7 +411,7 @@ synth_baseline = struct('name','synth_baseline','type','parameter','form','full'
 to_excel_el(1:sim_stop-sim_start,1:31)=0;
 to_excel_heat(1:sim_stop-sim_start,1:39)=0;
 to_excel_cool(1:sim_stop-sim_start,1:23)=0;
-to_excel_co2(1:sim_stop-sim_start,1:7)=0;
+to_excel_co2(1:sim_stop-sim_start,1:14)=0;
 
 for t=1:sim_length
     %% Variable input data to the dispatch model

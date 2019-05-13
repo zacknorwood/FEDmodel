@@ -176,7 +176,7 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       h_demand_nonAH, h_demand, h_demand_nonAH_sum
                       el_sell_price, el_price, marginalCost_DH, tout, cool_demand,heat_demand,elec_demand
                       BTES_model,
-                      FED_PE, FED_CO2, FED_CO2_tot, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2, CO2F_El, NREF_El, CO2F_DH, NREF_DH,
+                      FED_PE, FED_CO2, FED_CO2_tot, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2, CO2F_El, NREF_El, PE_el, CO2F_DH, NREF_DH, PE_DH,
                       h_Boiler1, h_FlueGasCondenser1, h_Boiler1_0, h_FlueGasCondenser1_0, fuel_Boiler1, B1_eff, tot_PE,
                       h_VKA1, c_VKA1, el_VKA1,
                       h_VKA4, c_VKA4, el_VKA4,

@@ -80,8 +80,10 @@ data.CO2F_Boiler2=gdx2mat(gdxData,'CO2F_Boiler2');
 data.NREF_Boiler2=gdx2mat(gdxData,'NREF_Boiler2');
 data.CO2F_El=gdx2mat(gdxData,'CO2F_El',h_sim.uels);
 data.NREF_El=gdx2mat(gdxData,'NREF_El',h_sim.uels);
+data.PE_El=gdx2mat(gdxData,'PE_El',h_sim.uels);
 data.CO2F_DH=gdx2mat(gdxData,'CO2F_DH',h_sim.uels);
 data.NREF_DH=gdx2mat(gdxData,'NREF_DH',h_sim.uels);
+data.PE_DH=gdx2mat(gdxData,'PE_DH',h_sim.uels);
 
 %Local production
 data.h_Boiler1=gdx2mat(gdxData,'h_Boiler1',h_sim.uels);
