@@ -60,6 +60,31 @@ while cooling_year <=sim_stop_y
     cooling_year = cooling_year + 1;
 end
 
+% BAC_savings_period_full
+BAC_savings_period_full = zeros(sim_stop,1);
+current_year = sim_start_y;
+while current_year <= sim_stop_y
+    year_start = HoS(current_year,1,1,1);
+    BAC_savings_end =  HoS(current_year,4,1,1);
+    BAC_savings_start = HoS(current_year,10,1,1);
+    year_end = HoS(current_year,12,31,23);
+
+   BAC_savings_period_full(year_start:BAC_savings_end) = 1;
+   BAC_savings_period_full(BAC_savings_start:year_end) = 1;
+    
+   current_year = current_year +1;
+end
+% P1 and P2 dispatchability
+% Get a series of ordinary working days
+
+
+%P1P2_dispatchable_test = zeros(sim_stop,1);
+%current_year = sim_start_y
+%while current_year <= sim_stop_y
+    
+    
+%end
+
 % DATA INDICES FOR INPUT DATA
 % data_read_stop is the last index of data needed for the simulation.
 % sim_length is the total length of data needed for the simulation.
@@ -222,9 +247,8 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 %Read static properties of the model
-% AK Change BAC, and BTES namings
-[P1P2_dispatchable_full, BAC_savings_period_full, BTES_model, BES_min_SoC] = fread_static_properties(sim_start,data_read_stop,data_length);
-
+% AK Removed BAC_savings_period as this is calculated above
+[P1P2_dispatchable_full, ~, BTES_model, BES_min_SoC] = fread_static_properties(sim_start,data_read_stop,data_length);
 %Read variable/measured input data
 [el_demand_full, h_demand_full, c_demand_full,h_Boiler1_0_full,...
     h_FlueGasCondenser1_0_full, el_VKA1_0_full, el_VKA4_0_full,...
