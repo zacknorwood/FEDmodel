@@ -1,4 +1,4 @@
-function [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
+function [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, ~, ~, t)
 % This function extract the first hour of the scheduled dispatch and put it
 % into an array that can be exported to excel for analysis 
 
@@ -153,6 +153,16 @@ to_excel_co2(t,6)=Results(t).dispatch.AH_CO2(1,2);
 to_excel_co2(t,7)=Results(t).dispatch.AH_NREF(1,2);
 to_excel_co2(t,8)=Results(t).dispatch.vc_tot_AH(1,2);
 to_excel_co2(t,9)=Results(t).dispatch.model_status(1);
+
+to_excel_co2(t,10)=Results(t).dispatch.PE_El(1,2);
+to_excel_co2(t,11)=Results(t).dispatch.CO2F_El(1,2);
+to_excel_co2(t,12)=Results(t).dispatch.NREF_El(1,2);
+
+to_excel_co2(t,13)=Results(t).dispatch.PE_DH(1,2);
+%to_excel_co2(t,14)=Results(t).dispatch.CO2F_DH(1,2);
+%to_excel_co2(t,15)=Results(t).dispatch.NREF_DH(1,2);
+
+
 end
 toc
 
