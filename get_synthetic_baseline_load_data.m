@@ -29,6 +29,7 @@ fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
     function output = read_xls(file_path)
         output = readtable(file_path, 'ReadVariableNames',true);
         output.Date = datetime(output.Tidpunkt, 'format', 'yyyy-MM-dd HH:mm:ss');
+        output = table2timetable(output)
     end
 
 % Read files
@@ -45,8 +46,9 @@ fgc_times = table2cell(fgc_production(:,1));
 fgc_date = datetime(fgc_times,'InputFormat','yyyy-MM-dd HH', 'format', 'yyyy-MM-dd HH:mm:ss');
 fgc_production.Date = fgc_date;
 clearvars fgc_date fgc_times
-
+fgc_production = table2timetable(fgc_production);
 % Interpoalte data to whole hours
+
 
 
 % Calculate net load
