@@ -60,7 +60,7 @@ fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
 
 % Electricity related files
 el_import_file = 'Inkommande el O0007008_el_901_v1_2018-10-01_2019-06-04.xls';
-kc_pv_file = 'Solceller KC O0007008_el_920_v1_2018-10-01_2019-06-04.xls';
+el_kc_pv_file = 'Solceller KC O0007008_el_920_v1_2018-10-01_2019-06-04.xls';
 
 % Cooling related files
 c_import_file = 'Kyla import från GBG O0007008_kb_501_v1_2018-10-01_2019-06-04.xls';
@@ -203,8 +203,24 @@ c_vka_4_production = read_measurement_xls(strcat(measurements_data_folder , c_vk
 ann_buildings = read_ann_csv(strcat(ann_data_folder, ann_file), dates);
 h_kibana_demand = read_kibana_csv(strcat(kibana_data_folder, h_kibana_file), dates);
 
-%% Electricity demand reading and calculation
+%% Electricity reading 
+%Read imported electricity
+el_imported = readtable(strcat(measurements_data_folder, el_import_file), 'ReadVariableNames',true);
+el_imported.Date = datetime(el_imported.Tidpunkt, 'format', 'yyyy-MM-dd HH:mm:ss');
+%Remove unnecessary columns
+el_imported = removevars(el_imported, {'Tidpunkt', 'x_ndratAv', 'Status', 'Norm_'});
+el_imported = table2timetable(el_imported);
+el_imported = sortrows(el_imported);
+el_imported.Properties.VariableNames = {'Value'};
+%Interpret strings in value as double
+el_imported.Value = strrep(el_imported.Value, " ", "");
+el_imported.Value = strrep(el_imported.Value, ",", ".");
+el_imported.Value = str2double(el_imported.Value);
+%Process the data
+el_imported = process_data(el_imported, dates);   
 
+%Read production of PV-panels on KC
+el_kc_pv_production = read_measurement_xls(strcat(measurements_data_folder, el_kc_pv_file ), dates);
 
 
 %% Heat demand calculation
@@ -253,9 +269,8 @@ setpoint_offset_correction = ( h_ann.Sp_offset_agent_a10_heating...
                              
 h_net_load_values = net_production + evi_correction +setpoint_offset_correction;
 h_demand = timetable(dates, h_net_load_values);
-h_demand = h_demand(start_datetime:end_datetime,:);
 
-%% Cooling demand reading and calculation
+%% Cooling calculation
 c_import = prune_data(c_import, start_datetime, end_datetime, time_resolution, 1000);
 c_vka_1_production = prune_data(c_vka_1_production, start_datetime, end_datetime, time_resolution, 1000);
 c_vka_2_production = prune_data(c_vka_2_production, start_datetime, end_datetime, time_resolution, 1000);
@@ -263,7 +278,14 @@ c_vka_4_production = prune_data(c_vka_4_production, start_datetime, end_datetime
 
 c_net_load_values = c_import.Value + c_vka_1_production.Value + c_vka_2_production.Value + c_vka_4_production.Value;
 c_demand = timetable(dates, c_net_load_values);
-c_demand = c_demand(start_datetime:end_datetime,:);
+
+%% Electricity calculation
+el_imported = prune_data(el_imported, start_datetime, end_datetime, time_resolution, 1000);
+el_kc_pv_production = prune_data(el_kc_pv_production, start_datetime, end_datetime, time_resolution, 1000);
+
+el_net_load_values = el_imported.Value + el_kc_pv_production.Value; % Need to add local production and consumption (KC, VKA, PVs)
+
+el_demand = timetable(dates, el_net_load_values);
 
 end
 
