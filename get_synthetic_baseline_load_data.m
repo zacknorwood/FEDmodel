@@ -16,7 +16,7 @@ if nargin==2
 elseif nargin==0
     warning('No start_datetime or end_datetime specified, using 2019-01-01 00:00 and 2019-03-31 23:00 respectively with a 1 hour step size')
     start_datetime = datetime(2019,04,01,0,0,0);
-    end_datetime = datetime(2019,04,05,23,0,0);
+    end_datetime = datetime(2019,04,17,23,0,0);
     time_resolution = 'hourly';
 end
 dates = (start_datetime:hours(1):end_datetime)';
@@ -78,35 +78,84 @@ el_kibana_file = 'EL_demand_kibana.csv';
 %simulation_steps = start_datetime:hours(step_hours):end_datetime;
 
 %% Input file reading
-    function output = read_measurement_xls(file_path, time_resolution)
+    function output = process_data(data_table, dates)
+        % Processes Mx1 timetables, removing outliers, below zero values,
+        % and interpolates missing values.
+        % Returns a timetable with for timeindices in 'dates'
+        input_table = data_table;
+        
+        quantiles = quantile(input_table.Value, [0.25, 0.5, 0.75]);
+        q1 = quantiles(1);
+        q3 = quantiles(3);
+        whisker_max_length = 5;
+        % Extract positive outliers based on boxplots whisker definition
+        positive_whisker = q3 + whisker_max_length * (q3 - q1);
+        
+        % Check whether the table values exceed the positive values, if not
+        % then no operation to correct is required
+        if max(input_table.Value)>positive_whisker
+            minimum_positive_outlier = min(input_table.Value(input_table.Value>positive_whisker));
+            input_table.Value(input_table.Value>minimum_positive_outlier) = NaN;
+        end
+        
+        input_table.Value(input_table.Value<0) = NaN;
+        % Shift all timestamps to next whole hour
+        input_table.Date = dateshift(input_table.Date,'start','hour','next') ;
+        new_table = timetable(dates, zeros(length(dates),1));
+        %Check if entire table is NaN, if so interpolation will not work.
+        if sum(isnan(input_table.Value))==length(input_table.Value)
+            output = synchronize(new_table, input_table,'first'); 
+        else
+            %Synchronise the new table with correct timestamps with measurement data and interpolate missing values
+            output = synchronize(new_table, input_table,'first','linear'); 
+        end
+        % Remove temporary data from output
+        output = removevars(output, {'Var1'}); 
+    end
+
+    function output = process_large_data(data, dates)
+        % Used for NxM timetables where M>1. 
+        % Calls process data for each variable in the timetable
+        temp_table = timetable(dates, zeros(length(dates),1));
+        for variable_name = data.Properties.VariableNames
+            one_variable = data(:,variable_name);
+            % Change VariableNames as process_data expects to work on
+            % column named 'Value'
+            one_variable.Properties.VariableNames = {'Value'};
+            % Process one column of data which is what process_data expects
+            partial_data = process_data(one_variable , dates);
+            % Change to original VariableName
+            partial_data.Properties.VariableNames = {variable_name{1}};
+            % Append temp_table to continue reconstructing original shape
+            temp_table = [temp_table partial_data];
+        end
+        output = removevars(temp_table, {'Var1'});
+    end
+
+    function output = read_measurement_xls(file_path, dates)
         output = readtable(file_path, 'ReadVariableNames',true);
         output.Date = datetime(output.Tidpunkt, 'format', 'yyyy-MM-dd HH:mm:ss');
         
-        output = removevars(output, {'Tidpunkt', 'x_ndratAv', 'Status', 'Norm_'});
-        output.V_rde = strrep(output.V_rde, " ", "");
-        output.V_rde = strrep(output.V_rde, ",", ".");
-        output.V_rde = str2double(output.V_rde);
-        
+        output = removevars(output, {'Tidpunkt', 'x_ndratAv', 'Status', 'Norm_', 'V_rde'});
+               
         output = table2timetable(output);
         output = sortrows(output);
-        
-        output = retime(output, time_resolution, 'previous');
-        output = fillmissing(output,'constant',0); % Replaces NaN, NaT, etc with 0
-        % Check for unreasonable values (ie above 10 MW or something like
-        % it)
+        output.Properties.VariableNames = {'Value'};
+        output = process_data(output, dates);   
     end
 
-    function output = read_ann_csv(file_path)
+    function output = read_ann_csv(file_path, dates)
         output = readtable(file_path, 'ReadVariableNames',true);
         output.Date = datetime(output.DateTimeUTC, 'format', 'yyyy-MM-dd HH:mm:ss');
-        output = removevars(output, {'DateTimeUTC'});       
+        output = removevars(output, {'DateTimeUTC', 'AmbientTemperature'});       
 
         output = table2timetable(output);
         output = sortrows(output);
+        output = process_large_data(output, dates);
         output = fillmissing(output,'constant',0); % Replaces NaN, NaT, etc with 0
     end
 
-    function output = read_kibana_csv(file_path)
+    function output = read_kibana_csv(file_path, dates)
         output = readtable(file_path, 'ReadVariableNames',true);
         output.Date = datetime(output.X_Timestamp, 'format', 'yyyy-MM-dd HH:mm:ss');
         output = removevars(output, {'Var1', 'X_Timestamp'});       
@@ -121,16 +170,17 @@ el_kibana_file = 'EL_demand_kibana.csv';
         
         output = table2timetable(output);
         output = sortrows(output);
+        output = process_large_data(output, dates);
         output = fillmissing(output,'constant',0); % Replaces NaN, NaT, etc with 0
     end
 
 % Heating production reading
-h_export = read_measurement_xls(strcat(measurements_data_folder , h_export_file), time_resolution);
-h_import = read_measurement_xls(strcat(measurements_data_folder , h_import_file), time_resolution);
-h_boiler_1_production = read_measurement_xls(strcat(measurements_data_folder , boiler_1_file), time_resolution);
-h_vka_1_production = read_measurement_xls(strcat(measurements_data_folder , h_vka_1_file), time_resolution);
-h_vka_2_production = read_measurement_xls(strcat(measurements_data_folder , h_vka_2_file), time_resolution);
-h_vka_4_production = read_measurement_xls(strcat(measurements_data_folder , h_vka_4_file), time_resolution);
+h_export = read_measurement_xls(strcat(measurements_data_folder , h_export_file), dates);
+h_import = read_measurement_xls(strcat(measurements_data_folder , h_import_file), dates);
+h_boiler_1_production = read_measurement_xls(strcat(measurements_data_folder , boiler_1_file), dates);
+h_vka_1_production = read_measurement_xls(strcat(measurements_data_folder , h_vka_1_file), dates);
+h_vka_2_production = read_measurement_xls(strcat(measurements_data_folder , h_vka_2_file), dates);
+h_vka_4_production = read_measurement_xls(strcat(measurements_data_folder , h_vka_4_file), dates);
 
 
 h_fgc_production = readtable(strcat(measurements_data_folder , fgc_file), 'ReadVariableNames',true, 'Range','A3:B4454'); % fgc_file on different format requiring separate file reading
@@ -140,18 +190,18 @@ h_fgc_production.Date = fgc_date;
 clearvars fgc_date fgc_times
 h_fgc_production = removevars(h_fgc_production, {'Var1'});
 h_fgc_production = table2timetable(h_fgc_production);
-h_fgc_production = retime(h_fgc_production, time_resolution, 'previous');
+h_fgc_production.Properties.VariableNames = {'Value'};
+h_fgc_production = process_data(h_fgc_production, dates);
 
 % Cooling production reading
-c_import = read_measurement_xls(strcat(measurements_data_folder , c_import_file), time_resolution);
-c_vka_1_production = read_measurement_xls(strcat(measurements_data_folder , c_vka_1_file), time_resolution);
-c_vka_2_production = read_measurement_xls(strcat(measurements_data_folder , c_vka2_file), time_resolution);
-c_vka_4_production = read_measurement_xls(strcat(measurements_data_folder , c_vka_4_file), time_resolution);
+c_import = read_measurement_xls(strcat(measurements_data_folder , c_import_file), dates);
+c_vka_1_production = read_measurement_xls(strcat(measurements_data_folder , c_vka_1_file), dates);
+c_vka_2_production = read_measurement_xls(strcat(measurements_data_folder , c_vka2_file), dates);
+c_vka_4_production = read_measurement_xls(strcat(measurements_data_folder , c_vka_4_file), dates);
 
 % ANN reading
-ann_buildings = read_ann_csv(strcat(ann_data_folder, ann_file));
-h_kibana_demand = read_kibana_csv(strcat(kibana_data_folder, h_kibana_file));
-
+ann_buildings = read_ann_csv(strcat(ann_data_folder, ann_file), dates);
+h_kibana_demand = read_kibana_csv(strcat(kibana_data_folder, h_kibana_file), dates);
 
 %% Electricity demand reading and calculation
 
@@ -175,13 +225,13 @@ h_ann = prune_data(ann_buildings, start_datetime, end_datetime, time_resolution,
 h_kibana_demand = prune_data(h_kibana_demand, start_datetime, end_datetime, time_resolution, 1);
 
 % Calculate net load
-net_production = (h_import.Diff...
-                 - h_export.Diff...
-                 + h_boiler_1_production.Diff...
-                 + h_vka_1_production.Diff...
-                 + h_vka_2_production.Diff...
-                 + h_vka_4_production.Diff...
-                 + h_fgc_production.MW); 
+net_production = (h_import.Value...
+                 - h_export.Value...
+                 + h_boiler_1_production.Value...
+                 + h_vka_1_production.Value...
+                 + h_vka_2_production.Value...
+                 + h_vka_4_production.Value...
+                 + h_fgc_production.Value); 
 
 evi_correction = (h_ann.Evi_agent_Mattecentrum_heating...
                 + h_ann.Evi_agent_Elkraft_heating...
@@ -211,7 +261,7 @@ c_vka_1_production = prune_data(c_vka_1_production, start_datetime, end_datetime
 c_vka_2_production = prune_data(c_vka_2_production, start_datetime, end_datetime, time_resolution, 1000);
 c_vka_4_production = prune_data(c_vka_4_production, start_datetime, end_datetime, time_resolution, 1000);
 
-c_net_load_values = c_import.Diff + c_vka_1_production.Diff + c_vka_2_production.Diff + c_vka_4_production.Diff;
+c_net_load_values = c_import.Value + c_vka_1_production.Value + c_vka_2_production.Value + c_vka_4_production.Value;
 c_demand = timetable(dates, c_net_load_values);
 c_demand = c_demand(start_datetime:end_datetime,:);
 
