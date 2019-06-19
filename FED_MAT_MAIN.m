@@ -20,8 +20,8 @@ sim_start_h = 1;
 
 %Sim stop time
 
-sim_stop_y = 2017;
-sim_stop_m = 2;
+sim_stop_y = 2016;
+sim_stop_m = 3;
 sim_stop_d = 28;
 sim_stop_h = 14;
 
@@ -256,6 +256,39 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
     G_facade_full, G_roof_full, c_DC_slack_full, el_exG_slack_full,...
     h_DH_slack_full, h_exp_AH_hist_full, h_imp_AH_hist_full] = fread_measurements(sim_start,data_read_stop,data_length);
 
+
+if synth_baseline == 1
+    start_datetime = datetime(sim_start_y,sim_start_m,sim_start_d,sim_start_h,0,0);
+    end_datetime = datetime(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h+10,0,0)
+   [el_demand_synth, h_demand_synth, c_demand_synth] = get_synthetic_baseline_load_data(start_datetime, end_datetime) 
+   
+   cooling_size = size(c_demand_full)
+   hours = cooling_size(1)
+   cooled_buildings = cooling_size(2)
+   
+   heating_size = size(h_demand_full)
+   heated_buildings = heating_size(2)
+   
+   electricity_size = size(el_demand_full)
+   electrified_buildings = electricity_size(2)
+   
+   synth_c_demand_full = zeros(hours,cooled_buildings)
+   synth_h_demand_full = zeros(hours,heated_buildings)
+   synth_el_demand_full = zeros(hours,electrified_buildings)
+   
+   for i=1:cooled_buildings
+       synth_c_demand_full(:,i) = c_demand_synth.c_net_load_values/cooled_buildings
+   end
+   for i=1:heated_buildings
+       synth_h_demand_full(:,i) = h_demand_synth.h_net_load_values/heated_buildings
+   end
+   for i=1:electrified_buildings
+       synth_el_demand_full(:,i) = el_demand_synth.el_net_load_values/electrified_buildings
+   end
+   c_demand_full = synth_c_demand_full
+   h_demand_full = synth_h_demand_full
+   el_demand_full = synth_el_demand_full
+end
 %This must be modified
 %     temp=load('Input_dispatch_model\import_export_forecasting');
 %     forecast_import=(temp.forecast_import')*1000;
