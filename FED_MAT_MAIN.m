@@ -300,8 +300,8 @@ if synth_baseline == 1
    
    COP_HP_C = 1.8; % Cooling COP of heat pumps
    HP_cooling_production = (ann_production.Total_cooling_demand - ann_production.AbsC_production);
-   el_VKA1_0_full = HP_cooling_production ./ COP_HP_C;
-   el_VKA4_0_full = zeros(hours,1);
+   el_VKA1_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
+   el_VKA4_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
    
    %el_factors dh_factors
    CO2F_El_full = el_factors.co2ei; 
@@ -327,7 +327,7 @@ if synth_baseline == 1
      
    NREF_El_full = zeros(hours,1); % SKIP THIS - USE ONLY PE AND CO2
    NREF_DH_full = zeros(hours,1); % SKIP THIS - USE ONLY PE AND CO2
-   NREF_DH_full(:,1) = 1;
+   NREF_El_full(:,1) = 1;
    NREF_DH_full(:,1) = 1;
    
    el_exG_slack_full = zeros(hours,1); % Should be zero as production == demand
