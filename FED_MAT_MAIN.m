@@ -13,17 +13,17 @@ system 'gams';
 
 %% SIMULATION START AND STOP TIME
 %Sim start time
-sim_start_y = 2016;
-sim_start_m = 3;
+sim_start_y = 2019;
+sim_start_m = 1;
 sim_start_d = 1;
-sim_start_h = 1;
+sim_start_h = 3;
 
 %Sim stop time
 
-sim_stop_y = 2016;
-sim_stop_m = 3;
-sim_stop_d = 28;
-sim_stop_h = 14;
+sim_stop_y = 2019;
+sim_stop_m = 4;
+sim_stop_d = 26;
+sim_stop_h = 23;
 
 %Get month and hours of simulation
 [HoS, ~] = fget_time_vector(sim_start_y,sim_stop_y);
@@ -250,26 +250,28 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 % AK Removed BAC_savings_period as this is calculated above
 [P1P2_dispatchable_full, ~, BTES_model, BES_min_SoC] = fread_static_properties(sim_start,data_read_stop,data_length);
 %Read variable/measured input data
-[el_demand_full, h_demand_full, c_demand_full,h_Boiler1_0_full,...
-    h_FlueGasCondenser1_0_full, el_VKA1_0_full, el_VKA4_0_full,...
-    c_AbsC_0_full, el_price_full, el_certificate_full, tout_full,...
-    G_facade_full, G_roof_full, c_DC_slack_full, el_exG_slack_full,...
-    h_DH_slack_full, h_exp_AH_hist_full, h_imp_AH_hist_full] = fread_measurements(sim_start,data_read_stop,data_length);
-
-
+if synth_baseline == 0
+    [el_demand_full, h_demand_full, c_demand_full,h_Boiler1_0_full,...
+        h_FlueGasCondenser1_0_full, el_VKA1_0_full, el_VKA4_0_full,...
+        c_AbsC_0_full, el_price_full, el_certificate_full, tout_full,...
+        G_facade_full, G_roof_full, c_DC_slack_full, el_exG_slack_full,...
+        h_DH_slack_full, h_exp_AH_hist_full, h_imp_AH_hist_full] = fread_measurements(sim_start,data_read_stop,data_length);
+end
+% Kommentera ut freadmeasurements och använd byggnadsID nedanför istället
+% för size(h_demand)
 if synth_baseline == 1
     start_datetime = datetime(sim_start_y,sim_start_m,sim_start_d,sim_start_h,0,0);
     end_datetime = datetime(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h+10,0,0);
-   [el_demand_synth, h_demand_synth, c_demand_synth] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
+   [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, el_factors, dh_factors, temperature, dh_price, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
    
-   cooling_size = size(c_demand_full);
-   hours = cooling_size(1);
+   cooling_size = size(BID_AH_c.uels);
+   hours = sim_length+10;
    cooled_buildings = cooling_size(2);
    
-   heating_size = size(h_demand_full);
+   heating_size = size(BID_AH_h.uels);
    heated_buildings = heating_size(2);
    
-   electricity_size = size(el_demand_full);
+   electricity_size = size(BID_AH_el.uels);
    electrified_buildings = electricity_size(2);
    
    synth_c_demand_full = zeros(hours,cooled_buildings);
@@ -288,6 +290,53 @@ if synth_baseline == 1
    c_demand_full = synth_c_demand_full;
    h_demand_full = synth_h_demand_full;
    el_demand_full = synth_el_demand_full;
+   
+   % Production units for synthetic baseline
+   h_Boiler1_0_full = ann_production.Boiler1_production ;
+   disp('WARNING TEMPORARY CORRECTION OF BOILER ANN AT ROW 297 IN FED_MAT_MAIN')
+   h_Boiler1_0_full(h_Boiler1_0_full>8000) = 8000;
+   h_FlueGasCondenser1_0_full = zeros(hours,1); % Does ANN include FGC data?
+   c_AbsC_0_full = ann_production.AbsC_production ;
+   
+   COP_HP_C = 1.8; % Cooling COP of heat pumps
+   HP_cooling_production = (ann_production.Total_cooling_demand - ann_production.AbsC_production);
+   el_VKA1_0_full = HP_cooling_production ./ COP_HP_C;
+   el_VKA4_0_full = zeros(hours,1);
+   
+   %el_factors dh_factors
+   CO2F_El_full = el_factors.co2ei; 
+   PE_El_full = el_factors.pef; 
+   CO2F_DH_full = dh_factors.co2ei; 
+   PE_DH_full = dh_factors.pef; 
+   
+   % Ambient temperature
+   tout_full = temperature.Value; 
+   el_price_full = el_price.Value;
+   el_certificate_full = zeros(hours,1); % OK TO BE ZERO
+   marginalCost_DH_full = dh_price.Value;    
+   % Solar irradiation
+   G_roof_full = zeros(hours,12); % NEEDED - USE TO CALCULATE NEW ELECTRICITY DEMAND (Total production + New PV Arrays (general data felmarginal typ 30%
+   for i=1:12
+       G_roof_full(:,i) = solar_irradiation.Value;
+   end
+   G_facade_full = solar_irradiation.Value;
+   
+   disp('SETTING h_exp_AH_hist and h_imp_AH_hist TO ZEROS ONLY USED IF min_tot_cost_0 = 1')
+   h_exp_AH_hist_full = zeros(hours,1); % Should be ignored in GAMS
+   h_imp_AH_hist_full = zeros(hours,1); % Should be ignored in GAMS
+     
+   NREF_El_full = zeros(hours,1); % SKIP THIS - USE ONLY PE AND CO2
+   NREF_DH_full = zeros(hours,1); % SKIP THIS - USE ONLY PE AND CO2
+   NREF_DH_full(:,1) = 1;
+   NREF_DH_full(:,1) = 1;
+   
+   el_exG_slack_full = zeros(hours,1); % Should be zero as production == demand
+   h_DH_slack_full = zeros(hours,1); % Should be zero as production == demand
+   c_DC_slack_full = zeros(hours,1); % Should be zero as production == demand
+   
+   el_exG_slack_full(:,1) = 1; % Zero values aren't passed from GAMS to GtoM.gdx thus failing fstore_results_excel
+   h_DH_slack_full(:,1) = 1;
+   c_DC_slack_full(:,1) = 1;
 end
 %This must be modified
 %     temp=load('Input_dispatch_model\import_export_forecasting');
@@ -303,8 +352,11 @@ end
 %     load('Input_dispatch_model\Heating_ANN');
 
 %% INPUT NRE and CO2 FACTORS
+if synth_baseline == 0
 [CO2F_El_full, NREF_El_full, PE_El_full, CO2F_DH_full, NREF_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop,data_length);
-
+else
+[~, ~, ~, ~, ~, ~, ~, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop,data_length);
+end
 %% Initialize FED INVESTMENT OPTIONS
 % If min_totCost_O=1, i.e. base case simulation, then all investment options
 % will be set to 0.
@@ -405,8 +457,8 @@ O724_index = find(strcmp(BTES_model.uels{1,2}, 'O0007024'));
 Scap_index = find(strcmp(BTES_model.uels{1,1}, 'BTES_Scap'));
 Dcap_index = find(strcmp(BTES_model.uels{1,1}, 'BTES_Dcap'));
 
-BTES_model.val(Scap_index, O724_index) = BTES_model.val(Scap_index, O724_index) * BTES_SO_EDIT_Correction_Factor
-BTES_model.val(Dcap_index, O724_index) = BTES_model.val(Dcap_index, O724_index) * BTES_SO_EDIT_Correction_Factor
+BTES_model.val(Scap_index, O724_index) = BTES_model.val(Scap_index, O724_index) * BTES_SO_EDIT_Correction_Factor;
+BTES_model.val(Dcap_index, O724_index) = BTES_model.val(Dcap_index, O724_index) * BTES_SO_EDIT_Correction_Factor;
 
 %Investments in PVs
 %=1 = fixed investment, 0=no investments (neither existing!!!) -1=variable of optimization
