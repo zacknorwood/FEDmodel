@@ -325,9 +325,6 @@ eq5_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0
 
 eq6_h_Boiler1(h)..
           fuel_Boiler1(h) =e= ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff);
-*Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN.
-*eq6_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
-*            h_Boiler1(h)=e= Boiler1(h);
 
 eq_h_Boiler1_dispatch(h)$(P1P2_dispatchable(h) eq 0)..
         h_Boiler1(h) =e= h_Boiler1_0(h);
@@ -341,10 +338,6 @@ h_FlueGasCondenser1.fx(h)$(min_totCost_0 = 1 or (synth_baseline = 1))=h_FlueGasC
 
 eq_h_FlueGasCondenser11(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
         h_FlueGasCondenser1(h)=l=h_Boiler1(h)*FlueGasCondenser1_eff;
-
-*Commented out because it has to do with the synthetic baseline and needs to be revisited. - ZN.
-*eq_h_RGK12(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 1 and min_totCost_0 eq 0)..
-*        h_RGK1(h)=e=FGC(h);
 
 eq_h_FlueGasCondenser1_dispatch(h)$(P1P2_dispatchable(h)=0)..
         h_FlueGasCondenser1(h) =e= h_FlueGasCondenser1_0(h);
@@ -368,7 +361,7 @@ eq_AbsC3(h)..
              el_AbsC(h) =e= c_AbsC(h) / AbsC_el_COP;
 
 
-                                                                        
+
 *----------Refrigerator Machine equations (electricity => cooling)--------------
 *this is the aggregated capacity of five exisiting RM Units
 RM_cap.fx =cap_sup_unit('RM');

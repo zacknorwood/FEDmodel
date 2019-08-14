@@ -11,6 +11,7 @@ tic
 % dispatch) and column 2 is for the power/cost
 if Results(t).dispatch.model_status(1)~= 1 && Results(t).dispatch.model_status(1)~= 6  
 to_excel_co2(t,7)=Results(t).dispatch.model_status(1);
+disp('GAMS FAILED!')
 else
 to_excel_el(t,1)=t;
 to_excel_el(t,2)=Results(t).dispatch.el_TURB(1,2); 
@@ -22,6 +23,7 @@ to_excel_el(t,12)=-Results(t).dispatch.el_VKA4(1,2);
 to_excel_el(t,14)=-Results(t).dispatch.el_HP(1,2);
 to_excel_el(t,16)=-Results(t).dispatch.el_RMMC(1,2);
 to_excel_el(t,18)=-Results(t).dispatch.el_RM(1,2);
+
 
 to_excel_el(t,20)=Results(t).dispatch.el_slack(1,2);
 to_excel_el(t,22)=Results(t).dispatch.el_slack_var(1,2);

@@ -72,7 +72,7 @@ end
 %Measured el input for VKA1
 el_VKA1_0=xlsread('Input_dispatch_model\varmepump VKA1.xls',2,gen_range);
 if (length(el_VKA1_0)<data_length) || (any(isnan(el_VKA1_0),'all'))
-    error('Error: input file does not have complete data for simulation length');
+    warning('Error: input file does not have complete data for simulation length');
 end
 %el_VKA1_0(isnan(el_VKA1_0))=0;
 %el_VKA1_measured=h_VKA1_measured/3; Removed by AK, previously h_VKA1 (col C) was
