@@ -22,7 +22,7 @@ sim_start_h = 3;
 
 sim_stop_y = 2019;
 sim_stop_m = 4;
-sim_stop_d = 26;
+sim_stop_d = 23;
 sim_stop_h = 23;
 
 %Get month and hours of simulation
