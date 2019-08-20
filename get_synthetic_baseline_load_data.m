@@ -12,8 +12,12 @@ function [el_demand, h_demand, c_demand, ann_production_pruned, el_factors, dh_f
 
 %% Setup of date range and resolution
 if nargin==2
+    % If no time_resolution is provided use hourly, the only one
+    % implemented currently
     time_resolution = 'hourly';
 elseif nargin==0
+    % Mainly used for debug purposes, alternatively one can alter the dates
+    % and comment below to skip calling with specifi start, end times
     warning('No start_datetime or end_datetime specified, using 2019-01-01 00:00 and 2019-04-30 23:00 respectively with a 1 hour step size')
     start_datetime = datetime(2019,01,3,0,0,0);
     end_datetime = datetime(2019,04,28,23,0,0);
@@ -27,6 +31,7 @@ dates = (start_datetime:hours(1):end_datetime)';
         %and end_date respectively with a resolution of time_resolution.
         %Optionally multiply all values by correction_factor
         if nargin < 5
+            % The correction factor is used to convert e.g. MWh to kWh
             correction_factor = 1;
         end
         
@@ -103,6 +108,10 @@ solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
         input_table = data_table;
         
         if remove_outliers == 1
+            % The outlier removal is exactly the same methodology as used
+            % by Claes Sandels in the processing of Kibana data etc for the
+            % progress reports. For questions regarding why this
+            % methodology is chosen, consult him.
             quantiles = quantile(input_table.Value, [0.25, 0.5, 0.75]);
             q1 = quantiles(1);
             q3 = quantiles(3);
@@ -119,7 +128,9 @@ solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
         end
         
         input_table.Value(input_table.Value<0) = NaN;
-        % Shift all timestamps to next whole hour
+        % Shift all timestamps to next whole hour, e.g. values timestamped
+        % 13:45 are moved to the next whole hour, 14:00 so that all data is
+        % uniform with regards to indices.
         input_table.Date = dateshift(input_table.Date,'start','hour','next') ;
         new_table = timetable(dates, zeros(length(dates),1));
         %Check if entire table is NaN, if so interpolation will not work.
@@ -159,7 +170,9 @@ solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
     function output = read_measurement_xls(file_path, dates)
         output = readtable(file_path, 'ReadVariableNames',true);
         output.Date = datetime(output.Tidpunkt, 'format', 'yyyy-MM-dd HH:mm:ss');
-        
+        % Removes columns which are present in the source data, but unused
+        % by this script. If the methodology in which the source data is
+        % compiled changes, this part will need changing as well.
         output = removevars(output, {'Tidpunkt', 'x_ndratAv', 'Status', 'Norm_', 'V_rde'});
                
         output = table2timetable(output);
@@ -171,6 +184,9 @@ solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
     function output = read_ann_csv(file_path, dates)
         output = readtable(file_path, 'ReadVariableNames',true);
         output.Date = datetime(output.DateTimeUTC, 'format', 'yyyy-MM-dd HH:mm:ss');
+        % Removes columns which are present in the source data, but unused
+        % by this script. If the methodology in which the source data is
+        % compiled changes, this part will need changing as well.
         output = removevars(output, {'DateTimeUTC', 'AmbientTemperature'}); 
         
         output = table2timetable(output);
@@ -182,6 +198,9 @@ solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
     function output = read_kibana_csv(file_path, dates)
         output = readtable(file_path, 'ReadVariableNames',true);
         output.Date = datetime(output.X_Timestamp, 'format', 'yyyy-MM-dd HH:mm:ss');
+        % Removes columns which are present in the source data, but unused
+        % by this script. If the methodology in which the source data is
+        % compiled changes, this part will need changing as well.
         output = removevars(output, {'Var1', 'X_Timestamp'});       
         
         output.pump_stop_lokalkontor = str2double(output.pump_stop_lokalkontor);
