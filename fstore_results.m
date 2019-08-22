@@ -71,6 +71,10 @@ data.FED_CO2_tot=gdx2mat(gdxData,'FED_CO2_tot');
 %AH CO2
 data.AH_CO2=gdx2mat(gdxData,'AH_CO2',h_sim.uels);
 
+%CO2 exG
+data.CO2F_EL=gdx2mat(gdxData,'CO2F_EL',h_sim.uels);
+data.CO2F_DH=gdx2mat(gdxData,'CO2F_DH',h_sim.uels);
+
 %PEF and CO2F used in the simulation
 data.CO2F_PV=gdx2mat(gdxData,'CO2F_PV');
 data.NREF_PV=gdx2mat(gdxData,'NREF_PV');
