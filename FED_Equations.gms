@@ -411,7 +411,9 @@ eq_RMMC3(h)..
          c_RMMC(h) =l= RMMC_inv * RMMC_cap;
 
 eq_RMMC4(h)..
-         h_RMMC(h) =l= h_demand(h,'O3060133');
+         h_RMMC(h) =l= h_demand(h,'O3060133')*0.2;
+* 2019-08-20 DS - Reduced max heat production from MC2 HP to 20% of the demand in MC2,
+* still the HP can produce more heat but it will not be useful 
 
 *----------------Absorption Chiller Investment----------------------------------
 AbsCInv_cap.fx $ (opt_fx_inv_AbsCInv_cap gt -1) = opt_fx_inv_AbsCInv_cap;
@@ -839,7 +841,7 @@ eq_hbalance4(h)$((no_imp_h_season(h)) = 1 and (min_totCost_0 = 0))..
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
 
-         sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=l=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
+         sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=e=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_HP(h) + c_RMInv(h)
                                 + c_AbsCInv(h)
                                 + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
