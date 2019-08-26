@@ -167,6 +167,9 @@ vc_el_TURB(h) = el_TURB.l(h)*utot_cost('TURB',h)+eps;
 *vc_e_PV                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
 *vc_tot = sum(h, tot_var_cost_AH(h));
 
+* Force unload default values as zero by setting defaults to eps and unloading eps values as zero
+*Assign Eps to x(i) = 0
+*el_slack_var.l(h)$(not el_slack_var.l(h)) = eps;
 
 option gdxuels = full;
 execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
