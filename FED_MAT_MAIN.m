@@ -13,17 +13,17 @@ system 'gams';
 
 %% SIMULATION START AND STOP TIME
 %Sim start time
-sim_start_y = 2019;
-sim_start_m = 1;
-sim_start_d = 1;
-sim_start_h = 3;
+sim_start_y = 2016;
+sim_start_m = 10;
+sim_start_d = 30;
+sim_start_h = 1;
 
 %Sim stop time
 
-sim_stop_y = 2019;
-sim_stop_m = 4;
-sim_stop_d = 23;
-sim_stop_h = 23;
+sim_stop_y = 2016;
+sim_stop_m = 11;
+sim_stop_d = 5;
+sim_stop_h = 1;
 
 %Get month and hours of simulation
 [HoS, ~] = fget_time_vector(sim_start_y,sim_stop_y);
@@ -34,10 +34,19 @@ sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 %sim_start=6480;
 %sim_stop=sim_start+47;
 forecast_horizon = 10;
+
+% data_read_stop is the last index of data needed for the simulation.
+% sim_length is the total length of data needed for the simulation.
+% Note there must always be at least as many extra hours of data
+% (beyond sim_start to sim_stop) to include the hours of the
+% forecast_horizon, thus data_read_stop is longer than sim_stop by the
+% forecast_horizon.
+data_read_stop = sim_stop + forecast_horizon;
+
 % Cooling season start stop
-DC_cooling_season_full = zeros(sim_stop,1);
-no_imp_h_season_full = zeros(sim_stop,1);
-DH_heating_season_full = ones(sim_stop,1);
+DC_cooling_season_full = zeros(data_read_stop,1);
+no_imp_h_season_full = zeros(data_read_stop,1);
+DH_heating_season_full = ones(data_read_stop,1);
 
 cooling_year = sim_start_y;
 while cooling_year <=sim_stop_y
@@ -61,7 +70,7 @@ while cooling_year <=sim_stop_y
 end
 
 % BAC_savings_period_full
-BAC_savings_period_full = zeros(sim_stop,1);
+BAC_savings_period_full = zeros(data_read_stop,1);
 current_year = sim_start_y;
 while current_year <= sim_stop_y
     year_start = HoS(current_year,1,1,1);
@@ -97,7 +106,7 @@ end
 % 00:00 to 2017-02-28 23:00, but one year from 2016-03-01 to 2017-02-28 is
 % preferred for data completeness/correctness. Still there is heat pump
 % data missing as well as building data missing even in this period.
-data_read_stop = sim_stop + forecast_horizon;
+
 sim_length = sim_stop - sim_start + 1;
 data_length = data_read_stop - sim_start + 1;
 
@@ -611,21 +620,21 @@ for t=1:sim_length
     P1P2_dispatchable.uels=h.uels;
     
     %Heat export season - Replaced by DH_heating_season -DS
-    %DH_export_season = struct('name','DH_export_season','type','parameter','form','full','val',DH_export_season_full(t:forecast_end,:));
+    %DH_export_season = struct('name','DH_export_season','type','parameter','form','full','val',DH_export_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
     %DH_export_season.uels=h.uels;
     
     %DH heating season
-    DH_heating_season = struct('name','DH_heating_season','type','parameter','form','full','val',DH_heating_season_full(t:forecast_end,:));
+    DH_heating_season = struct('name','DH_heating_season','type','parameter','form','full','val',DH_heating_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
     DH_heating_season.uels=h.uels;
     
     %BAC saving period
-    BAC_savings_period = struct('name','BAC_savings_period','type','parameter','form','full','val',BAC_savings_period_full(t:forecast_end,:));
+    BAC_savings_period = struct('name','BAC_savings_period','type','parameter','form','full','val',BAC_savings_period_full(t+sim_start-1:forecast_end+sim_start-1,:));
     BAC_savings_period.uels=h.uels;
     
-    DC_cooling_season = struct('name','DC_cooling_season','type','parameter','form','full','val',DC_cooling_season_full(t:forecast_end,:));
+    DC_cooling_season = struct('name','DC_cooling_season','type','parameter','form','full','val',DC_cooling_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
     DC_cooling_season.uels = h.uels;
 
-    no_imp_h_season = struct('name','no_imp_h_season','type','parameter','form','full','val',no_imp_h_season_full(t:forecast_end,:));
+    no_imp_h_season = struct('name','no_imp_h_season','type','parameter','form','full','val',no_imp_h_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
     no_imp_h_season.uels = h.uels;
     
     %Calculation of BAC savings factors
