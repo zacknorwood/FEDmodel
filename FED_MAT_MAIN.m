@@ -14,16 +14,16 @@ system 'gams';
 %% SIMULATION START AND STOP TIME
 %Sim start time
 sim_start_y = 2016;
-sim_start_m = 10;
-sim_start_d = 30;
+sim_start_m = 3;
+sim_start_d = 1;
 sim_start_h = 1;
 
 %Sim stop time
 
 sim_stop_y = 2016;
-sim_stop_m = 11;
-sim_stop_d = 5;
-sim_stop_h = 1;
+sim_stop_m = 3;
+sim_stop_d = 27;
+sim_stop_h = 24;
 
 %Get month and hours of simulation
 [HoS, ~] = fget_time_vector(sim_start_y,sim_stop_y);
@@ -772,6 +772,7 @@ for t=1:sim_length
     
     [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
 end
+delete  'result_temp.xlsx';
 xlswrite('result_temp.xlsx',to_excel_el,'Electricity','A3');
 xlswrite('result_temp.xlsx',to_excel_heat,'Heat','A3');
 xlswrite('result_temp.xlsx',to_excel_cool,'Cooling','A3');
