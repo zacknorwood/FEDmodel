@@ -413,7 +413,7 @@ eq_RMMC3(h)..
 eq_RMMC4(h)..
          h_RMMC(h) =l= h_demand(h,'O3060133')*0.2;
 * 2019-08-20 DS - Reduced max heat production from MC2 HP to 20% of the demand in MC2,
-* still the HP can produce more heat but it will not be useful 
+* still the HP can produce more heat but it will not be useful
 
 *----------------Absorption Chiller Investment----------------------------------
 AbsCInv_cap.fx $ (opt_fx_inv_AbsCInv_cap gt -1) = opt_fx_inv_AbsCInv_cap;
@@ -482,7 +482,7 @@ el_HP.fx(h)$ (min_totCost_0 = 1 or (synth_baseline = 1))=0;
 eq_HP1(h)..
              h_HP(h) =e= HP_H_COP*el_HP(h);
 eq_HP2(h)..
-             c_HP(h) =l= HP_C_COP*el_HP(h);
+             c_HP(h) =e= HP_C_COP*el_HP(h);
 eq_HP3(h)..
              h_HP(h) =l= HP_cap*DH_heating_season(h);
 *Limit heat to be produce during winter mode -DS
@@ -822,7 +822,7 @@ eq_hbalance1(h)..
              h_exp_AH(h) =l= h_Boiler1(h) + h_DH_slack_var(h);
 * Change to equal to test the slack variable
 eq_hbalance2(h)..
-             sum(BID,h_demand(h,BID)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Boiler1(h) + h_FlueGasCondenser1(h) + h_VKA1(h)
+             sum(BID,h_demand(h,BID)) =l= h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Boiler1(h) + h_FlueGasCondenser1(h) + h_VKA1(h)
                                      + h_VKA4(h) + H_from_turb(h) + H_B2_to_grid(h) + h_RMMC(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
