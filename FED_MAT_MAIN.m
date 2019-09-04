@@ -192,7 +192,16 @@ BID_nonBTES.uels={'O0007043',...
     'O0007005',...
     'O0007018','O3060137', 'Karhuset', 'O3060138',...
     'Karhus_studenter'};
-
+%% %%%%%
+for i=1:length(BID.uels)
+    AH_el(i)=sum(double(strcmp(BID.uels(i),BID_AH_el.uels)));
+    AH_h(i)=sum(double(strcmp(BID.uels(i),BID_AH_h.uels)));
+    AH_c(i)=sum(double(strcmp(BID.uels(i),BID_AH_c.uels)));
+    
+    nonAH_el(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_el.uels)));
+    nonAH_h(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_h.uels)));
+    nonAH_c(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_c.uels)));
+end
 %% IDs used to name the buses or nodes in the local electrical distribution system
 %OBS: proper maping need to be established between the nodes in the el distribution system and the building IDs
 
