@@ -20,10 +20,10 @@ sim_start_h = 1;
 
 %Sim stop time
 
-sim_stop_y = 2016;
-sim_stop_m = 3;
-sim_stop_d = 27;
-sim_stop_h = 24;
+sim_stop_y = 2017;
+sim_stop_m = 2;
+sim_stop_d = 28;
+sim_stop_h = 14;
 
 %Get month and hours of simulation
 [HoS, ~] = fget_time_vector(sim_start_y,sim_stop_y);
@@ -773,6 +773,8 @@ for t=1:sim_length
     [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
 end
 delete  'result_temp.xlsx';
+copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx') % to add the toprows in the excelfile
+
 xlswrite('result_temp.xlsx',to_excel_el,'Electricity','A3');
 xlswrite('result_temp.xlsx',to_excel_heat,'Heat','A3');
 xlswrite('result_temp.xlsx',to_excel_cool,'Cooling','A3');
