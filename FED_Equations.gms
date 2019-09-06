@@ -346,7 +346,8 @@ eq_h_FlueGasCondenser1_dispatch(h)$(P1P2_dispatchable(h)=0)..
 
 * When its not the cooling season the absorption chillers are switched on
 * and thus have a minimum production.
-c_AbsC.lo(h)$(DC_cooling_season(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0)) = AbsC_min_prod;
+c_AbsC.lo(h)$(DC_cooling_season(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0)) = AbsC_min_prod$(AbsC_min_prod gt sum(BID_AH_c,c_demand_AH(h,BID_AH_c))) 
+                                                                                       + sum(BID_AH_c,c_demand_AH(h,BID_AH_c))$(AbsC_min_prod lt sum(BID_AH_c,c_demand_AH(h,BID_AH_c)));
 AbsC_cap.fx = cap_sup_unit('AbsC');
 *in BAU Abs chiller is used as balancing unit since the AAC is set to zero
 h_AbsC.lo(h)$(min_totCost_0 = 1 or (synth_baseline = 1)) = c_AbsC_0(h) / AbsC_COP;
