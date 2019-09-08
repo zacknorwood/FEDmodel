@@ -55,6 +55,9 @@ equation
            eq_CWB_en_init        Cold Water Basin initial charge state
            eq_CWB_en             Cold Water Basin charge equation
            eq_CWB_discharge      Cold Water Basin discharges only to M building
+           eq_CWB1               Cold Water Basin cant discharge and charge simultaneously
+           eq_CWB2               Cold Water Basin cant discharge and charge simultaneously
+           eq_CWB3               Cold Water Basin cant discharge and charge simultaneously
 
            eq1_AbsCInv  Production equation-AbsChiller investment
            eq2_AbsCInv  Investment capacity-AbsChiller investment
@@ -346,8 +349,8 @@ eq_h_FlueGasCondenser1_dispatch(h)$(P1P2_dispatchable(h)=0)..
 
 * When its not the cooling season the absorption chillers are switched on
 * and thus have a minimum production.
-c_AbsC.lo(h)$(DC_cooling_season(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0)) = AbsC_min_prod$(AbsC_min_prod gt sum(BID_AH_c,c_demand_AH(h,BID_AH_c))) 
-                                                                                       + sum(BID_AH_c,c_demand_AH(h,BID_AH_c))$(AbsC_min_prod lt sum(BID_AH_c,c_demand_AH(h,BID_AH_c)));
+c_AbsC.lo(h)$(DC_cooling_season(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0)) = AbsC_min_prod$(AbsC_min_prod lt sum(BID_AH_c,c_demand_AH(h,BID_AH_c)))
+                                                                                       + sum(BID_AH_c,c_demand_AH(h,BID_AH_c))$(AbsC_min_prod gt sum(BID_AH_c,c_demand_AH(h,BID_AH_c)));
 AbsC_cap.fx = cap_sup_unit('AbsC');
 *in BAU Abs chiller is used as balancing unit since the AAC is set to zero
 h_AbsC.lo(h)$(min_totCost_0 = 1 or (synth_baseline = 1)) = c_AbsC_0(h) / AbsC_COP;
@@ -534,6 +537,14 @@ eq_CWB_en(h)$(ord(h) gt 1)..
 
 eq_CWB_discharge(h)..
          CWB_dis(h) =l= c_demand(h,'O0007028');
+
+
+eq_CWB1(h)..
+         CWB_B_dis(h)+CWB_B_ch(h) =l= 1;
+eq_CWB2(h)..
+         CWB_ch(h)=l=CWB_B_ch(h)*100000;
+eq_CWB3(h)..
+         CWB_dis(h)=l=CWB_B_dis(h)*100000;
 
 *------------------Building Advanced Control equations--------------------------
 BAC_Sen.up(h,BID)=1000*BTES_model('BTES_Scap',BID);
