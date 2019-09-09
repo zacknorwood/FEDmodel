@@ -773,6 +773,8 @@ for t=1:sim_length
     [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
 end
 delete  'result_temp.xlsx';
+copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx') % to add the toprows in the excelfile
+
 xlswrite('result_temp.xlsx',to_excel_el,'Electricity','A3');
 xlswrite('result_temp.xlsx',to_excel_heat,'Heat','A3');
 xlswrite('result_temp.xlsx',to_excel_cool,'Cooling','A3');
