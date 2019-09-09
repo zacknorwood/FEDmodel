@@ -76,7 +76,7 @@ while current_year <= sim_stop_y
     year_start = HoS(current_year,1,1,1);
     BAC_savings_end =  HoS(current_year,4,1,1);
     BAC_savings_start = HoS(current_year,10,1,1);
-    year_end = HoS(current_year,12,31,23);
+    year_end = HoS(current_year,12,31,24);
 
    BAC_savings_period_full(year_start:BAC_savings_end) = 1;
    BAC_savings_period_full(BAC_savings_start:year_end) = 1;
@@ -739,7 +739,7 @@ for t=1:sim_length
     opt_fx_inv_BTES_SO_S_init.uels = {num2cell(t), BTES_SO_BID_uels};
     opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
     opt_fx_inv_CWB_init.uels = {num2cell(t), CWB_BID_uels};
-    
+
     %opt_fx_inv_BFCh_init.uels = {num2cell(t), BFCh_BID_uels};
     
     %% Preparing input GDX file (MtoG) and RUN GAMS model

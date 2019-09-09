@@ -6,9 +6,9 @@ opt_marg_factors=1;
 synth_baseline=0;
 IPCC_factors=1; %Change to the new factors for CO2 and PE
 for IPCC_factors=[1]
-for i=3:6
+for i=2:2
     
-copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx')
+%copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx')
     disp(['Case no ' num2str(i)])
     if i==1
         min_totCost_0=1;
