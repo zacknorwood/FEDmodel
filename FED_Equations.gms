@@ -418,11 +418,11 @@ eq_RMMC1(h)..
          h_RMMC(h) =l= RMCC_H_COP * el_RMMC(h);
 
 eq_RMMC2(h)..
-         c_RMMC(h) =e= RMCC_C_COP * el_RMMC(h)*DH_heating_season(h);
-* Assuming DH_heating_season equal "wintermode" -DS
+         c_RMMC(h) =e= RMCC_C_COP * el_RMMC(h);
 
 eq_RMMC3(h)..
-         c_RMMC(h) =l= RMMC_inv * RMMC_cap;
+         c_RMMC(h) =l= RMMC_inv * RMMC_cap*DH_heating_season(h);
+* Assuming DH_heating_season equal "wintermode" -DS
 
 eq_RMMC4(h)..
          h_RMMC(h) =l= h_demand(h,'O3060133')*0.2;
@@ -542,8 +542,9 @@ CWB_dis.fx(h)$ (min_totCost_0 = 1 or (synth_baseline = 1))=0;
 * If we want to use the CWB for different buildings in future we need to specify CWB_dis etc with a BID -DS
 eq_CWB_en_init(h)$(ord(h) eq 1)..
          CWB_en(h) =e= sum(BID,opt_fx_inv_CWB_init(h,BID))+CWB_ch(h)-CWB_dis(h);
+
 eq_CWB_en(h)$(ord(h) gt 1)..
-         CWB_en(h) =e= CWB_en(h-1)+CWB_ch(h)-CWB_dis(h);
+         CWB_en(h) =e= CWB_en(h-1) + CWB_ch(h)* CWB_chr_eff - CWB_dis(h)/ CWB_dis_eff;
 
 eq_CWB_discharge(h)..
          CWB_dis(h) =l= c_demand(h,'O0007028');
@@ -864,7 +865,7 @@ eq_cbalance(h)..
          sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=e=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_HP(h) + c_RMInv(h)
                                 + c_AbsCInv(h)
-                                + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
+                                + (CWB_dis(h) - CWB_ch(h);
 
 *--------------Demand supply balance for electricity ---------------------------
 el_imp_AH.up(h)=el_imp_max_cap;
