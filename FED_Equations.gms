@@ -415,7 +415,7 @@ el_RMMC.fx(h) $ (min_totCost_0 = 1 or (synth_baseline = 1))=0;
 RMMC_inv.fx $ (opt_fx_inv_RMMC gt -1) = opt_fx_inv_RMMC;
 
 eq_RMMC1(h)..
-         h_RMMC(h) =l= RMCC_H_COP * el_RMMC(h);
+         h_RMMC(h) =l= RMCC_H_COP * el_RMMC(h)*DH_heating_season(h);
 
 eq_RMMC2(h)..
          c_RMMC(h) =e= RMCC_C_COP * el_RMMC(h)*DH_heating_season(h);
