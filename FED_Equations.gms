@@ -310,6 +310,8 @@ eq_VKA43(h) $ ((min_totCost_0 eq 0) and (synth_baseline = 0))..
 Boiler1_cap.fx=cap_sup_unit('B1');
 h_Boiler1.up(h)$(P1P2_dispatchable(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0))=B1_max;
 h_Boiler1.fx(h)$((min_totCost_0 = 1) or (synth_baseline = 1)) = h_Boiler1_0(h);
+h_Boiler1.fx(h)$(((min_totCost_0 = 0) and (synth_baseline = 0)) and (DH_heating_season(h) = 0)) = 0;
+
 
 eq1_h_Boiler1(h) $ (min_totCost_0 eq 0)..
         h_Boiler1(h)=l=Boiler1_cap;
@@ -415,14 +417,14 @@ el_RMMC.fx(h) $ (min_totCost_0 = 1 or (synth_baseline = 1))=0;
 RMMC_inv.fx $ (opt_fx_inv_RMMC gt -1) = opt_fx_inv_RMMC;
 
 eq_RMMC1(h)..
-         h_RMMC(h) =l= RMCC_H_COP * el_RMMC(h)*DH_heating_season(h);
+         h_RMMC(h) =l= RMCC_H_COP * el_RMMC(h);
 
 eq_RMMC2(h)..
-         c_RMMC(h) =e= RMCC_C_COP * el_RMMC(h)*DH_heating_season(h);
-* Assuming DH_heating_season equal "wintermode" -DS
+         c_RMMC(h) =e= RMCC_C_COP * el_RMMC(h);
 
 eq_RMMC3(h)..
-         c_RMMC(h) =l= RMMC_inv * RMMC_cap;
+         c_RMMC(h) =l= RMMC_inv * RMMC_cap*DH_heating_season(h);
+* Assuming DH_heating_season equal "wintermode" -DS
 
 eq_RMMC4(h)..
          h_RMMC(h) =l= h_demand(h,'O3060133')*0.2;
@@ -443,6 +445,7 @@ eq2_AbsCInv(h)..
 h_Boiler2.up(h)=B2_max;
 B_Boiler2.fx $ (opt_fx_inv_Boiler2 gt -1) = opt_fx_inv_Boiler2;
 h_Boiler2.fx(h)$ (min_totCost_0 = 1 or (synth_baseline = 1))=0;
+h_Boiler2.fx(h)$(((min_totCost_0 = 0) and (synth_baseline = 0)) and DH_heating_season_P2(h) = 0) = 0;
 
 eq1_Boiler2(h)..
          h_Boiler2(h) =e= fuel_Boiler2(h) * B2_eff;
