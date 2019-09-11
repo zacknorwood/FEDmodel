@@ -24,7 +24,7 @@ ALL
 
 SOLVE total using MIP minimizing obj;
 
-display B_BAC.l, h_BAC_savings.l;
+*display B_BAC.l, h_BAC_savings.l;
 
 parameter
 h_demand_nonAH_sum  total demand for non AH buildings
