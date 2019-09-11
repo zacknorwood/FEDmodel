@@ -69,7 +69,7 @@ while cooling_year <=sim_stop_y
     
      DH_heating_season_P2_start = HoS(cooling_year,9,30,24);
     DH_heating_season_P2_stop = HoS(cooling_year,5,1,1);
-    DH_heating_season_P2_full(DH_heating_season_stop:DH_heating_season_start) = 0;
+    DH_heating_season_P2_full(DH_heating_season_P2_stop:DH_heating_season_P2_start) = 0;
     
     cooling_year = cooling_year + 1;
 end
