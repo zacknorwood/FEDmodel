@@ -442,7 +442,7 @@ eq2_AbsCInv(h)..
 h_Boiler2.up(h)=B2_max;
 B_Boiler2.fx $ (opt_fx_inv_Boiler2 gt -1) = opt_fx_inv_Boiler2;
 h_Boiler2.fx(h)$ (min_totCost_0 = 1 or (synth_baseline = 1))=0;
-h_Boiler2.fx(h)$(((min_totCost_0 = 0) and (synth_baseline = 0)) and DH_heating_season_P2(h) = 0 and P1P2_dispatchable(h) eq 0) = 0;
+h_Boiler2.fx(h)$(((min_totCost_0 = 0) and (synth_baseline = 0)) and DH_heating_season_P2(h) = 0 and P1P2_dispatchable(h) eq 1) = 0;
 
 eq1_Boiler2(h)..
          h_Boiler2(h) =e= fuel_Boiler2(h) * B2_eff;
