@@ -310,22 +310,22 @@ eq_VKA43(h) $ ((min_totCost_0 eq 0) and (synth_baseline = 0))..
 Boiler1_cap.fx=cap_sup_unit('B1');
 h_Boiler1.up(h)$(P1P2_dispatchable(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0))=B1_max;
 h_Boiler1.fx(h)$((min_totCost_0 = 1) or (synth_baseline = 1)) = h_Boiler1_0(h);
-h_Boiler1.fx(h)$(((min_totCost_0 = 0) and (synth_baseline = 0)) and (DH_heating_season(h) = 0) and P1P2_dispatchable(h) eq 1) = 0;
+*h_Boiler1.fx(h)$(((min_totCost_0 = 0) and (synth_baseline = 0)) and (DH_heating_season(h) = 0) and P1P2_dispatchable(h) eq 1) = 0;
 
 
 eq1_h_Boiler1(h) $ (min_totCost_0 eq 0)..
         h_Boiler1(h)=l=Boiler1_cap;
 
-eq2_h_Boiler1(h)$(ord(h) gt 1 and (P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1) and synth_baseline eq 0 and min_totCost_0 eq 0  and (DH_heating_season(h) = 1))..
+eq2_h_Boiler1(h)$(ord(h) gt 1 and (P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1) and synth_baseline eq 0 and min_totCost_0 eq 0)..
         h_Boiler1(h-1)- h_Boiler1(h)=g=-B1_hourly_ramprate;
 
-eq3_h_Boiler1(h)$(ord(h) gt 1 and (P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1)  and synth_baseline eq 0 and min_totCost_0 eq 0 and (DH_heating_season(h) = 1))..
+eq3_h_Boiler1(h)$(ord(h) gt 1 and (P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1)  and synth_baseline eq 0 and min_totCost_0 eq 0)..
         h_Boiler1(h-1)- h_Boiler1(h)=l=B1_hourly_ramprate;
 
-eq4_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0 and (DH_heating_season(h) = 1))..
+eq4_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0 )..
              Boiler1_prev_disp- h_Boiler1(h)=l=B1_hourly_ramprate;
 
-eq5_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0 and (DH_heating_season(h) = 1))..
+eq5_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0 )..
              Boiler1_prev_disp- h_Boiler1(h)=g=-B1_hourly_ramprate;
 
 eq6_h_Boiler1(h)..
@@ -442,26 +442,26 @@ eq2_AbsCInv(h)..
 h_Boiler2.up(h)=B2_max;
 B_Boiler2.fx $ (opt_fx_inv_Boiler2 gt -1) = opt_fx_inv_Boiler2;
 h_Boiler2.fx(h)$ (min_totCost_0 = 1 or (synth_baseline = 1))=0;
-h_Boiler2.fx(h)$(((min_totCost_0 = 0) and (synth_baseline = 0)) and DH_heating_season_P2(h) = 0 and P1P2_dispatchable(h) eq 1) = 0;
+*h_Boiler2.fx(h)$(((min_totCost_0 = 0) and (synth_baseline = 0)) and DH_heating_season_P2(h) = 0 and P1P2_dispatchable(h) eq 1) = 0;
 
 eq1_Boiler2(h)..
          h_Boiler2(h) =e= fuel_Boiler2(h) * B2_eff;
 eq2_Boiler2(h)..
          h_Boiler2(h) =l= B_Boiler2 * B2_cap;
 
-eq3_Boiler2(h)$((P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1)  and ord(h) gt 1 and DH_heating_season_P2(h) = 1)..
+eq3_Boiler2(h)$((P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1)  and ord(h) gt 1)..
          h_Boiler2(h)-h_Boiler2(h-1) =l= B2_hourly_ramprate;
 
-eq4_Boiler2(h)$((P1P2_dispatchable(h)=1  or P1P2_dispatchable(h-1)=1) and ord(h) gt 1 and DH_heating_season_P2(h) = 1)..
+eq4_Boiler2(h)$((P1P2_dispatchable(h)=1  or P1P2_dispatchable(h-1)=1) and ord(h) gt 1)..
          h_Boiler2(h) - h_Boiler2(h-1) =g= -B2_hourly_ramprate;
 
-eq5_h_Boiler2(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0 and DH_heating_season_P2(h) = 1)..
+eq5_h_Boiler2(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
              Boiler2_prev_disp- h_Boiler2(h)=l=B2_hourly_ramprate;
 
-eq6_h_Boiler2(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0 and DH_heating_season_P2(h) = 1)..
+eq6_h_Boiler2(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
              Boiler2_prev_disp- h_Boiler2(h)=g=-B2_hourly_ramprate;
 
-eq_h_Boiler2_research(h)$(P1P2_dispatchable(h)=0 and min_totCost_0 = 0 and (synth_baseline = 0) and DH_heating_season_P2(h) = 1)..
+eq_h_Boiler2_research(h)$(P1P2_dispatchable(h)=0 and min_totCost_0 = 0 and (synth_baseline = 0))..
          h_Boiler2(h) =e= B_Boiler2 * B2_research_prod;
 
 *----------------Refurb turbine equations --------------------------------------
