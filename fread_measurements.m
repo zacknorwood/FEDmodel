@@ -94,7 +94,9 @@ el_VKA4_0(isnan(el_VKA4_0))=0;
 %el_AAC_0=c_AAC_0/10;
 
 %Measured heat input for AbsC converted to kWh
-c_AbsC_0=xlsread('Input_dispatch_model\abs o frikyla 2016-2017.xlsx',2,strcat('D',int2str(sim_start+1),':D',int2str(data_read_stop+1)))*MWhtokWh;
+%Include total cooling delivery to Chalmers (i.e. both AbsC and AAC)
+%So, the c_AbsC_0 variable represents the total import cooling
+c_AbsC_0=xlsread('Input_dispatch_model\abs o frikyla 2016-2017.xlsx',2,strcat('B',int2str(sim_start+1),':B',int2str(data_read_stop+1)))*MWhtokWh;
 if (length(c_AbsC_0)<data_length) || (any(isnan(c_AbsC_0),'all'))
     error('Error: input file does not have complete data for simulation length');
 end
@@ -161,7 +163,7 @@ end
 
 %District heating slack bus data
 net_h_prod = h_imp_AH_measured - h_exp_AH_measured + h_Boiler1_0 + h_FlueGasCondenser1_0 + el_VKA1_0*COP_VKA1 + el_VKA4_0*COP_VKA4;
-ah_h_demand = sum(h_demand(:,[1,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,29,31,32,33,34]), 2);
+ah_h_demand = sum(h_demand(:,[1,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,22,23,24,25,26,27,29,31,32,33,34]), 2);
 h_DH_slack = ah_h_demand - net_h_prod;
 diff_h=h_DH_slack-h_DH_slack1;
 
@@ -194,7 +196,7 @@ end
 
 %electricity slack bus data
 net_e_prod = e_imp_AH_measured;
-ah_e_demand = sum(el_demand(:,:), 2);
+ah_e_demand = sum(el_demand(:,[1,5,6,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,31,32,33,34]), 2);
 el_exG_slack_new = ah_e_demand - net_e_prod;
 diff_e=el_exG_slack_new-el_exG_slack1;
 el_exG_slack=el_exG_slack1;

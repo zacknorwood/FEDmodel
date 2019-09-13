@@ -9,9 +9,9 @@ tic
 %% ELECTRICITY DATA
 % (1,2) is for taking the value from the first hour (of the 10 hour
 % dispatch) and column 2 is for the power/cost
-if Results(t).dispatch.model_status(1)~= 1 && Results(t).dispatch.model_status(1)~= 6  
+if Results(t).dispatch.model_status(1)~= 1 && Results(t).dispatch.model_status(1)~= 6  && Results(t).dispatch.model_status(1)~= 8
 to_excel_co2(t,7)=Results(t).dispatch.model_status(1);
-disp('GAMS FAILED!')
+disp(['GAMS FAILED! error code: ' num2str(Results(t).dispatch.model_status(1))])
 else
 to_excel_el(t,1)=t;
 to_excel_el(t,2)=Results(t).dispatch.el_TURB(1,2); 

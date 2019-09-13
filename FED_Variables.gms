@@ -68,6 +68,10 @@ positive variable
          CWB_ch(h)       hourly charging of basin
          CWB_dis(h)      hourly discharging of basin
 ;
+binary variable
+         CWB_B_ch(h)     binary variable for CWB charge
+         CWB_B_dis(h)     binary variable for CWB charge
+;
 
 
 *------------------Ambient Air Cooling Machine related--------------------------
