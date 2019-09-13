@@ -55,6 +55,9 @@ equation
            eq_CWB_en_init        Cold Water Basin initial charge state
            eq_CWB_en             Cold Water Basin charge equation
            eq_CWB_discharge      Cold Water Basin discharges only to M building
+           eq_CWB1               Cold Water Basin cant discharge and charge simultaneously
+           eq_CWB2               Cold Water Basin cant discharge and charge simultaneously
+           eq_CWB3               Cold Water Basin cant discharge and charge simultaneously
 
            eq1_AbsCInv  Production equation-AbsChiller investment
            eq2_AbsCInv  Investment capacity-AbsChiller investment
@@ -307,6 +310,8 @@ eq_VKA43(h) $ ((min_totCost_0 eq 0) and (synth_baseline = 0))..
 Boiler1_cap.fx=cap_sup_unit('B1');
 h_Boiler1.up(h)$(P1P2_dispatchable(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0))=B1_max;
 h_Boiler1.fx(h)$((min_totCost_0 = 1) or (synth_baseline = 1)) = h_Boiler1_0(h);
+*h_Boiler1.fx(h)$(((min_totCost_0 = 0) and (synth_baseline = 0)) and (DH_heating_season(h) = 0) and P1P2_dispatchable(h) eq 1) = 0;
+
 
 eq1_h_Boiler1(h) $ (min_totCost_0 eq 0)..
         h_Boiler1(h)=l=Boiler1_cap;
@@ -317,10 +322,10 @@ eq2_h_Boiler1(h)$(ord(h) gt 1 and (P1P2_dispatchable(h)=1 or P1P2_dispatchable(h
 eq3_h_Boiler1(h)$(ord(h) gt 1 and (P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1)  and synth_baseline eq 0 and min_totCost_0 eq 0)..
         h_Boiler1(h-1)- h_Boiler1(h)=l=B1_hourly_ramprate;
 
-eq4_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
+eq4_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0 )..
              Boiler1_prev_disp- h_Boiler1(h)=l=B1_hourly_ramprate;
 
-eq5_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
+eq5_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0 )..
              Boiler1_prev_disp- h_Boiler1(h)=g=-B1_hourly_ramprate;
 
 eq6_h_Boiler1(h)..
@@ -347,6 +352,8 @@ eq_h_FlueGasCondenser1_dispatch(h)$(P1P2_dispatchable(h)=0)..
 * When its not the cooling season the absorption chillers are switched on
 * and thus have a minimum production.
 c_AbsC.lo(h)$(DC_cooling_season(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0)) = AbsC_min_prod;
+c_AbsC.lo(h)$(DC_cooling_season(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0) and (AbsC_min_prod gt (sum(BID_AH_c,c_demand_AH(h,BID_AH_c))-c_DC_slack(h)))) = sum(BID_AH_c,c_demand_AH(h,BID_AH_c))-c_DC_slack(h);
+
 AbsC_cap.fx = cap_sup_unit('AbsC');
 *in BAU Abs chiller is used as balancing unit since the AAC is set to zero
 h_AbsC.lo(h)$(min_totCost_0 = 1 or (synth_baseline = 1)) = c_AbsC_0(h) / AbsC_COP;
@@ -372,6 +379,12 @@ eq_RM2(h)..
              c_RM(h) =l= RM_cap;
 
 ********** Ambient Air Cooling Machine equations (electricity => cooling)-------
+
+*Basecase c_AAC=e=c_AAC_0
+*c_AAC_0 from matlab
+*synth_baseline = 1 c_AAC=0
+
+
 *eq_ACC1(h)..
 *             c_AAC(h) =e= AAC_COP*el_AAC(h);
 *eq_ACC2(h) $ (min_totCost_0 eq 0)..
@@ -404,16 +417,16 @@ eq_RMMC1(h)..
          h_RMMC(h) =l= RMCC_H_COP * el_RMMC(h);
 
 eq_RMMC2(h)..
-         c_RMMC(h) =e= RMCC_C_COP * el_RMMC(h)*DH_heating_season(h);
-* Assuming DH_heating_season equal "wintermode" -DS
+         c_RMMC(h) =e= RMCC_C_COP * el_RMMC(h);
 
 eq_RMMC3(h)..
-         c_RMMC(h) =l= RMMC_inv * RMMC_cap;
+         c_RMMC(h) =l= RMMC_inv * RMMC_cap*DH_heating_season(h);
+* Assuming DH_heating_season equal "wintermode" -DS
 
 eq_RMMC4(h)..
          h_RMMC(h) =l= h_demand(h,'O3060133')*0.2;
 * 2019-08-20 DS - Reduced max heat production from MC2 HP to 20% of the demand in MC2,
-* still the HP can produce more heat but it will not be useful 
+* still the HP can produce more heat but it will not be useful
 
 *----------------Absorption Chiller Investment----------------------------------
 AbsCInv_cap.fx $ (opt_fx_inv_AbsCInv_cap gt -1) = opt_fx_inv_AbsCInv_cap;
@@ -429,6 +442,7 @@ eq2_AbsCInv(h)..
 h_Boiler2.up(h)=B2_max;
 B_Boiler2.fx $ (opt_fx_inv_Boiler2 gt -1) = opt_fx_inv_Boiler2;
 h_Boiler2.fx(h)$ (min_totCost_0 = 1 or (synth_baseline = 1))=0;
+*h_Boiler2.fx(h)$(((min_totCost_0 = 0) and (synth_baseline = 0)) and DH_heating_season_P2(h) = 0 and P1P2_dispatchable(h) eq 1) = 0;
 
 eq1_Boiler2(h)..
          h_Boiler2(h) =e= fuel_Boiler2(h) * B2_eff;
@@ -482,7 +496,7 @@ el_HP.fx(h)$ (min_totCost_0 = 1 or (synth_baseline = 1))=0;
 eq_HP1(h)..
              h_HP(h) =e= HP_H_COP*el_HP(h);
 eq_HP2(h)..
-             c_HP(h) =l= HP_C_COP*el_HP(h);
+             c_HP(h) =e= HP_C_COP*el_HP(h);
 eq_HP3(h)..
              h_HP(h) =l= HP_cap*DH_heating_season(h);
 *Limit heat to be produce during winter mode -DS
@@ -527,12 +541,18 @@ CWB_ch.fx(h)$ (min_totCost_0 = 1 or (synth_baseline = 1))=0;
 CWB_dis.fx(h)$ (min_totCost_0 = 1 or (synth_baseline = 1))=0;
 * If we want to use the CWB for different buildings in future we need to specify CWB_dis etc with a BID -DS
 eq_CWB_en_init(h)$(ord(h) eq 1)..
-         CWB_en(h) =e= sum(BID,opt_fx_inv_CWB_init(h,BID)+CWB_ch(h)-CWB_dis(h));
+         CWB_en(h) =e= sum(BID,opt_fx_inv_CWB_init(h,BID)) + CWB_ch(h)* CWB_chr_eff - CWB_dis(h)/ CWB_dis_eff;
 eq_CWB_en(h)$(ord(h) gt 1)..
-         CWB_en(h) =e= CWB_en(h-1)+CWB_ch(h)-CWB_dis(h);
+         CWB_en(h) =e= CWB_en(h-1) + CWB_ch(h)* CWB_chr_eff - CWB_dis(h)/ CWB_dis_eff;
 
 eq_CWB_discharge(h)..
          CWB_dis(h) =l= c_demand(h,'O0007028');
+eq_CWB1(h)..
+         CWB_B_dis(h)+CWB_B_ch(h) =l= 1;
+eq_CWB2(h)..
+         CWB_ch(h)=l=CWB_B_ch(h)*100000;
+eq_CWB3(h)..
+         CWB_dis(h)=l=CWB_B_dis(h)*100000;
 
 *------------------Building Advanced Control equations--------------------------
 BAC_Sen.up(h,BID)=1000*BTES_model('BTES_Scap',BID);
@@ -822,7 +842,7 @@ eq_hbalance1(h)..
              h_exp_AH(h) =l= h_Boiler1(h) + h_DH_slack_var(h);
 * Change to equal to test the slack variable
 eq_hbalance2(h)..
-             sum(BID,h_demand(h,BID)) =l=h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Boiler1(h) + h_FlueGasCondenser1(h) + h_VKA1(h)
+             sum(BID,h_demand(h,BID)) =l= h_imp_AH(h) + h_DH_slack(h)+ h_DH_slack_var(h) + h_imp_nonAH(h) - h_exp_AH(h)  + h_Boiler1(h) + h_FlueGasCondenser1(h) + h_VKA1(h)
                                      + h_VKA4(h) + H_from_turb(h) + H_B2_to_grid(h) + h_RMMC(h)
                                      + h_HP(h)
                                      + (TES_dis_eff*TES_dis(h)-TES_ch(h)/TES_chr_eff)
@@ -844,7 +864,7 @@ eq_cbalance(h)..
          sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=e=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_HP(h) + c_RMInv(h)
                                 + c_AbsCInv(h)
-                                + (CWB_dis_eff*CWB_dis(h) - CWB_ch(h)/CWB_chr_eff);
+                                + CWB_dis(h) - CWB_ch(h);
 
 *--------------Demand supply balance for electricity ---------------------------
 el_imp_AH.up(h)=el_imp_max_cap;
@@ -1138,5 +1158,7 @@ eq_invCost..
 ****************Objective function**********************************************
 eq_obj..
          obj=e= min_totCost*totCost + min_totPE*tot_PE + min_totCO2*FED_CO2_tot;
+* + sum(h,h_Boiler2(h)*(1-DH_heating_season_P2(h))*100000 + h_Boiler1(h)*(1-DH_heating_season(h))*100000);
+
 
 ********************************************************************************
