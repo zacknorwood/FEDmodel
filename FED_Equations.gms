@@ -863,7 +863,7 @@ eq_cbalance(h)..
 
          sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=e=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_HP(h) + c_RMInv(h)
-                                + c_AbsCInv(h)
+                                + (sum(BID,c_BAC_savings(h,BID))) + c_AbsCInv(h)
                                 + CWB_dis(h) - CWB_ch(h);
 
 *--------------Demand supply balance for electricity ---------------------------
