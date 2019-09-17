@@ -3,10 +3,10 @@ clear all
 % Initial run
 opt_RunGAMSModel=1;
 opt_marg_factors=1;
-synth_baseline=0;
+synth_baseline=1;
 IPCC_factors=1; %Change to the new factors for CO2 and PE
 for IPCC_factors=[1]
-for i=7:10
+for i=2
     
 %copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx')
     disp(['Case no ' num2str(i)])

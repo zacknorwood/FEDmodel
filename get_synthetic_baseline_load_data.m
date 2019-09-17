@@ -1,4 +1,4 @@
-function [el_demand, h_demand, c_demand, ann_production_pruned, el_factors, dh_factors, temperature, dh_price, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime, time_resolution)
+function [el_demand, h_demand, c_demand, ann_production_pruned, el_factors, dh_factors, temperature, dh_price, el_price, solar_irradiation, h_boiler_1_production] = get_synthetic_baseline_load_data(start_datetime, end_datetime, time_resolution)
 % get_synthetic_baseline_load_data - Retrieves load data for synthetic
 % baseline using in-function specified load files.
 %
@@ -90,6 +90,8 @@ el_kibana_file = 'EL_demand_kibana.csv'; % Unused as we don't consider electrici
 % Production file
 ann_production_file = 'ProductionUnitsANN.csv'; % File containing boiler 1 production, AbsC, total cooling production
 mc2_cooling_production_file = 'mc2cooling.csv'; % Ignored further down, contains all zeros for cooling production
+
+P1_kibana_file = 'P1_kibana.csv';
 
 % Temperaure file
 temperature_file = 'Temperatur_Goteborg_A_2019.xlsx';
@@ -224,7 +226,26 @@ solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
         output = fillmissing(output,'constant',0); % Replaces NaN, NaT, etc with 0
     end
 
-% Heating production reading
+ function output = read_kibana_P1_csv(file_path, dates)
+        output = readtable(file_path, 'ReadVariableNames',true);
+        output.Date = datetime(output.X_Timestamp, 'format', 'yyyy-MM-dd HH:mm:ss');
+        % Removes columns which are present in the source data, but unused
+        % by this script. If the methodology in which the source data is
+        % compiled changes, this part will need changing as well.
+        output = removevars(output, {'Var1', 'X_Timestamp','marketStatus'});       
+        %output = removevars(output, {'marketStatus', 'X_Timestamp'});   
+        
+       
+        output.researchMode = str2double(output.researchMode);
+        
+        output = table2timetable(output);
+        output = sortrows(output);
+        output = process_large_data(output, dates);
+        output = fillmissing(output,'constant',0); % Replaces NaN, NaT, etc with 0
+    end
+
+%% Heating production reading
+
 h_export = read_measurement_xls(strcat(measurements_data_folder , h_export_file), dates);
 h_import = read_measurement_xls(strcat(measurements_data_folder , h_import_file), dates);
 h_boiler_1_production = read_measurement_xls(strcat(measurements_data_folder , boiler_1_file), dates);
@@ -252,6 +273,7 @@ c_vka_4_production = read_measurement_xls(strcat(measurements_data_folder , c_vk
 % ANN reading
 ann_buildings = read_ann_csv(strcat(ann_data_folder, ann_file), dates);
 h_kibana_demand = read_kibana_csv(strcat(kibana_data_folder, h_kibana_file), dates);
+
 
 % MC2 Cooling production
 % Cooling production = 0 for entire period according to actualCapacity in
@@ -281,6 +303,9 @@ el_kc_pv_production = read_measurement_xls(strcat(measurements_data_folder, el_k
 ann_production = read_ann_csv(strcat(ann_data_folder, ann_production_file), dates);
 ann_production_pruned = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1000);
 
+
+
+
 %ann_production.AbsC_production(ann_production.AbsC_production<0) = 0
 %ann_production.Boiler1_production(ann_production.Boiler1_production<0) = 0
 %ann_production.Total_cooling_demand(ann_production.Total_cooling_demand<0) = 0
@@ -301,6 +326,19 @@ h_fgc_production =  prune_data(h_fgc_production, start_datetime, end_datetime, t
 
 h_ann = prune_data(ann_buildings, start_datetime, end_datetime, time_resolution, 1000);
 h_kibana_demand = prune_data(h_kibana_demand, start_datetime, end_datetime, time_resolution, 1);
+
+% Read P1 bidds
+P1_kibana = read_kibana_P1_csv(strcat(kibana_data_folder, P1_kibana_file), dates);
+P1_kibana_pruned = prune_data(P1_kibana, start_datetime, end_datetime, time_resolution, 1);
+ann_production_pruned_temp=ann_production_pruned;
+ann_production_pruned.Boiler1_production(P1_kibana_pruned.researchMode==0)=h_boiler_1_production.Value((P1_kibana_pruned.researchMode==0));
+% figure
+% plot(ann_production_pruned_temp.Boiler1_production)
+% hold on
+% plot(h_boiler_1_production.Value)
+% plot(ann_production_pruned.Boiler1_production)
+% plot(P1_kibana_pruned.researchMode*10000)
+% legend('P1 ANN', 'P1 Historical', 'P1 ANN or Historical', 'ResearchMode')
 
 % Calculate net load
 net_production = (h_import.Value...

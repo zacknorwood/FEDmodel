@@ -13,17 +13,17 @@ system 'gams';
 
 %% SIMULATION START AND STOP TIME
 %Sim start time
-sim_start_y = 2016;
-sim_start_m = 3;
+sim_start_y = 2019;
+sim_start_m = 1;
 sim_start_d = 1;
-sim_start_h = 1;
+sim_start_h = 3;
 
 %Sim stop time
 
-sim_stop_y = 2017;
-sim_stop_m = 2;
-sim_stop_d = 28;
-sim_stop_h = 14;
+sim_stop_y = 2019;
+sim_stop_m = 4;
+sim_stop_d = 23;
+sim_stop_h = 23;
 
 %Get month and hours of simulation
 [HoS, ~] = fget_time_vector(sim_start_y,sim_stop_y);
