@@ -35,6 +35,8 @@ equation
            eq_AbsC1     for determining capacity of AR
            eq_AbsC2     relates cooling from AR
            eq_AbsC3     Absorption chiller electricity usage
+                   eq_AbsC4             General lower limit
+                   eq_AbsC5             Lower limit in exceptional situations where the demand is lower than the general lower limit
 
            eq_RM1       Refrigerator equation
            eq_RM2       Refrigerator equation
@@ -349,10 +351,6 @@ eq_h_FlueGasCondenser1_dispatch(h)$(P1P2_dispatchable(h)=0)..
 
 *-----------AbsC (Absorption Chiller) equations  (Heat => cooling )-------------
 
-* When its not the cooling season the absorption chillers are switched on
-* and thus have a minimum production.
-c_AbsC.lo(h)$(DC_cooling_season(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0)) = AbsC_min_prod;
-c_AbsC.lo(h)$(DC_cooling_season(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0) and (AbsC_min_prod gt (sum(BID_AH_c,c_demand_AH(h,BID_AH_c))-c_DC_slack(h)))) = sum(BID_AH_c,c_demand_AH(h,BID_AH_c))-c_DC_slack(h);
 
 AbsC_cap.fx = cap_sup_unit('AbsC');
 *in BAU Abs chiller is used as balancing unit since the AAC is set to zero
@@ -367,6 +365,18 @@ eq_AbsC2(h) $ (min_totCost_0 eq 0 and (synth_baseline = 0))..
 eq_AbsC3(h)..
              el_AbsC(h) =e= c_AbsC(h) / AbsC_el_COP;
 
+* When its not the cooling season the absorption chillers are switched on
+* and thus have a minimum production.
+
+eq_AbsC4(h) $ (DC_cooling_season(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0)and (AbsC_min_prod le (sum(BID_AH_c,c_demand_AH(h,BID_AH_c))-c_DC_slack(h))))..
+                        c_AbsC(h) =g= AbsC_min_prod;
+
+eq_AbsC5(h) $ (DC_cooling_season(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0) and (AbsC_min_prod gt (sum(BID_AH_c,c_demand_AH(h,BID_AH_c))-c_DC_slack(h))))..
+                        c_AbsC(h) =g= sum(BID_AH_c,c_demand_AH(h,BID_AH_c))-c_DC_slack(h)- sum(BID,c_BAC_savings(h,BID));
+
+
+*c_AbsC.lo(h)$(DC_cooling_season(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0)) = AbsC_min_prod;
+*c_AbsC.lo(h)$(DC_cooling_season(h)=1 and min_totCost_0 = 0 and (synth_baseline = 0) and (AbsC_min_prod gt (sum(BID_AH_c,c_demand_AH(h,BID_AH_c))-c_DC_slack(h)))) = sum(BID_AH_c,c_demand_AH(h,BID_AH_c))-c_DC_slack(h)- sum(BID,c_BAC_savings(h,BID));
 
 
 *----------Refrigerator Machine equations (electricity => cooling)--------------
