@@ -108,11 +108,11 @@ solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
 %simulation_steps = start_datetime:hours(step_hours):end_datetime;
 
 %% Input file reading
-    function output = process_data(data_table, dates, energy_data, remove_outliers)
+    function output = process_data(data_table, dates, remove_outliers)
         % Processes Mx1 timetables, removing outliers, below zero values,
         % and interpolates missing values.
         % Returns a timetable with for timeindices in 'dates'
-        if nargin == 3
+        if nargin == 2
            remove_outliers = 1;
         end
         input_table = data_table;
@@ -138,10 +138,7 @@ solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
         end
 
         input_table.Value(input_table.Value<0) = NaN;
-
-        if energy_data==0
-        input_table.Value(input_table.Value==0) = NaN;
-        end
+%        input_table.Value(input_table.Value==0) = NaN;
         % Shift all timestamps to next whole hour, e.g. values timestamped
         % 13:45 are moved to the next whole hour, 14:00 so that all data is
         % uniform with regards to indices.
@@ -155,20 +152,13 @@ solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
             output = synchronize(new_table, input_table,'first','linear'); 
         end
         
-        if energy_data==0
-            % Calculate the hourly power from the measurements
-        for t=1:length(output.Value)
-            if t==1
-                output.Value1(t)=0;
-            else
-                output.Value1(t)=output.Value(t)-output.Value(t-1);
-            end
-        end
-        % 
-        output.Properties.VariableNames = {'Var1', 'Value','Var2'};
-        output = removevars(output, {'Var2'});
-        end
-        % Remove temporary data from output
+%         for t=1:length(output.Value)
+%             if t==1
+%                 output.Value1(t)=0;
+%             else
+%                 output.Value1(t)=output.Value(t)-output.Value(t-1);
+%             end
+%         end        % Remove temporary data from output
         output = removevars(output, {'Var1'});
     end
 
@@ -186,7 +176,7 @@ solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
             % column named 'Value'
             one_variable.Properties.VariableNames = {'Value'};
             % Process one column of data which is what process_data expects
-            partial_data = process_data(one_variable , dates, energy_data, remove_outliers);
+            partial_data = process_data(one_variable , dates, remove_outliers);
             % Change to original VariableName
             partial_data.Properties.VariableNames = {variable_name{1}};
             % Append temp_table to continue reconstructing original shape
@@ -202,12 +192,12 @@ solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
         % by this script. If the methodology in which the source data is
         % compiled changes, this part will need changing as well.
         output = removevars(output, {'Tidpunkt', 'x_ndratAv', 'Status', 'Norm_', 'V_rde'});
-        % Change so we are looking at the energy meter reading instead
 %        output = removevars(output, {'Tidpunkt', 'x_ndratAv', 'Status', 'Norm_', 'Diff'});
+               
         output = table2timetable(output);
         output = sortrows(output);
         output.Properties.VariableNames = {'Value'};
-        output = process_data(output, dates, energy_data);   
+        output = process_data(output, dates);   
     end
 
     function output = read_ann_csv(file_path, dates)
@@ -265,7 +255,7 @@ solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
     end
 
 %% Heating production reading
-energy_data=1;
+
 h_export = read_measurement_xls(strcat(measurements_data_folder , h_export_file), dates);
 h_import = read_measurement_xls(strcat(measurements_data_folder , h_import_file), dates);
 h_boiler_1_production = read_measurement_xls(strcat(measurements_data_folder , boiler_1_file), dates);
@@ -273,7 +263,7 @@ h_vka_1_production = read_measurement_xls(strcat(measurements_data_folder , h_vk
 h_vka_2_production = read_measurement_xls(strcat(measurements_data_folder , h_vka_2_file), dates);
 h_vka_4_production = read_measurement_xls(strcat(measurements_data_folder , h_vka_4_file), dates);
 
-energy_data=1;
+
 h_fgc_production = readtable(strcat(measurements_data_folder , fgc_file), 'ReadVariableNames',true, 'Range','A3:B4454'); % fgc_file on different format requiring separate file reading
 fgc_times = table2cell(h_fgc_production(:,1));
 fgc_date = datetime(fgc_times,'InputFormat','yyyy-MM-dd HH', 'format', 'yyyy-MM-dd HH:mm:ss');
@@ -282,8 +272,7 @@ clearvars fgc_date fgc_times
 h_fgc_production = removevars(h_fgc_production, {'Var1'});
 h_fgc_production = table2timetable(h_fgc_production);
 h_fgc_production.Properties.VariableNames = {'Value'};
-h_fgc_production = process_data(h_fgc_production, dates, energy_data);
-energy_data=0;
+h_fgc_production = process_data(h_fgc_production, dates);
 
 % Cooling production reading
 c_import = read_measurement_xls(strcat(measurements_data_folder , c_import_file), dates);
@@ -312,9 +301,9 @@ el_imported.Properties.VariableNames = {'Value'};
 %Interpret strings in value as double
 el_imported.Value = strrep(el_imported.Value, " ", "");
 el_imported.Value = strrep(el_imported.Value, ",", ".");
-%el_imported.Value = str2double(el_imported.Value);
+el_imported.Value = str2double(el_imported.Value);
 %Process the data
-el_imported = process_data(el_imported, dates, energy_data);   
+el_imported = process_data(el_imported, dates);   
 
 %Read production of PV-panels on KC
 el_kc_pv_production = read_measurement_xls(strcat(measurements_data_folder, el_kc_pv_file ), dates);
@@ -344,7 +333,6 @@ h_vka_1_production =  prune_data(h_vka_1_production, start_datetime, end_datetim
 h_vka_2_production =  prune_data(h_vka_2_production, start_datetime, end_datetime, time_resolution, 1);
 h_vka_4_production =  prune_data(h_vka_4_production, start_datetime, end_datetime, time_resolution, 1);
 h_fgc_production =  prune_data(h_fgc_production, start_datetime, end_datetime, time_resolution, 1000);
-h_export.Value(h_export.Value>h_boiler_1_production.Value)=h_boiler_1_production.Value(h_export.Value>h_boiler_1_production.Value);
 
 h_ann = prune_data(ann_buildings, start_datetime, end_datetime, time_resolution, 1000);
 h_kibana_demand = prune_data(h_kibana_demand, start_datetime, end_datetime, time_resolution, 1);
@@ -397,10 +385,7 @@ net_production = (h_import.Value...
                  + h_vka_2_production.Value...
                  + h_vka_4_production.Value...
                  + h_fgc_production.Value); 
-figure
-plot(h_boiler_1_production.Value)
-hold on
-plot(h_export.Value,'g--')
+
 % FoS har kass Kibana data, Antar att FoS är oförändrad.
 evi_correction = (h_ann.Evi_agent_Mattecentrum_heating...
                 + h_ann.Evi_agent_Elkraft_heating...
@@ -499,7 +484,7 @@ temperature = removevars(temperature, {'CombinedDate_UTC_', 'Kvalitet', 'Lufttem
 temperature = table2timetable(temperature);
 temperature = sortrows(temperature);
 temperature = remove_duplicates(temperature);
-temperature = process_data(temperature, dates, energy_data, 0);
+temperature = process_data(temperature, dates, 0);
 temperature = fillmissing(temperature,'linear');
 temperature = prune_data(temperature, start_datetime, end_datetime, time_resolution, 1);
 
@@ -512,7 +497,7 @@ dh_price = removevars(dh_price, {'agentId', 'x_timestamp', 'price'});
 dh_price = table2timetable(dh_price);
 dh_price = sortrows(dh_price);
 dh_price = remove_duplicates(dh_price);
-dh_price = process_data(dh_price, dates, energy_data, 0);
+dh_price = process_data(dh_price, dates, 0);
 dh_price = fillmissing(dh_price,'linear');
 dh_price = prune_data(dh_price, start_datetime, end_datetime, time_resolution, 1);
 
@@ -524,7 +509,7 @@ el_price = removevars(el_price, {'agentId', 'x_timestamp', 'price'});
 el_price = table2timetable(el_price);
 el_price = sortrows(el_price);
 el_price = remove_duplicates(el_price);
-el_price = process_data(el_price, dates, energy_data, 0);
+el_price = process_data(el_price, dates, 0);
 el_price = fillmissing(el_price,'linear');
 el_price = prune_data(el_price, start_datetime, end_datetime, time_resolution, 1);
 
@@ -536,7 +521,7 @@ solar_irradiation = removevars(solar_irradiation, {'x0', 'x2019_01_01'});
 solar_irradiation = table2timetable(solar_irradiation);
 solar_irradiation = sortrows(solar_irradiation);
 solar_irradiation = remove_duplicates(solar_irradiation);
-solar_irradiation = process_data(solar_irradiation, dates, energy_data, 0);
+solar_irradiation = process_data(solar_irradiation, dates, 0);
 solar_irradiation = fillmissing(solar_irradiation,'linear');
 solar_irradiation = prune_data(solar_irradiation, start_datetime, end_datetime, time_resolution, 1);
 
