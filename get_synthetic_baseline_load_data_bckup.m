@@ -20,7 +20,7 @@ elseif nargin==0
     % and comment below to skip calling with specifi start, end times
     warning('No start_datetime or end_datetime specified, using 2019-01-01 00:00 and 2019-04-30 23:00 respectively with a 1 hour step size')
     start_datetime = datetime(2019,01,3,0,0,0);
-    end_datetime = datetime(2019,01,28,23,0,0);
+    end_datetime = datetime(2019,04,28,23,0,0);
     time_resolution = 'hourly';
 end
 dates = (start_datetime:hours(1):end_datetime)';
@@ -50,120 +50,69 @@ dates = (start_datetime:hours(1):end_datetime)';
     end
 
 %% Input data folder & file names
-PR=3;
-if PR==3
-    base_folder = 'Input_dispatch_model\synthetic_baseline_data\';
-    measurements_data_folder = 'Input_dispatch_model\synthetic_baseline_data\measurement_data\';
-    ann_data_folder = 'Input_dispatch_model\synthetic_baseline_data\ann_data\';
-    kibana_data_folder = 'Input_dispatch_model\synthetic_baseline_data\kibana_data\';
-    
-    % Heat related files
-    h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
-    h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
-    boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
-    h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
-    h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
-    h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
-    fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
-    %h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
-    %h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
-    %boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
-    %h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
-    %h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
-    %h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
-    %fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
-    
-    % Electricity related files
-    el_import_file = 'Inkommande el O0007008_el_901_v1_2018-10-01_2019-06-04.xls';
-    el_kc_pv_file = 'Solceller KC O0007008_el_920_v1_2018-10-01_2019-06-04.xls';
-    
-    % Cooling related files
-    c_import_file = 'Kyla import från GBG O0007008_kb_501_v1_2018-10-01_2019-06-04.xls';
-    c_vka_1_file = 'Kyla VKA1 O0007008_kb_502_v1_2018-10-01_2019-06-04.xls';
-    c_vka2_file = 'Kyla VKA2 O0007008_kb_504_v1_2018-10-01_2019-06-04.xls';
-    c_vka_4_file = 'Kyla VKA4 O0007008_kb_503_v1_2018-10-01_2019-06-04.xls';
-    
-    % Building files
-    ann_file = 'HeatDemandsActiveBuildings.csv';
-    h_kibana_file = 'DH_demand_kibana.csv';
-    c_kibana_file = 'DC_demand_kibana.csv'; % Unused as we don't consider cooling as affected by active buildings
-    el_kibana_file = 'EL_demand_kibana.csv'; % Unused as we don't consider electricity as affected by active buildings
-    
-    % Production file
-    ann_production_file = 'ProductionUnitsANN.csv'; % File containing boiler 1 production, AbsC, total cooling production
-    mc2_cooling_production_file = 'mc2cooling.csv'; % Ignored further down, contains all zeros for cooling production
-    
-    P1_kibana_file = 'P1_kibana.csv';
-    P1_market_file = 'boiler1JantoAug.csv';
-    
-    % Temperaure file
-    temperature_file = 'Temperatur_Goteborg_A_2019.xlsx';
-    
-    % Price data
-    dh_price_file = 'district heating price.csv';
-    el_price_file = 'electricity price retailagent.csv';
-    
-    % Solar irradiation file
-    solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
-end
-if PR==4
-    base_folder = 'Input_dispatch_model\synthetic_baseline_data\';
-    measurements_data_folder = 'Input_dispatch_model\synthetic_baseline_data\measurement_data_may-aug_2019\';
-    ann_data_folder = 'Input_dispatch_model\synthetic_baseline_data\ann_data_may-aug_2019\';
-    kibana_data_folder = 'Input_dispatch_model\synthetic_baseline_data\kibana_data_may-aug_2019\';
-    
-    % Heat related files
-    h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2019-05-01_2019-08-31.xls';
-    h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2019-05-01_2019-08-31.xls';
-    boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2019-05-01_2019-08-31.xls';
-    h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2019-05-01_2019-08-31.xls';
-    h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2019-05-01_2019-08-31.xls';
-    h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2019-05-01_2019-08-31.xls';
-    fgc_file = 'Värme rökgaskondensor panna 1_2019-05-01_2019-08-31.xlsx';
-    
-    
-    % Electricity related files
-    el_import_file = 'Inkommande el O0007008_el_901_v1_2019-05-01_2019-08-31.xls';
-    el_kc_pv_file = 'Solceller KC O0007008_el_920_v1_2019-05-01_2019-08-31.xls';
-    
-    % Cooling related files
-    c_import_file = 'Kyla import från GBG O0007008_kb_501_v1_2019-05-01_2019-08-31.xls';
-    c_vka_1_file = 'Kyla VKA1 O0007008_kb_502_v1_2019-05-01_2019-08-31.xls';
-    c_vka2_file = 'Kyla VKA2 O0007008_kb_504_v1_2019-05-01_2019-08-31.xls';
-    c_vka_4_file = 'Kyla VKA4 O0007008_kb_503_v1_2019-05-01_2019-08-31.xls';
-    
-    % Building files
-    ann_file = 'HeatDemandsActiveBuildings.csv';
-    h_kibana_file = 'DH_demand_kibana.csv';
-    c_kibana_file = 'DC_demand_kibana.csv'; % Unused as we don't consider cooling as affected by active buildings
-    el_kibana_file = 'EL_demand_kibana.csv'; % Unused as we don't consider electricity as affected by active buildings
-    
-    % Production file
-    ann_production_file = 'ProductionUnitsANN.csv'; % File containing boiler 1 production, AbsC, total cooling production
-    mc2_cooling_production_file = 'mc2cooling.csv'; % Ignored further down, contains all zeros for cooling production
-    
-    P1_kibana_file = 'P1_kibana.csv';
-    P1_market_file = 'boiler1JantoAug.csv';
-    
-    % Temperaure file
-    temperature_file = 'Temperatur_Goteborg_A_2019.xlsx';
-    
-    % Price data
-    dh_price_file = 'district heating price.csv';
-    el_price_file = 'electricity price retailagent.csv';
-    
-    % Solar irradiation file
-    solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
-end
+base_folder = 'Input_dispatch_model\synthetic_baseline_data\';
+measurements_data_folder = 'Input_dispatch_model\synthetic_baseline_data\measurement_data\';
+ann_data_folder = 'Input_dispatch_model\synthetic_baseline_data\ann_data\';
+kibana_data_folder = 'Input_dispatch_model\synthetic_baseline_data\kibana_data\';
+
+% Heat related files
+h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
+h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
+boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
+h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
+h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
+h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
+fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
+%h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
+%h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
+%boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
+%h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
+%h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
+%h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
+%fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
+
+% Electricity related files
+el_import_file = 'Inkommande el O0007008_el_901_v1_2018-10-01_2019-06-04.xls';
+el_kc_pv_file = 'Solceller KC O0007008_el_920_v1_2018-10-01_2019-06-04.xls';
+
+% Cooling related files
+c_import_file = 'Kyla import från GBG O0007008_kb_501_v1_2018-10-01_2019-06-04.xls';
+c_vka_1_file = 'Kyla VKA1 O0007008_kb_502_v1_2018-10-01_2019-06-04.xls';
+c_vka2_file = 'Kyla VKA2 O0007008_kb_504_v1_2018-10-01_2019-06-04.xls';
+c_vka_4_file = 'Kyla VKA4 O0007008_kb_503_v1_2018-10-01_2019-06-04.xls';
+
+% Building files
+ann_file = 'HeatDemandsActiveBuildings.csv';
+h_kibana_file = 'DH_demand_kibana.csv';
+c_kibana_file = 'DC_demand_kibana.csv'; % Unused as we don't consider cooling as affected by active buildings 
+el_kibana_file = 'EL_demand_kibana.csv'; % Unused as we don't consider electricity as affected by active buildings 
+
+% Production file
+ann_production_file = 'ProductionUnitsANN.csv'; % File containing boiler 1 production, AbsC, total cooling production
+mc2_cooling_production_file = 'mc2cooling.csv'; % Ignored further down, contains all zeros for cooling production
+
+P1_kibana_file = 'P1_kibana.csv';
+P1_market_file = 'boiler1JantoAug.csv';
+
+% Temperaure file
+temperature_file = 'Temperatur_Goteborg_A_2019.xlsx';
+
+% Price data
+dh_price_file = 'district heating price.csv';
+el_price_file = 'electricity price retailagent.csv';
+
+% Solar irradiation file
+solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
+
 %% Create series of simulation steps
 %simulation_steps = start_datetime:hours(step_hours):end_datetime;
 
 %% Input file reading
-    function output = process_data(data_table, dates, energy_data, remove_outliers)
+    function output = process_data(data_table, dates, remove_outliers)
         % Processes Mx1 timetables, removing outliers, below zero values,
         % and interpolates missing values.
         % Returns a timetable with for timeindices in 'dates'
-        if nargin == 3
+        if nargin == 2
            remove_outliers = 1;
         end
         input_table = data_table;
@@ -189,10 +138,7 @@ end
         end
 
         input_table.Value(input_table.Value<0) = NaN;
-
-        if energy_data==0
-        input_table.Value(input_table.Value==0) = NaN;
-        end
+%        input_table.Value(input_table.Value==0) = NaN;
         % Shift all timestamps to next whole hour, e.g. values timestamped
         % 13:45 are moved to the next whole hour, 14:00 so that all data is
         % uniform with regards to indices.
@@ -206,20 +152,13 @@ end
             output = synchronize(new_table, input_table,'first','linear'); 
         end
         
-        if energy_data==0
-            % Calculate the hourly power from the measurements
-        for t=1:length(output.Value)
-            if t==1
-                output.Value1(t)=0;
-            else
-                output.Value1(t)=output.Value(t)-output.Value(t-1);
-            end
-        end
-        % 
-        output.Properties.VariableNames = {'Var1', 'Value','Var2'};
-        output = removevars(output, {'Var2'});
-        end
-        % Remove temporary data from output
+%         for t=1:length(output.Value)
+%             if t==1
+%                 output.Value1(t)=0;
+%             else
+%                 output.Value1(t)=output.Value(t)-output.Value(t-1);
+%             end
+%         end        % Remove temporary data from output
         output = removevars(output, {'Var1'});
     end
 
@@ -237,7 +176,7 @@ end
             % column named 'Value'
             one_variable.Properties.VariableNames = {'Value'};
             % Process one column of data which is what process_data expects
-            partial_data = process_data(one_variable , dates, energy_data, remove_outliers);
+            partial_data = process_data(one_variable , dates, remove_outliers);
             % Change to original VariableName
             partial_data.Properties.VariableNames = {variable_name{1}};
             % Append temp_table to continue reconstructing original shape
@@ -253,12 +192,12 @@ end
         % by this script. If the methodology in which the source data is
         % compiled changes, this part will need changing as well.
         output = removevars(output, {'Tidpunkt', 'x_ndratAv', 'Status', 'Norm_', 'V_rde'});
-        % Change so we are looking at the energy meter reading instead
 %        output = removevars(output, {'Tidpunkt', 'x_ndratAv', 'Status', 'Norm_', 'Diff'});
+               
         output = table2timetable(output);
         output = sortrows(output);
         output.Properties.VariableNames = {'Value'};
-        output = process_data(output, dates, energy_data);   
+        output = process_data(output, dates);   
     end
 
     function output = read_ann_csv(file_path, dates)
@@ -316,7 +255,7 @@ end
     end
 
 %% Heating production reading
-energy_data=1;
+
 h_export = read_measurement_xls(strcat(measurements_data_folder , h_export_file), dates);
 h_import = read_measurement_xls(strcat(measurements_data_folder , h_import_file), dates);
 h_boiler_1_production = read_measurement_xls(strcat(measurements_data_folder , boiler_1_file), dates);
@@ -324,7 +263,7 @@ h_vka_1_production = read_measurement_xls(strcat(measurements_data_folder , h_vk
 h_vka_2_production = read_measurement_xls(strcat(measurements_data_folder , h_vka_2_file), dates);
 h_vka_4_production = read_measurement_xls(strcat(measurements_data_folder , h_vka_4_file), dates);
 
-energy_data=1;
+
 h_fgc_production = readtable(strcat(measurements_data_folder , fgc_file), 'ReadVariableNames',true, 'Range','A3:B4454'); % fgc_file on different format requiring separate file reading
 fgc_times = table2cell(h_fgc_production(:,1));
 fgc_date = datetime(fgc_times,'InputFormat','yyyy-MM-dd HH', 'format', 'yyyy-MM-dd HH:mm:ss');
@@ -333,8 +272,7 @@ clearvars fgc_date fgc_times
 h_fgc_production = removevars(h_fgc_production, {'Var1'});
 h_fgc_production = table2timetable(h_fgc_production);
 h_fgc_production.Properties.VariableNames = {'Value'};
-h_fgc_production = process_data(h_fgc_production, dates, energy_data);
-energy_data=0;
+h_fgc_production = process_data(h_fgc_production, dates);
 
 % Cooling production reading
 c_import = read_measurement_xls(strcat(measurements_data_folder , c_import_file), dates);
@@ -363,9 +301,9 @@ el_imported.Properties.VariableNames = {'Value'};
 %Interpret strings in value as double
 el_imported.Value = strrep(el_imported.Value, " ", "");
 el_imported.Value = strrep(el_imported.Value, ",", ".");
-%el_imported.Value = str2double(el_imported.Value);
+el_imported.Value = str2double(el_imported.Value);
 %Process the data
-el_imported = process_data(el_imported, dates, energy_data);   
+el_imported = process_data(el_imported, dates);   
 
 %Read production of PV-panels on KC
 el_kc_pv_production = read_measurement_xls(strcat(measurements_data_folder, el_kc_pv_file ), dates);
@@ -395,7 +333,6 @@ h_vka_1_production =  prune_data(h_vka_1_production, start_datetime, end_datetim
 h_vka_2_production =  prune_data(h_vka_2_production, start_datetime, end_datetime, time_resolution, 1);
 h_vka_4_production =  prune_data(h_vka_4_production, start_datetime, end_datetime, time_resolution, 1);
 h_fgc_production =  prune_data(h_fgc_production, start_datetime, end_datetime, time_resolution, 1000);
-h_export.Value(h_export.Value>h_boiler_1_production.Value)=h_boiler_1_production.Value(h_export.Value>h_boiler_1_production.Value);
 
 h_ann = prune_data(ann_buildings, start_datetime, end_datetime, time_resolution, 1000);
 h_kibana_demand = prune_data(h_kibana_demand, start_datetime, end_datetime, time_resolution, 1);
@@ -448,10 +385,7 @@ net_production = (h_import.Value...
                  + h_vka_2_production.Value...
                  + h_vka_4_production.Value...
                  + h_fgc_production.Value); 
-figure
-plot(h_boiler_1_production.Value)
-hold on
-plot(h_export.Value,'g--')
+
 % FoS har kass Kibana data, Antar att FoS är oförändrad.
 evi_correction = (h_ann.Evi_agent_Mattecentrum_heating...
                 + h_ann.Evi_agent_Elkraft_heating...
@@ -550,7 +484,7 @@ temperature = removevars(temperature, {'CombinedDate_UTC_', 'Kvalitet', 'Lufttem
 temperature = table2timetable(temperature);
 temperature = sortrows(temperature);
 temperature = remove_duplicates(temperature);
-temperature = process_data(temperature, dates, energy_data, 0);
+temperature = process_data(temperature, dates, 0);
 temperature = fillmissing(temperature,'linear');
 temperature = prune_data(temperature, start_datetime, end_datetime, time_resolution, 1);
 
@@ -563,7 +497,7 @@ dh_price = removevars(dh_price, {'agentId', 'x_timestamp', 'price'});
 dh_price = table2timetable(dh_price);
 dh_price = sortrows(dh_price);
 dh_price = remove_duplicates(dh_price);
-dh_price = process_data(dh_price, dates, energy_data, 0);
+dh_price = process_data(dh_price, dates, 0);
 dh_price = fillmissing(dh_price,'linear');
 dh_price = prune_data(dh_price, start_datetime, end_datetime, time_resolution, 1);
 
@@ -575,7 +509,7 @@ el_price = removevars(el_price, {'agentId', 'x_timestamp', 'price'});
 el_price = table2timetable(el_price);
 el_price = sortrows(el_price);
 el_price = remove_duplicates(el_price);
-el_price = process_data(el_price, dates, energy_data, 0);
+el_price = process_data(el_price, dates, 0);
 el_price = fillmissing(el_price,'linear');
 el_price = prune_data(el_price, start_datetime, end_datetime, time_resolution, 1);
 
@@ -587,7 +521,7 @@ solar_irradiation = removevars(solar_irradiation, {'x0', 'x2019_01_01'});
 solar_irradiation = table2timetable(solar_irradiation);
 solar_irradiation = sortrows(solar_irradiation);
 solar_irradiation = remove_duplicates(solar_irradiation);
-solar_irradiation = process_data(solar_irradiation, dates, energy_data, 0);
+solar_irradiation = process_data(solar_irradiation, dates, 0);
 solar_irradiation = fillmissing(solar_irradiation,'linear');
 solar_irradiation = prune_data(solar_irradiation, start_datetime, end_datetime, time_resolution, 1);
 

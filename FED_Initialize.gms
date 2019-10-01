@@ -161,9 +161,10 @@ scalar
 * accounted for RMMC capacity is here decreased by 600 kW
 scalar
 * Source, historical data, from Chalmersfastigheter energiförsörjning campus johanneberg (BDAB)
+* 20190910 Changed RMMC_COP to 1.9/2.86 (from 1.94/3) as an average between the values stated in BDAB report and the mail from markus 28/4 2018
 * RMMC_cap value is a technical capacity limit of the connetion, according to AH
-      RMCC_H_COP Coefficient of performance for RM /3/
-      RMCC_C_COP Coefficient of performance for RM /1.94/
+      RMCC_H_COP Coefficient of performance for RM /2.86/
+      RMCC_C_COP Coefficient of performance for RM /1.9/
       RMMC_cap Maximum cooling capacity for RM in kW/500/
 ;
 

@@ -34,10 +34,20 @@ sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 %sim_start=6480;
 %sim_stop=sim_start+47;
 forecast_horizon = 10;
+
+% data_read_stop is the last index of data needed for the simulation.
+% sim_length is the total length of data needed for the simulation.
+% Note there must always be at least as many extra hours of data
+% (beyond sim_start to sim_stop) to include the hours of the
+% forecast_horizon, thus data_read_stop is longer than sim_stop by the
+% forecast_horizon.
+data_read_stop = sim_stop + forecast_horizon;
+
 % Cooling season start stop
-DC_cooling_season_full = zeros(sim_stop,1);
-no_imp_h_season_full = zeros(sim_stop,1);
-DH_heating_season_full = ones(sim_stop,1);
+DC_cooling_season_full = zeros(data_read_stop,1);
+no_imp_h_season_full = zeros(data_read_stop,1);
+DH_heating_season_full = ones(data_read_stop,1);
+DH_heating_season_P2_full = ones(data_read_stop,1);
 
 cooling_year = sim_start_y;
 while cooling_year <=sim_stop_y
@@ -57,17 +67,21 @@ while cooling_year <=sim_stop_y
     no_imp_h_season_full(no_h_imp_season_start:no_h_imp_season_end) = 1;
     DH_heating_season_full(DH_heating_season_stop:DH_heating_season_start) = 0;
     
+     DH_heating_season_P2_start = HoS(cooling_year,9,30,24);
+    DH_heating_season_P2_stop = HoS(cooling_year,5,1,1);
+    DH_heating_season_P2_full(DH_heating_season_P2_stop:DH_heating_season_P2_start) = 0;
+    
     cooling_year = cooling_year + 1;
 end
 
 % BAC_savings_period_full
-BAC_savings_period_full = zeros(sim_stop,1);
+BAC_savings_period_full = zeros(data_read_stop,1);
 current_year = sim_start_y;
 while current_year <= sim_stop_y
     year_start = HoS(current_year,1,1,1);
     BAC_savings_end =  HoS(current_year,4,1,1);
     BAC_savings_start = HoS(current_year,10,1,1);
-    year_end = HoS(current_year,12,31,23);
+    year_end = HoS(current_year,12,31,24);
 
    BAC_savings_period_full(year_start:BAC_savings_end) = 1;
    BAC_savings_period_full(BAC_savings_start:year_end) = 1;
@@ -97,7 +111,7 @@ end
 % 00:00 to 2017-02-28 23:00, but one year from 2016-03-01 to 2017-02-28 is
 % preferred for data completeness/correctness. Still there is heat pump
 % data missing as well as building data missing even in this period.
-data_read_stop = sim_stop + forecast_horizon;
+
 sim_length = sim_stop - sim_start + 1;
 data_length = data_read_stop - sim_start + 1;
 
@@ -192,7 +206,16 @@ BID_nonBTES.uels={'O0007043',...
     'O0007005',...
     'O0007018','O3060137', 'Karhuset', 'O3060138',...
     'Karhus_studenter'};
-
+%% %%%%%
+for i=1:length(BID.uels)
+    AH_el(i)=sum(double(strcmp(BID.uels(i),BID_AH_el.uels)));
+    AH_h(i)=sum(double(strcmp(BID.uels(i),BID_AH_h.uels)));
+    AH_c(i)=sum(double(strcmp(BID.uels(i),BID_AH_c.uels)));
+    
+    nonAH_el(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_el.uels)));
+    nonAH_h(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_h.uels)));
+    nonAH_c(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_c.uels)));
+end
 %% IDs used to name the buses or nodes in the local electrical distribution system
 %OBS: proper maping need to be established between the nodes in the el distribution system and the building IDs
 
@@ -611,21 +634,25 @@ for t=1:sim_length
     P1P2_dispatchable.uels=h.uels;
     
     %Heat export season - Replaced by DH_heating_season -DS
-    %DH_export_season = struct('name','DH_export_season','type','parameter','form','full','val',DH_export_season_full(t:forecast_end,:));
+    %DH_export_season = struct('name','DH_export_season','type','parameter','form','full','val',DH_export_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
     %DH_export_season.uels=h.uels;
     
     %DH heating season
-    DH_heating_season = struct('name','DH_heating_season','type','parameter','form','full','val',DH_heating_season_full(t:forecast_end,:));
+    DH_heating_season = struct('name','DH_heating_season','type','parameter','form','full','val',DH_heating_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
     DH_heating_season.uels=h.uels;
+   
+    %DH heating season P2
+    DH_heating_season_P2 = struct('name','DH_heating_season_P2','type','parameter','form','full','val',DH_heating_season_P2_full(t+sim_start-1:forecast_end+sim_start-1,:));
+    DH_heating_season_P2.uels=h.uels;
     
     %BAC saving period
-    BAC_savings_period = struct('name','BAC_savings_period','type','parameter','form','full','val',BAC_savings_period_full(t:forecast_end,:));
+    BAC_savings_period = struct('name','BAC_savings_period','type','parameter','form','full','val',BAC_savings_period_full(t+sim_start-1:forecast_end+sim_start-1,:));
     BAC_savings_period.uels=h.uels;
     
-    DC_cooling_season = struct('name','DC_cooling_season','type','parameter','form','full','val',DC_cooling_season_full(t:forecast_end,:));
+    DC_cooling_season = struct('name','DC_cooling_season','type','parameter','form','full','val',DC_cooling_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
     DC_cooling_season.uels = h.uels;
 
-    no_imp_h_season = struct('name','no_imp_h_season','type','parameter','form','full','val',no_imp_h_season_full(t:forecast_end,:));
+    no_imp_h_season = struct('name','no_imp_h_season','type','parameter','form','full','val',no_imp_h_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
     no_imp_h_season.uels = h.uels;
     
     %Calculation of BAC savings factors
@@ -730,7 +757,7 @@ for t=1:sim_length
     opt_fx_inv_BTES_SO_S_init.uels = {num2cell(t), BTES_SO_BID_uels};
     opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
     opt_fx_inv_CWB_init.uels = {num2cell(t), CWB_BID_uels};
-    
+
     %opt_fx_inv_BFCh_init.uels = {num2cell(t), BFCh_BID_uels};
     
     %% Preparing input GDX file (MtoG) and RUN GAMS model
@@ -746,7 +773,7 @@ for t=1:sim_length
         BID, BID_AH_el, BID_nonAH_el, BID_AH_h, BID_nonAH_h, BID_AH_c, BID_nonAH_c, BID_nonBTES,...
         el_demand, h_demand, c_demand, h_Boiler1_0, h_FlueGasCondenser1_0,...
         el_VKA1_0, el_VKA4_0, c_AbsC_0, G_roof, G_facade,...
-        BES_min_SoC, BTES_properties, BTES_model, P1P2_dispatchable, DH_heating_season,DC_cooling_season, no_imp_h_season, BAC_savings_period,...
+        BES_min_SoC, BTES_properties, BTES_model, P1P2_dispatchable, DH_heating_season, DH_heating_season_P2, DC_cooling_season, no_imp_h_season, BAC_savings_period,...
         PVID, PVID_roof, PV_roof_cap, PVID_facade, PV_facade_cap,...
         el_price, el_certificate, tout, BAC_savings_factor, FED_Inv_lim, BusID,...
         opt_fx_inv_BTES_BAC_D_init, opt_fx_inv_BTES_BAC_S_init, opt_fx_inv_BTES_SO_D_init,...
@@ -763,6 +790,9 @@ for t=1:sim_length
     
     [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
 end
+delete  'result_temp.xlsx';
+copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx') % to add the toprows in the excelfile
+
 xlswrite('result_temp.xlsx',to_excel_el,'Electricity','A3');
 xlswrite('result_temp.xlsx',to_excel_heat,'Heat','A3');
 xlswrite('result_temp.xlsx',to_excel_cool,'Cooling','A3');

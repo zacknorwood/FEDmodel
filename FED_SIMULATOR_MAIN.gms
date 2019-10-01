@@ -24,7 +24,7 @@ ALL
 
 SOLVE total using MIP minimizing obj;
 
-display B_BAC.l, h_BAC_savings.l;
+*display B_BAC.l, h_BAC_savings.l;
 
 parameter
 h_demand_nonAH_sum  total demand for non AH buildings
@@ -201,7 +201,7 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       fix_cost, utot_cost, price, fuel_cost, var_cost, en_tax, cost_inv_opt, lifT_inv_opt,
                       totCost, Ainv_cost, fix_cost_existing, fix_cost_new, var_cost_existing, var_cost_new,
                       AH_PE, AH_CO2, nonAH_CO2, AH_NREF, nonAH_NREF, FED_NREF,
-                      DH_heating_season, P1P2_dispatchable, inv_lim,
+                      DH_heating_season, DH_heating_season_P2, P1P2_dispatchable, inv_lim,
                       c_RMInv, el_RMInv, RMInv_cap, invCost_RMInv,
                       model_status,B_Heating_cost,B_Electricity_cost,B_Cooling_cost
                       tot_var_cost_AH, sim_PT_exG,PT_DH, tot_fixed_cost, fix_cost_existing_AH, fix_cost_new_AH, var_cost_existing_AH, var_cost_new_AH,
