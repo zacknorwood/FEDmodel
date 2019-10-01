@@ -20,7 +20,7 @@ elseif nargin==0
     % and comment below to skip calling with specifi start, end times
     warning('No start_datetime or end_datetime specified, using 2019-01-01 00:00 and 2019-04-30 23:00 respectively with a 1 hour step size')
     start_datetime = datetime(2019,01,3,0,0,0);
-    end_datetime = datetime(2019,04,28,23,0,0);
+    end_datetime = datetime(2019,01,28,23,0,0);
     time_resolution = 'hourly';
 end
 dates = (start_datetime:hours(1):end_datetime)';
@@ -50,60 +50,111 @@ dates = (start_datetime:hours(1):end_datetime)';
     end
 
 %% Input data folder & file names
-base_folder = 'Input_dispatch_model\synthetic_baseline_data\';
-measurements_data_folder = 'Input_dispatch_model\synthetic_baseline_data\measurement_data\';
-ann_data_folder = 'Input_dispatch_model\synthetic_baseline_data\ann_data\';
-kibana_data_folder = 'Input_dispatch_model\synthetic_baseline_data\kibana_data\';
-
-% Heat related files
-h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
-h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
-boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
-h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
-h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
-h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
-fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
-%h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
-%h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
-%boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
-%h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
-%h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
-%h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
-%fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
-
-% Electricity related files
-el_import_file = 'Inkommande el O0007008_el_901_v1_2018-10-01_2019-06-04.xls';
-el_kc_pv_file = 'Solceller KC O0007008_el_920_v1_2018-10-01_2019-06-04.xls';
-
-% Cooling related files
-c_import_file = 'Kyla import från GBG O0007008_kb_501_v1_2018-10-01_2019-06-04.xls';
-c_vka_1_file = 'Kyla VKA1 O0007008_kb_502_v1_2018-10-01_2019-06-04.xls';
-c_vka2_file = 'Kyla VKA2 O0007008_kb_504_v1_2018-10-01_2019-06-04.xls';
-c_vka_4_file = 'Kyla VKA4 O0007008_kb_503_v1_2018-10-01_2019-06-04.xls';
-
-% Building files
-ann_file = 'HeatDemandsActiveBuildings.csv';
-h_kibana_file = 'DH_demand_kibana.csv';
-c_kibana_file = 'DC_demand_kibana.csv'; % Unused as we don't consider cooling as affected by active buildings 
-el_kibana_file = 'EL_demand_kibana.csv'; % Unused as we don't consider electricity as affected by active buildings 
-
-% Production file
-ann_production_file = 'ProductionUnitsANN.csv'; % File containing boiler 1 production, AbsC, total cooling production
-mc2_cooling_production_file = 'mc2cooling.csv'; % Ignored further down, contains all zeros for cooling production
-
-P1_kibana_file = 'P1_kibana.csv';
-P1_market_file = 'boiler1JantoAug.csv';
-
-% Temperaure file
-temperature_file = 'Temperatur_Goteborg_A_2019.xlsx';
-
-% Price data
-dh_price_file = 'district heating price.csv';
-el_price_file = 'electricity price retailagent.csv';
-
-% Solar irradiation file
-solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
-
+PR=3;
+if PR==3
+    base_folder = 'Input_dispatch_model\synthetic_baseline_data\';
+    measurements_data_folder = 'Input_dispatch_model\synthetic_baseline_data\measurement_data\';
+    ann_data_folder = 'Input_dispatch_model\synthetic_baseline_data\ann_data\';
+    kibana_data_folder = 'Input_dispatch_model\synthetic_baseline_data\kibana_data\';
+    
+    % Heat related files
+    h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
+    h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
+    boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
+    h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
+    h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
+    h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
+    fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
+    %h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
+    %h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
+    %boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
+    %h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
+    %h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
+    %h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
+    %fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
+    
+    % Electricity related files
+    el_import_file = 'Inkommande el O0007008_el_901_v1_2018-10-01_2019-06-04.xls';
+    el_kc_pv_file = 'Solceller KC O0007008_el_920_v1_2018-10-01_2019-06-04.xls';
+    
+    % Cooling related files
+    c_import_file = 'Kyla import från GBG O0007008_kb_501_v1_2018-10-01_2019-06-04.xls';
+    c_vka_1_file = 'Kyla VKA1 O0007008_kb_502_v1_2018-10-01_2019-06-04.xls';
+    c_vka2_file = 'Kyla VKA2 O0007008_kb_504_v1_2018-10-01_2019-06-04.xls';
+    c_vka_4_file = 'Kyla VKA4 O0007008_kb_503_v1_2018-10-01_2019-06-04.xls';
+    
+    % Building files
+    ann_file = 'HeatDemandsActiveBuildings.csv';
+    h_kibana_file = 'DH_demand_kibana.csv';
+    c_kibana_file = 'DC_demand_kibana.csv'; % Unused as we don't consider cooling as affected by active buildings
+    el_kibana_file = 'EL_demand_kibana.csv'; % Unused as we don't consider electricity as affected by active buildings
+    
+    % Production file
+    ann_production_file = 'ProductionUnitsANN.csv'; % File containing boiler 1 production, AbsC, total cooling production
+    mc2_cooling_production_file = 'mc2cooling.csv'; % Ignored further down, contains all zeros for cooling production
+    
+    P1_kibana_file = 'P1_kibana.csv';
+    P1_market_file = 'boiler1JantoAug.csv';
+    
+    % Temperaure file
+    temperature_file = 'Temperatur_Goteborg_A_2019.xlsx';
+    
+    % Price data
+    dh_price_file = 'district heating price.csv';
+    el_price_file = 'electricity price retailagent.csv';
+    
+    % Solar irradiation file
+    solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
+end
+if PR==4
+    base_folder = 'Input_dispatch_model\synthetic_baseline_data\';
+    measurements_data_folder = 'Input_dispatch_model\synthetic_baseline_data\measurement_data_may-aug_2019\';
+    ann_data_folder = 'Input_dispatch_model\synthetic_baseline_data\ann_data_may-aug_2019\';
+    kibana_data_folder = 'Input_dispatch_model\synthetic_baseline_data\kibana_data_may-aug_2019\';
+    
+    % Heat related files
+    h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2019-05-01_2019-08-31.xls';
+    h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2019-05-01_2019-08-31.xls';
+    boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2019-05-01_2019-08-31.xls';
+    h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2019-05-01_2019-08-31.xls';
+    h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2019-05-01_2019-08-31.xls';
+    h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2019-05-01_2019-08-31.xls';
+    fgc_file = 'Värme rökgaskondensor panna 1_2019-05-01_2019-08-31.xlsx';
+    
+    
+    % Electricity related files
+    el_import_file = 'Inkommande el O0007008_el_901_v1_2019-05-01_2019-08-31.xls';
+    el_kc_pv_file = 'Solceller KC O0007008_el_920_v1_2019-05-01_2019-08-31.xls';
+    
+    % Cooling related files
+    c_import_file = 'Kyla import från GBG O0007008_kb_501_v1_2019-05-01_2019-08-31.xls';
+    c_vka_1_file = 'Kyla VKA1 O0007008_kb_502_v1_2019-05-01_2019-08-31.xls';
+    c_vka2_file = 'Kyla VKA2 O0007008_kb_504_v1_2019-05-01_2019-08-31.xls';
+    c_vka_4_file = 'Kyla VKA4 O0007008_kb_503_v1_2019-05-01_2019-08-31.xls';
+    
+    % Building files
+    ann_file = 'HeatDemandsActiveBuildings.csv';
+    h_kibana_file = 'DH_demand_kibana.csv';
+    c_kibana_file = 'DC_demand_kibana.csv'; % Unused as we don't consider cooling as affected by active buildings
+    el_kibana_file = 'EL_demand_kibana.csv'; % Unused as we don't consider electricity as affected by active buildings
+    
+    % Production file
+    ann_production_file = 'ProductionUnitsANN.csv'; % File containing boiler 1 production, AbsC, total cooling production
+    mc2_cooling_production_file = 'mc2cooling.csv'; % Ignored further down, contains all zeros for cooling production
+    
+    P1_kibana_file = 'P1_kibana.csv';
+    P1_market_file = 'boiler1JantoAug.csv';
+    
+    % Temperaure file
+    temperature_file = 'Temperatur_Goteborg_A_2019.xlsx';
+    
+    % Price data
+    dh_price_file = 'district heating price.csv';
+    el_price_file = 'electricity price retailagent.csv';
+    
+    % Solar irradiation file
+    solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
+end
 %% Create series of simulation steps
 %simulation_steps = start_datetime:hours(step_hours):end_datetime;
 
