@@ -14,16 +14,16 @@ system 'gams';
 %% SIMULATION START AND STOP TIME
 %Sim start time
 sim_start_y = 2019;
-sim_start_m = 1;
-sim_start_d = 1;
-sim_start_h = 3;
+sim_start_m = 8;
+sim_start_d = 19;
+sim_start_h = 1;
 
 %Sim stop time
 
 sim_stop_y = 2019;
-sim_stop_m = 4;
-sim_stop_d = 23;
-sim_stop_h = 23;
+sim_stop_m = 8;
+sim_stop_d = 31;
+sim_stop_h = 24;
 
 %Get month and hours of simulation
 [HoS, ~] = fget_time_vector(sim_start_y,sim_stop_y);
@@ -327,6 +327,7 @@ if synth_baseline == 1
    el_VKA4_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
    
    %el_factors dh_factors
+   %DS - This should be taken from Input file
    CO2F_El_full = el_factors.co2ei; 
    PE_El_full = el_factors.pef; 
    CO2F_DH_full = dh_factors.co2ei; 
@@ -337,6 +338,8 @@ if synth_baseline == 1
    el_price_full = el_price.Value;
    el_certificate_full = zeros(hours,1); % OK TO BE ZERO
    marginalCost_DH_full = dh_price.Value;    
+   
+   %DS - For PR4 real measurement data is used, right now the irradiance is set to zero in "get_synthetic_base....".
    % Solar irradiation
    G_roof_full = zeros(hours,12); % NEEDED - USE TO CALCULATE NEW ELECTRICITY DEMAND (Total production + New PV Arrays (general data felmarginal typ 30%
    for i=1:12
@@ -344,6 +347,7 @@ if synth_baseline == 1
    end
    G_facade_full = solar_irradiation.Value;
    
+   %DS - Unclear function for me?!
    disp('SETTING h_exp_AH_hist and h_imp_AH_hist TO ZEROS ONLY USED IF min_tot_cost_0 = 1')
    h_exp_AH_hist_full = zeros(hours,1); % Should be ignored in GAMS
    h_imp_AH_hist_full = zeros(hours,1); % Should be ignored in GAMS
@@ -357,9 +361,6 @@ if synth_baseline == 1
    h_DH_slack_full = zeros(hours,1); % Should be zero as production == demand
    c_DC_slack_full = zeros(hours,1); % Should be zero as production == demand
    
-   el_exG_slack_full(:,1) = 1; % Zero values aren't passed from GAMS to GtoM.gdx thus failing fstore_results_excel
-   h_DH_slack_full(:,1) = 1;
-   c_DC_slack_full(:,1) = 1;
 end
 %This must be modified
 %     temp=load('Input_dispatch_model\import_export_forecasting');
@@ -378,6 +379,7 @@ end
 if synth_baseline == 0
 [CO2F_El_full, NREF_El_full, PE_El_full, CO2F_DH_full, NREF_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop,data_length);
 else
+    %DS - we should read emissions from ex grid from here as well.
 [~, ~, ~, ~, ~, ~, ~, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop,data_length);
 end
 %% Initialize FED INVESTMENT OPTIONS
