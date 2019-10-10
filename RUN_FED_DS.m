@@ -20,8 +20,8 @@ for i=2
     end
     if i==2
         min_totCost_0=0;
-        min_totCost=0;
-        min_totPE=1;
+        min_totCost=1;
+        min_totPE=0;
         min_totCO2=0;
     end 
     if i==3
@@ -32,8 +32,8 @@ for i=2
     end
     if i==4
         min_totCost_0=0;
-        min_totCost=1;
-        min_totPE=0;
+        min_totCost=0;
+        min_totPE=1;
         min_totCO2=0;
     end
 
