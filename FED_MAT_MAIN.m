@@ -1,4 +1,4 @@
-function [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, Results] = FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline)
+function [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, Results] = FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, GE_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline)
 % optimization options
 % min_totCost_0: option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
 % min_totCost:  weighting factor for total cost to use in the minimization function
@@ -33,7 +33,15 @@ sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 
 %sim_start=6480;
 %sim_stop=sim_start+47;
-forecast_horizon = 10;
+
+% In synthetic baseline the forecast horizon should be zero, and 10 hours
+% otherwise in FED operation.
+if (synth_baseline)    
+    forecast_horizon = 0;
+else
+    forecast_horizon = 10;
+end
+
 
 % data_read_stop is the last index of data needed for the simulation.
 % sim_length is the total length of data needed for the simulation.
@@ -67,7 +75,7 @@ while cooling_year <=sim_stop_y
     no_imp_h_season_full(no_h_imp_season_start:no_h_imp_season_end) = 1;
     DH_heating_season_full(DH_heating_season_stop:DH_heating_season_start) = 0;
     
-     DH_heating_season_P2_start = HoS(cooling_year,9,30,24);
+    DH_heating_season_P2_start = HoS(cooling_year,9,30,24);
     DH_heating_season_P2_stop = HoS(cooling_year,5,1,1);
     DH_heating_season_P2_full(DH_heating_season_P2_stop:DH_heating_season_P2_start) = 0;
     
@@ -82,11 +90,11 @@ while current_year <= sim_stop_y
     BAC_savings_end =  HoS(current_year,4,1,1);
     BAC_savings_start = HoS(current_year,10,1,1);
     year_end = HoS(current_year,12,31,24);
-
-   BAC_savings_period_full(year_start:BAC_savings_end) = 1;
-   BAC_savings_period_full(BAC_savings_start:year_end) = 1;
     
-   current_year = current_year +1;
+    BAC_savings_period_full(year_start:BAC_savings_end) = 1;
+    BAC_savings_period_full(BAC_savings_start:year_end) = 1;
+    
+    current_year = current_year +1;
 end
 % P1 and P2 dispatchability
 % Get a series of ordinary working days
@@ -95,8 +103,8 @@ end
 %P1P2_dispatchable_test = zeros(sim_stop,1);
 %current_year = sim_start_y
 %while current_year <= sim_stop_y
-    
-    
+
+
 %end
 
 % DATA INDICES FOR INPUT DATA
@@ -169,7 +177,7 @@ BID_AH_h.uels={'O3060132', 'O0007017',...
     'O0007022', 'O0007025', 'O0007012', 'O0007021', 'O0007028','O0007001',...
     'O3060133', 'O0007024', 'O0007005', 'O0013001','O0011001',...
     'O0007018','Karhuset','O0007023', 'O0007026', 'O0007027',...
-     'Karhus_studenter'};
+    'Karhus_studenter'};
 
 %Subset of buildings in the FED system not connected to AH's local heat distribution network, buildings heat demand is hence supplied from GE's external DH system
 BID_nonAH_h.name='BID_nonAH_h';
@@ -285,82 +293,82 @@ end
 if synth_baseline == 1
     start_datetime = datetime(sim_start_y,sim_start_m,sim_start_d,sim_start_h,0,0);
     end_datetime = datetime(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h+10,0,0);
-   [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, el_factors, dh_factors, temperature, dh_price, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
-   
-   cooling_size = size(BID_AH_c.uels);
-   hours = sim_length+10;
-   cooled_buildings = cooling_size(2);
-   
-   heating_size = size(BID_AH_h.uels);
-   heated_buildings = heating_size(2);
-   
-   electricity_size = size(BID_AH_el.uels);
-   electrified_buildings = electricity_size(2);
-   
-   synth_c_demand_full = zeros(hours,cooled_buildings);
-   synth_h_demand_full = zeros(hours,heated_buildings);
-   synth_el_demand_full = zeros(hours,electrified_buildings);
-   
-   for i=1:cooled_buildings
-       synth_c_demand_full(:,i) = c_demand_synth.c_net_load_values/cooled_buildings;
-   end
-   for i=1:heated_buildings
-       synth_h_demand_full(:,i) = h_demand_synth.h_net_load_values/heated_buildings;
-   end
-   for i=1:electrified_buildings
-       synth_el_demand_full(:,i) = el_demand_synth.el_net_load_values/electrified_buildings;
-   end
-   c_demand_full = synth_c_demand_full;
-   h_demand_full = synth_h_demand_full;
-   el_demand_full = synth_el_demand_full;
-   
-   % Production units for synthetic baseline
-   h_Boiler1_0_full = ann_production.Boiler1_production ;
-   disp('WARNING TEMPORARY CORRECTION OF BOILER ANN AT ROW 297 IN FED_MAT_MAIN')
-   h_Boiler1_0_full(h_Boiler1_0_full>8000) = 8000;
-   h_FlueGasCondenser1_0_full = zeros(hours,1); % Does ANN include FGC data?
-   c_AbsC_0_full = ann_production.AbsC_production ;
-   
-   COP_HP_C = 1.8; % Cooling COP of heat pumps
-   HP_cooling_production = (ann_production.Total_cooling_demand - ann_production.AbsC_production);
-   el_VKA1_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
-   el_VKA4_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
-   
-   %el_factors dh_factors
-   %DS - This should be taken from Input file
-   CO2F_El_full = el_factors.co2ei; 
-   PE_El_full = el_factors.pef; 
-   CO2F_DH_full = dh_factors.co2ei; 
-   PE_DH_full = dh_factors.pef; 
-   
-   % Ambient temperature
-   tout_full = temperature.Value; 
-   el_price_full = el_price.Value;
-   el_certificate_full = zeros(hours,1); % OK TO BE ZERO
-   marginalCost_DH_full = dh_price.Value;    
-   
-   %DS - For PR4 real measurement data is used, right now the irradiance is set to zero in "get_synthetic_base....".
-   % Solar irradiation
-   G_roof_full = zeros(hours,12); % NEEDED - USE TO CALCULATE NEW ELECTRICITY DEMAND (Total production + New PV Arrays (general data felmarginal typ 30%
-   for i=1:12
-       G_roof_full(:,i) = solar_irradiation.Value;
-   end
-   G_facade_full = solar_irradiation.Value;
-   
-   %DS - Unclear function for me?!
-   disp('SETTING h_exp_AH_hist and h_imp_AH_hist TO ZEROS ONLY USED IF min_tot_cost_0 = 1')
-   h_exp_AH_hist_full = zeros(hours,1); % Should be ignored in GAMS
-   h_imp_AH_hist_full = zeros(hours,1); % Should be ignored in GAMS
-     
-   NREF_El_full = zeros(hours,1); % SKIP THIS - USE ONLY PE AND CO2
-   NREF_DH_full = zeros(hours,1); % SKIP THIS - USE ONLY PE AND CO2
-   NREF_El_full(:,1) = 1;
-   NREF_DH_full(:,1) = 1;
-   
-   el_exG_slack_full = zeros(hours,1); % Should be zero as production == demand
-   h_DH_slack_full = zeros(hours,1); % Should be zero as production == demand
-   c_DC_slack_full = zeros(hours,1); % Should be zero as production == demand
-   
+    [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, el_factors, dh_factors, temperature, dh_price, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
+    
+    cooling_size = size(BID_AH_c.uels);
+    hours = sim_length+10;
+    cooled_buildings = cooling_size(2);
+    
+    heating_size = size(BID_AH_h.uels);
+    heated_buildings = heating_size(2);
+    
+    electricity_size = size(BID_AH_el.uels);
+    electrified_buildings = electricity_size(2);
+    
+    synth_c_demand_full = zeros(hours,cooled_buildings);
+    synth_h_demand_full = zeros(hours,heated_buildings);
+    synth_el_demand_full = zeros(hours,electrified_buildings);
+    
+    for i=1:cooled_buildings
+        synth_c_demand_full(:,i) = c_demand_synth.c_net_load_values/cooled_buildings;
+    end
+    for i=1:heated_buildings
+        synth_h_demand_full(:,i) = h_demand_synth.h_net_load_values/heated_buildings;
+    end
+    for i=1:electrified_buildings
+        synth_el_demand_full(:,i) = el_demand_synth.el_net_load_values/electrified_buildings;
+    end
+    c_demand_full = synth_c_demand_full;
+    h_demand_full = synth_h_demand_full;
+    el_demand_full = synth_el_demand_full;
+    
+    % Production units for synthetic baseline
+    h_Boiler1_0_full = ann_production.Boiler1_production ;
+    disp('WARNING TEMPORARY CORRECTION OF BOILER ANN AT ROW 297 IN FED_MAT_MAIN')
+    h_Boiler1_0_full(h_Boiler1_0_full>8000) = 8000;
+    h_FlueGasCondenser1_0_full = zeros(hours,1); % Does ANN include FGC data?
+    c_AbsC_0_full = ann_production.AbsC_production ;
+    
+    COP_HP_C = 1.8; % Cooling COP of heat pumps
+    HP_cooling_production = (ann_production.Total_cooling_demand - ann_production.AbsC_production);
+    el_VKA1_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
+    el_VKA4_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
+    
+    %el_factors dh_factors
+    %DS - This should be taken from Input file
+    %    CO2F_El_full = el_factors.co2ei;
+    %    PE_El_full = el_factors.pef;
+    %    CO2F_DH_full = dh_factors.co2ei;
+    %    PE_DH_full = dh_factors.pef;
+    
+    % Ambient temperature
+    tout_full = temperature.Value;
+    el_price_full = el_price.Value;
+    el_certificate_full = zeros(hours,1); % OK TO BE ZERO
+    %   marginalCost_DH_full = dh_price.Value;
+    
+    %DS - For PR4 real measurement data is used, right now the irradiance is set to zero in "get_synthetic_base....".
+    % Solar irradiation
+    G_roof_full = zeros(hours,12); % NEEDED - USE TO CALCULATE NEW ELECTRICITY DEMAND (Total production + New PV Arrays (general data felmarginal typ 30%
+    for i=1:12
+        G_roof_full(:,i) = solar_irradiation.Value;
+    end
+    G_facade_full = solar_irradiation.Value;
+    
+    %DS - Unclear function for me?!
+    disp('SETTING h_exp_AH_hist and h_imp_AH_hist TO ZEROS ONLY USED IF min_tot_cost_0 = 1')
+    h_exp_AH_hist_full = zeros(hours,1); % Should be ignored in GAMS
+    h_imp_AH_hist_full = zeros(hours,1); % Should be ignored in GAMS
+    
+    %    NREF_El_full = zeros(hours,1); % SKIP THIS - USE ONLY PE AND CO2
+    %    NREF_DH_full = zeros(hours,1); % SKIP THIS - USE ONLY PE AND CO2
+    %    NREF_El_full(:,1) = 1;
+    %    NREF_DH_full(:,1) = 1;
+    
+    el_exG_slack_full = zeros(hours,1); % Should be zero as production == demand
+    h_DH_slack_full = zeros(hours,1); % Should be zero as production == demand
+    c_DC_slack_full = zeros(hours,1); % Should be zero as production == demand
+    
 end
 %This must be modified
 %     temp=load('Input_dispatch_model\import_export_forecasting');
@@ -375,13 +383,9 @@ end
 %     %Import ANN data
 %     load('Input_dispatch_model\Heating_ANN');
 
-%% INPUT NRE and CO2 FACTORS
-if synth_baseline == 0
-[CO2F_El_full, NREF_El_full, PE_El_full, CO2F_DH_full, NREF_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop,data_length);
-else
-    %DS - we should read emissions from ex grid from here as well.
-[~, ~, ~, ~, ~, ~, ~, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop,data_length);
-end
+%% INPUT NRPE, CO2 FACTORS and DH Prices
+[CO2F_El_full, PE_El_full, CO2F_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, PE_PV, CO2F_Boiler1, PE_Boiler1, CO2F_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,GE_factors,sim_start,data_read_stop,data_length);
+
 %% Initialize FED INVESTMENT OPTIONS
 % If min_totCost_O=1, i.e. base case simulation, then all investment options
 % will be set to 0.
@@ -414,7 +418,7 @@ opt_fx_inv_TURB = struct('name','opt_fx_inv_TURB','type','parameter','form','ful
 %Option for new HP investment
 %>=0 =fixed investment, -1=variable of optimization; 630 kw is heating capacity of the HP invested in
 opt_fx_inv_HP_cap = struct('name','opt_fx_inv_HP_cap','type','parameter','form','full','val',630*(1-min_totCost_0)*(1-synth_baseline));
-% minimum heat output from HP during wintermode in kW heat 
+% minimum heat output from HP during wintermode in kW heat
 opt_fx_inv_HP_min= struct('name','opt_fx_inv_HP_min','type','parameter','form','full','val',100*(1-min_totCost_0)*(1-synth_baseline));
 
 %Option for new RM investment
@@ -440,7 +444,7 @@ opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','
 %Option for Cold water basin
 opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
 opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-synth_baseline));
-opt_fx_inv_CWB_cap.uels = CWB_BID_uels; 
+opt_fx_inv_CWB_cap.uels = CWB_BID_uels;
 
 opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter','form','full','val',203.5*(1-min_totCost_0)*(1-synth_baseline));
 opt_fx_inv_CWB_ch_max.uels= CWB_BID_uels;
@@ -450,7 +454,7 @@ opt_fx_inv_CWB_dis_max.uels=opt_fx_inv_CWB_cap.uels;
 %Option for BES investment
 opt_fx_inv_BES = struct('name','opt_fx_inv_BES','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
 opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',[200 100]*(1-min_totCost_0)*(1-synth_baseline));
-opt_fx_inv_BES_cap.uels = BES_BID_uels; 
+opt_fx_inv_BES_cap.uels = BES_BID_uels;
 opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','form','full','val',[100 50]*(1-min_totCost_0)*(1-synth_baseline));
 opt_fx_inv_BES_maxP.uels = BES_BID_uels;
 BES_min_SoC = struct('name','BES_min_SoC','type','parameter','form','full','val',BES_min_SoC);
@@ -467,7 +471,7 @@ BTES_SO_max_power = struct('name', 'BTES_SO_max_power', 'type', 'parameter', 'fo
 BTES_SO_max_power.uels = BTES_SO_BID_uels;
 BTES_SO_max_power.val = [45, 20, 90, 76, 11]; % kWh/h, Requires ordering of BTES_SO_UELS to be O11:01, O7:888, O7:28, O7, 27, O7:24
 
-%Building thermal energy storage properties 
+%Building thermal energy storage properties
 BTES_properties=struct('name','BTES_properties','type','set','form','full');
 BTES_properties.uels={'BTES_Scap', 'BTES_Dcap', 'BTES_Esig', 'BTES_Sch_hc',...
     'BTES_Sdis_hc', 'kloss_Sday', 'kloss_Snight', 'kloss_D', 'K_BS_BD'};
@@ -476,7 +480,7 @@ BTES_properties.uels={'BTES_Scap', 'BTES_Dcap', 'BTES_Esig', 'BTES_Sch_hc',...
 BTES_model = struct('name','BTES_model','type','parameter','form','full','val',BTES_model);
 BTES_model.uels={BTES_properties.uels,BID.uels};
 
-%Adjust O7:24 in BTES model 
+%Adjust O7:24 in BTES model
 BTES_SO_EDIT_Correction_Factor = 0.19; % Correction factor for O7:10, O7:20 as they are only part of O7:24, used below for correcting BTES_model
 O724_index = find(strcmp(BTES_model.uels{1,2}, 'O0007024'));
 Scap_index = find(strcmp(BTES_model.uels{1,1}, 'BTES_Scap'));
@@ -642,7 +646,7 @@ for t=1:sim_length
     %DH heating season
     DH_heating_season = struct('name','DH_heating_season','type','parameter','form','full','val',DH_heating_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
     DH_heating_season.uels=h.uels;
-   
+    
     %DH heating season P2
     DH_heating_season_P2 = struct('name','DH_heating_season_P2','type','parameter','form','full','val',DH_heating_season_P2_full(t+sim_start-1:forecast_end+sim_start-1,:));
     DH_heating_season_P2.uels=h.uels;
@@ -653,7 +657,7 @@ for t=1:sim_length
     
     DC_cooling_season = struct('name','DC_cooling_season','type','parameter','form','full','val',DC_cooling_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
     DC_cooling_season.uels = h.uels;
-
+    
     no_imp_h_season = struct('name','no_imp_h_season','type','parameter','form','full','val',no_imp_h_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
     no_imp_h_season.uels = h.uels;
     
@@ -671,8 +675,8 @@ for t=1:sim_length
     CO2F_El.uels=h.uels;
     
     %NRE factors of the external el grid
-    NREF_El = struct('name','NREF_El','type','parameter','form','full','val',NREF_El_full(t:forecast_end,:));
-    NREF_El.uels=h.uels;
+    %     NREF_El = struct('name','NREF_El','type','parameter','form','full','val',NREF_El_full(t:forecast_end,:));
+    %     NREF_El.uels=h.uels;
     
     %PE factors of the external el grid
     PE_El = struct('name','PE_El','type','parameter','form','full','val',PE_El_full(t:forecast_end,:));
@@ -687,13 +691,13 @@ for t=1:sim_length
     CO2F_DH.uels=h.uels;
     
     %NRE factors of the external DH grid
-    NREF_DH = struct('name','NREF_DH','type','parameter','form','full','val',NREF_DH_full(t:forecast_end,:));
-    NREF_DH.uels=h.uels;
-
+    %     NREF_DH = struct('name','NREF_DH','type','parameter','form','full','val',NREF_DH_full(t:forecast_end,:));
+    %     NREF_DH.uels=h.uels;
+    
     %PE factors of the external DH grid
     PE_DH = struct('name','PE_DH','type','parameter','form','full','val',PE_DH_full(t:forecast_end,:));
     PE_DH.uels=h.uels;
-
+    
     %el exG slack bus data
     el_exG_slack = struct('name','el_exG_slack','type','parameter','form','full','val',el_exG_slack_full(t:forecast_end,:));
     el_exG_slack.uels=h.uels;
@@ -759,7 +763,7 @@ for t=1:sim_length
     opt_fx_inv_BTES_SO_S_init.uels = {num2cell(t), BTES_SO_BID_uels};
     opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
     opt_fx_inv_CWB_init.uels = {num2cell(t), CWB_BID_uels};
-
+    
     %opt_fx_inv_BFCh_init.uels = {num2cell(t), BFCh_BID_uels};
     
     %% Preparing input GDX file (MtoG) and RUN GAMS model
@@ -770,8 +774,8 @@ for t=1:sim_length
         opt_fx_inv_CWB, opt_fx_inv_CWB_cap, opt_fx_inv_CWB_ch_max, opt_fx_inv_CWB_dis_max,...
         opt_fx_inv_BES_cap, opt_fx_inv_BES_maxP, opt_fx_inv_SO, opt_fx_inv_BAC,...
         h, BTES_BAC_Inv, BTES_SO_Inv,...
-        CO2F_El, NREF_El, PE_El, CO2F_DH, NREF_DH, PE_DH, marginalCost_DH, CO2F_PV, NREF_PV, PE_PV,...
-        CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2,...
+        CO2F_El, PE_El, CO2F_DH, PE_DH, marginalCost_DH, CO2F_PV, PE_PV,...
+        CO2F_Boiler1, PE_Boiler1, CO2F_Boiler2, PE_Boiler2,...
         BID, BID_AH_el, BID_nonAH_el, BID_AH_h, BID_nonAH_h, BID_AH_c, BID_nonAH_c, BID_nonBTES,...
         el_demand, h_demand, c_demand, h_Boiler1_0, h_FlueGasCondenser1_0,...
         el_VKA1_0, el_VKA4_0, c_AbsC_0, G_roof, G_facade,...

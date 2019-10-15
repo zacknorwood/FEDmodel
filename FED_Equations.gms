@@ -194,10 +194,10 @@ equation
 *           eq_dcpowerflow10  line limits equations
 *           eq_dcpowerflow11  slack angle constraint
 *           eq_dcpowerflow12  slack voltage constraint
-           eq_AH_NREF    NREF use in AH buildings
-           eq_nonAH_NREF NREF use in nonAH buildings
-           eq_NREF       NREF use in the FED system
-           eq_totNREF    total NREF used in the FED system
+*           eq_AH_NREF    NREF use in AH buildings
+*           eq_nonAH_NREF NREF use in nonAH buildings
+*           eq_NREF       NREF use in the FED system
+*           eq_totNREF    total NREF used in the FED system
            eq_AH_PE
            eq_nonAH_PE
            eq_PE         PE use in the FED system (marginal or average depending on which factors are used)
@@ -923,6 +923,7 @@ $ontext
 1)el_RM(h),e_RMMC(h),e_AAC(h), e_HP(h),e_RMInv(h) are set to KC
 2)inverter of FBch is the same with the pv additional constraints must be added
 $offtext
+$ontext
 *-------------- FED NREF use ------------------------
 eq_AH_NREF(h)..
          AH_NREF(h) =e= (el_imp_AH(h)-el_exp_AH(h))*NREF_El(h)
@@ -945,6 +946,7 @@ eq_NREF(h)..
 
 eq_totNREF..
          tot_NREF=e=sum(h,FED_NREF(h));
+$offtext
 
 *--------------Primary energy use-------------------------------------------
 
