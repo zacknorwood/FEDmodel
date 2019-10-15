@@ -53,7 +53,7 @@ end
 if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are based on the marginal production unit/mix.
     %% Marginal CO2 and NRE factors of the external grid
     %Import marginal CO2 and PE factors
-    prodMix_El=xlsread('Input_dispatch_model\electricityMap - Marginal mix updated v2 - SE - 2016 - 2017.xlsx',1,strcat('B',num2str(sim_start+1),':M',num2str(data_read_stop+1)));
+    prodMix_El=xlsread('Input_dispatch_model\electricityMap - Marginal mix SE 2019 August.xlsx',1,strcat('B',num2str(sim_start+1),':M',num2str(data_read_stop+1)));
     if (length(prodMix_El)<data_length) || (any(isnan(prodMix_El),'all'))
         error('Error: input file does not have complete data for simulation length');
     end
@@ -67,7 +67,7 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     PEF_El = sum(prodMix_El(:,1:length(PEintensityProdMix_El)) .* PEintensityProdMix_El, 2);
     
     %Get Marginal units DH
-    marginalUnits_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2019 Augusti.xlsx',1,strcat('C',num2str(sim_start+1),':J',num2str(data_read_stop+1)));
+    marginalUnits_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2019 August.xlsx',1,strcat('C',num2str(sim_start+1),':J',num2str(data_read_stop+1)));
     if (length(marginalUnits_DH)<data_length) || (any(isnan(marginalUnits_DH),'all'))
         error('Error: input file does not have complete data for simulation length');
     end

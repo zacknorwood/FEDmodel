@@ -16,14 +16,14 @@ system 'gams';
 sim_start_y = 2019;
 sim_start_m = 8;
 sim_start_d = 19;
-sim_start_h = 1;
+sim_start_h = 0;
 
 %Sim stop time
 
 sim_stop_y = 2019;
 sim_stop_m = 8;
 sim_stop_d = 31;
-sim_stop_h = 24;
+sim_stop_h = 23;
 
 %Get month and hours of simulation
 [HoS, ~] = fget_time_vector(sim_start_y,sim_stop_y);
