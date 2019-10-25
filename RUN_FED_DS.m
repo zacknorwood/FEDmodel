@@ -5,6 +5,7 @@ opt_RunGAMSModel=1;
 opt_marg_factors=1;
 synth_baseline=1;
 IPCC_factors=1; %Change to the new factors for CO2 and PE
+GE_factors=1;
 for IPCC_factors=[1]
 
 for i=2
@@ -129,7 +130,7 @@ for i=2
     
     
 % Run FED model
-[to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, Results]=FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline);
+[to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, Results]=FED_MAT_MAIN(opt_RunGAMSModel, opt_marg_factors, GE_factors, min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline);
 
 
 % Save result files
