@@ -11,6 +11,10 @@ function [el_demand, h_demand, c_demand, ann_production_pruned, el_factors, dh_f
 % time_resolution (optional) - string, currently only 'hourly' implemented
 
 %% Setup of date range and resolution
+FED_case=1;  %Using measured data to calculate the values for the FED case
+changed_cooling_demand=0; %Using cooling demand based on ANN
+PR=4; %Choose between PR3 or PR4
+
 if nargin==2
     % If no time_resolution is provided use hourly, the only one
     % implemented currently
@@ -50,7 +54,6 @@ dates = (start_datetime:hours(1):end_datetime)';
     end
 
 %% Input data folder & file names
-PR=4;
 if PR==3
     base_folder = 'Input_dispatch_model\synthetic_baseline_data\';
     measurements_data_folder = 'Input_dispatch_model\synthetic_baseline_data\measurement_data\';
@@ -109,7 +112,7 @@ end
 if PR==4
     base_folder = 'Input_dispatch_model\synthetic_baseline_data\';
     measurements_data_folder = 'Input_dispatch_model\synthetic_baseline_data\measurement_data_may-aug_2019\';
-    ann_data_folder = 'Input_dispatch_model\synthetic_baseline_data\ann_data_may-aug_2019\';
+    ann_data_folder = 'Input_dispatch_model\synthetic_baseline_data\ann_data\';
     kibana_data_folder = 'Input_dispatch_model\synthetic_baseline_data\kibana_data_may-aug_2019\';
     
     % Heat related files
@@ -140,7 +143,8 @@ if PR==4
     el_kibana_file = 'EL_demand_kibana.csv'; % Unused as we don't consider electricity as affected by active buildings
     
     % Production file
-    ann_production_file = 'ProductionUnitsANN.csv'; % File containing boiler 1 production, AbsC, total cooling production
+%    ann_production_file = 'ProductionUnitsANN.csv'; % File containing boiler 1 production, AbsC, total cooling production
+    ann_production_file = 'outputANNcooling_2019-08-19-2019-08-31.xls'; % File containing boiler 1 production, AbsC, total cooling production
     mc2_cooling_production_file = 'mc2cooling.csv'; % Ignored further down, contains all zeros for cooling production
     
     P1_kibana_file = 'P1_kibana.csv';
@@ -300,6 +304,19 @@ end
         % by this script. If the methodology in which the source data is
         % compiled changes, this part will need changing as well.
         output = removevars(output, {'DateTimeUTC', 'AmbientTemperature'}); 
+        
+        output = table2timetable(output);
+        output = sortrows(output);
+        output = process_large_data(output, dates, 0);
+        output = fillmissing(output,'constant',0); % Replaces NaN, NaT, etc with 0
+ end
+ function output = read_ann_xls(file_path, dates)
+        output = readtable(file_path, 'ReadVariableNames',true);
+        output.Date = datetime(output.date, 'format', 'yyyy-MM-dd HH');
+        % Removes columns which are present in the source data, but unused
+        % by this script. If the methodology in which the source data is
+        % compiled changes, this part will need changing as well.
+        output = removevars(output, {'date', 'outsideTemp_celsius_','kyl_biblan_MWh_','kyl_friskis_MWh_','kyl_28_VKA1_8_VKA4_MWh_'}); 
         
         output = table2timetable(output);
         output = sortrows(output);
@@ -514,6 +531,7 @@ c_vka_4_production = read_measurement_xls(strcat(measurements_data_folder , c_vk
 % Cooling load =
 % + Cooling import (AbsC)
 % + Cooling production
+% This will be replaced by "ANN based" cooling demand.
 c_import = prune_data(c_import, start_datetime, end_datetime, time_resolution, 1000);
 c_vka_1_production = prune_data(c_vka_1_production, start_datetime, end_datetime, time_resolution, 1000);
 c_vka_2_production = prune_data(c_vka_2_production, start_datetime, end_datetime, time_resolution, 1000);
@@ -541,6 +559,16 @@ if PR==3
 ann_production = read_ann_csv(strcat(ann_data_folder, ann_production_file), dates);
 ann_production_pruned = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1000);
 else
+    if changed_cooling_demand==1 && FED_case==0
+        energy_data=0;
+        ann_production = read_ann_xls(strcat(ann_data_folder, ann_production_file), dates);
+        ann_production_pruned = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1000);
+        c_net_load_values = ann_production_pruned.kyl_total_MWh_;
+        c_demand.c_net_load_values = ann_production_pruned.kyl_total_MWh_;
+        ann_production_pruned = addvars(ann_production_pruned,ann_production_pruned.kyl_total_MWh_);
+        ann_production_pruned.Properties.VariableNames = {'AbsC_production' 'Total_cooling_demand' 'Boiler1_production'};
+        ann_production_pruned.Boiler1_production = zeros(length(ann_production_pruned.Boiler1_production),1); 
+    else
 % run ANN for absC
 % Fix input data vector
 month_idx_2019=0;
@@ -578,10 +606,13 @@ ann_production.Properties.VariableNames={'Boiler1_production' 'AbsC_production'}
 % be changed to use ANN cooling demand instead.
 ann_production.Total_cooling_demand = c_demand.c_net_load_values;
 ann_production_pruned = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1);
-
+ann_production_pruned.AbsC_production = ann_production_pruned.AbsC_production*1000;
+    end
 end
-ann_production_pruned.AbsC_production = ann_production_pruned.AbsC_production*1000
-ann_production_pruned.AbsC_production(ann_production_pruned.Total_cooling_demand<ann_production_pruned.AbsC_production) = ann_production_pruned.Total_cooling_demand(ann_production_pruned.Total_cooling_demand<ann_production_pruned.AbsC_production)
+if FED_case==1;
+ann_production_pruned.AbsC_production=c_import.Value;
+end
+ann_production_pruned.AbsC_production(ann_production_pruned.Total_cooling_demand<ann_production_pruned.AbsC_production) = ann_production_pruned.Total_cooling_demand(ann_production_pruned.Total_cooling_demand<ann_production_pruned.AbsC_production);
 %ann_production.AbsC_production(ann_production.AbsC_production<0) = 0
 %ann_production.Boiler1_production(ann_production.Boiler1_production<0) = 0
 %ann_production.Total_cooling_demand(ann_production.Total_cooling_demand<0) = 0
@@ -705,6 +736,11 @@ el_net_load_values = el_imported.Value + el_kc_pv_production.Value + el_SB2_pv_p
 + el_edit_pv_production.Value + el_SB3_pv_production.Value + el_kemi_pv_production.Value; % Need to add local production and consumption (KC, VKA, PVs, Batteries)
 
 el_demand = timetable(dates, el_net_load_values);
+
+if FED_case==1;
+    el_demand.el_net_load_values = el_imported.Value;
+end
+    
 
 %% Get Electricity CO2 and PEF data
 % This should be taken as a production mix
