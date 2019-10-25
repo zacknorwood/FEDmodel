@@ -164,19 +164,45 @@ to_excel_cool(t,17)=Results(t).dispatch.vc_c_RMMC(1,2);
 to_excel_co2(t,1)=t;
 to_excel_co2(t,2)=Results(t).dispatch.FED_PE(1,2);
 to_excel_co2(t,3)=Results(t).dispatch.FED_CO2(1,2);
-to_excel_co2(t,4)=Results(t).dispatch.FED_NREF(1,2);
+%to_excel_co2(t,4)=Results(t).dispatch.FED_NREF(1,2);
 to_excel_co2(t,5)=Results(t).dispatch.AH_PE(1,2);
 to_excel_co2(t,6)=Results(t).dispatch.AH_CO2(1,2);
-to_excel_co2(t,7)=Results(t).dispatch.AH_NREF(1,2);
+%to_excel_co2(t,7)=Results(t).dispatch.AH_NREF(1,2);
 to_excel_co2(t,8)=Results(t).dispatch.vc_tot_AH(1,2);
 to_excel_co2(t,9)=Results(t).dispatch.model_status(1);
 
+if length(Results(t).dispatch.PE_El)~=0
+if Results(t).dispatch.PE_El(1,1)==1
 to_excel_co2(t,10)=Results(t).dispatch.PE_El(1,2);
+else
+to_excel_co2(t,10)=0;
+end
+end
+if length(Results(t).dispatch.CO2F_El)~=0
+if Results(t).dispatch.CO2F_El(1,1)==1
 to_excel_co2(t,11)=Results(t).dispatch.CO2F_El(1,2);
-to_excel_co2(t,12)=Results(t).dispatch.NREF_El(1,2);
+else    
+to_excel_co2(t,11)=0;
+end
+end
+    
+%to_excel_co2(t,12)=Results(t).dispatch.NREF_El(1,2);
 
-to_excel_co2(t,13)=Results(t).dispatch.PE_DH(1,2);
-%to_excel_co2(t,14)=Results(t).dispatch.CO2F_DH(1,2);
+if length(Results(t).dispatch.PE_DH)~=0
+if Results(t).dispatch.PE_DH(1,1)==1
+    to_excel_co2(t,13)=Results(t).dispatch.PE_DH(1,2);
+else
+    to_excel_co2(t,13)=0;
+end
+end
+
+if length(Results(t).dispatch.CO2F_DH)~=0
+if Results(t).dispatch.CO2F_DH(1,1)==1
+to_excel_co2(t,14)=Results(t).dispatch.CO2F_DH(1,2);
+else
+to_excel_co2(t,14)=0;
+end
+end
 %to_excel_co2(t,15)=Results(t).dispatch.NREF_DH(1,2);
 
 
