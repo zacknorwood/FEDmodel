@@ -1,4 +1,4 @@
-function [ CO2F_El, PEF_El, CO2F_DH, PEF_DH, marginalCost_DH, CO2F_PV, PEF_PV, CO2F_Boiler1, PEF_Boiler1, CO2F_Boiler2, PEF_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors, GE_factors, sim_start, data_read_stop, data_length)
+function [ CO2F_El, PE_El, CO2F_DH, PE_DH, marginalCost_DH, CO2F_PV, PE_PV, CO2F_Boiler1, PE_Boiler1, CO2F_Boiler2, PE_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors, GE_factors, sim_start, data_read_stop, data_length)
 %% Here, the CO2 factor and Primary Energy factor of the external grids are calculated
 % The external grid production mix data read in is from the district
 % heating system (Göteborg Energi) and the Swedish electrical grid (Tomorrow / tmrow.com)
@@ -22,7 +22,6 @@ if(GE_factors)
     %CO2 and PE factors of the District Heating system in the Göteborg
     %Energi Industry Case
     %Values based on Göteborg Energi from Värmemarknadskommitten
-    
     % Heat order: [Biomass-HOB Biomass-CHP BioGas-HOB Gas-CHP Oil-HOB RefineryHeat WasteIncineration-CHP]
     CO2intensityProdMix_Heat = [21 8 14 142 395 0 113];
     PEintensityProdMix_Heat = [0.13 0.02 0.18 0.62 1.5 0 0.03];
@@ -31,18 +30,18 @@ end
 %CO2 and PE factors for local generation units
 %CO2 and PE emissions intensity factors for solar PV
 CO2F_PV = struct('name','CO2F_PV','type','parameter','val',CO2intensityProdMix_El(7));
-PEF_PV = struct('name','PEF_PV','type','parameter','val',PEintensityProdMix_El(7));
+PE_PV = struct('name','PE_PV','type','parameter','val',PEintensityProdMix_El(7));
 
 %CO2 and PE emissions intensity factors for boiler 1. Depends on the type
 %of fuel used(assume biomass now). Note that the Biomass-HOB factor is used for
 %Boiler 1. This factor should be applied to the output of Boiler 1 before heat goes to the turbine.
 CO2F_Boiler1 = struct('name','CO2F_Boiler1','type','parameter','val',CO2intensityProdMix_Heat(1));
-PEF_Boiler1 = struct('name','PEF_Boiler1','type','parameter','val',PEintensityProdMix_Heat(1));
+PE_Boiler1 = struct('name','PE_Boiler1','type','parameter','val',PEintensityProdMix_Heat(1));
 
 %CO2 and PE emissions intensity factors for boiler 2. Depends on the type
 %of fuel used (assume biomass now).
 CO2F_Boiler2 = struct('name','CO2F_Boiler2','type','parameter','val',CO2intensityProdMix_Heat(1));
-PEF_Boiler2 = struct('name','PEF_Boiler2','type','parameter','val',PEintensityProdMix_Heat(1));
+PE_Boiler2 = struct('name','PE_Boiler2','type','parameter','val',PEintensityProdMix_Heat(1));
 
 %Get Marginal cost DH (SEK / kWh)
 marginalCost_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('K',num2str(sim_start+1),':K',num2str(data_read_stop+1)));
@@ -53,7 +52,13 @@ end
 if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are based on the marginal production unit/mix.
     %% Marginal CO2 and NRE factors of the external grid
     %Import marginal CO2 and PE factors
-    prodMix_El=xlsread('Input_dispatch_model\electricityMap - Marginal mix SE 2019 August.xlsx',1,strcat('B',num2str(sim_start+1),':M',num2str(data_read_stop+1)));
+    synthetic_baseline=1;
+    if synthetic_baseline == 1
+        prodMix_El=xlsread('Input_dispatch_model\electricityMap - Marginal mix SE 2019 August.xlsx',1,strcat('B',num2str(sim_start+1),':M',num2str(data_read_stop+1)));
+    else
+        prodMix_El=xlsread('Input_dispatch_model\electricityMap - Marginal mix updated v2 - SE - 2016 - 2017.xlsx',1,strcat('B',num2str(sim_start+1),':M',num2str(data_read_stop+1)));
+    end
+        
     if (length(prodMix_El)<data_length) || (any(isnan(prodMix_El),'all'))
         error('Error: input file does not have complete data for simulation length');
     end
@@ -64,7 +69,7 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     % algorithm. Charging is assumed to have zero CO2/PE effect, and round
     % cycle efficiency is assumed to be 100%.
     CO2F_El = sum(prodMix_El(:,1:length(CO2intensityProdMix_El)) .* CO2intensityProdMix_El, 2);
-    PEF_El = sum(prodMix_El(:,1:length(PEintensityProdMix_El)) .* PEintensityProdMix_El, 2);
+    PE_El = sum(prodMix_El(:,1:length(PEintensityProdMix_El)) .* PEintensityProdMix_El, 2);
     
     %Get Marginal units DH
     marginalUnits_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2019 August.xlsx',1,strcat('C',num2str(sim_start+1),':J',num2str(data_read_stop+1)));
@@ -75,7 +80,7 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     % For the times that the heatpump is on the margin, the production
     % factors are then calculated as the marginal electric mix divided by the COP of the heat pump (Rya).
     CO2F_DH = marginalUnits_DH(:,1:size(marginalUnits_DH,2)-1) * CO2intensityProdMix_Heat' + marginalUnits_DH(:,size(marginalUnits_DH,2)) .* CO2F_El./COP_HP_DH;
-    PEF_DH = marginalUnits_DH(:,1:size(marginalUnits_DH,2)-1) * PEintensityProdMix_Heat' + marginalUnits_DH(:,size(marginalUnits_DH,2)) .* PEF_El./COP_HP_DH;
+    PE_DH = marginalUnits_DH(:,1:size(marginalUnits_DH,2)-1) * PEintensityProdMix_Heat' + marginalUnits_DH(:,size(marginalUnits_DH,2)) .* PE_El./COP_HP_DH;
    
 else
     error('Average emissions/price option is not currently implemented, set opt_marg_factors to 1');

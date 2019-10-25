@@ -12,18 +12,21 @@ delete MtoG.gdx
 system 'gams';
 
 %% SIMULATION START AND STOP TIME
+% All excel files needs to start from 1/1 of the simulation year or changes
+% 
+
 %Sim start time
 sim_start_y = 2019;
 sim_start_m = 8;
 sim_start_d = 19;
-sim_start_h = 0;
+sim_start_h = 1;
 
 %Sim stop time
 
 sim_stop_y = 2019;
 sim_stop_m = 8;
 sim_stop_d = 31;
-sim_stop_h = 23;
+sim_stop_h = 24;
 
 %Get month and hours of simulation
 [HoS, ~] = fget_time_vector(sim_start_y,sim_stop_y);
@@ -35,9 +38,10 @@ sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 %sim_stop=sim_start+47;
 
 % In synthetic baseline the forecast horizon should be zero, and 10 hours
-% otherwise in FED operation.
-if (synth_baseline)    
-    forecast_horizon = 0;
+% otherwise in FED operation. However currently the result read script does
+% not work for forecast horizon below 2.
+if (synth_baseline==1)    
+    forecast_horizon = 2;
 else
     forecast_horizon = 10;
 end
@@ -292,11 +296,11 @@ end
 % för size(h_demand)
 if synth_baseline == 1
     start_datetime = datetime(sim_start_y,sim_start_m,sim_start_d,sim_start_h,0,0);
-    end_datetime = datetime(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h+10,0,0);
+    end_datetime = datetime(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h+forecast_horizon,0,0);
     [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, el_factors, dh_factors, temperature, dh_price, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
     
     cooling_size = size(BID_AH_c.uels);
-    hours = sim_length+10;
+    hours = sim_length+forecast_horizon;
     cooled_buildings = cooling_size(2);
     
     heating_size = size(BID_AH_h.uels);
