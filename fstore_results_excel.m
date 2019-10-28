@@ -24,8 +24,11 @@ to_excel_el(t,14)=-Results(t).dispatch.el_HP(1,2);
 to_excel_el(t,16)=-Results(t).dispatch.el_RMMC(1,2);
 to_excel_el(t,18)=-Results(t).dispatch.el_RM(1,2);
 
-
+if length(Results(t).dispatch.el_slack)~=0
 to_excel_el(t,20)=Results(t).dispatch.el_slack(1,2);
+else
+    to_excel_el(t,20)=0;
+end
 to_excel_el(t,22)=Results(t).dispatch.el_slack_var(1,2);
 to_excel_el(t,24)=Results(t).dispatch.BES_en(find(Results(t).dispatch.BES_en(:,2)==33,1),3); 
 % find the energy storage at node/BID 33 and the first value(e.g. first hour), column 3 is for the energy/power level.
@@ -70,7 +73,11 @@ to_excel_heat(t,20)=Results(t).dispatch.H_from_turb(1,2);
 to_excel_heat(t,22)=-Results(t).dispatch.h_AbsC(1,2);
 to_excel_heat(t,24)=sum(Results(t).dispatch.h_BAC_savings(find(Results(t).dispatch.h_BAC_savings(:,1)==1),3));
 
+if length(Results(t).dispatch.h_slack)~=0
 to_excel_heat(t,26)=Results(t).dispatch.h_slack(1,2);
+else
+    to_excel_heat(t,26)=0;
+end
 to_excel_heat(t,28)=Results(t).dispatch.h_slack_var(1,2);
 to_excel_heat(t,29)=Results(t).dispatch.h_RMMC(1,2);
 to_excel_heat(t,30)=sum(Results(t).dispatch.BAC_Sen(find(Results(t).dispatch.BAC_Sen(:,1)==1),3));
@@ -86,9 +93,12 @@ to_excel_heat(t,37)=sum(Results(t).dispatch.SO_Den(find(Results(t).dispatch.SO_D
 
 
 to_excel_heat(t,38)=Results(t).dispatch.h_imp_nonAH(1,2);
+
+if length(Results(t).dispatch.heat_demand)~=0
 to_excel_heat(t,39)=-Results(t).dispatch.heat_demand(1,2);
-
-
+else
+to_excel_heat(t,39)=0;
+end
 %Variable cost for heating
 to_excel_heat(t,3)=Results(t).dispatch.vc_h_Boiler1(1,2);
 to_excel_heat(t,5)=Results(t).dispatch.vc_h_Boiler2(1,2);
@@ -113,7 +123,12 @@ to_excel_cool(t,1)=t;
 to_excel_cool(t,2)=Results(t).dispatch.c_VKA1(1,2);
 to_excel_cool(t,4)=Results(t).dispatch.c_VKA4(1,2);
 to_excel_cool(t,6)=Results(t).dispatch.c_HP(1,2);
+
+if length(Results(t).dispatch.c_slack)~=0
 to_excel_cool(t,8)=Results(t).dispatch.c_slack(1,2);
+else
+    to_excel_cool(t,8)=0;
+end
 to_excel_cool(t,10)=Results(t).dispatch.c_AbsC(1,2);
 %to_excel_cool(t,12)=Results(t).dispatch.c_AAC(1,2);
 to_excel_cool(t,14)=Results(t).dispatch.c_RM(1,2); 
@@ -149,19 +164,45 @@ to_excel_cool(t,17)=Results(t).dispatch.vc_c_RMMC(1,2);
 to_excel_co2(t,1)=t;
 to_excel_co2(t,2)=Results(t).dispatch.FED_PE(1,2);
 to_excel_co2(t,3)=Results(t).dispatch.FED_CO2(1,2);
-to_excel_co2(t,4)=Results(t).dispatch.FED_NREF(1,2);
+%to_excel_co2(t,4)=Results(t).dispatch.FED_NREF(1,2);
 to_excel_co2(t,5)=Results(t).dispatch.AH_PE(1,2);
 to_excel_co2(t,6)=Results(t).dispatch.AH_CO2(1,2);
-to_excel_co2(t,7)=Results(t).dispatch.AH_NREF(1,2);
+%to_excel_co2(t,7)=Results(t).dispatch.AH_NREF(1,2);
 to_excel_co2(t,8)=Results(t).dispatch.vc_tot_AH(1,2);
 to_excel_co2(t,9)=Results(t).dispatch.model_status(1);
 
+if length(Results(t).dispatch.PE_El)~=0
+if Results(t).dispatch.PE_El(1,1)==1
 to_excel_co2(t,10)=Results(t).dispatch.PE_El(1,2);
+else
+to_excel_co2(t,10)=0;
+end
+end
+if length(Results(t).dispatch.CO2F_El)~=0
+if Results(t).dispatch.CO2F_El(1,1)==1
 to_excel_co2(t,11)=Results(t).dispatch.CO2F_El(1,2);
-to_excel_co2(t,12)=Results(t).dispatch.NREF_El(1,2);
+else    
+to_excel_co2(t,11)=0;
+end
+end
+    
+%to_excel_co2(t,12)=Results(t).dispatch.NREF_El(1,2);
 
-to_excel_co2(t,13)=Results(t).dispatch.PE_DH(1,2);
-%to_excel_co2(t,14)=Results(t).dispatch.CO2F_DH(1,2);
+if length(Results(t).dispatch.PE_DH)~=0
+if Results(t).dispatch.PE_DH(1,1)==1
+    to_excel_co2(t,13)=Results(t).dispatch.PE_DH(1,2);
+else
+    to_excel_co2(t,13)=0;
+end
+end
+
+if length(Results(t).dispatch.CO2F_DH)~=0
+if Results(t).dispatch.CO2F_DH(1,1)==1
+to_excel_co2(t,14)=Results(t).dispatch.CO2F_DH(1,2);
+else
+to_excel_co2(t,14)=0;
+end
+end
 %to_excel_co2(t,15)=Results(t).dispatch.NREF_DH(1,2);
 
 

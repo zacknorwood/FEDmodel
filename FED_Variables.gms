@@ -258,10 +258,10 @@ variable
          nonAH_PE(h)
          FED_PE(h)      Hourly PE use in the FED system
          tot_PE         Total PE use in the FED system
-         AH_NREF(h)     Hourly NREF use in AH Buildings
-         nonAH_NREF(h)  Hourly NREF use in nonAH buildings
-         FED_NREF(h)    Hourly NREF use in the FED system
-         tot_NREF        Total NREF used in the FED System
+*         AH_NREF(h)     Hourly NREF use in AH Buildings
+*         nonAH_NREF(h)  Hourly NREF use in nonAH buildings
+*         FED_NREF(h)    Hourly NREF use in the FED system
+*         tot_NREF        Total NREF used in the FED System
 ;
 
 *-------------------- Power tariffs --------------------------------------------
