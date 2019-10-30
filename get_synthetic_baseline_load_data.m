@@ -11,8 +11,8 @@ function [el_demand, h_demand, c_demand, ann_production_pruned, el_factors, dh_f
 % time_resolution (optional) - string, currently only 'hourly' implemented
 
 %% Setup of date range and resolution
-FED_case=1;  %Using measured data to calculate the values for the FED case
-changed_cooling_demand=0; %Using cooling demand based on ANN
+FED_case=0;  %Using measured data to calculate the values for the FED case
+changed_cooling_demand=1; %Using cooling demand based on ANN
 PR=4; %Choose between PR3 or PR4
 
 if nargin==2
