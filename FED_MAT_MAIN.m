@@ -219,15 +219,15 @@ BID_nonBTES.uels={'O0007043',...
     'O0007018','O3060137', 'Karhuset', 'O3060138',...
     'Karhus_studenter'};
 %% %%%%%
-for i=1:length(BID.uels)
-    AH_el(i)=sum(double(strcmp(BID.uels(i),BID_AH_el.uels)));
-    AH_h(i)=sum(double(strcmp(BID.uels(i),BID_AH_h.uels)));
-    AH_c(i)=sum(double(strcmp(BID.uels(i),BID_AH_c.uels)));
-    
-    nonAH_el(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_el.uels)));
-    nonAH_h(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_h.uels)));
-    nonAH_c(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_c.uels)));
-end
+% for i=1:length(BID.uels)
+%     AH_el(i)=sum(double(strcmp(BID.uels(i),BID_AH_el.uels)));
+%     AH_h(i)=sum(double(strcmp(BID.uels(i),BID_AH_h.uels)));
+%     AH_c(i)=sum(double(strcmp(BID.uels(i),BID_AH_c.uels)));
+%     
+%     nonAH_el(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_el.uels)));
+%     nonAH_h(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_h.uels)));
+%     nonAH_c(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_c.uels)));
+% end
 %% IDs used to name the buses or nodes in the local electrical distribution system
 %OBS: proper maping need to be established between the nodes in the el distribution system and the building IDs
 
@@ -297,7 +297,7 @@ end
 if synth_baseline == 1
     start_datetime = datetime(sim_start_y,sim_start_m,sim_start_d,sim_start_h,0,0);
     end_datetime = datetime(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h+forecast_horizon,0,0);
-    [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, el_factors, dh_factors, temperature, dh_price, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
+    [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, temperature, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
     
     cooling_size = size(BID_AH_c.uels);
     hours = sim_length+forecast_horizon;
@@ -589,7 +589,9 @@ for t=1:sim_length
     
     %forecasted cooling demand
     c_demand = struct('name','c_demand','type','parameter','form','full','val',c_demand_full(t:forecast_end,:));
-    c_demand.uels={h.uels,BID.uels};
+    % Warning!  Changed for PR4 to BID_AH_c.uels from BID.uels, work
+    % around!
+    c_demand.uels={h.uels,BID_AH_c.uels};
     
     %Historical heat export
     h_exp_AH_hist = struct('name','h_exp_AH_hist','type','parameter','form','full','val',h_exp_AH_hist_full(t:forecast_end,:));
@@ -800,11 +802,11 @@ for t=1:sim_length
     
     [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
 end
-delete  'result_temp.xlsx';
-copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx') % to add the toprows in the excelfile
+%delete  'Input_dispatch_model\result_temp.xlsx';
+copyfile('Input_dispatch_model\result_temp_bkup.xlsx', 'result_temp.xlsx'); % to create an output file template with the correct header row
 
 xlswrite('result_temp.xlsx',to_excel_el,'Electricity','A3');
 xlswrite('result_temp.xlsx',to_excel_heat,'Heat','A3');
 xlswrite('result_temp.xlsx',to_excel_cool,'Cooling','A3');
 xlswrite('result_temp.xlsx',to_excel_co2,'CO2_PE','A3');
-
+end
