@@ -11,8 +11,8 @@ function [el_demand, h_demand, c_demand, ann_production_pruned, el_factors, dh_f
 % time_resolution (optional) - string, currently only 'hourly' implemented
 
 %% Setup of date range and resolution
-FED_case=1;  %Using measured data to calculate the values for the FED case
-changed_cooling_demand=0; %Using cooling demand based on ANN
+FED_case=0;  %=1 means when we have FED, e.g. using measured data to calculate the values for the FED case
+changed_cooling_demand=0; %=1 means using cooling demand based on ANN
 PR=4; %Choose between PR3 or PR4
 
 if nargin==2
@@ -407,7 +407,6 @@ end
  
         output = process_data(output, dates, energy_data);  
  end
-
  function output = remove_duplicates(input)
         input = unique(input);
         dupTimes = sort(input.Date);
@@ -419,7 +418,7 @@ end
         output = retime(input,uniqueTimes);
         output = retime(input,uniqueTimes,'previous');
 end
- function length=get_length(input)
+ function length = get_length(input)
         length = size(input);
         length = length(1);
     end
@@ -574,7 +573,7 @@ else
 month_idx_2019=0;
 workday_2019=0;
 time_of_day_2019=0;
-load C:\Users\davste\Documents\GitHub\FEDmodel\ANN\ANN_input_2019\ANN_input_2019
+load ANN_input_2019
 ANN_dates = (datetime(2019,01,01,0,0,0):hours(1):datetime(2019,12,31,23,0,0))';
 ANN_input_table = timetable(ANN_dates, zeros(length(ANN_dates),1));
 ANN_input_table.month=month_idx_2019';
@@ -586,12 +585,12 @@ ANN_input_table=movevars(ANN_input_table, 'temp', 'Before', 'month');
 ANN_input_table.Cdem=(c_demand.c_net_load_values);
 
 ANN_input_ABS=[ANN_input_table.temp'; ANN_input_table.month'; ANN_input_table.WD'; ANN_input_table.ToD'; c_demand.c_net_load_values'/1000];
-folder=cd;
-cd 'C:\Users\davste\Documents\GitHub\FEDmodel\ANN\ANNs';
+%folder=cd;
+%cd 'C:\Users\davste\Documents\GitHub\FEDmodel\ANN\ANNs';
 absC_ANN=kb_ABS_final(ANN_input_ABS);
 % Discard negative values
 absC_ANN(absC_ANN<0)=0;
-cd(folder)
+%cd(folder)
 ann_production=ANN_input_table;
 ann_production=removevars(ann_production,{'month', 'WD', 'ToD', 'temp', 'Cdem'});
 ann_production.AbsC_production = absC_ANN';
@@ -601,7 +600,7 @@ ann_production.AbsC_production = absC_ANN';
 
 % No heat production for PR4
 %ann_production.Boiler1_production = 0;
-ann_production.Properties.VariableNames={'Boiler1_production' 'AbsC_production'}
+ann_production.Properties.VariableNames={'Boiler1_production' 'AbsC_production'};
 % Set the cooling demand equal to the actual cooling demand in FED this may
 % be changed to use ANN cooling demand instead.
 ann_production.Total_cooling_demand = c_demand.c_net_load_values;
@@ -616,6 +615,64 @@ ann_production_pruned.AbsC_production(ann_production_pruned.Total_cooling_demand
 %ann_production.AbsC_production(ann_production.AbsC_production<0) = 0
 %ann_production.Boiler1_production(ann_production.Boiler1_production<0) = 0
 %ann_production.Total_cooling_demand(ann_production.Total_cooling_demand<0) = 0
+
+%% Test script %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+% if FED_CASE==0
+%     if changed_cooling_demand==1
+%         energy_data=0;
+%         ann_production = read_ann_xls(strcat(ann_data_folder, ann_production_file), dates);
+%         ann_production_pruned = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1000);
+%         c_net_load_values = ann_production_pruned.kyl_total_MWh_;
+%         c_demand.c_net_load_values = ann_production_pruned.kyl_total_MWh_;
+%         ann_production_pruned = addvars(ann_production_pruned,ann_production_pruned.kyl_total_MWh_);
+%         ann_production_pruned.Properties.VariableNames = {'AbsC_production' 'Total_cooling_demand' 'Boiler1_production'};
+%         ann_production_pruned.Boiler1_production = zeros(length(ann_production_pruned.Boiler1_production),1);
+%     else
+%         % run ANN for absC
+%         % Fix input data vector
+%         month_idx_2019=0;
+%         workday_2019=0;
+%         time_of_day_2019=0;
+%         load ANN_input_2019
+%         ANN_dates = (datetime(2019,01,01,0,0,0):hours(1):datetime(2019,12,31,23,0,0))';
+%         ANN_input_table = timetable(ANN_dates, zeros(length(ANN_dates),1));
+%         ANN_input_table.month=month_idx_2019';
+%         ANN_input_table.WD=workday_2019';
+%         ANN_input_table.ToD=time_of_day_2019';
+%         ANN_input_table=prune_data(ANN_input_table, start_datetime, end_datetime, time_resolution, 1);
+%         ANN_input_table.temp=temperature.Value;
+%         ANN_input_table=movevars(ANN_input_table, 'temp', 'Before', 'month');
+%         ANN_input_table.Cdem=(c_demand.c_net_load_values);
+%         
+%         ANN_input_ABS=[ANN_input_table.temp'; ANN_input_table.month'; ANN_input_table.WD'; ANN_input_table.ToD'; c_demand.c_net_load_values'/1000];
+%         %folder=cd;
+%         %cd 'C:\Users\davste\Documents\GitHub\FEDmodel\ANN\ANNs';
+%         absC_ANN=kb_ABS_final(ANN_input_ABS);
+%         % Discard negative values
+%         absC_ANN(absC_ANN<0)=0;
+%         %cd(folder)
+%         ann_production=ANN_input_table;
+%         ann_production=removevars(ann_production,{'month', 'WD', 'ToD', 'temp', 'Cdem'});
+%         ann_production.AbsC_production = absC_ANN';
+%         %ann_production.dates = ANN_input_table.ANN_dates;
+%         %ann_production.AbsC_production = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1);
+%         
+%         
+%         % No heat production for PR4
+%         %ann_production.Boiler1_production = 0;
+%         ann_production.Properties.VariableNames={'Boiler1_production' 'AbsC_production'};
+%         % Set the cooling demand equal to the actual cooling demand in FED this may
+%         % be changed to use ANN cooling demand instead.
+%         ann_production.Total_cooling_demand = c_demand.c_net_load_values;
+%         ann_production_pruned = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1);
+%         ann_production_pruned.AbsC_production = ann_production_pruned.AbsC_production*1000;
+%     end
+% else 
+%     ann_production_pruned.AbsC_production=c_import.Value;
+% end
+% end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 
 %% Heat demand calculation
 % Heat load = 
@@ -737,9 +794,10 @@ el_net_load_values = el_imported.Value + el_kc_pv_production.Value + el_SB2_pv_p
 
 el_demand = timetable(dates, el_net_load_values);
 
-if FED_case==1;
+% DS - dont model the solar PV
+%if FED_case==1;
     el_demand.el_net_load_values = el_imported.Value;
-end
+%end
     
 
 %% Get Electricity CO2 and PEF data
@@ -806,6 +864,10 @@ el_price = process_data(el_price, dates, energy_data, 0);
 el_price = fillmissing(el_price,'linear');
 el_price = prune_data(el_price, start_datetime, end_datetime, time_resolution, 1);
 
+if PR==4
+    %calculate heating price based on cooling price on FED market
+    dh_price.Value = (dh_price.Value-el_price.Value/22)*0.5; 
+end
 %% Read solar data
 %This is not used in PR4
 if PR==3

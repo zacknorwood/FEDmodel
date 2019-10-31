@@ -337,6 +337,9 @@ if synth_baseline == 1
     HP_cooling_production = (ann_production.Total_cooling_demand - ann_production.AbsC_production);
     el_VKA1_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
     el_VKA4_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
+%DS - put all on VKA1
+    el_VKA1_0_full = 1 * (HP_cooling_production ./ COP_HP_C);
+    el_VKA4_0_full = 0 * (HP_cooling_production ./ COP_HP_C);
     
     %el_factors dh_factors
     %DS - This should be taken from Input file
@@ -390,6 +393,12 @@ end
 %% INPUT NRPE, CO2 FACTORS and DH Prices
 [CO2F_El_full, PE_El_full, CO2F_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, PE_PV, CO2F_Boiler1, PE_Boiler1, CO2F_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,GE_factors,sim_start,data_read_stop,data_length);
 
+%DS - take price from get synth baseline instead
+if synth_baseline==1
+    marginalCost_DH_full=dh_price.Value;
+end
+%DS - Set synth baseline to 0 for report 4.4.1
+synth_baseline=0;
 %% Initialize FED INVESTMENT OPTIONS
 % If min_totCost_O=1, i.e. base case simulation, then all investment options
 % will be set to 0.
@@ -448,6 +457,11 @@ opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','
 %Option for Cold water basin
 opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
 opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-synth_baseline));
+
+%DS - Set to zero for comp.
+opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(synth_baseline));
+opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(synth_baseline));
+
 opt_fx_inv_CWB_cap.uels = CWB_BID_uels;
 
 opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter','form','full','val',203.5*(1-min_totCost_0)*(1-synth_baseline));
@@ -463,8 +477,13 @@ opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','fo
 opt_fx_inv_BES_maxP.uels = BES_BID_uels;
 BES_min_SoC = struct('name','BES_min_SoC','type','parameter','form','full','val',BES_min_SoC);
 
+
+%DS - Set to zero for comp.
+opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',[200 100]*(1-min_totCost_0)*(synth_baseline));
+
 BTES_BAC_Inv.name = 'BTES_BAC_Inv';
 BTES_BAC_Inv.uels = BTES_BAC_BID_uels;
+
 
 BTES_SO_Inv.name = 'BTES_SO_Inv';
 BTES_SO_Inv.uels = BTES_SO_BID_uels;
@@ -496,6 +515,9 @@ BTES_model.val(Dcap_index, O724_index) = BTES_model.val(Dcap_index, O724_index) 
 %Investments in PVs
 %=1 = fixed investment, 0=no investments (neither existing!!!) -1=variable of optimization
 opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',1);
+
+%DS - set to zero
+opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',0);
 
 %Placement of roof PVs (Existing)
 PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista p� anl�ggningar.xlsx" as well as the 3d shading model
@@ -589,7 +611,9 @@ for t=1:sim_length
     
     %forecasted cooling demand
     c_demand = struct('name','c_demand','type','parameter','form','full','val',c_demand_full(t:forecast_end,:));
-    c_demand.uels={h.uels,BID.uels};
+    %c_demand.uels={h.uels,BID.uels};
+    %DS - for report 4.4.1. only consider AH buildings
+    c_demand.uels={h.uels,BID_AH_c.uels};
     
     %Historical heat export
     h_exp_AH_hist = struct('name','h_exp_AH_hist','type','parameter','form','full','val',h_exp_AH_hist_full(t:forecast_end,:));
