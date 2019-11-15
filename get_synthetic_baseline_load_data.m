@@ -1,4 +1,4 @@
-function [el_demand, h_demand, c_demand, ann_production_pruned, temperature, el_price, solar_irradiation, h_boiler_1_production] = get_synthetic_baseline_load_data(start_datetime, end_datetime, time_resolution)
+function [el_demand, h_demand, c_demand, ann_production_pruned, temperature, dh_price, el_price, solar_irradiation, h_boiler_1_production] = get_synthetic_baseline_load_data(start_datetime, end_datetime, time_resolution)
 % get_synthetic_baseline_load_data - Retrieves load data for synthetic
 % baseline using in-function specified load files.
 %
@@ -11,7 +11,7 @@ function [el_demand, h_demand, c_demand, ann_production_pruned, temperature, el_
 % time_resolution (optional) - string, currently only 'hourly' implemented
 
 %% Setup of date range and resolution
-FED_case=1;  %=1 means when we have FED, e.g. using measured data to calculate the values for the FED case
+FED_case=0;  %=1 means when we have FED, e.g. using measured data to calculate the values for the FED case
 changed_cooling_demand=1; %=1 means using cooling demand based on ANN
 PR=4; %Choose between PR3 or PR4
 
@@ -61,27 +61,20 @@ if PR==3
     kibana_data_folder = 'Input_dispatch_model\synthetic_baseline_data\kibana_data\';
     
     % Heat related files
-    h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
-    h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
-    boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
-    h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
-    h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
-    h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
-    %fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
-    %h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
-    %h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
-    %boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
-    %h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
-    %h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
-    %h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
-    %fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
+    h_export_file = 'V�rme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
+    h_import_file = 'V�rme import fr�n GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
+    boiler_1_file = 'V�rme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
+    h_vka_1_file = 'V�rme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
+    h_vka_2_file = 'V�rme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
+    h_vka_4_file = 'V�rme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
+    %fgc_file = 'V�rme r�kgaskondensor panna 1.xlsx';
     
     % Electricity related files
     el_import_file = 'Inkommande el O0007008_el_901_v1_2018-10-01_2019-06-04.xls';
     %el_kc_pv_file = 'Solceller KC O0007008_el_920_v1_2018-10-01_2019-06-04.xls';
     
     % Cooling related files
-    c_import_file = 'Kyla import från GBG O0007008_kb_501_v1_2018-10-01_2019-06-04.xls';
+    c_import_file = 'Kyla import fr�n GBG O0007008_kb_501_v1_2018-10-01_2019-06-04.xls';
     c_vka_1_file = 'Kyla VKA1 O0007008_kb_502_v1_2018-10-01_2019-06-04.xls';
     c_vka2_file = 'Kyla VKA2 O0007008_kb_504_v1_2018-10-01_2019-06-04.xls';
     c_vka_4_file = 'Kyla VKA4 O0007008_kb_503_v1_2018-10-01_2019-06-04.xls';
@@ -107,7 +100,7 @@ if PR==3
     el_price_file = 'electricity price retailagent.csv';
     
     % Solar irradiation file
-    solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
+    solar_file = 'Str�ng UTC+1 global horizontal Wm2.xlsx';
 end
 if PR==4
     base_folder = 'Input_dispatch_model\synthetic_baseline_data\';
@@ -116,13 +109,13 @@ if PR==4
     kibana_data_folder = 'Input_dispatch_model\synthetic_baseline_data\kibana_data_may-aug_2019\';
     
     % Heat related files
-    h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2019-05-01_2019-08-31.xls';
-    h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2019-05-01_2019-08-31.xls';
-    boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2019-05-01_2019-08-31.xls';
-    h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2019-05-01_2019-08-31.xls';
-    h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2019-05-01_2019-08-31.xls';
-    h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2019-05-01_2019-08-31.xls';
-    %fgc_file = 'Värme rökgaskondensor panna 1_2019-05-01_2019-08-31.xlsx';
+    h_export_file = 'V�rme export till GBG O0007008_fj_201_v1_2019-05-01_2019-08-31.xls';
+    h_import_file = 'V�rme import fr�n GBG O0007008_fj_103_v1_2019-05-01_2019-08-31.xls';
+    boiler_1_file = 'V�rme panna 1 O0007008_fj_101_v1_2019-05-01_2019-08-31.xls';
+    h_vka_1_file = 'V�rme VKA1 O0007008_fj_001_v1_2019-05-01_2019-08-31.xls';
+    h_vka_2_file = 'V�rme VKA2 O0007008_fj_104_v1_2019-05-01_2019-08-31.xls';
+    h_vka_4_file = 'V�rme VKA4 O0007008_fj_002_v1_2019-05-01_2019-08-31.xls';
+    %fgc_file = 'V�rme r�kgaskondensor panna 1_2019-05-01_2019-08-31.xlsx';
     
     
     % Electricity related files
@@ -131,7 +124,7 @@ if PR==4
     
     % Cooling related files
     
-    c_import_file = 'Kyla import från GBG O0007008_kb_501_v1_2019-05-01_2019-08-31.xls';
+    c_import_file = 'Kyla import fr�n GBG O0007008_kb_501_v1_2019-05-01_2019-08-31.xls';
     c_vka_1_file = 'Kyla VKA1 O0007008_kb_502_v1_2019-05-01_2019-08-31.xls';
     c_vka2_file = 'Kyla VKA2 O0007008_kb_504_v1_2019-05-01_2019-08-31.xls';
     c_vka_4_file = 'Kyla VKA4 O0007008_kb_503_v1_2019-05-01_2019-08-31.xls';
@@ -151,10 +144,10 @@ if PR==4
     %P1_market_file = 'boiler1JantoAug.csv';
     
     % Temperaure file
-    temperature_file = 'Utetemp från okt 18.xlsx';
+    temperature_file = 'Utetemp fr�n okt 18.xlsx';
     
     % Price data
-    %dh_price_file = 'CoolingpricesAugust.csv';
+    dh_price_file = 'CoolingpricesAugust.csv';
     el_price_file = 'ELpricesAugust.csv';
     
     % Solar irradiation file
@@ -170,7 +163,7 @@ if PR==4
     solar_file_SB3='O0007027_el_925_v1_2019-01-01_2019-08-31.xls';
     solar_file_kemi='solel_kemi_trend_JOHANNEBERG_60102_VASA_2_3_ENERGIANALYS_WPP.csv';
     
-    solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
+    solar_file = 'Str�ng UTC+1 global horizontal Wm2.xlsx';
 end
 %% Create series of simulation steps
 %simulation_steps = start_datetime:hours(step_hours):end_datetime;
@@ -838,22 +831,22 @@ el_demand = timetable(dates, el_net_load_values);
 %else
 %% Load el and DH prices
 energy_data=0;
-% We do not have heating price for PR4 but cooling prices
-% dh_price = readtable(strcat(base_folder, dh_price_file), 'ReadVariableNames', true);
-% dh_price.Value = dh_price.Price;
-% if PR == 3
-%     dh_price.Date = datetime(dh_price.x_timestamp, 'format', 'yyyy-MM-dd HH:mm:ss');
-%     dh_price = removevars(dh_price, {'agentId', 'x_timestamp', 'price'});
-% else
-%     dh_price.Date = datetime(dh_price.Time, 'format', 'yyyy-MM-dd HH:mm:ss');
-%     dh_price = removevars(dh_price, {'Var1', 'Time', 'Price'});
-% end
-% dh_price = table2timetable(dh_price);
-% dh_price = sortrows(dh_price);
-% dh_price = remove_duplicates(dh_price);
-% dh_price = process_data(dh_price, dates, energy_data, 0);
-% dh_price = fillmissing(dh_price,'linear');
-% dh_price = prune_data(dh_price, start_datetime, end_datetime, time_resolution, 1);
+%We do not have heating price for PR4 but cooling prices
+dh_price = readtable(strcat(base_folder, dh_price_file), 'ReadVariableNames', true);
+dh_price.Value = dh_price.Price;
+if PR == 3
+    dh_price.Date = datetime(dh_price.x_timestamp, 'format', 'yyyy-MM-dd HH:mm:ss');
+    dh_price = removevars(dh_price, {'agentId', 'x_timestamp', 'price'});
+else
+    dh_price.Date = datetime(dh_price.Time, 'format', 'yyyy-MM-dd HH:mm:ss');
+    dh_price = removevars(dh_price, {'Var1', 'Time', 'Price'});
+end
+dh_price = table2timetable(dh_price);
+dh_price = sortrows(dh_price);
+dh_price = remove_duplicates(dh_price);
+dh_price = process_data(dh_price, dates, energy_data, 0);
+dh_price = fillmissing(dh_price,'linear');
+dh_price = prune_data(dh_price, start_datetime, end_datetime, time_resolution, 1);
 
 el_price = readtable(strcat(base_folder, el_price_file), 'ReadVariableNames', true);
 el_price.Value = el_price.Price;
