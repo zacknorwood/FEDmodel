@@ -608,9 +608,10 @@ eq_BAC_link(h,BID) $ (BTES_model('BTES_Scap',BID) ne 0)..
 eq_BAC_savings(h,BID)..
           h_BAC_savings(h,BID) =e= BAC_savings_factor(h)*B_BAC(BID)*h_demand(h,BID);
 
-*DS - set to zero for report 4.4.1
 eq_BAC_cooling_savings(h, BID)..
-          c_BAC_savings(h,BID) =e= BAC_cooling_savings_factor * B_BAC(BID)*c_demand(h,BID)*DC_cooling_season(h)*0;
+          c_BAC_savings(h,BID) =e= BAC_cooling_savings_factor * B_BAC(BID)*c_demand(h,BID)*DC_cooling_season(h);
+*DS - set to zero for report 4.4.1
+*          c_BAC_savings(h,BID) =e= BAC_cooling_savings_factor * B_BAC(BID)*c_demand(h,BID)*DC_cooling_season(h)*0;
 
 eq_BAC_S_loss(h,BID)..
          BAC_Sloss(h,BID) =e= BTES_kSloss(BID)*BAC_Sen(h-1,BID);

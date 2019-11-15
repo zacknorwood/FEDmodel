@@ -297,7 +297,7 @@ end
 if synth_baseline == 1
     start_datetime = datetime(sim_start_y,sim_start_m,sim_start_d,sim_start_h,0,0);
     end_datetime = datetime(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h+forecast_horizon,0,0);
-    [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, temperature, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
+    [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, temperature, dh_price, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
     
     cooling_size = size(BID_AH_c.uels);
     hours = sim_length+forecast_horizon;
@@ -335,8 +335,8 @@ if synth_baseline == 1
     
     COP_HP_C = 1.8; % Cooling COP of heat pumps
     HP_cooling_production = (ann_production.Total_cooling_demand - ann_production.AbsC_production);
-    el_VKA1_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
-    el_VKA4_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
+%    el_VKA1_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
+%    el_VKA4_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
 %DS - put all on VKA1
     el_VKA1_0_full = 1 * (HP_cooling_production ./ COP_HP_C);
     el_VKA4_0_full = 0 * (HP_cooling_production ./ COP_HP_C);
@@ -398,7 +398,7 @@ if synth_baseline==1
     marginalCost_DH_full=dh_price.Value;
 end
 %DS - Set synth baseline to 0 for report 4.4.1
-synth_baseline=0;
+%synth_baseline=0;
 %% Initialize FED INVESTMENT OPTIONS
 % If min_totCost_O=1, i.e. base case simulation, then all investment options
 % will be set to 0.
@@ -455,9 +455,8 @@ opt_fx_inv_BAC = struct('name','opt_fx_inv_BAC','type','parameter','form','full'
 opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
 
 %Option for Cold water basin
-opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
-opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-synth_baseline));
-
+%opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
+%opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-synth_baseline));
 %DS - Set to zero for comp.
 opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(synth_baseline));
 opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(synth_baseline));
@@ -514,9 +513,9 @@ BTES_model.val(Dcap_index, O724_index) = BTES_model.val(Dcap_index, O724_index) 
 
 %Investments in PVs
 %=1 = fixed investment, 0=no investments (neither existing!!!) -1=variable of optimization
-opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',1);
 
 %DS - set to zero
+%opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',1);
 opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',0);
 
 %Placement of roof PVs (Existing)
@@ -577,6 +576,8 @@ to_excel_heat(1:sim_stop-sim_start,1:39)=0;
 to_excel_cool(1:sim_stop-sim_start,1:23)=0;
 to_excel_co2(1:sim_stop-sim_start,1:14)=0;
 
+%Results=zeros(1,length(sim_length));
+
 for t=1:sim_length
     %% Variable input data to the dispatch model
     %Structures are created to send to GAMS which contain subsets of the
@@ -612,7 +613,6 @@ for t=1:sim_length
     %forecasted cooling demand
     c_demand = struct('name','c_demand','type','parameter','form','full','val',c_demand_full(t:forecast_end,:));
     %c_demand.uels={h.uels,BID.uels};
-    %DS - for report 4.4.1. only consider AH buildings
     % Warning!  Changed for PR4 to BID_AH_c.uels from BID.uels, work
     % around!
     c_demand.uels={h.uels,BID_AH_c.uels};

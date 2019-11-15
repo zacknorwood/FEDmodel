@@ -1,4 +1,4 @@
-function [el_demand, h_demand, c_demand, ann_production_pruned, temperature, el_price, solar_irradiation, h_boiler_1_production] = get_synthetic_baseline_load_data(start_datetime, end_datetime, time_resolution)
+function [el_demand, h_demand, c_demand, ann_production_pruned, temperature, dh_price, el_price, solar_irradiation, h_boiler_1_production] = get_synthetic_baseline_load_data(start_datetime, end_datetime, time_resolution)
 % get_synthetic_baseline_load_data - Retrieves load data for synthetic
 % baseline using in-function specified load files.
 %
@@ -11,7 +11,7 @@ function [el_demand, h_demand, c_demand, ann_production_pruned, temperature, el_
 % time_resolution (optional) - string, currently only 'hourly' implemented
 
 %% Setup of date range and resolution
-FED_case=1;  %=1 means when we have FED, e.g. using measured data to calculate the values for the FED case
+FED_case=0;  %=1 means when we have FED, e.g. using measured data to calculate the values for the FED case
 changed_cooling_demand=1; %=1 means using cooling demand based on ANN
 PR=4; %Choose between PR3 or PR4
 
@@ -81,7 +81,7 @@ if PR==3
     %el_kc_pv_file = 'Solceller KC O0007008_el_920_v1_2018-10-01_2019-06-04.xls';
     
     % Cooling related files
-    c_import_file = 'Kyla import från GBG O0007008_kb_501_v1_2018-10-01_2019-06-04.xls';
+    c_import_file = 'Kyla import fr�n GBG O0007008_kb_501_v1_2018-10-01_2019-06-04.xls';
     c_vka_1_file = 'Kyla VKA1 O0007008_kb_502_v1_2018-10-01_2019-06-04.xls';
     c_vka2_file = 'Kyla VKA2 O0007008_kb_504_v1_2018-10-01_2019-06-04.xls';
     c_vka_4_file = 'Kyla VKA4 O0007008_kb_503_v1_2018-10-01_2019-06-04.xls';
@@ -107,7 +107,7 @@ if PR==3
     el_price_file = 'electricity price retailagent.csv';
     
     % Solar irradiation file
-    solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
+    solar_file = 'Str�ng UTC+1 global horizontal Wm2.xlsx';
 end
 if PR==4
     base_folder = 'Input_dispatch_model\synthetic_baseline_data\';
@@ -154,7 +154,7 @@ if PR==4
     temperature_file = 'Utetemp från okt 18.xlsx';
     
     % Price data
-    %dh_price_file = 'CoolingpricesAugust.csv';
+    dh_price_file = 'CoolingpricesAugust.csv';
     el_price_file = 'ELpricesAugust.csv';
     
     % Solar irradiation file
@@ -838,22 +838,22 @@ el_demand = timetable(dates, el_net_load_values);
 %else
 %% Load el and DH prices
 energy_data=0;
-% We do not have heating price for PR4 but cooling prices
-% dh_price = readtable(strcat(base_folder, dh_price_file), 'ReadVariableNames', true);
-% dh_price.Value = dh_price.Price;
-% if PR == 3
-%     dh_price.Date = datetime(dh_price.x_timestamp, 'format', 'yyyy-MM-dd HH:mm:ss');
-%     dh_price = removevars(dh_price, {'agentId', 'x_timestamp', 'price'});
-% else
-%     dh_price.Date = datetime(dh_price.Time, 'format', 'yyyy-MM-dd HH:mm:ss');
-%     dh_price = removevars(dh_price, {'Var1', 'Time', 'Price'});
-% end
-% dh_price = table2timetable(dh_price);
-% dh_price = sortrows(dh_price);
-% dh_price = remove_duplicates(dh_price);
-% dh_price = process_data(dh_price, dates, energy_data, 0);
-% dh_price = fillmissing(dh_price,'linear');
-% dh_price = prune_data(dh_price, start_datetime, end_datetime, time_resolution, 1);
+%We do not have heating price for PR4 but cooling prices
+dh_price = readtable(strcat(base_folder, dh_price_file), 'ReadVariableNames', true);
+dh_price.Value = dh_price.Price;
+if PR == 3
+    dh_price.Date = datetime(dh_price.x_timestamp, 'format', 'yyyy-MM-dd HH:mm:ss');
+    dh_price = removevars(dh_price, {'agentId', 'x_timestamp', 'price'});
+else
+    dh_price.Date = datetime(dh_price.Time, 'format', 'yyyy-MM-dd HH:mm:ss');
+    dh_price = removevars(dh_price, {'Var1', 'Time', 'Price'});
+end
+dh_price = table2timetable(dh_price);
+dh_price = sortrows(dh_price);
+dh_price = remove_duplicates(dh_price);
+dh_price = process_data(dh_price, dates, energy_data, 0);
+dh_price = fillmissing(dh_price,'linear');
+dh_price = prune_data(dh_price, start_datetime, end_datetime, time_resolution, 1);
 
 el_price = readtable(strcat(base_folder, el_price_file), 'ReadVariableNames', true);
 el_price.Value = el_price.Price;
