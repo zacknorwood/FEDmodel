@@ -219,15 +219,15 @@ BID_nonBTES.uels={'O0007043',...
     'O0007018','O3060137', 'Karhuset', 'O3060138',...
     'Karhus_studenter'};
 %% %%%%%
-for i=1:length(BID.uels)
-    AH_el(i)=sum(double(strcmp(BID.uels(i),BID_AH_el.uels)));
-    AH_h(i)=sum(double(strcmp(BID.uels(i),BID_AH_h.uels)));
-    AH_c(i)=sum(double(strcmp(BID.uels(i),BID_AH_c.uels)));
-    
-    nonAH_el(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_el.uels)));
-    nonAH_h(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_h.uels)));
-    nonAH_c(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_c.uels)));
-end
+% for i=1:length(BID.uels)
+%     AH_el(i)=sum(double(strcmp(BID.uels(i),BID_AH_el.uels)));
+%     AH_h(i)=sum(double(strcmp(BID.uels(i),BID_AH_h.uels)));
+%     AH_c(i)=sum(double(strcmp(BID.uels(i),BID_AH_c.uels)));
+%     
+%     nonAH_el(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_el.uels)));
+%     nonAH_h(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_h.uels)));
+%     nonAH_c(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_c.uels)));
+% end
 %% IDs used to name the buses or nodes in the local electrical distribution system
 %OBS: proper maping need to be established between the nodes in the el distribution system and the building IDs
 
@@ -237,7 +237,7 @@ BusID.uels=num2cell(1:41);
 %% *****IDs for solar irradiance data
 %OBS: These IDs, which represent where the solar PVs are located, could be modified so they are mapped to Building IDs and/or the electrical
 %nodes in the local el distribution system. Currently they are numbered
-%based on the file "solceller lista p� anl�ggningar.xlsx" which is from the 3d shading model
+%based on the file "solceller lista pï¿½ anlï¿½ggningar.xlsx" which is from the 3d shading model
 
 PVID.name='PVID';
 PVID.uels=num2cell(1:99);
@@ -292,12 +292,12 @@ if synth_baseline == 0
         G_facade_full, G_roof_full, c_DC_slack_full, el_exG_slack_full,...
         h_DH_slack_full, h_exp_AH_hist_full, h_imp_AH_hist_full] = fread_measurements(sim_start,data_read_stop,data_length);
 end
-% Kommentera ut freadmeasurements och anv�nd byggnadsID nedanf�r ist�llet
-% f�r size(h_demand)
+% Kommentera ut freadmeasurements och använd byggnadsID nedanför istället
+% för size(h_demand)
 if synth_baseline == 1
     start_datetime = datetime(sim_start_y,sim_start_m,sim_start_d,sim_start_h,0,0);
     end_datetime = datetime(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h+forecast_horizon,0,0);
-    [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, el_factors, dh_factors, temperature, dh_price, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
+    [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, temperature, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
     
     cooling_size = size(BID_AH_c.uels);
     hours = sim_length+forecast_horizon;
@@ -489,7 +489,7 @@ BTES_SO_Inv.name = 'BTES_SO_Inv';
 BTES_SO_Inv.uels = BTES_SO_BID_uels;
 % Maximum charging/discharging power available for building setpoint
 % offsets according to power charts attatched to Building agent
-% descriptions. Calculated assuming 10�C offset available.
+% descriptions. Calculated assuming 10ï¿½C offset available.
 BTES_SO_max_power = struct('name', 'BTES_SO_max_power', 'type', 'parameter', 'form', 'full');
 BTES_SO_max_power.uels = BTES_SO_BID_uels;
 BTES_SO_max_power.val = [45, 20, 90, 76, 11]; % kWh/h, Requires ordering of BTES_SO_UELS to be O11:01, O7:888, O7:28, O7, 27, O7:24
@@ -520,23 +520,23 @@ opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','
 opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',0);
 
 %Placement of roof PVs (Existing)
-PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista p� anl�ggningar.xlsx" as well as the 3d shading model
+PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista pï¿½ anlï¿½ggningar.xlsx" as well as the 3d shading model
 
 %Placement of roof PVs (Investments)
-PVID_roof_investments=[0 1 3 4 5 6 7 8 9 10] ;  %Refers to ID in "solceller lista p� anl�ggningar.xlsx" as well as the 3d shading model
+PVID_roof_investments=[0 1 3 4 5 6 7 8 9 10] ;  %Refers to ID in "solceller lista pï¿½ anlï¿½ggningar.xlsx" as well as the 3d shading model
 
 %Merge all roof PVIDs and create struct for GAMS
 PVID_roof.name='PVID_roof';
 PVID_roof.uels=num2cell(horzcat(PVID_roof_existing,PVID_roof_investments));
 
 %Capacity of roof PVs (Existing)
-%PV_roof_cap_temp1=[50 42];   %OBS:According to document 'ProjektmÃ¶te nr 22 samordning  WP4-WP8 samt WP5'
-PV_roof_cap_existing=[48 40]; % According to "solceller lista p� anl�ggningar.xlsx" (updated from AH and CF 2018-12)
+%PV_roof_cap_temp1=[50 42];   %OBS:According to document 'ProjektmÃÂ¶te nr 22 samordning  WP4-WP8 samt WP5'
+PV_roof_cap_existing=[48 40]; % According to "solceller lista pï¿½ anlï¿½ggningar.xlsx" (updated from AH and CF 2018-12)
 
 %Capacity of roof PVs (Investments)
 %Note that these need to be set to zero if running the base case without PV investments.
-%PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]*(1-min_totCost_0)*(1-synth_baseline); % According to solceller lista p� anl�ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
+%PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃÂ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
+PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]*(1-min_totCost_0)*(1-synth_baseline); % According to solceller lista pï¿½ anlï¿½ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
 %the project plan for FED according to AH hence that capacity being zero.
 
 %Merge all roof PV capacities and create struct for GAMS
@@ -613,6 +613,8 @@ for t=1:sim_length
     c_demand = struct('name','c_demand','type','parameter','form','full','val',c_demand_full(t:forecast_end,:));
     %c_demand.uels={h.uels,BID.uels};
     %DS - for report 4.4.1. only consider AH buildings
+    % Warning!  Changed for PR4 to BID_AH_c.uels from BID.uels, work
+    % around!
     c_demand.uels={h.uels,BID_AH_c.uels};
     
     %Historical heat export
@@ -824,11 +826,11 @@ for t=1:sim_length
     
     [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
 end
-delete  'result_temp.xlsx';
-copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx') % to add the toprows in the excelfile
+%delete  'Input_dispatch_model\result_temp.xlsx';
+copyfile('Input_dispatch_model\result_temp_bkup.xlsx', 'result_temp.xlsx'); % to create an output file template with the correct header row
 
 xlswrite('result_temp.xlsx',to_excel_el,'Electricity','A3');
 xlswrite('result_temp.xlsx',to_excel_heat,'Heat','A3');
 xlswrite('result_temp.xlsx',to_excel_cool,'Cooling','A3');
 xlswrite('result_temp.xlsx',to_excel_co2,'CO2_PE','A3');
-
+end
