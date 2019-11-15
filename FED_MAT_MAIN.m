@@ -237,7 +237,7 @@ BusID.uels=num2cell(1:41);
 %% *****IDs for solar irradiance data
 %OBS: These IDs, which represent where the solar PVs are located, could be modified so they are mapped to Building IDs and/or the electrical
 %nodes in the local el distribution system. Currently they are numbered
-%based on the file "solceller lista p� anl�ggningar.xlsx" which is from the 3d shading model
+%based on the file "solceller lista pï¿½ anlï¿½ggningar.xlsx" which is from the 3d shading model
 
 PVID.name='PVID';
 PVID.uels=num2cell(1:99);
@@ -292,8 +292,8 @@ if synth_baseline == 0
         G_facade_full, G_roof_full, c_DC_slack_full, el_exG_slack_full,...
         h_DH_slack_full, h_exp_AH_hist_full, h_imp_AH_hist_full] = fread_measurements(sim_start,data_read_stop,data_length);
 end
-% Kommentera ut freadmeasurements och anv�nd byggnadsID nedanf�r ist�llet
-% f�r size(h_demand)
+% Kommentera ut freadmeasurements och använd byggnadsID nedanför istället
+% för size(h_demand)
 if synth_baseline == 1
     start_datetime = datetime(sim_start_y,sim_start_m,sim_start_d,sim_start_h,0,0);
     end_datetime = datetime(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h+forecast_horizon,0,0);
@@ -337,6 +337,9 @@ if synth_baseline == 1
     HP_cooling_production = (ann_production.Total_cooling_demand - ann_production.AbsC_production);
     el_VKA1_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
     el_VKA4_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
+%DS - put all on VKA1
+    el_VKA1_0_full = 1 * (HP_cooling_production ./ COP_HP_C);
+    el_VKA4_0_full = 0 * (HP_cooling_production ./ COP_HP_C);
     
     %el_factors dh_factors
     %DS - This should be taken from Input file
@@ -390,6 +393,12 @@ end
 %% INPUT NRPE, CO2 FACTORS and DH Prices
 [CO2F_El_full, PE_El_full, CO2F_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, PE_PV, CO2F_Boiler1, PE_Boiler1, CO2F_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,GE_factors,sim_start,data_read_stop,data_length);
 
+%DS - take price from get synth baseline instead
+if synth_baseline==1
+    marginalCost_DH_full=dh_price.Value;
+end
+%DS - Set synth baseline to 0 for report 4.4.1
+synth_baseline=0;
 %% Initialize FED INVESTMENT OPTIONS
 % If min_totCost_O=1, i.e. base case simulation, then all investment options
 % will be set to 0.
@@ -448,6 +457,11 @@ opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','
 %Option for Cold water basin
 opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
 opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-synth_baseline));
+
+%DS - Set to zero for comp.
+opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(synth_baseline));
+opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(synth_baseline));
+
 opt_fx_inv_CWB_cap.uels = CWB_BID_uels;
 
 opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter','form','full','val',203.5*(1-min_totCost_0)*(1-synth_baseline));
@@ -463,14 +477,19 @@ opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','fo
 opt_fx_inv_BES_maxP.uels = BES_BID_uels;
 BES_min_SoC = struct('name','BES_min_SoC','type','parameter','form','full','val',BES_min_SoC);
 
+
+%DS - Set to zero for comp.
+opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',[200 100]*(1-min_totCost_0)*(synth_baseline));
+
 BTES_BAC_Inv.name = 'BTES_BAC_Inv';
 BTES_BAC_Inv.uels = BTES_BAC_BID_uels;
+
 
 BTES_SO_Inv.name = 'BTES_SO_Inv';
 BTES_SO_Inv.uels = BTES_SO_BID_uels;
 % Maximum charging/discharging power available for building setpoint
 % offsets according to power charts attatched to Building agent
-% descriptions. Calculated assuming 10�C offset available.
+% descriptions. Calculated assuming 10ï¿½C offset available.
 BTES_SO_max_power = struct('name', 'BTES_SO_max_power', 'type', 'parameter', 'form', 'full');
 BTES_SO_max_power.uels = BTES_SO_BID_uels;
 BTES_SO_max_power.val = [45, 20, 90, 76, 11]; % kWh/h, Requires ordering of BTES_SO_UELS to be O11:01, O7:888, O7:28, O7, 27, O7:24
@@ -497,24 +516,27 @@ BTES_model.val(Dcap_index, O724_index) = BTES_model.val(Dcap_index, O724_index) 
 %=1 = fixed investment, 0=no investments (neither existing!!!) -1=variable of optimization
 opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',1);
 
+%DS - set to zero
+opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',0);
+
 %Placement of roof PVs (Existing)
-PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista p� anl�ggningar.xlsx" as well as the 3d shading model
+PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista pï¿½ anlï¿½ggningar.xlsx" as well as the 3d shading model
 
 %Placement of roof PVs (Investments)
-PVID_roof_investments=[0 1 3 4 5 6 7 8 9 10] ;  %Refers to ID in "solceller lista p� anl�ggningar.xlsx" as well as the 3d shading model
+PVID_roof_investments=[0 1 3 4 5 6 7 8 9 10] ;  %Refers to ID in "solceller lista pï¿½ anlï¿½ggningar.xlsx" as well as the 3d shading model
 
 %Merge all roof PVIDs and create struct for GAMS
 PVID_roof.name='PVID_roof';
 PVID_roof.uels=num2cell(horzcat(PVID_roof_existing,PVID_roof_investments));
 
 %Capacity of roof PVs (Existing)
-%PV_roof_cap_temp1=[50 42];   %OBS:According to document 'ProjektmÃ¶te nr 22 samordning  WP4-WP8 samt WP5'
-PV_roof_cap_existing=[48 40]; % According to "solceller lista p� anl�ggningar.xlsx" (updated from AH and CF 2018-12)
+%PV_roof_cap_temp1=[50 42];   %OBS:According to document 'ProjektmÃÂ¶te nr 22 samordning  WP4-WP8 samt WP5'
+PV_roof_cap_existing=[48 40]; % According to "solceller lista pï¿½ anlï¿½ggningar.xlsx" (updated from AH and CF 2018-12)
 
 %Capacity of roof PVs (Investments)
 %Note that these need to be set to zero if running the base case without PV investments.
-%PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
-PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]*(1-min_totCost_0)*(1-synth_baseline); % According to solceller lista p� anl�ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
+%PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃÂ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
+PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]*(1-min_totCost_0)*(1-synth_baseline); % According to solceller lista pï¿½ anlï¿½ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
 %the project plan for FED according to AH hence that capacity being zero.
 
 %Merge all roof PV capacities and create struct for GAMS
@@ -589,6 +611,8 @@ for t=1:sim_length
     
     %forecasted cooling demand
     c_demand = struct('name','c_demand','type','parameter','form','full','val',c_demand_full(t:forecast_end,:));
+    %c_demand.uels={h.uels,BID.uels};
+    %DS - for report 4.4.1. only consider AH buildings
     % Warning!  Changed for PR4 to BID_AH_c.uels from BID.uels, work
     % around!
     c_demand.uels={h.uels,BID_AH_c.uels};

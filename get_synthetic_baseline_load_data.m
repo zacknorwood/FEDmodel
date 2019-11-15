@@ -11,8 +11,8 @@ function [el_demand, h_demand, c_demand, ann_production_pruned, temperature, el_
 % time_resolution (optional) - string, currently only 'hourly' implemented
 
 %% Setup of date range and resolution
-FED_case=1;  %Using measured data to calculate the values for the FED case
-changed_cooling_demand=1; %Using cooling demand based on ANN
+FED_case=1;  %=1 means when we have FED, e.g. using measured data to calculate the values for the FED case
+changed_cooling_demand=1; %=1 means using cooling demand based on ANN
 PR=4; %Choose between PR3 or PR4
 
 if nargin==2
@@ -61,27 +61,27 @@ if PR==3
     kibana_data_folder = 'Input_dispatch_model\synthetic_baseline_data\kibana_data\';
     
     % Heat related files
-    h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
-    h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
-    boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
-    h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
-    h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
-    h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
-    %fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
-    %h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
-    %h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
-    %boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
-    %h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
-    %h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
-    %h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
-    %fgc_file = 'Värme rökgaskondensor panna 1.xlsx';
+    h_export_file = 'VÃ¤rme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
+    h_import_file = 'VÃ¤rme import frÃ¥n GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
+    boiler_1_file = 'VÃ¤rme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
+    h_vka_1_file = 'VÃ¤rme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
+    h_vka_2_file = 'VÃ¤rme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
+    h_vka_4_file = 'VÃ¤rme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
+    %fgc_file = 'VÃ¤rme rÃ¶kgaskondensor panna 1.xlsx';
+    %h_export_file = 'VÃ¤rme export till GBG O0007008_fj_201_v1_2018-10-01_2019-06-04.xls';
+    %h_import_file = 'VÃ¤rme import frÃ¥n GBG O0007008_fj_103_v1_2018-10-01_2019-06-04.xls';
+    %boiler_1_file = 'VÃ¤rme panna 1 O0007008_fj_101_v1_2018-10-01_2019-06-04.xls';
+    %h_vka_1_file = 'VÃ¤rme VKA1 O0007008_fj_001_v1_2018-10-01_2019-06-04.xls';
+    %h_vka_2_file = 'VÃ¤rme VKA2 O0007008_fj_104_v1_2018-10-01_2019-06-04.xls';
+    %h_vka_4_file = 'VÃ¤rme VKA4 O0007008_fj_002_v1_2018-10-01_2019-06-04.xls';
+    %fgc_file = 'VÃ¤rme rÃ¶kgaskondensor panna 1.xlsx';
     
     % Electricity related files
     el_import_file = 'Inkommande el O0007008_el_901_v1_2018-10-01_2019-06-04.xls';
     %el_kc_pv_file = 'Solceller KC O0007008_el_920_v1_2018-10-01_2019-06-04.xls';
     
     % Cooling related files
-    c_import_file = 'Kyla import från GBG O0007008_kb_501_v1_2018-10-01_2019-06-04.xls';
+    c_import_file = 'Kyla import frÃ¥n GBG O0007008_kb_501_v1_2018-10-01_2019-06-04.xls';
     c_vka_1_file = 'Kyla VKA1 O0007008_kb_502_v1_2018-10-01_2019-06-04.xls';
     c_vka2_file = 'Kyla VKA2 O0007008_kb_504_v1_2018-10-01_2019-06-04.xls';
     c_vka_4_file = 'Kyla VKA4 O0007008_kb_503_v1_2018-10-01_2019-06-04.xls';
@@ -107,7 +107,7 @@ if PR==3
     el_price_file = 'electricity price retailagent.csv';
     
     % Solar irradiation file
-    solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
+    solar_file = 'StrÃ¥ng UTC+1 global horizontal Wm2.xlsx';
 end
 if PR==4
     base_folder = 'Input_dispatch_model\synthetic_baseline_data\';
@@ -116,13 +116,13 @@ if PR==4
     kibana_data_folder = 'Input_dispatch_model\synthetic_baseline_data\kibana_data_may-aug_2019\';
     
     % Heat related files
-    h_export_file = 'Värme export till GBG O0007008_fj_201_v1_2019-05-01_2019-08-31.xls';
-    h_import_file = 'Värme import från GBG O0007008_fj_103_v1_2019-05-01_2019-08-31.xls';
-    boiler_1_file = 'Värme panna 1 O0007008_fj_101_v1_2019-05-01_2019-08-31.xls';
-    h_vka_1_file = 'Värme VKA1 O0007008_fj_001_v1_2019-05-01_2019-08-31.xls';
-    h_vka_2_file = 'Värme VKA2 O0007008_fj_104_v1_2019-05-01_2019-08-31.xls';
-    h_vka_4_file = 'Värme VKA4 O0007008_fj_002_v1_2019-05-01_2019-08-31.xls';
-    %fgc_file = 'Värme rökgaskondensor panna 1_2019-05-01_2019-08-31.xlsx';
+    h_export_file = 'VÃ¤rme export till GBG O0007008_fj_201_v1_2019-05-01_2019-08-31.xls';
+    h_import_file = 'VÃ¤rme import frÃ¥n GBG O0007008_fj_103_v1_2019-05-01_2019-08-31.xls';
+    boiler_1_file = 'VÃ¤rme panna 1 O0007008_fj_101_v1_2019-05-01_2019-08-31.xls';
+    h_vka_1_file = 'VÃ¤rme VKA1 O0007008_fj_001_v1_2019-05-01_2019-08-31.xls';
+    h_vka_2_file = 'VÃ¤rme VKA2 O0007008_fj_104_v1_2019-05-01_2019-08-31.xls';
+    h_vka_4_file = 'VÃ¤rme VKA4 O0007008_fj_002_v1_2019-05-01_2019-08-31.xls';
+    %fgc_file = 'VÃ¤rme rÃ¶kgaskondensor panna 1_2019-05-01_2019-08-31.xlsx';
     
     
     % Electricity related files
@@ -131,7 +131,7 @@ if PR==4
     
     % Cooling related files
     
-    c_import_file = 'Kyla import från GBG O0007008_kb_501_v1_2019-05-01_2019-08-31.xls';
+    c_import_file = 'Kyla import frÃ¥n GBG O0007008_kb_501_v1_2019-05-01_2019-08-31.xls';
     c_vka_1_file = 'Kyla VKA1 O0007008_kb_502_v1_2019-05-01_2019-08-31.xls';
     c_vka2_file = 'Kyla VKA2 O0007008_kb_504_v1_2019-05-01_2019-08-31.xls';
     c_vka_4_file = 'Kyla VKA4 O0007008_kb_503_v1_2019-05-01_2019-08-31.xls';
@@ -151,7 +151,7 @@ if PR==4
     %P1_market_file = 'boiler1JantoAug.csv';
     
     % Temperaure file
-    temperature_file = 'Utetemp från okt 18.xlsx';
+    temperature_file = 'Utetemp frÃ¥n okt 18.xlsx';
     
     % Price data
     %dh_price_file = 'CoolingpricesAugust.csv';
@@ -170,7 +170,7 @@ if PR==4
     solar_file_SB3='O0007027_el_925_v1_2019-01-01_2019-08-31.xls';
     solar_file_kemi='solel_kemi_trend_JOHANNEBERG_60102_VASA_2_3_ENERGIANALYS_WPP.csv';
     
-    solar_file = 'Strång UTC+1 global horizontal Wm2.xlsx';
+    solar_file = 'StrÃ¥ng UTC+1 global horizontal Wm2.xlsx';
 end
 %% Create series of simulation steps
 %simulation_steps = start_datetime:hours(step_hours):end_datetime;
@@ -404,11 +404,10 @@ end
             output.Value=str2double(output.Value);
         end
         output=retime(output,'hourly','max');
-        
-        output = process_data(output, dates, energy_data);
-    end
+        output = process_data(output, dates, energy_data);  
+ end
+ function output = remove_duplicates(input)
 
-    function output = remove_duplicates(input)
         input = unique(input);
         dupTimes = sort(input.Date);
         TF = (diff(dupTimes) == 0);
@@ -418,6 +417,11 @@ end
         uniqueTimes = unique(input.Date);
         %         output = retime(input,uniqueTimes);
         output = retime(input,uniqueTimes,'previous');
+end
+ function length = get_length(input)
+        length = size(input);
+        length = length(1);
+
     end
 %  function length=get_length(input)
 %         length = size(input);
@@ -569,44 +573,45 @@ else
         ann_production_pruned.Properties.VariableNames = {'AbsC_production' 'Total_cooling_demand' 'Boiler1_production'};
         ann_production_pruned.Boiler1_production = zeros(length(ann_production_pruned.Boiler1_production),1);
     else
-        % run ANN for absC
-        % Fix input data vector
-        month_idx_2019=0;
-        workday_2019=0;
-        time_of_day_2019=0;
-        load 'Input_dispatch_model\ANN_input_2019';
-        ANN_dates = (datetime(2019,01,01,0,0,0):hours(1):datetime(2019,12,31,23,0,0))';
-        ANN_input_table = timetable(ANN_dates, zeros(length(ANN_dates),1));
-        ANN_input_table.month=month_idx_2019';
-        ANN_input_table.WD=workday_2019';
-        ANN_input_table.ToD=time_of_day_2019';
-        ANN_input_table=prune_data(ANN_input_table, start_datetime, end_datetime, time_resolution, 1);
-        ANN_input_table.temp=temperature.Value;
-        ANN_input_table=movevars(ANN_input_table, 'temp', 'Before', 'month');
-        ANN_input_table.Cdem=(c_demand.c_net_load_values);
-        
-        ANN_input_ABS=[ANN_input_table.temp'; ANN_input_table.month'; ANN_input_table.WD'; ANN_input_table.ToD'; c_demand.c_net_load_values'/1000];
-%         folder=cd;
-%         cd 'C:\Users\davste\Documents\GitHub\FEDmodel\ANN\ANNs';
-        absC_ANN=kb_ABS_final(ANN_input_ABS);
-        % Discard negative values
-        absC_ANN(absC_ANN<0)=0;
-%         cd(folder)
-        ann_production=ANN_input_table;
-        ann_production=removevars(ann_production,{'month', 'WD', 'ToD', 'temp', 'Cdem'});
-        ann_production.AbsC_production = absC_ANN';
-        %ann_production.dates = ANN_input_table.ANN_dates;
-        %ann_production.AbsC_production = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1);
-        
-        
-        % No heat production for PR4
-        %ann_production.Boiler1_production = 0;
-        ann_production.Properties.VariableNames={'Boiler1_production' 'AbsC_production'};
-        % Set the cooling demand equal to the actual cooling demand in FED this may
-        % be changed to use ANN cooling demand instead.
-        ann_production.Total_cooling_demand = c_demand.c_net_load_values;
-        ann_production_pruned = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1);
-        ann_production_pruned.AbsC_production = ann_production_pruned.AbsC_production*1000;
+% run ANN for absC
+% Fix input data vector
+month_idx_2019=0;
+workday_2019=0;
+time_of_day_2019=0;
+load ANN_input_2019
+ANN_dates = (datetime(2019,01,01,0,0,0):hours(1):datetime(2019,12,31,23,0,0))';
+ANN_input_table = timetable(ANN_dates, zeros(length(ANN_dates),1));
+ANN_input_table.month=month_idx_2019';
+ANN_input_table.WD=workday_2019';
+ANN_input_table.ToD=time_of_day_2019';
+ANN_input_table=prune_data(ANN_input_table, start_datetime, end_datetime, time_resolution, 1);
+ANN_input_table.temp=temperature.Value; 
+ANN_input_table=movevars(ANN_input_table, 'temp', 'Before', 'month'); 
+ANN_input_table.Cdem=(c_demand.c_net_load_values);
+
+ANN_input_ABS=[ANN_input_table.temp'; ANN_input_table.month'; ANN_input_table.WD'; ANN_input_table.ToD'; c_demand.c_net_load_values'/1000];
+%folder=cd;
+%cd 'C:\Users\davste\Documents\GitHub\FEDmodel\ANN\ANNs';
+absC_ANN=kb_ABS_final(ANN_input_ABS);
+% Discard negative values
+absC_ANN(absC_ANN<0)=0;
+%cd(folder)
+ann_production=ANN_input_table;
+ann_production=removevars(ann_production,{'month', 'WD', 'ToD', 'temp', 'Cdem'});
+ann_production.AbsC_production = absC_ANN';
+%ann_production.dates = ANN_input_table.ANN_dates;
+%ann_production.AbsC_production = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1);
+
+
+% No heat production for PR4
+%ann_production.Boiler1_production = 0;
+ann_production.Properties.VariableNames={'Boiler1_production' 'AbsC_production'};
+% Set the cooling demand equal to the actual cooling demand in FED this may
+% be changed to use ANN cooling demand instead.
+ann_production.Total_cooling_demand = c_demand.c_net_load_values;
+ann_production_pruned = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1);
+ann_production_pruned.AbsC_production = ann_production_pruned.AbsC_production*1000;
+
     end
 end
 if FED_case==1
@@ -616,6 +621,64 @@ ann_production_pruned.AbsC_production(ann_production_pruned.Total_cooling_demand
 %ann_production.AbsC_production(ann_production.AbsC_production<0) = 0
 %ann_production.Boiler1_production(ann_production.Boiler1_production<0) = 0
 %ann_production.Total_cooling_demand(ann_production.Total_cooling_demand<0) = 0
+
+%% Test script %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+% if FED_CASE==0
+%     if changed_cooling_demand==1
+%         energy_data=0;
+%         ann_production = read_ann_xls(strcat(ann_data_folder, ann_production_file), dates);
+%         ann_production_pruned = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1000);
+%         c_net_load_values = ann_production_pruned.kyl_total_MWh_;
+%         c_demand.c_net_load_values = ann_production_pruned.kyl_total_MWh_;
+%         ann_production_pruned = addvars(ann_production_pruned,ann_production_pruned.kyl_total_MWh_);
+%         ann_production_pruned.Properties.VariableNames = {'AbsC_production' 'Total_cooling_demand' 'Boiler1_production'};
+%         ann_production_pruned.Boiler1_production = zeros(length(ann_production_pruned.Boiler1_production),1);
+%     else
+%         % run ANN for absC
+%         % Fix input data vector
+%         month_idx_2019=0;
+%         workday_2019=0;
+%         time_of_day_2019=0;
+%         load ANN_input_2019
+%         ANN_dates = (datetime(2019,01,01,0,0,0):hours(1):datetime(2019,12,31,23,0,0))';
+%         ANN_input_table = timetable(ANN_dates, zeros(length(ANN_dates),1));
+%         ANN_input_table.month=month_idx_2019';
+%         ANN_input_table.WD=workday_2019';
+%         ANN_input_table.ToD=time_of_day_2019';
+%         ANN_input_table=prune_data(ANN_input_table, start_datetime, end_datetime, time_resolution, 1);
+%         ANN_input_table.temp=temperature.Value;
+%         ANN_input_table=movevars(ANN_input_table, 'temp', 'Before', 'month');
+%         ANN_input_table.Cdem=(c_demand.c_net_load_values);
+%         
+%         ANN_input_ABS=[ANN_input_table.temp'; ANN_input_table.month'; ANN_input_table.WD'; ANN_input_table.ToD'; c_demand.c_net_load_values'/1000];
+%         %folder=cd;
+%         %cd 'C:\Users\davste\Documents\GitHub\FEDmodel\ANN\ANNs';
+%         absC_ANN=kb_ABS_final(ANN_input_ABS);
+%         % Discard negative values
+%         absC_ANN(absC_ANN<0)=0;
+%         %cd(folder)
+%         ann_production=ANN_input_table;
+%         ann_production=removevars(ann_production,{'month', 'WD', 'ToD', 'temp', 'Cdem'});
+%         ann_production.AbsC_production = absC_ANN';
+%         %ann_production.dates = ANN_input_table.ANN_dates;
+%         %ann_production.AbsC_production = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1);
+%         
+%         
+%         % No heat production for PR4
+%         %ann_production.Boiler1_production = 0;
+%         ann_production.Properties.VariableNames={'Boiler1_production' 'AbsC_production'};
+%         % Set the cooling demand equal to the actual cooling demand in FED this may
+%         % be changed to use ANN cooling demand instead.
+%         ann_production.Total_cooling_demand = c_demand.c_net_load_values;
+%         ann_production_pruned = prune_data(ann_production, start_datetime, end_datetime, time_resolution, 1);
+%         ann_production_pruned.AbsC_production = ann_production_pruned.AbsC_production*1000;
+%     end
+% else 
+%     ann_production_pruned.AbsC_production=c_import.Value;
+% end
+% end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 
 %% Heat demand calculation
 % Heat load =
@@ -688,7 +751,7 @@ if PR==3
     plot(h_boiler_1_production.Value)
     hold on
     plot(h_export.Value,'g--')
-    % FoS har kass Kibana data, Antar att FoS är oförändrad.
+    % FoS har kass Kibana data, Antar att FoS Ã¤r ofÃ¶rÃ¤ndrad.
     evi_correction = (h_ann.Evi_agent_Mattecentrum_heating...
         + h_ann.Evi_agent_Elkraft_heating...
         + h_ann.Evi_agent_SB2_heating...
@@ -737,9 +800,11 @@ el_net_load_values = el_imported.Value + el_kc_pv_production.Value + el_SB2_pv_p
 
 el_demand = timetable(dates, el_net_load_values);
 
-if FED_case==1
+% DS - dont model the solar PV
+%if FED_case==1;
     el_demand.el_net_load_values = el_imported.Value;
-end
+%end
+    
 
 
 %% Get Electricity CO2 and PEF data
@@ -806,6 +871,10 @@ el_price = process_data(el_price, dates, energy_data, 0);
 el_price = fillmissing(el_price,'linear');
 el_price = prune_data(el_price, start_datetime, end_datetime, time_resolution, 1);
 
+if PR==4
+    %calculate heating price based on cooling price on FED market
+    dh_price.Value = (dh_price.Value-el_price.Value/22)*0.5; 
+end
 %% Read solar data
 %This is not used in PR4
 if PR==3
