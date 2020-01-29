@@ -16,17 +16,17 @@ system 'gams';
 % 
 
 %Sim start time
-sim_start_y = 2019;
-sim_start_m = 8;
-sim_start_d = 19;
+sim_start_y = 2016;
+sim_start_m = 3;
+sim_start_d = 1;
 sim_start_h = 1;
 
 %Sim stop time
+sim_stop_y = 2017;
+sim_stop_m = 2;
+sim_stop_d = 28;
+sim_stop_h = 14;
 
-sim_stop_y = 2019;
-sim_stop_m = 8;
-sim_stop_d = 31;
-sim_stop_h = 24;
 
 %Get month and hours of simulation
 [HoS, ~] = fget_time_vector(sim_start_y,sim_stop_y);
@@ -391,7 +391,7 @@ end
 %     load('Input_dispatch_model\Heating_ANN');
 
 %% INPUT NRPE, CO2 FACTORS and DH Prices
-[CO2F_El_full, PE_El_full, CO2F_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, PE_PV, CO2F_Boiler1, PE_Boiler1, CO2F_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,GE_factors,sim_start,data_read_stop,data_length);
+[CO2F_El_full, PE_El_full, CO2F_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, PE_PV, CO2F_Boiler1, PE_Boiler1, CO2F_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,GE_factors,sim_start,data_read_stop,data_length,synth_baseline);
 
 %DS - take price from get synth baseline instead
 if synth_baseline==1

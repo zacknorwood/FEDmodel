@@ -51,20 +51,22 @@ Parameter
 *This data is imported from MATLAB and stored in MtoG
 Parameter
 *          h_P1(h)     Total heat output from P1
-          B1_eff      Effeciency of B1 /0.9/
+          B1_eff      Effeciency of B1 /0.77/
           B1_max      Maximum output from B1 /6000/
           B1_min      Minimum output from B1 /3000/
           B1_hourly_ramprate     hourly maximum ramp rate /1000/
 ;
 ***** CHECK: B1_min is currently not implemented -DS!!!!
+***** B1 efficiency is changed from 89% to 77% because it's based o LHV ("check LHV and HHV of wood chips.xlsx" for more details)
 
 *---------------Flue gas condenser------------------------
 Parameters
-          FlueGasCondenser1_eff   Effeciency of flue gas condenser /0.15/
+          FlueGasCondenser1_eff   Effeciency of flue gas condenser /0.5/
           FlueGasCondenser1_cap   Capacity of flue gas condenser /1000/
           FlueGasCondenser1_min   Minimum output from the flue gas condenser /500/
 ;
 **** Changed FGC efficiency to 15% according to 4.1.3 minimum output is not integrated. -DS
+**** FGC Efficiency is changed to 50% according to "LHV and HHV of wood chips.xlsx"
 
 *--------------VKA4 constants and parameters------------------------------------
 * Maximum electricty input and the coefficients for VKA1 and VKA4 corresponds to the 800 kW heating capacity for each machine
@@ -138,13 +140,16 @@ scalar
 
 *----------------Boiler 2  ------------------------------------------------------
 scalar
-      B2_eff                 Efficiency of B2 /0.9/
+      B2_eff                 Efficiency of B2 /0.77/
       B2_cap                 Capacity of B2 /6000/
       B2_max                 Maximum output from B2 /6000/
       B2_min                 Minimum output from B2 /1000/
       B2_hourly_ramprate     hourly maximum ramp rate /1000/
       B2_research_prod        Heat output during research /1500/
 ;
+
+***** B2 efficiency is changed from 89% to 77% because it's based o LHV ("check LHV and HHV of wood chips.xlsx" for more details)
+
 
 *----------------Refurbished turbine for Boiler 2  ------------------------------
 scalar
@@ -348,7 +353,7 @@ fuel_cost('CHP',h)= 0.353;
 fuel_cost('B1',h)=0.353;
 *0.186/P1_eff;
 
-fuel_cost('FGC1',h)=0.353;
+fuel_cost('FGC1',h)=0;
 
 *0.186/RGK1_eff;
 *fuel_cost('P1',h)=0.186*fuel_P1(h)/q_P1(h);

@@ -331,7 +331,7 @@ eq5_h_Boiler1(h)$(ord(h) eq 1 and P1P2_dispatchable(h)=1 and synth_baseline eq 0
              Boiler1_prev_disp- h_Boiler1(h)=g=-B1_hourly_ramprate;
 
 eq6_h_Boiler1(h)..
-          fuel_Boiler1(h) =e= ((h_Boiler1(h)+h_FlueGasCondenser1(h))/B1_eff);
+          fuel_Boiler1(h) =e= ((h_Boiler1(h))/B1_eff);
 
 eq_h_Boiler1_dispatch(h)$(P1P2_dispatchable(h) eq 0)..
         h_Boiler1(h) =e= h_Boiler1_0(h);
@@ -344,7 +344,7 @@ h_FlueGasCondenser1.fx(h)$(min_totCost_0 = 1 or (synth_baseline = 1))=h_FlueGasC
 
 
 eq_h_FlueGasCondenser11(h)$(P1P2_dispatchable(h)=1 and synth_baseline eq 0 and min_totCost_0 eq 0)..
-        h_FlueGasCondenser1(h)=l=h_Boiler1(h)*FlueGasCondenser1_eff;
+        h_FlueGasCondenser1(h)=l=fuel_Boiler1(h)*(1-B1_eff)*FlueGasCondenser1_eff;
 
 eq_h_FlueGasCondenser1_dispatch(h)$(P1P2_dispatchable(h)=0)..
         h_FlueGasCondenser1(h) =e= h_FlueGasCondenser1_0(h);
@@ -873,7 +873,7 @@ eq_hbalance4(h)$((no_imp_h_season(h)) = 1 and (min_totCost_0 = 0))..
 *-------------- Demand supply balance for cooling ------------------------------
 eq_cbalance(h)..
 
-         sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=l=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
+         sum(BID_AH_c,c_demand_AH(h,BID_AH_c))=e=C_DC_slack_var(h) + c_DC_slack(h) + c_VKA1(h) + c_VKA4(h) +  c_AbsC(h)
                                 + c_RM(h) + c_RMMC(h) + c_HP(h) + c_RMInv(h)
                                 + (sum(BID,c_BAC_savings(h,BID))) + c_AbsCInv(h)
                                 + CWB_dis(h) - CWB_ch(h);
