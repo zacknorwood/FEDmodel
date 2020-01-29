@@ -3,10 +3,11 @@ clear all
 % Initial run
 opt_RunGAMSModel=1;
 opt_marg_factors=1;
-synth_baseline=0;
-IPCC_factors=1; %Change to the new factors for CO2 and PE
+
+synth_baseline=1;
+%IPCC_factors=1; %Change to the new factors for CO2 and PE
 GE_factors=1;
-for IPCC_factors=[1]
+for IPCC_factors=1
 
 for i=4 :16
 

@@ -14,7 +14,7 @@ PEintensityProdMix_El = [0.09 2.44 1.93 0.01 3.27 2.74 0.23 0.03 0.02 2.06 0.02 
 
 % Heat order: [Biomass-HOB Biomass-CHP BioGas-HOB Gas-CHP Oil-HOB RefineryHeat WasteIncineration-CHP]
 CO2intensityProdMix_Heat = [79 46 79 183 339 43 59];
-PEintensityProdMix_Heat = [0.03 0.02 1.18 0.72 1.19 0.15 0.08];
+PEintensityProdMix_Heat = [0.03 0.02 0.03 0.72 1.19 0.15 0.08];
 
 % Changes the CO2 and PE factors for District Heating when running with the
 % GE Industry Case flag

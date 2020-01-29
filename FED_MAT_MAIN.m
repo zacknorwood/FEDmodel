@@ -219,15 +219,15 @@ BID_nonBTES.uels={'O0007043',...
     'O0007018','O3060137', 'Karhuset', 'O3060138',...
     'Karhus_studenter'};
 %% %%%%%
-for i=1:length(BID.uels)
-    AH_el(i)=sum(double(strcmp(BID.uels(i),BID_AH_el.uels)));
-    AH_h(i)=sum(double(strcmp(BID.uels(i),BID_AH_h.uels)));
-    AH_c(i)=sum(double(strcmp(BID.uels(i),BID_AH_c.uels)));
-    
-    nonAH_el(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_el.uels)));
-    nonAH_h(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_h.uels)));
-    nonAH_c(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_c.uels)));
-end
+% for i=1:length(BID.uels)
+%     AH_el(i)=sum(double(strcmp(BID.uels(i),BID_AH_el.uels)));
+%     AH_h(i)=sum(double(strcmp(BID.uels(i),BID_AH_h.uels)));
+%     AH_c(i)=sum(double(strcmp(BID.uels(i),BID_AH_c.uels)));
+%     
+%     nonAH_el(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_el.uels)));
+%     nonAH_h(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_h.uels)));
+%     nonAH_c(i)=sum(double(strcmp(BID.uels(i),BID_nonAH_c.uels)));
+% end
 %% IDs used to name the buses or nodes in the local electrical distribution system
 %OBS: proper maping need to be established between the nodes in the el distribution system and the building IDs
 
@@ -297,7 +297,7 @@ end
 if synth_baseline == 1
     start_datetime = datetime(sim_start_y,sim_start_m,sim_start_d,sim_start_h,0,0);
     end_datetime = datetime(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h+forecast_horizon,0,0);
-    [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, el_factors, dh_factors, temperature, dh_price, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
+    [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, temperature, dh_price, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
     
     cooling_size = size(BID_AH_c.uels);
     hours = sim_length+forecast_horizon;
@@ -335,8 +335,11 @@ if synth_baseline == 1
     
     COP_HP_C = 1.8; % Cooling COP of heat pumps
     HP_cooling_production = (ann_production.Total_cooling_demand - ann_production.AbsC_production);
-    el_VKA1_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
-    el_VKA4_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
+%    el_VKA1_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
+%    el_VKA4_0_full = 0.5 * (HP_cooling_production ./ COP_HP_C);
+%DS - put all on VKA1
+    el_VKA1_0_full = 1 * (HP_cooling_production ./ COP_HP_C);
+    el_VKA4_0_full = 0 * (HP_cooling_production ./ COP_HP_C);
     
     %el_factors dh_factors
     %DS - This should be taken from Input file
@@ -390,6 +393,12 @@ end
 %% INPUT NRPE, CO2 FACTORS and DH Prices
 [CO2F_El_full, PE_El_full, CO2F_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, PE_PV, CO2F_Boiler1, PE_Boiler1, CO2F_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,GE_factors,sim_start,data_read_stop,data_length,synth_baseline);
 
+%DS - take price from get synth baseline instead
+if synth_baseline==1
+    marginalCost_DH_full=dh_price.Value;
+end
+%DS - Set synth baseline to 0 for report 4.4.1
+%synth_baseline=0;
 %% Initialize FED INVESTMENT OPTIONS
 % If min_totCost_O=1, i.e. base case simulation, then all investment options
 % will be set to 0.
@@ -446,8 +455,12 @@ opt_fx_inv_BAC = struct('name','opt_fx_inv_BAC','type','parameter','form','full'
 opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
 
 %Option for Cold water basin
-opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
-opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-synth_baseline));
+%opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
+%opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(1-synth_baseline));
+%DS - Set to zero for comp.
+opt_fx_inv_CWB = struct('name','opt_fx_inv_CWB','type','parameter','form','full','val',1*(1-min_totCost_0)*(synth_baseline));
+opt_fx_inv_CWB_cap = struct('name','opt_fx_inv_CWB_cap','type','parameter','form','full','val',814*(1-min_totCost_0)*(synth_baseline));
+
 opt_fx_inv_CWB_cap.uels = CWB_BID_uels;
 
 opt_fx_inv_CWB_ch_max = struct('name','opt_fx_inv_CWB_ch_max','type','parameter','form','full','val',203.5*(1-min_totCost_0)*(1-synth_baseline));
@@ -463,8 +476,13 @@ opt_fx_inv_BES_maxP = struct('name','opt_fx_inv_BES_maxP','type','parameter','fo
 opt_fx_inv_BES_maxP.uels = BES_BID_uels;
 BES_min_SoC = struct('name','BES_min_SoC','type','parameter','form','full','val',BES_min_SoC);
 
+
+%DS - Set to zero for comp.
+opt_fx_inv_BES_cap = struct('name','opt_fx_inv_BES_cap','type','parameter','form','full','val',[200 100]*(1-min_totCost_0)*(synth_baseline));
+
 BTES_BAC_Inv.name = 'BTES_BAC_Inv';
 BTES_BAC_Inv.uels = BTES_BAC_BID_uels;
+
 
 BTES_SO_Inv.name = 'BTES_SO_Inv';
 BTES_SO_Inv.uels = BTES_SO_BID_uels;
@@ -495,7 +513,10 @@ BTES_model.val(Dcap_index, O724_index) = BTES_model.val(Dcap_index, O724_index) 
 
 %Investments in PVs
 %=1 = fixed investment, 0=no investments (neither existing!!!) -1=variable of optimization
-opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',1);
+
+%DS - set to zero
+%opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',1);
+opt_fx_inv_PV = struct('name','opt_fx_inv_PV','type','parameter','form','full','val',0);
 
 %Placement of roof PVs (Existing)
 PVID_roof_existing=[2 11]; %Refers to ID in "solceller lista pï¿½ anlï¿½ggningar.xlsx" as well as the 3d shading model
@@ -555,6 +576,8 @@ to_excel_heat(1:sim_stop-sim_start,1:39)=0;
 to_excel_cool(1:sim_stop-sim_start,1:23)=0;
 to_excel_co2(1:sim_stop-sim_start,1:14)=0;
 
+%Results=zeros(1,length(sim_length));
+
 for t=1:sim_length
     %% Variable input data to the dispatch model
     %Structures are created to send to GAMS which contain subsets of the
@@ -589,7 +612,10 @@ for t=1:sim_length
     
     %forecasted cooling demand
     c_demand = struct('name','c_demand','type','parameter','form','full','val',c_demand_full(t:forecast_end,:));
-    c_demand.uels={h.uels,BID.uels};
+    %c_demand.uels={h.uels,BID.uels};
+    % Warning!  Changed for PR4 to BID_AH_c.uels from BID.uels, work
+    % around!
+    c_demand.uels={h.uels,BID_AH_c.uels};
     
     %Historical heat export
     h_exp_AH_hist = struct('name','h_exp_AH_hist','type','parameter','form','full','val',h_exp_AH_hist_full(t:forecast_end,:));
@@ -800,11 +826,11 @@ for t=1:sim_length
     
     [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
 end
-delete  'result_temp.xlsx';
-copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx') % to add the toprows in the excelfile
+%delete  'Input_dispatch_model\result_temp.xlsx';
+copyfile('Input_dispatch_model\result_temp_bkup.xlsx', 'result_temp.xlsx'); % to create an output file template with the correct header row
 
 xlswrite('result_temp.xlsx',to_excel_el,'Electricity','A3');
 xlswrite('result_temp.xlsx',to_excel_heat,'Heat','A3');
 xlswrite('result_temp.xlsx',to_excel_cool,'Cooling','A3');
 xlswrite('result_temp.xlsx',to_excel_co2,'CO2_PE','A3');
-
+end
