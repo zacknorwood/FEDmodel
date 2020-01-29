@@ -3,12 +3,13 @@ clear all
 % Initial run
 opt_RunGAMSModel=1;
 opt_marg_factors=1;
+
 synth_baseline=1;
 %IPCC_factors=1; %Change to the new factors for CO2 and PE
 GE_factors=1;
 for IPCC_factors=1
 
-for i=2
+for i=4 :16
 
     
 %copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx')
@@ -42,7 +43,7 @@ for i=2
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
-        min_totCO2=0.000001;
+        min_totCO2=0.000005;
     end
 %     if i==6
 %         min_totCost_0=0;
@@ -58,12 +59,12 @@ for i=2
 %         min_totCO2=1;
 %     end
      
-    if i==6
-        min_totCost_0=0;
-        min_totCost=1;
-        min_totPE=0;
-        min_totCO2=0.000005;
-    end
+%     if i==6
+%         min_totCost_0=0;
+%         min_totCost=1;
+%         min_totPE=0;
+%         min_totCO2=0.000005;
+%     end
     if i==7
         min_totCost_0=0;
         min_totCost=1;
@@ -104,7 +105,7 @@ for i=2
     end
     if i==13
         min_totCost_0=0;
-        min_totCost=0;
+        min_totCost=1;
         min_totPE=0;
         min_totCO2=0.01;
     end
@@ -124,9 +125,17 @@ for i=2
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
+        min_totCO2=0.95;
+    end
+    
+    if i==6
+        min_totCost_0=0;
+        min_totCost=1;
+        min_totPE=0;
         min_totCO2=0.5;
     end
-
+ 
+    
     
     
 % Run FED model

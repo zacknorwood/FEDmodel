@@ -1,4 +1,4 @@
-function [ CO2F_El, PE_El, CO2F_DH, PE_DH, marginalCost_DH, CO2F_PV, PE_PV, CO2F_Boiler1, PE_Boiler1, CO2F_Boiler2, PE_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors, GE_factors, sim_start, data_read_stop, data_length)
+function [ CO2F_El, PE_El, CO2F_DH, PE_DH, marginalCost_DH, CO2F_PV, PE_PV, CO2F_Boiler1, PE_Boiler1, CO2F_Boiler2, PE_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors, GE_factors, sim_start, data_read_stop, data_length, synth_baseline)
 %% Here, the CO2 factor and Primary Energy factor of the external grids are calculated
 % The external grid production mix data read in is from the district
 % heating system (Göteborg Energi) and the Swedish electrical grid (Tomorrow / tmrow.com)
@@ -52,8 +52,7 @@ end
 if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are based on the marginal production unit/mix.
     %% Marginal CO2 and NRE factors of the external grid
     %Import marginal CO2 and PE factors
-    synthetic_baseline=1;
-    if synthetic_baseline == 1
+    if synth_baseline == 1
         prodMix_El=xlsread('Input_dispatch_model\electricityMap - Marginal mix SE 2019 August.xlsx',1,strcat('B',num2str(sim_start+1),':M',num2str(data_read_stop+1)));
     else
         prodMix_El=xlsread('Input_dispatch_model\electricityMap - Marginal mix updated v2 - SE - 2016 - 2017.xlsx',1,strcat('B',num2str(sim_start+1),':M',num2str(data_read_stop+1)));
@@ -72,7 +71,13 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     PE_El = sum(prodMix_El(:,1:length(PEintensityProdMix_El)) .* PEintensityProdMix_El, 2);
     
     %Get Marginal units DH
+    
+if synth_baseline == 1   
     marginalUnits_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2019 August.xlsx',1,strcat('C',num2str(sim_start+1),':J',num2str(data_read_stop+1)));
+else
+    marginalUnits_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('C',num2str(sim_start+1),':J',num2str(data_read_stop+1)));
+end
+
     if (length(marginalUnits_DH)<data_length) || (any(isnan(marginalUnits_DH),'all'))
         error('Error: input file does not have complete data for simulation length');
     end
