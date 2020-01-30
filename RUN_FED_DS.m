@@ -7,132 +7,93 @@ synth_baseline=0;
 IPCC_factors=1; %Change to the new factors for CO2 and PE
 for IPCC_factors=[1]
 
-for i=4 :16
-
-    
+for i=1:13   
 %copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx')
     disp(['Case no ' num2str(i)])
+
+    % min_totCost is alpha value in equation (1) of the article- weighting factor for cost 
+    % min_totCO2 is beta value in the equation (1) of the article - weighting factor for emissions
+    % min_totCO2 (beta) is changed from 0 to 1 while keeping min_totCost equal to 1
     if i==1
-        min_totCost_0=1;
+        min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
         min_totCO2=0;
     end
     if i==2
         min_totCost_0=0;
-        min_totCost=0;
-        min_totPE=1;
-        min_totCO2=0;
-    end 
-    if i==3
-        min_totCost_0=0;
-        min_totCost=0;
-        min_totPE=0;
-        min_totCO2=1;
-    end
-    if i==4
-        min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
-        min_totCO2=0;
-    end
-
-    if i==5
+        min_totCO2=0.000001;
+    end  
+    if i==3
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
         min_totCO2=0.000005;
     end
-%     if i==6
-%         min_totCost_0=0;
-%         min_totCost=1;
-%         min_totPE=0.59;
-%         min_totCO2=.01;
-%     end
-    
-%     if i==7
-%         min_totCost_0=0;
-%         min_totCost=0.0001;
-%         min_totPE=0;
-%         min_totCO2=1;
-%     end
-     
-%     if i==6
-%         min_totCost_0=0;
-%         min_totCost=1;
-%         min_totPE=0;
-%         min_totCO2=0.000005;
-%     end
-    if i==7
+    if i==4
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
         min_totCO2=0.00001;
     end
-    if i==8
+    if i==5
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
         min_totCO2=0.00005;
     end
     
-    if i==9
+    if i==6
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
         min_totCO2=0.0001;
     end
-    if i==10
+    if i==7
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
         min_totCO2=0.0005;
     end
-    if i==11
+    if i==8
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
         min_totCO2=0.001;
     end
 
-    if i==12
+    if i==9
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
         min_totCO2=0.005;
     end
-    if i==13
+    if i==10
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
         min_totCO2=0.01;
     end
-    if i==14
+    if i==11
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
         min_totCO2=0.05;
     end
-    if i==15
+    if i==12
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
         min_totCO2=0.1;
     end
-    if i==16
+    if i==13
         min_totCost_0=0;
         min_totCost=1;
         min_totPE=0;
         min_totCO2=0.95;
-    end
-    
-    if i==6
-        min_totCost_0=0;
-        min_totCost=1;
-        min_totPE=0;
-        min_totCO2=0.5;
-    end
- 
+    end 
     
     
     
