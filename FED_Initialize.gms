@@ -19,8 +19,7 @@ Parameter
 ************ Capacities of the units in the FED system
 Parameter
 *RM capacity at AH is set to 900kW which the capacity of RM at Kemi (2*450 kW)
-*The capacity for FGC is set separetely on line 63 ish
-*Only B1 absC, and RM are used but all are used to calculate the fixed costs -DS
+*The capacity for Flue Gas condeser (FGC) is set separetely on FGC part
          cap_sup_unit(sup_unit)   operational capacity of the existing units
                      /PV 65, B1 8000, AbsC 2300, AAC 1000, RM 900, RMMC 4200, FGC1 1000/
 ;
@@ -50,14 +49,11 @@ Parameter
 *--------------Existing Thermal boiler constants and parameters (B1)------------
 *This data is imported from MATLAB and stored in MtoG
 Parameter
-*          h_P1(h)     Total heat output from P1
           B1_eff      Effeciency of B1 /0.77/
           B1_max      Maximum output from B1 /6000/
           B1_min      Minimum output from B1 /3000/
           B1_hourly_ramprate     hourly maximum ramp rate /1000/
 ;
-***** CHECK: B1_min is currently not implemented -DS!!!!
-***** B1 efficiency is changed from 89% to 77% because it's based o LHV ("check LHV and HHV of wood chips.xlsx" for more details)
 
 *---------------Flue gas condenser------------------------
 Parameters
@@ -65,13 +61,11 @@ Parameters
           FlueGasCondenser1_cap   Capacity of flue gas condenser /1000/
           FlueGasCondenser1_min   Minimum output from the flue gas condenser /500/
 ;
-**** Changed FGC efficiency to 15% according to 4.1.3 minimum output is not integrated. -DS
-**** FGC Efficiency is changed to 50% according to "LHV and HHV of wood chips.xlsx"
 
 *--------------VKA4 constants and parameters------------------------------------
 * Maximum electricty input and the coefficients for VKA1 and VKA4 corresponds to the 800 kW heating capacity for each machine
 *Calculated from historical data
-*COP calculated from historical data (on dropbox) max heating capacity
+*COP calculated from historical data max heating capacity
 *(800kW) from BDAB "Utredning ackumulatortank KC 4.0"
 * "Effektiv kylanvändning chalmersfastigheter" BDAB states cooling production of 400-500 kW
 * Model implementation limits cooling production to 480 kW
@@ -95,8 +89,7 @@ scalar
 ******* Changed el Cap to 216 (from 266) to get max heat to 650 kW according to historical data -DS
 
 *--------------AbsC(Absorbition Refrigerator), cooling source-------------------
-* The AbsC_COP is from which source?
-* The AbsC_el_COP and AbsC_min_prod is from the agent description
+* The AbsC_el_COP and AbsC_min_prod is from the agent description of FED project
 scalar
          AbsC_COP Coefficent of performance of AbsC /0.5/
          AbsC_el_COP Electrical Coefficient of Performance of AbsC /22/
@@ -104,24 +97,14 @@ scalar
 * changed to 200 (from 290) based on Pers mail 20190325 -DS
 ;
 
-*--------------AAC(Ambient Air Cooler), cooling source--------------------------
-* Source Per
-*scalar
-*         AAC_COP Coefficent of performance of AAC /10/
-*         AAC_eff Efficiency of AAC /0.95/
-*         AAC_TempLim Temperature limit of AAC/12/
-*;
-
 *--------------Refrigerator Machines, cooling source----------------------------
 scalar
       RM_COP Coefficent of performance of RM /0.2/
 ;
-
-*********** CHECK: i reduced this COP to 0.2 (from 2) since i dont think they are operated more than in "emergency", -DS
+*Reduced this COP to 0.2 (from 2) since i dont think they are operated more than in "emergency", -DS
 
 *--------------Cold water basin at maskin, cold storage-------------------------
 * Source communications with Per
-* charging and discharging efficiencies are assumed values
 scalar
          CWB_max_cap_kwh     Maximum capacity available /814/
          CWB_chr_eff         Cold Water Basin charging efficiency /0.95/
@@ -148,16 +131,13 @@ scalar
       B2_research_prod        Heat output during research /1500/
 ;
 
-***** B2 efficiency is changed from 89% to 77% because it's based o LHV ("check LHV and HHV of wood chips.xlsx" for more details)
-
-
 *----------------Refurbished turbine for Boiler 2  ------------------------------
 scalar
 * 25% turbine efficiency from Danish energy agency reports
 * 17% according to 4.1.3
 
       TURB_eff Efficiency of turbine /0.17/
-* Max turbine output from AH WP4.2 report
+* Max turbine output from Akademiska Hus (AH) WP4.2 report
       TURB_cap Maximum power output of turbine /800/
 ;
 
@@ -231,7 +211,6 @@ parameter
                                                           + coef_Si('6')*sqr(Tekv_facade(h,PVID)));
 
 *--------------HP constants and parameters (an investment options)-------------
-*[COP and eff values need to be checked]
 scalar
 * HP_H_COP=3,1 and HP_C_COP=2,19 are from AH based on new investment
 * HP_H_COP=3,15 and HP_C_COP=2,5 Heat pump efficiencies from Danish Energy Agency, year 2015 cost: https://ens.dk/sites/ens.dk/files/Analyser/technology_data_catalogue_for_energy_plants_-_aug_2016._update_june_2017.pdf
@@ -287,9 +266,6 @@ BAC_cooling_savings_factor Savings factor during cooling season /0.0037/
 scalar
          BES_chr_eff   Charging efficiency /0.95/
          BES_dis_eff   Discharging efficiency /0.95/
-*         BFCh_chr_eff    Charging efficiency /0.95/
-*         BFCh_dis_eff   Discharding efficiency /0.95/
-*         BFCh_min_SOC   Minimum State of charge /0.20/
 ;
 
 *--------------set building energy demands--------------------------------------
@@ -351,16 +327,11 @@ fuel_cost('CHP',h)= 0.353;
 
 * Divided by efficiency to get actual fuel use when multiplying with heat output
 fuel_cost('B1',h)=0.353;
-*0.186/P1_eff;
-
+*No fuel is consumed for FGC, it uses the exhaust heat of B1
 fuel_cost('FGC1',h)=0;
 
-*0.186/RGK1_eff;
-*fuel_cost('P1',h)=0.186*fuel_P1(h)/q_P1(h);
 * Divided by efficiency to get actual fuel use when multiplying with heat output
-
 fuel_cost('B2',h)=0.353;
-*0.186/P2_eff;
 
 var_cost(sup_unit,h)=0;
 fix_cost(sup_unit)=0;
@@ -389,9 +360,6 @@ fix_cost('AbsC')= 3000 / kilo * EUR_to_SEK_2015;
 * AbsCInv variable O&M inclusive electricity, adjusted by COP for absorption heating compared to cooling factors
 var_cost('AbsCInv',h)= 0.9 / kilo * AbsCInv_COP * EUR_to_SEK_2015;
 fix_cost('AbsCInv')= 3000 / kilo * EUR_to_SEK_2015;
-* No data on ambient air chillers, assume same as absorption heater for both variable O&M and fixed costs
-*var_cost('AAC',h)= 0.9 / kilo * EUR_to_SEK_2015;
-*fix_cost('AAC')= 3000 / kilo * EUR_to_SEK_2015;
 * No data in Danish Energy Agency report for lithium ion, assume costs same as for NaS
 var_cost('BES',h)= 5.3 / kilo * EUR_to_SEK_2015;
 fix_cost('BES')= 51000 / kilo * EUR_to_SEK_2015;
@@ -399,7 +367,7 @@ fix_cost('BES')= 51000 / kilo * EUR_to_SEK_2015;
 var_cost('RMInv',h)= var_cost('HP',h);
 fix_cost('RMInv')= fix_cost('HP');
 
-*From Göteborg Energi homepage, tax on a kWh electricity purchased in SEK
+*From Goteborg Energi homepage, tax on a kWh electricity purchased in SEK
 en_tax(sup_unit,h)=0;
 en_tax('exG',h)=el_tax;
 

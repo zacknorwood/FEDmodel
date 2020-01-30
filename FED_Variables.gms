@@ -19,12 +19,14 @@ positive variable
 
 *******************Existing units***********************************************
 *------------------VKA1 Heatpump related----------------------------------------
+*VKA1 in the model =  summer heat pump (HP_S) in the article
 positive variable
          h_VKA1(h)         heating power available from VKA1
          c_VKA1(h)         cooling power available from VKA1
          el_VKA1(h)        electricity needed by VKA1
 ;
 *------------------VKA4 Heatpump related----------------------------------------
+*VKA4 in the model =  winter heat pump 1 (HP_w1) in the article
 positive variable
          h_VKA4(h)         heating power available from VKA4
          c_VKA4(h)         cooling power available from VKA4
@@ -55,6 +57,7 @@ positive variable
 
 
 *------------------Refrigerator Machine related---------------------------------
+*This unit is only used in emergency need, so the COP has been put to 0.2 to prevent it from dispatching
 positive variable
          el_RM(h)          electricity demand for refrigerator
          c_RM(h)           cooling power available from the refrigerator
@@ -73,19 +76,9 @@ binary variable
          CWB_B_dis(h)     binary variable for CWB charge
 ;
 
-
-*------------------Ambient Air Cooling Machine related--------------------------
-*positive variable
-*         el_AAC(h)           electricity demand for refrigerator
-*         c_AAC(h)           cooling power available from the refrigerator
-*         AAC_cap            capacity of refrigerator
-*;
-*AAC_cap.fx = cap_sup_unit('AAC');
-*el_AAC.fx(h)$(min_totCost_0 = 1)=el_AAC_0(h);
-
-
 ******************New investments***********************************************
 *------------------MC2 Refrigerator Machine related-----------------------------
+*RMMC in the model =  refrigeration heat pump (HP_R) in the article
 positive variable
          el_RMMC(h)          electricity demand for refrigerators
          h_RMMC(h)          cooling power available from refrigerators
@@ -102,6 +95,7 @@ positive variable
          AbsCInv_cap       Installed capacity in kW cooling
 ;
 *----------------Boiler 2 related -----------------------------------------------
+*CHP Boiler in the article
 positive variable
          fuel_Boiler2(h)        fuel demand in B2
          h_Boiler2(h)           generated heating in B2
@@ -112,6 +106,7 @@ binary variable
 ;
 
 *----------------Refurbished turbine for Boiler 2  ------------------------------
+*CHP turbine in the article
 positive variable
          el_TURB(h)         electricity generated in turbine-gen
          h_TURB(h)         steam demand in turbine
@@ -126,6 +121,7 @@ binary variable
 ;
 
 *------------------HP related---------------------------------------------------
+*HP in the model =  winter heat pump 2 (HP_w2) in the article
 positive variable
          h_HP(h)           heating power available in HP
          c_HP(h)           cooling power available from HP
@@ -134,6 +130,7 @@ positive variable
 ;
 
 *------------------TES related--------------------------------------------------
+*The investment in thermal energy storage was zero, so the capacity is zero in the article
 positive variable
          TES_ch(h)         input to the TES-chargin the TES
          TES_dis(h)        output from the TES-discharging the TES
@@ -145,6 +142,9 @@ binary variable
          TES_inv          Decision variable for Accumulator investment
 ;
 *------------------Building Advanced Control related----------------------
+*Building advanced control system(BAC) and system offset(SO) are used to
+*utilize building inertia thermal energy storage(BITES).Therefore,
+*some of them are considered under BITES in the article
 positive variable
          BAC_Sch(h,BID)    charing rate of shallow section of the building
          BAC_Sdis(h,BID)   dischargin rate of shallow section of the building
@@ -166,6 +166,9 @@ binary variable
 ;
 
 *------------------Building Setpoint Offset related----------------------
+*Building advanced control system(BAC) and system offset(SO) are used to
+*utilize building inertia thermal energy storage(BITES).Therefore,
+*some of them are considered under BITES in the article
 positive variable
          SO_Sch(h,BID)    charing rate of shallow section of the building
          SO_Sdis(h,BID)   dischargin rate of shallow section of the building
@@ -201,13 +204,6 @@ positive variables
          BES_dis_to_grid(h,BID)  Useful discharging energy to the grid
          BES_ch_from_grid(h,BID) Useful charging energy from the grid
          BES_cap(BID)         Capacity of the battery at building BID
-
-*         BFCh_en(h,BID)       Energy stored in the battery at time t and building BID
-*         BFCh_ch(h,BID)       Battery charing at time t and building BID
-*         BFCh_dis(h,BID)      Battery discharging at time t and building BID
-*         BFCh_dis_to_grid(h,BID)  Useful discharging energy to the grid
-*         BFCh_ch_from_grid(h,BID) Useful charging energy from the grid
-*         BFCh_cap(BID)         Capacity of the battery at building BID
 ;
 
 *------------------Refrigeration machine investment related---------------------
@@ -227,8 +223,6 @@ positive variable
 variable
         rel_imp_AH(h)        Imported reactive to the AH system
         delta(h,BusID)    Voltage angles of EL Grid
-*        BES_reac(h,BID)       BES reactive power
-*        BFCh_reac(h,BID)      BFCh reactive power
 ;
 *------------------Grid DH related----------------------------------------------
 positive variable

@@ -24,8 +24,6 @@ ALL
 
 SOLVE total using MIP minimizing obj;
 
-*display B_BAC.l, h_BAC_savings.l;
-
 parameter
 h_demand_nonAH_sum  total demand for non AH buildings
 ;
@@ -53,8 +51,6 @@ fix_cost_existing_AH = sum(sup_unit,fix_cost(sup_unit)*cap_sup_unit(sup_unit));
 fix_cost_new_AH = fix_cost_new.l;
 
 sim_PT_exG = max_PT_exG.l;
-
-* The export costs from space heating need to be implemented in a way that doesn't require an ordered set for m.  Or else m needs to be redefined so it is always ordered so the "ord" operator can be used.
 
 tot_var_cost_AH(h)= var_cost_existing_AH.l(h)+var_cost_new_AH.l(h);
 tot_fixed_cost=fix_cost_existing_AH + fix_cost_new_AH;
@@ -94,9 +90,6 @@ B_Heating_cost(h,BID)= abs(eq_hbalance3.M(h))*h_demand(h,BID);
 B_Electricity_cost(h,BID_AH_el)=abs(eq_ebalance3.M(h))*el_demand(h,BID_AH_el);
 B_Cooling_cost(h,BID_AH_c)=abs(eq_cbalance.M(h))*c_demand_AH(h,BID_AH_c);
 
-*Not used in rolling time horizon - ZN
-*max_exG_prev=sum(m, max_exG.l(m));
-
 ** Variable cost for different production units ********************************************************
 parameter
 vc_el_imp(h)
@@ -112,10 +105,7 @@ vc_h_VKA4(h)
 vc_h_ABSC
 vc_c_RM(h)
 vc_c_RMMC(h)
-*vc_c_AAC(h)
-*vc_el_PV(h)
 vc_c_absC(h)
-*vc_el_PV(h)
 vc_el_new_PV(h)
 vc_h_HP(h)
 vc_el_PT(h)
@@ -164,12 +154,7 @@ vc_h_BAC(h) = sum(BID,BAC_Sch.l(h,BID)*utot_cost('BAC',h))+eps;
 vc_h_SO(h) = sum(BID,SO_Sch.l(h,BID)*utot_cost('SO',h))+eps;
 vc_h_Boiler2(h)  = h_Boiler2.l(h) * var_cost('B2',h)+fuel_Boiler2.l(h)*fuel_cost('B2',h)+eps;
 vc_el_TURB(h) = el_TURB.l(h)*utot_cost('TURB',h)+eps;
-*vc_e_PV                           + c_AbsCInv.l(h)*utot_cost('AbsCInv',h);
-*vc_tot = sum(h, tot_var_cost_AH(h));
 
-* Force unload default values as zero by setting defaults to eps and unloading eps values as zero
-*Assign Eps to x(i) = 0
-*el_slack_var.l(h)$(not el_slack_var.l(h)) = eps;
 
 option gdxuels = full;
 execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
@@ -186,7 +171,6 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       B_Boiler2, invCost_Boiler2, fuel_Boiler2, h_Boiler2, H_B2_to_grid, H_from_turb, B_TURB, invCost_TURB, el_TURB, h_TURB, B2_eff, TURB_eff,
                       h_AbsC, c_AbsC, el_AbsC, h_AbsCInv, c_AbsCInv, AbsCInv_cap, invCost_AbsCInv,
                       el_RM, c_RM, el_RMMC, h_RMMC, c_RMMC, RMMC_inv, invCost_RMMC,
-*                      el_AAC, c_AAC,
                       h_HP, el_HP, c_HP, HP_cap, invCost_HP,
                       h_DH_slack, h_DH_slack_var, c_DC_slack, c_DC_slack_var, el_slack_var, el_exG_slack
                       TES_ch, TES_dis, TES_en, TES_cap, TES_inv, invCost_TES, TES_dis_eff, TES_chr_eff,
@@ -210,41 +194,4 @@ execute_unload 'GtoM' min_totCost_0, min_totCost, min_totPE, min_totCO2,
                       vc_h_HP , vc_c_RM, vc_el_BES,vc_h_TES,vc_el_new_PV, vc_c_new_RM, vc_h_BAC, vc_h_SO, vc_h_ABSC, vc_h_Boiler2,vc_el_TURB, vc_el_PT, vc_tot,
                       vc_h_slack_var,vc_c_slack,vc_el_slack,
                       tot_var_cost_AH, model_status;
-
-
-$ontext
-
-*THIS IS NOT USED AND ARE ONLY KEEPT FOR FUTURE REFERENCE
-
-*********** Marginal Emission ***************
-Parameters
-        MA_AH_PE(h)  AH margional PE use
-        AH_CO2(h)    AH average CO2 emission
-        MA_AH_CO2(h) AH margional CO2 emission
-        MA_AH_PE_tot   AH total PE marginal
-        MA_AH_CO2_tot  AH total CO2 marginal
-        AH_CO2_tot     AH total CO2 average
-        MA_AH_CO2_peak AH peak CO2 marginal
-        AH_CO2_peak    AH peak CO2 average
-;
-
-MA_AH_PE(h)= (el_imp_AH.l(h)-el_exp_AH.l(h))*MA_PEF_exG(h)
-              + el_PV.l(h)*PEF_PV
-              + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_heating_season(h))*MA_PEF_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*PEF_P1
-              + fuel_P2.l(h)*PEF_P2;
-
-
-*MA_AH_PE_tot= sum(h,MA_AH_PE(h));
-
-* MA_AH_CO2(h) = (el_imp_AH.l(h)-el_exp_AH.l(h))*MA_CO2F_exG(h)
-*                + el_PV.l(h)*CO2F_PV
-*                + (h_AbsC.l(h)+h_imp_AH.l(h)-h_exp_AH.l(h)*DH_heating_season(h))*MA_CO2F_DH(h) + ((h_Boiler1.l(h)+h_RGK1.l(h))/P1_eff)*CO2F_P1
-*                + fuel_P2.l(h) * CO2F_P2;
-
-*MA_AH_CO2_tot = sum(h, MA_AH_CO2(h));
-*AH_CO2_tot    = sum(h, AH_CO2(h));
-*MA_AH_CO2_peak= smax(h, MA_AH_CO2(h));
-*AH_CO2_peak   = smax(h, AH_CO2(h));
-
-$offtext
 

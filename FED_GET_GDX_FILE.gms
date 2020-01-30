@@ -152,17 +152,11 @@ $GDXIN
 
 Parameter PV_roof_cap(PVID) Invested PV capacity-roof
           PV_facade_cap(PVID) Invested PV capacity-facade
-*          PV_inverter_PF_Inv(PVID)            Invested PV roof inverters power factor
 ;
 $GDXIN MtoG.gdx
 $LOAD PV_roof_cap
 $LOAD PV_facade_cap
-*$load PV_inverter_PF_Inv
 $GDXIN
-
-*set BusToBID(BusID,BID)   Mapping between buses and BIDs
-*                            /15.(6,44), 5.(54,55,53,4), 21.(52,43,47), 11.(40,50,51), 20.28, 9.(12,46,45), 34.(56,32,37,33,35),
-*                             32.(29,9,19,20,22,8), 40.(18,60,1,36), 30.(68,70,69,62,65), 24.(57,25,24,11), 26.(10,48,49), 28.(23,27,75)/
 ;
 
 *----------------PREPARE THE FULL INPUT DATA------------------------------------
@@ -198,7 +192,6 @@ PARAMETERS
             h_FlueGasCondenser1_0(h)         Heat out from FGC (Boiler1)
             el_VKA1_0(h)   el used by VKA1 in the base case
             el_VKA4_0(h)   el used by VKA4 in the base case
-*            el_AAC_0(h)    el used by the AAC in the base case
             c_AbsC_0(h)    cooling produced by the AbsC in the base case
 ;
 $GDXIN MtoG.gdx
@@ -206,7 +199,6 @@ $LOAD h_Boiler1_0
 $LOAD h_FlueGasCondenser1_0
 $LOAD el_VKA1_0
 $LOAD el_VKA4_0
-*$LOAD el_AAC_0
 $LOAD c_AbsC_0
 $GDXIN
 
@@ -226,12 +218,10 @@ $GDXIN
 PARAMETERS
            el_price(h)       ELECTRICTY PRICE IN THE EXTERNAL GRID
            el_certificate(h) Electricity certificate for selling renewable energy (SEK per kWh)
-*           h_price(h)        Heat PRICE IN THE IN THE EXTERNAL DH SYSTEM
 ;
 $GDXIN MtoG.gdx
 $LOAD el_price
 $LOAD el_certificate
-*$LOAD h_price
 $GDXIN
 
 *-----------forecasted outdoor temprature from MATLAB----------------------------
@@ -333,7 +323,6 @@ PARAMETERS
             CO2F_DH(h)         CO2 factor of the district heating grid
             NREF_DH(h)         NRE factor of the district heating grid
             PE_DH(h)           PE factor of the district heating grid
-*            max_exG_prev       max exG of previous dispatch
             marginalCost_DH         DH marginal cost
 ;
 $GDXIN MtoG.gdx
@@ -352,7 +341,6 @@ $LOAD PE_El
 $LOAD CO2F_DH
 $LOAD NREF_DH
 $LOAD PE_DH
-*$load max_exG_prev
 $load marginalCost_DH
 $GDXIN
 *-----------Investmet limit----------------------------------------------------
@@ -379,9 +367,6 @@ PARAMETERS
          opt_fx_inv_BES_cap     capacity of the new BES
          opt_fx_inv_BES_maxP    power factor limit of the new BES
          BES_min_SOC            Battery minimum state of charge (fraction of capacity from 0 to 1)
-*         opt_fx_inv_BFCh        options to fix investment in new BFCh
-*         opt_fx_inv_BFCh_cap    capacity of the new BFCh
-*         opt_fx_inv_BFCh_maxP   power factor limit of the new BFCh
          opt_fx_inv_BAC        options to fix investment in BAC
          opt_fx_inv_SO       options to fix investment in SO
          opt_fx_inv_CWB      options to fix investment in CWB
@@ -401,60 +386,36 @@ $LOAD opt_fx_inv_RMInv_cap
 $LOAD opt_fx_inv_TES_cap
 $LOAD opt_fx_inv_BES
 $LOAD opt_fx_inv_BES_cap
-*$LOAD opt_fx_inv_BFCh
-*$LOAD opt_fx_inv_BFCh_cap
 $LOAD opt_fx_inv_BES_maxP
 $LOAD BES_min_SoC
-*$load opt_fx_inv_BFCh_maxP
 $LOAD opt_fx_inv_BAC
 $LOAD opt_fx_inv_SO
 $LOAD opt_fx_inv_CWB
 $LOAD opt_fx_inv_CWB_cap
 $LOAD opt_fx_inv_CWB_ch_max
 $LOAD opt_fx_inv_CWB_dis_max
-*$load opt_marg_factors
 $GDXIN
 
 *-------Initial SoC of Storage systems------*
 Parameters
       opt_fx_inv_CWB_init(h,BID)           Initial SOC CWB
       opt_fx_inv_BES_init(h,BID)    BES Init. energy level (SoC in kWh)
-*      opt_fx_inv_BFCh_init(h,BID)   BFCh Init. energy level (SOC in kWh)
-*      opt_fx_inv_TES_init    TES Init. SoC
       opt_fx_inv_BTES_BAC_D_init Initial energy storage for BAC Deep storage
       opt_fx_inv_BTES_BAC_S_init Initial energy storage for BAC Shallow storage
       opt_fx_inv_BTES_SO_D_init    Initial energy storage for SO Deep storage
       opt_fx_inv_BTES_SO_S_init    Initial energy storage for SO Shallow storage
-*      opt_fx_inv_BTES_PS_D_init    Initial energy storage for PS Shallow storage
-*      opt_fx_inv_BTES_PS_D_init    Initial energy storage for PS Shallow storage
       Boiler1_prev_disp      Boiler1 previous dispatch
       Boiler2_prev_disp      Boiler2 previous dispatch
-*      Boiler1                 Boiler1 forecast?
-*      FGC                    FGC forecast?
-*      import                 Import forecast?
-*      export                 Export forecast?
-
-
-
-
 ;
 $GDXIN MtoG.gdx
 $load opt_fx_inv_CWB_init
 $load opt_fx_inv_BES_init
-*$load opt_fx_inv_BFCh_init
-*$load opt_fx_inv_TES_init
 $load opt_fx_inv_BTES_BAC_D_init
 $load opt_fx_inv_BTES_BAC_S_init
 $load opt_fx_inv_BTES_SO_D_init
 $load opt_fx_inv_BTES_SO_S_init
-*$load opt_fx_inv_BTES_PS_D_init
-*$load opt_fx_inv_BTES_PS_D_init
 $load Boiler1_prev_disp
 $load Boiler2_prev_disp
-*$load Boiler1
-*$load import
-*$load export
-*$load FGC
 
 $GDXIN
 *the combination is used to comment out sections codes inside
