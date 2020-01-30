@@ -319,38 +319,38 @@ PARAMETERS
             CO2_max            Maximum CO2 emission in the base case
             PE_tot_ref         reference total PE use
             CO2F_PV            CO2 factor of solar PV
-*            NREF_PV            NRE factor of solar PV
+            NREF_PV            NRE factor of solar PV
             PE_PV              PE factor of solar PV
             CO2F_Boiler1       CO2 factor of Boiler1 (B1)
-*            NREF_Boiler1       NRE factor of Boiler1 (B1)
+            NREF_Boiler1       NRE factor of Boiler1 (B1)
             PE_Boiler1         PE factor of Boiler1 (B1)
             CO2F_Boiler2       CO2 factor of Boiler2 (B2)
-*            NREF_Boiler2       NRE factor of Boiler2 (B2)
+            NREF_Boiler2       NRE factor of Boiler2 (B2)
             PE_Boiler2         PE factor of Boiler2 (B2)
             CO2F_El(h)         CO2 factor of the electricity grid
-*            NREF_El(h)         NRE factor of the electricity grid
+            NREF_El(h)         NRE factor of the electricity grid
             PE_El(h)           PE factor of the electricity grid
             CO2F_DH(h)         CO2 factor of the district heating grid
-*            NREF_DH(h)         NRE factor of the district heating grid
+            NREF_DH(h)         NRE factor of the district heating grid
             PE_DH(h)           PE factor of the district heating grid
 *            max_exG_prev       max exG of previous dispatch
             marginalCost_DH         DH marginal cost
 ;
 $GDXIN MtoG.gdx
 $LOAD CO2F_PV
-*$LOAD NREF_PV
+$LOAD NREF_PV
 $LOAD PE_PV
 $LOAD CO2F_Boiler1
-*$LOAD NREF_Boiler1
+$LOAD NREF_Boiler1
 $LOAD PE_Boiler1
 $LOAD CO2F_Boiler2
-*$LOAD NREF_Boiler2
+$LOAD NREF_Boiler2
 $LOAD PE_Boiler2
 $LOAD CO2F_El
-*$LOAD NREF_El
+$LOAD NREF_El
 $LOAD PE_El
 $LOAD CO2F_DH
-*$LOAD NREF_DH
+$LOAD NREF_DH
 $LOAD PE_DH
 *$load max_exG_prev
 $load marginalCost_DH

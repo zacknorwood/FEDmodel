@@ -53,9 +53,9 @@ data.h_price=gdx2mat(gdxData,'marginalCost_DH',h_sim.uels);
 data.tout=gdx2mat(gdxData,'tout',h_sim.uels);
 
 %NREF
-%data.AH_NREF=gdx2mat(gdxData,'AH_NREF',h_sim.uels);
-%data.nonAH_NREF=gdx2mat(gdxData,'nonAH_NREF',h_sim.uels);
-%data.FED_NREF=gdx2mat(gdxData,'FED_NREF',h_sim.uels);
+data.AH_NREF=gdx2mat(gdxData,'AH_NREF',h_sim.uels);
+data.nonAH_NREF=gdx2mat(gdxData,'nonAH_NREF',h_sim.uels);
+data.FED_NREF=gdx2mat(gdxData,'FED_NREF',h_sim.uels);
 
 %FED PE
 data.FED_PE=gdx2mat(gdxData,'FED_PE',h_sim.uels);
@@ -77,16 +77,16 @@ data.CO2F_DH=gdx2mat(gdxData,'CO2F_DH',h_sim.uels);
 
 %PEF and CO2F used in the simulation
 data.CO2F_PV=gdx2mat(gdxData,'CO2F_PV');
-%data.NREF_PV=gdx2mat(gdxData,'NREF_PV');
+data.NREF_PV=gdx2mat(gdxData,'NREF_PV');
 data.CO2F_Boiler1=gdx2mat(gdxData,'CO2F_Boiler1');
-%data.NREF_Boiler1=gdx2mat(gdxData,'NREF_Boiler1');
+data.NREF_Boiler1=gdx2mat(gdxData,'NREF_Boiler1');
 data.CO2F_Boiler2=gdx2mat(gdxData,'CO2F_Boiler2');
-%data.NREF_Boiler2=gdx2mat(gdxData,'NREF_Boiler2');
+data.NREF_Boiler2=gdx2mat(gdxData,'NREF_Boiler2');
 data.CO2F_El=gdx2mat(gdxData,'CO2F_El',h_sim.uels);
-%data.NREF_El=gdx2mat(gdxData,'NREF_El',h_sim.uels);
+data.NREF_El=gdx2mat(gdxData,'NREF_El',h_sim.uels);
 data.PE_El=gdx2mat(gdxData,'PE_El',h_sim.uels);
 data.CO2F_DH=gdx2mat(gdxData,'CO2F_DH',h_sim.uels);
-%data.NREF_DH=gdx2mat(gdxData,'NREF_DH',h_sim.uels);
+data.NREF_DH=gdx2mat(gdxData,'NREF_DH',h_sim.uels);
 data.PE_DH=gdx2mat(gdxData,'PE_DH',h_sim.uels);
 
 %Local production

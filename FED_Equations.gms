@@ -194,10 +194,10 @@ equation
 *           eq_dcpowerflow10  line limits equations
 *           eq_dcpowerflow11  slack angle constraint
 *           eq_dcpowerflow12  slack voltage constraint
-*           eq_AH_NREF    NREF use in AH buildings
-*           eq_nonAH_NREF NREF use in nonAH buildings
-*           eq_NREF       NREF use in the FED system
-*           eq_totNREF    total NREF used in the FED system
+           eq_AH_NREF    NREF use in AH buildings
+           eq_nonAH_NREF NREF use in nonAH buildings
+           eq_NREF       NREF use in the FED system
+           eq_totNREF    total NREF used in the FED system
            eq_AH_PE
            eq_nonAH_PE
            eq_PE         PE use in the FED system (marginal or average depending on which factors are used)
@@ -316,7 +316,7 @@ h_Boiler1.fx(h)$((min_totCost_0 = 1) or (synth_baseline = 1)) = h_Boiler1_0(h);
 
 
 eq1_h_Boiler1(h) $ (min_totCost_0 eq 0)..
-        h_Boiler1(h)=l=Boiler1_cap*DH_heating_season(h);
+        h_Boiler1(h)=l=Boiler1_cap;
 
 eq2_h_Boiler1(h)$(ord(h) gt 1 and (P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1) and synth_baseline eq 0 and min_totCost_0 eq 0)..
         h_Boiler1(h-1)- h_Boiler1(h)=g=-B1_hourly_ramprate;
@@ -457,7 +457,7 @@ h_Boiler2.fx(h)$ (min_totCost_0 = 1 or (synth_baseline = 1))=0;
 eq1_Boiler2(h)..
          h_Boiler2(h) =e= fuel_Boiler2(h) * B2_eff;
 eq2_Boiler2(h)..
-         h_Boiler2(h) =l= B_Boiler2 * B2_cap*DH_heating_season(h);
+         h_Boiler2(h) =l= B_Boiler2 * B2_cap;
 
 eq3_Boiler2(h)$((P1P2_dispatchable(h)=1 or P1P2_dispatchable(h-1)=1)  and ord(h) gt 1)..
          h_Boiler2(h)-h_Boiler2(h-1) =l= B2_hourly_ramprate;
@@ -610,8 +610,6 @@ eq_BAC_savings(h,BID)..
 
 eq_BAC_cooling_savings(h, BID)..
           c_BAC_savings(h,BID) =e= BAC_cooling_savings_factor * B_BAC(BID)*c_demand(h,BID)*DC_cooling_season(h);
-*DS - set to zero for report 4.4.1
-*          c_BAC_savings(h,BID) =e= BAC_cooling_savings_factor * B_BAC(BID)*c_demand(h,BID)*DC_cooling_season(h)*0;
 
 eq_BAC_S_loss(h,BID)..
          BAC_Sloss(h,BID) =e= BTES_kSloss(BID)*BAC_Sen(h-1,BID);
@@ -925,7 +923,6 @@ $ontext
 1)el_RM(h),e_RMMC(h),e_AAC(h), e_HP(h),e_RMInv(h) are set to KC
 2)inverter of FBch is the same with the pv additional constraints must be added
 $offtext
-$ontext
 *-------------- FED NREF use ------------------------
 eq_AH_NREF(h)..
          AH_NREF(h) =e= (el_imp_AH(h)-el_exp_AH(h))*NREF_El(h)
@@ -948,7 +945,6 @@ eq_NREF(h)..
 
 eq_totNREF..
          tot_NREF=e=sum(h,FED_NREF(h));
-$offtext
 
 *--------------Primary energy use-------------------------------------------
 

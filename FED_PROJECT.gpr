@@ -1,9 +1,12 @@
 [PROJECT]
 
-[RP:FED_VARIABLES]
+[RP:FED_GET_GDX_FILE]
 1=
 
 [RP:FED_INITIALIZE]
+1=
+
+[RP:FED_VARIABLES]
 1=
 
 [RP:FED_EQUATIONS]
@@ -11,26 +14,28 @@
 2=GDXVIEWER.EXE
 3= C:\> gams trnsport.gms GDX=trnsport.gdx
 
-[RP:FED_GET_GDX_FILE]
-1=
-
 [RP:FED_SIMULATOR_MAIN]
 1=
 
 [MRUFILES]
-1=C:\Users\davste\Documents\GitHub\FEDmodel\FED_SIMULATOR_MAIN.lst
-2=D:\Users\norwood\Documents\FEDmodel\FED_Equations.gms
-3=D:\Users\norwood\Documents\FEDmodel\FED_GET_GDX_FILE.gms
-4=D:\Users\norwood\Documents\FEDmodel\FED_Initialize.gms
-5=D:\Users\norwood\Documents\FEDmodel\FED_SIMULATOR_MAIN.gms
-6=D:\Users\norwood\Documents\FEDmodel\FED_Variables.gms
+1=C:\Project Assistant\Project assistant Chalmers\FED\FEDmodel\FED_SIMULATOR_MAIN.lst
+2=C:\Project Assistant\Project assistant Chalmers\FED\FEDmodel\FED_GET_GDX_FILE.gms
+3=C:\Project Assistant\Project assistant Chalmers\FED\FEDmodel\FED_Equations.lst
+4=D:\Users\norwood\Documents\FEDmodel\FED_Equations.gms
+5=D:\Users\norwood\Documents\FEDmodel\FED_GET_GDX_FILE.gms
+6=D:\Users\norwood\Documents\FEDmodel\FED_Initialize.gms
+7=D:\Users\norwood\Documents\FEDmodel\FED_SIMULATOR_MAIN.gms
+8=D:\Users\norwood\Documents\FEDmodel\FED_Variables.gms
+9=C:\Users\davste\Documents\GitHub\FEDmodel\FED_SIMULATOR_MAIN.lst
 
 [OPENWINDOW_1]
-FILE0=C:\Users\davste\Documents\GitHub\FEDmodel\FED_GET_GDX_FILE.gms
-FILE1=C:\Users\davste\Documents\GitHub\FEDmodel\FED_SIMULATOR_MAIN.gms
-FILE2=C:\Users\davste\Documents\GitHub\FEDmodel\FED_SIMULATOR_MAIN.gms
+FILE0=C:\Project Assistant\Project assistant Chalmers\FED\FEDmodel\FED_Equations.gms
+FILE1=C:\Project Assistant\Project assistant Chalmers\FED\FEDmodel\FED_Initialize.gms
+FILE2=C:\Project Assistant\Project assistant Chalmers\FED\FEDmodel\FED_SIMULATOR_MAIN.gms
+FILE3=C:\Project Assistant\Project assistant Chalmers\FED\FEDmodel\FED_Variables.gms
+FILE4=C:\Project Assistant\Project assistant Chalmers\FED\FEDmodel\FED_Variables.gms
 MAXIM=0
-TOP=-3
-LEFT=6
+TOP=120
+LEFT=271
 HEIGHT=538
 WIDTH=1202
