@@ -11,7 +11,6 @@ SO_Den=struct('name','SO_Den','form','full','compress','false');
 SO_Sen=struct('name','SO_Sen','form','full','compress','false');
 CWB_en=struct('name','CWB_en','form','full','compress','false');
 BES_en=struct('name','BES_en','form','full','compress','false');
-%BFCh_en=struct('name','BFCh_en','form','full','compress','false');
 h_Boiler1=struct('name','h_Boiler1','form','full','compress','false');
 h_Boiler2=struct('name','h_Boiler2','form','full','compress','false');
 
@@ -37,13 +36,6 @@ SO_Sen.uels=BTES_SO_uels;
 SO_Sen = rgdx('GtoM',SO_Sen);
 BTES_SO_S_init = SO_Sen.val;
 
-% AK Implement pump stop
-BTES_PS_init = 0;
-%BTES_PS_uels = {num2cell(hour), BTES_PS_uels};
-%BTES_PS_en.uels=BTES_PS_uels;
-%BTES_PS_en = rgdx('GtoM',BTES_PS_en);
-%BTES_PS_init = BTES_PS_en.val;
-
 CWB_en.uels={num2cell(hour)};
 CWB_en=rgdx('GtoM',CWB_en);
 CWB_init = CWB_en.val;
@@ -51,10 +43,6 @@ CWB_init = CWB_en.val;
 BES_en.uels={num2cell(hour), BES_BID_uels};
 BES_en=rgdx('GtoM',BES_en);
 BES_init = BES_en.val;
-
-% BFCh_en.uels={num2cell(hour), BFCh_BID_uels};
-% BFCh_en=rgdx('GtoM',BFCh_en);
-% BFCh_init = BFCh_en.val;
 
 h_Boiler1.uels = num2cell(hour);
 h_Boiler1=rgdx('GtoM',h_Boiler1);

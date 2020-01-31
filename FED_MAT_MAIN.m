@@ -31,8 +31,6 @@ sim_stop_h = 14;
 sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 
-%sim_start=6480;
-%sim_stop=sim_start+47;
 forecast_horizon = 10;
 
 % data_read_stop is the last index of data needed for the simulation.
@@ -88,16 +86,6 @@ while current_year <= sim_stop_y
     
    current_year = current_year +1;
 end
-% P1 and P2 dispatchability
-% Get a series of ordinary working days
-
-
-%P1P2_dispatchable_test = zeros(sim_stop,1);
-%current_year = sim_start_y
-%while current_year <= sim_stop_y
-    
-    
-%end
 
 % DATA INDICES FOR INPUT DATA
 % data_read_stop is the last index of data needed for the simulation.
@@ -114,9 +102,6 @@ end
 
 sim_length = sim_stop - sim_start + 1;
 data_length = data_read_stop - sim_start + 1;
-
-% Initialize Results cell array
-%Results=cell(data_length,1);
 
 %% Assigning buildings ID to the buildings in the FED system and BIDs to the location of investments
 
@@ -198,7 +183,6 @@ BID_nonAH_c.uels={'O3060101','O0007043', 'O3060102_3', 'O3060104_15',...
     'Chabo'};
 
 %Subset of buildings in the FED system which are not considered for thermal energy storage
-% AK Check if these are used
 BID_nonBTES.name='BID_nonBTES';
 BID_nonBTES.uels={'O0007043',...
     'SSPA', 'Studentbostader', 'Karhus_CFAB',...
@@ -206,7 +190,7 @@ BID_nonBTES.uels={'O0007043',...
     'O0007005',...
     'O0007018','O3060137', 'Karhuset', 'O3060138',...
     'Karhus_studenter'};
-%% %%%%%
+
 for i=1:length(BID.uels)
     AH_el(i)=sum(double(strcmp(BID.uels(i),BID_AH_el.uels)));
     AH_h(i)=sum(double(strcmp(BID.uels(i),BID_AH_h.uels)));
@@ -270,7 +254,6 @@ DC_Node_ID.uels = {DC_Node_VoV.name, DC_Node_Maskin.name, DC_Node_EDIT.name, DC_
 
 %% ********LOAD EXCEL DATA - FIXED MODEL INPUT DATA and variable input data************
 %Read static properties of the model
-% AK Removed BAC_savings_period as this is calculated above
 [P1P2_dispatchable_full, ~, BTES_model, BES_min_SoC] = fread_static_properties(sim_start,data_read_stop,data_length);
 %Read variable/measured input data
 if synth_baseline == 0
@@ -280,8 +263,7 @@ if synth_baseline == 0
         G_facade_full, G_roof_full, c_DC_slack_full, el_exG_slack_full,...
         h_DH_slack_full, h_exp_AH_hist_full, h_imp_AH_hist_full] = fread_measurements(sim_start,data_read_stop,data_length);
 end
-% Kommentera ut freadmeasurements och använd byggnadsID nedanför istället
-% för size(h_demand)
+
 if synth_baseline == 1
     start_datetime = datetime(sim_start_y,sim_start_m,sim_start_d,sim_start_h,0,0);
     end_datetime = datetime(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h+10,0,0);
@@ -318,7 +300,7 @@ if synth_baseline == 1
    h_Boiler1_0_full = ann_production.Boiler1_production ;
    disp('WARNING TEMPORARY CORRECTION OF BOILER ANN AT ROW 297 IN FED_MAT_MAIN')
    h_Boiler1_0_full(h_Boiler1_0_full>8000) = 8000;
-   h_FlueGasCondenser1_0_full = zeros(hours,1); % Does ANN include FGC data?
+   h_FlueGasCondenser1_0_full = zeros(hours,1); 
    c_AbsC_0_full = ann_production.AbsC_production ;
    
    COP_HP_C = 1.8; % Cooling COP of heat pumps
@@ -338,20 +320,13 @@ if synth_baseline == 1
    el_certificate_full = zeros(hours,1); % OK TO BE ZERO
    marginalCost_DH_full = dh_price.Value;    
    % Solar irradiation
-   G_roof_full = zeros(hours,12); % NEEDED - USE TO CALCULATE NEW ELECTRICITY DEMAND (Total production + New PV Arrays (general data felmarginal typ 30%
+   G_roof_full = zeros(hours,12); % NEEDED - USED TO CALCULATE NEW ELECTRICITY DEMAND (Total production + New PV Arrays (general data felmarginal typ 30%)
    for i=1:12
        G_roof_full(:,i) = solar_irradiation.Value;
    end
    G_facade_full = solar_irradiation.Value;
    
    disp('SETTING h_exp_AH_hist and h_imp_AH_hist TO ZEROS ONLY USED IF min_tot_cost_0 = 1')
-   h_exp_AH_hist_full = zeros(hours,1); % Should be ignored in GAMS
-   h_imp_AH_hist_full = zeros(hours,1); % Should be ignored in GAMS
-     
-   NREF_El_full = zeros(hours,1); % SKIP THIS - USE ONLY PE AND CO2
-   NREF_DH_full = zeros(hours,1); % SKIP THIS - USE ONLY PE AND CO2
-   NREF_El_full(:,1) = 1;
-   NREF_DH_full(:,1) = 1;
    
    el_exG_slack_full = zeros(hours,1); % Should be zero as production == demand
    h_DH_slack_full = zeros(hours,1); % Should be zero as production == demand
@@ -361,18 +336,7 @@ if synth_baseline == 1
    h_DH_slack_full(:,1) = 1;
    c_DC_slack_full(:,1) = 1;
 end
-%This must be modified
-%     temp=load('Input_dispatch_model\import_export_forecasting');
-%     forecast_import=(temp.forecast_import')*1000;
-%     forecast_export=(temp.forecast_export')*1000;
-%
-%     Boiler1_forecast=load('Input_dispatch_model\Boiler1_forecast');
-%     Boiler1_forecast=abs((Boiler1_forecast.Boiler1_forecast')*1000);
-%     FGC_forecast=load('Input_dispatch_model\FGC_forecast');
-%     FGC_forecast=abs((FGC_forecast.FGC_forecasting'));
-%
-%     %Import ANN data
-%     load('Input_dispatch_model\Heating_ANN');
+
 
 %% INPUT NRE and CO2 FACTORS
 if synth_baseline == 0
@@ -384,13 +348,9 @@ end
 % If min_totCost_O=1, i.e. base case simulation, then all investment options
 % will be set to 0.
 
-%FED investment limit
-%68570065; %76761000;  %this is projected FED investment cost in SEK
+%FED investment limit (68570065 is the projected FED investment cost in
+%SEK)
 FED_Inv_lim = struct('name','inv_lim','type','parameter','val',68570065);
-
-%Option to set if investments in BITES, BAC, PV and BES are to be fixed
-%This is not used, it is set individually!!!
-opt_fx_inv = struct('name','opt_fx_inv','type','parameter','form','full','val',1);
 
 %Option for RMMC investment
 %0=no investment, 1=fixed investment, -1=variable of optimization
@@ -423,15 +383,7 @@ opt_fx_inv_RMInv_cap = struct('name','opt_fx_inv_RMInv_cap','type','parameter','
 %>=0 =fixed investment, -1=variable of optimization
 opt_fx_inv_TES_cap = struct('name','opt_fx_inv_TES_cap','type','parameter','form','full','val',0*(1-min_totCost_0)*(1-synth_baseline));
 
-%Option for BFCh investment  % Why is this battery investment separate?-ZN
-%opt_fx_inv_BFCh = struct('name','opt_fx_inv_BFCh','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-NO_inv));
-%must be set to 100
-%opt_fx_inv_BFCh_cap = struct('name','opt_fx_inv_BFCh_cap','type','parameter','form','full','val',100*(1-min_totCost_0)*(1-NO_inv));
-%opt_fx_inv_BFCh_cap.uels={'O0007028'}; %OBS: Refers to Bus 5
-%must be set to 50
-%opt_fx_inv_BFCh_maxP = struct('name','opt_fx_inv_BFCh_maxP','type','parameter','form','full','val',50*(1-min_totCost_0)*(1-NO_inv));
-%opt_fx_inv_BFCh_maxP.uels=opt_fx_inv_BFCh_cap.uels;
-
+%Option for Building advanced control (BAC) and setpoint offset (SP) investment
 opt_fx_inv_BAC = struct('name','opt_fx_inv_BAC','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
 opt_fx_inv_SO = struct('name','opt_fx_inv_SO','type','parameter','form','full','val',1*(1-min_totCost_0)*(1-synth_baseline));
 
@@ -498,12 +450,10 @@ PVID_roof.name='PVID_roof';
 PVID_roof.uels=num2cell(horzcat(PVID_roof_existing,PVID_roof_investments));
 
 %Capacity of roof PVs (Existing)
-%PV_roof_cap_temp1=[50 42];   %OBS:According to document 'ProjektmÃƒÂ¶te nr 22 samordning  WP4-WP8 samt WP5'
 PV_roof_cap_existing=[48 40]; % According to "solceller lista pï¿½ anlï¿½ggningar.xlsx" (updated from AH and CF 2018-12)
 
 %Capacity of roof PVs (Investments)
 %Note that these need to be set to zero if running the base case without PV investments.
-%PV_roof_cap_temp2=[0 0 0 0 0 0 0 0 0 0]; %[33 116 115 35 102 32 64 57 57 113]   %OBS:According to document 'ProjektmÃƒÂ¶te nr 22 samordning  WP4-WP8 samt WP5 and pdf solceller'
 PV_roof_cap_investments=[36.54 125.37 116.235 53.55 106.785 37.485 66.15 0 40.32 100.485]*(1-min_totCost_0)*(1-synth_baseline); % According to solceller lista pï¿½ anlï¿½ggningar.xlsx (updated from AH and CF 2018-12) AWL has been removed from
 %the project plan for FED according to AH hence that capacity being zero.
 
@@ -604,11 +554,7 @@ for t=1:sim_length
     %el used by VKA4 in the base case
     el_VKA4_0 = struct('name','el_VKA4_0','type','parameter','form','full','val',el_VKA4_0_full(t:forecast_end,:));
     el_VKA4_0.uels=h.uels;
-    
-    %el used by AAC in the base case
-    %el_AAC_0.val=el_AAC_measured(t:forecast_end,:);
-    %el_AAC_0.uels=h.uels;
-    
+   
     %h used by ABC in the base case
     c_AbsC_0 = struct('name','c_AbsC_0','type','parameter','form','full','val',c_AbsC_0_full(t:forecast_end,:));
     c_AbsC_0.uels=h.uels;
@@ -621,10 +567,6 @@ for t=1:sim_length
     el_certificate = struct('name','el_certificate','type','parameter','form','full','val',el_certificate_full(t:forecast_end,:));
     el_certificate.uels=h.uels;
     
-    %forecasted GE's heat price
-    %h_price = struct('name','h_price','type','parameter','form','full','val',h_price_full(t:forecast_end,:));
-    %h_price.uels=h.uels;
-    
     %forecasted outdoor temperature
     tout = struct('name','tout','type','parameter','form','full','val',tout_full(t:forecast_end,:));
     tout.uels=h.uels;
@@ -632,11 +574,7 @@ for t=1:sim_length
     %P1P2 dispatchability
     P1P2_dispatchable = struct('name','P1P2_dispatchable','type','parameter','form','full','val',P1P2_dispatchable_full(t:forecast_end,:));
     P1P2_dispatchable.uels=h.uels;
-    
-    %Heat export season - Replaced by DH_heating_season -DS
-    %DH_export_season = struct('name','DH_export_season','type','parameter','form','full','val',DH_export_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
-    %DH_export_season.uels=h.uels;
-    
+ 
     %DH heating season
     DH_heating_season = struct('name','DH_heating_season','type','parameter','form','full','val',DH_heating_season_full(t+sim_start-1:forecast_end+sim_start-1,:));
     DH_heating_season.uels=h.uels;
@@ -712,12 +650,7 @@ for t=1:sim_length
         % Set initial state of SO Buildings to empty
         opt_fx_inv_BTES_SO_D_init = struct('name','opt_fx_inv_BTES_SO_D_init','type','parameter','form','full','val',zeros(1,length(BTES_SO_BID_uels)));
         opt_fx_inv_BTES_SO_S_init = struct('name','opt_fx_inv_BTES_SO_S_init','type','parameter','form','full','val',zeros(1,length(BTES_SO_BID_uels)));
-        
-        % Set inital state of PS Buildings
-        % AK How to implement?
-        %opt_fx_inv_BTES_PS_init = struct('name','opt_fx_inv_BTES_PS_init','type','parameter','form','full','val',zeros(1,length(BTES_PS_uels)));
-        %opt_fx_inv_BTES_PS_init.uels = {num2cell(t), BTES_PS_uels};
-        
+       
         % Set initial SoC for Cold water basin and battery energy storage to be passed from Matlab to GAMS
         opt_fx_inv_CWB_init = struct('name','opt_fx_inv_CWB_init','type','parameter','form','full','val',0);
         opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',BES_min_SoC.val.*opt_fx_inv_BES_cap.val);
@@ -739,13 +672,8 @@ for t=1:sim_length
         opt_fx_inv_BTES_SO_D_init = struct('name','opt_fx_inv_BTES_SO_D_init','type','parameter','form','full','val',BTES_SO_D_init);
         opt_fx_inv_BTES_SO_S_init = struct('name','opt_fx_inv_BTES_SO_S_init','type','parameter','form','full','val',BTES_SO_S_init);
         
-        % AK implement PS
-        %opt_fx_inv_BTES_PS_init = struct('name','opt_fx_inv_BTES_PS_init','type','parameter','form','full','val',BTES_PS_init);
-        %opt_fx_inv_BTES_PS_init.uels = {num2cell(t), BTES_PS_uels};
-        
         opt_fx_inv_CWB_init = struct('name','opt_fx_inv_CWB_init','type','parameter','form','full','val',CWB_init);
         opt_fx_inv_BES_init = struct('name','opt_fx_inv_BES_init','type','parameter','form','full','val',BES_init);
-        %opt_fx_inv_BFCh_init = struct('name','opt_fx_inv_BFCh_init','type','parameter','form','full','val',BFCh_init);
         Boiler1_prev_disp = struct('name','Boiler1_prev_disp','type','parameter','form','full','val',Boiler1_init);
         Boiler2_prev_disp = struct('name','Boiler2_prev_disp','type','parameter','form','full','val',Boiler2_init);
     end
@@ -757,12 +685,10 @@ for t=1:sim_length
     opt_fx_inv_BTES_SO_S_init.uels = {num2cell(t), BTES_SO_BID_uels};
     opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
     opt_fx_inv_CWB_init.uels = {num2cell(t), CWB_BID_uels};
-
-    %opt_fx_inv_BFCh_init.uels = {num2cell(t), BFCh_BID_uels};
     
     %% Preparing input GDX file (MtoG) and RUN GAMS model
     wgdx('MtoG.gdx', min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline,...
-        opt_fx_inv, opt_fx_inv_RMMC, opt_fx_inv_AbsCInv_cap, opt_fx_inv_PV,...
+        opt_fx_inv_RMMC, opt_fx_inv_AbsCInv_cap, opt_fx_inv_PV,...
         opt_fx_inv_Boiler2, opt_fx_inv_TURB, opt_fx_inv_HP_cap, opt_fx_inv_HP_min,...
         opt_fx_inv_RMInv_cap, opt_fx_inv_TES_cap, opt_fx_inv_BES,...
         opt_fx_inv_CWB, opt_fx_inv_CWB_cap, opt_fx_inv_CWB_ch_max, opt_fx_inv_CWB_dis_max,...
