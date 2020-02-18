@@ -1,3 +1,5 @@
+% This script creates the date vector used in GAMS
+
 i=1;
 d=1;
 for year=2016:2017

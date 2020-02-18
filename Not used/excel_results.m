@@ -535,7 +535,7 @@ end
     [num,text,raw,]=xlsread('Input_dispatch_model\measured_demand.xlsx',1,strcat('A',num2str(sim_stop),':A',num2str(sim_stop)));
     xlswrite('results',text,'Sim infos','C9:C9');
     
-    %Model statys    
+    %Model status    
     xlswrite('results',Model_status','Sim infos',strcat('F2:F',num2str(count+2)));
     xlswrite('results',{'Model status'},'Sim infos','F1:F1');    
 end

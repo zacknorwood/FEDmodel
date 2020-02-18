@@ -1,35 +1,27 @@
 function [ CO2F_El, NREF_El, PE_El, CO2F_DH, NREF_DH, PE_DH, marginalCost_DH, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2 ] = get_CO2PE_exGrids(opt_marg_factors, sim_start, data_read_stop, data_length)
 % NEW: CO2F_El_full, NREF_El_full, PE_el_full, CO2F_DH_full, NREF_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2
-% Old: CO2F_El, NREF_El, CO2F_DH, NREF_DH, marginalCost_DH, CO2F_PV, NREF_PV, CO2F_Boiler1, NREF_Boiler1, CO2F_Boiler2, NREF_Boiler2
 %% Here, the CO2 factor and Energy factor of the external grids are calculated
 % The external grid production mix data read in is from the district
-% heating system (Göteborg Energi) and the Swedish electrical grid (Tomorrow / tmrow.com)
+% heating system and the Swedish electrical grid (Tomorrow / tmrow.com)
 
-COP_HP_DH=305/90.1;  %Based on Alexanders data, COP of the HP in DH system (Rya)
+COP_HP_DH=305/90.1;  %Based on Alexanders data, COP of the HP in DH system
 %CO2 and PE factors of the external electricity generation system
+
 %New values based on IPCC / electricitymap.org
 % El order: [biomass coal gas hydro nuclear oil solar wind geothermal unknown hydro-discharge hydro-charge]
 CO2intensityProdMix_El = [0 820 490 24 12 782 45 11 38 362 46 0];
 
 % Heat order: [Biomass-HOB Biomass-CHP Gas-HOB Gas-CHP Oil-HOB RefineryHeat WasteIncineration-CHP]
-CO2intensityProdMix_Heat = [0 0 299 183 339 43 59];
-% GEs value 0 for refinary waste heat
-%CO2intensityProdMix_Heat = [79 46 299 183 339 0 59];
-
-%Old values based on D7.1.1
-%CO2intensityProdMix_El =[230  820  490  24   12   650  22   11   38   700  46 0];
+CO2intensityProdMix_Heat = [0 0 299 183 339 43 59]; % For academic case
+%CO2intensityProdMix_Heat = [79 46 299 183 339 0 59]; % For industrial case
 
 %New values based on NREF - Non-renewable Energy Factors
 NREintensityProdMix_El = [0 1 1 0 1 1 0 0 0 1 0 0];
-
 NREintensityProdMix_Heat = [0 0 1 1 1 1 0.08];
 
-%Old values based on D7.1.1. Note we have no primary energy factor for hydro-discharge so assuming the
-%same as hydro here.
 % El order: [biomass coal gas hydro nuclear oil solar wind geothermal unknown hydro-discharge hydro-charge]
 PEintensityProdMix_El = [2.99 2.45 1.93 1.01 3.29 2.75 1.25 1.03 1.02 2.47 1.01 0];
 
-%%%%%%%%%%%%%%%%%% PLEASE CHECK THESE VALUES -DS %%%%%%%%%%%%
 % Heat order: [Biomass-HOB Biomass-CHP Gas-HOB Gas-CHP Oil-HOB RefineryHeat WasteIncineration-CHP]
 PEintensityProdMix_Heat = [1.33 0.76 1.09 0.78 1.31 0.03 0.03];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
