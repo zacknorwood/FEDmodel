@@ -1,5 +1,13 @@
 clc
 clear all
+
+% optimization options
+% min_totCost_0: option for base case simulation of the FED system where historical data of the generating units are used and the external connection is kept as a slack (for balancing)
+% min_totCost:  weighting factor for total cost to use in the minimization function - it is alpha in equation (1) of the article- weighting factor for cost
+% min_totPE:    weighting factor for NRE to use in the minimization function
+% min_totCO2:   weighting factor for CO2 emissions to use in the minimization function - it is beta value in the equation (1) of the article 
+
+
 % Initial run
 opt_RunGAMSModel=1;
 opt_marg_factors=1;
@@ -7,13 +15,11 @@ synth_baseline=0;
 IPCC_factors=1; %Change to the new factors for CO2 and PE
 for IPCC_factors=[1]
 
+% weighting factor for emissions (min_totCO2 OR beta) is changed from 0 to 1 while keeping min_totCost equal to 1
 for i=1:13   
 %copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx')
     disp(['Case no ' num2str(i)])
 
-    % min_totCost is alpha value in equation (1) of the article- weighting factor for cost 
-    % min_totCO2 is beta value in the equation (1) of the article - weighting factor for emissions
-    % min_totCO2 (beta) is changed from 0 to 1 while keeping min_totCost equal to 1
     if i==1
         min_totCost_0=0;
         min_totCost=1;
