@@ -46,7 +46,7 @@ NREF_Boiler2 = struct('name','NREF_Boiler2','type','parameter','val',NREintensit
 PE_Boiler2 = struct('name','PE_Boiler2','type','parameter','val',PEintensityProdMix_Heat(1));
 
 %Get Marginal cost DH (SEK / kWh)
-marginalCost_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('K',num2str(sim_start+1),':K',num2str(data_read_stop+1)));
+marginalCost_DH = xlsread('Input_dispatch_model\poductionmix_DH_for_energies.xlsx',1,strcat('K',num2str(sim_start+1),':K',num2str(data_read_stop+1)));
 if (length(marginalCost_DH)<data_length) || (any(isnan(marginalCost_DH),'all'))
     error('Error: input file does not have complete data for simulation length');
 end
@@ -68,7 +68,7 @@ if (opt_marg_factors) %If the opt_MarginalEmissions is set to 1 emissions are ba
     PE_El = sum(prodMix_El(:,1:length(PEintensityProdMix_El)) .* PEintensityProdMix_El, 2);
     
     %Get Marginal units DH
-    marginalUnits_DH = xlsread('Input_dispatch_model\Produktionsdata med timpriser och miljodata 2016-2017 20190313.xlsx',1,strcat('C',num2str(sim_start+1),':J',num2str(data_read_stop+1)));
+    marginalUnits_DH = xlsread('Input_dispatch_model\poductionmix_DH_for_energies.xlsx',1,strcat('C',num2str(sim_start+1),':J',num2str(data_read_stop+1)));
     if (length(marginalUnits_DH)<data_length) || (any(isnan(marginalUnits_DH),'all'))
         error('Error: input file does not have complete data for simulation length');
     end
