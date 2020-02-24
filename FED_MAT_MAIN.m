@@ -12,14 +12,13 @@ delete MtoG.gdx
 system 'gams';
 
 %% SIMULATION START AND STOP TIME
-%Sim start time
+%Set start time of the simulation
 sim_start_y = 2016;
 sim_start_m = 3;
 sim_start_d = 1;
 sim_start_h = 1;
 
-%Sim stop time
-
+%Set stop time of the simulation
 sim_stop_y = 2017;
 sim_stop_m = 2;
 sim_stop_d = 28;
@@ -31,6 +30,7 @@ sim_stop_h = 14;
 sim_start = HoS(sim_start_y,sim_start_m,sim_start_d,sim_start_h);
 sim_stop = HoS(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h);
 
+%Set forecast horizon
 forecast_horizon = 10;
 
 % data_read_stop is the last index of data needed for the simulation.
@@ -106,9 +106,8 @@ data_length = data_read_stop - sim_start + 1;
 %% Assigning buildings ID to the buildings in the FED system and BIDs to the location of investments
 
 BES_BID_uels = {'O0007027', 'O0007028'}; %Buildings with Battery Energy Storage systems Note: Refers to bus 28, Refers to Bus 5; %
-CWB_BID_uels = {'O0007027'}; %Buildings with Cold Water Basin OBS: DS is this correct? Refers to bus 28
+CWB_BID_uels = {'O0007027'}; %Buildings with Cold Water Basin OBS: Refers to bus 28
 
-% AK SHould 'O0007024' be included?
 BTES_BAC_BID_uels = {'O0007006', 'O0007012', 'O0007017', 'O0007023', 'O0007026', 'O3060135', 'O3060133'}; %Buildings with Advanced Control (BAC) system
 BTES_PS_BID_uels = {'O0011001', 'O0007888'}; % Buildings with Pump Stop (PS) capability
 BTES_SO_BID_uels = {'O0007028', 'O0007027', 'O0007024'}; % Buildings with Setpoint Offset (SO) capability, O0007024 (EDIT) included to represent O7:10, and O7:20 which are parts of EDIT
@@ -202,6 +201,7 @@ for i=1:length(BID.uels)
 end
 %% IDs used to name the buses or nodes in the local electrical distribution system
 %OBS: proper maping need to be established between the nodes in the el distribution system and the building IDs
+%currently this is not used
 
 BusID.name='BusID';
 BusID.uels=num2cell(1:41);
@@ -264,10 +264,12 @@ if synth_baseline == 0
         h_DH_slack_full, h_exp_AH_hist_full, h_imp_AH_hist_full] = fread_measurements(sim_start,data_read_stop,data_length);
 end
 
-if synth_baseline == 1
+if synth_baseline == 1 
     start_datetime = datetime(sim_start_y,sim_start_m,sim_start_d,sim_start_h,0,0);
     end_datetime = datetime(sim_stop_y,sim_stop_m,sim_stop_d,sim_stop_h+10,0,0);
-   [el_demand_synth, h_demand_synth, c_demand_synth, ann_production, el_factors, dh_factors, temperature, dh_price, el_price, solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
+   [el_demand_synth, h_demand_synth, c_demand_synth, ann_production,...
+       el_factors, dh_factors, temperature, dh_price, el_price,...
+       solar_irradiation] = get_synthetic_baseline_load_data(start_datetime, end_datetime) ;
    
    cooling_size = size(BID_AH_c.uels);
    hours = sim_length+10;
@@ -317,7 +319,7 @@ if synth_baseline == 1
    % Ambient temperature
    tout_full = temperature.Value; 
    el_price_full = el_price.Value;
-   el_certificate_full = zeros(hours,1); % OK TO BE ZERO
+   el_certificate_full = zeros(hours,1); % Consider cert = 0 for synthetic baseline
    marginalCost_DH_full = dh_price.Value;    
    % Solar irradiation
    G_roof_full = zeros(hours,12); % NEEDED - USED TO CALCULATE NEW ELECTRICITY DEMAND (Total production + New PV Arrays (general data felmarginal typ 30%)
@@ -340,9 +342,13 @@ end
 
 %% INPUT NRE and CO2 FACTORS
 if synth_baseline == 0
-[CO2F_El_full, NREF_El_full, PE_El_full, CO2F_DH_full, NREF_DH_full, PE_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop,data_length);
+[CO2F_El_full, NREF_El_full, PE_El_full, CO2F_DH_full, NREF_DH_full,...
+    PE_DH_full, marginalCost_DH_full, CO2F_PV, NREF_PV, PE_PV,...
+    CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2,...
+    PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop,data_length);
 else
-[~, ~, ~, ~, ~, ~, ~, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1, PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop,data_length);
+[~, ~, ~, ~, ~, ~, ~, CO2F_PV, NREF_PV, PE_PV, CO2F_Boiler1, NREF_Boiler1,...
+    PE_Boiler1, CO2F_Boiler2, NREF_Boiler2, PE_Boiler2] = get_CO2PE_exGrids(opt_marg_factors,sim_start,data_read_stop,data_length);
 end
 %% Initialize FED INVESTMENT OPTIONS
 % If min_totCost_O=1, i.e. base case simulation, then all investment options
@@ -490,14 +496,15 @@ min_totCost = struct('name','min_totCost','type','parameter','form','full','val'
 min_totPE = struct('name','min_totPE','type','parameter','form','full','val',min_totPE);
 min_totCO2 = struct('name','min_totCO2','type','parameter','form','full','val',min_totCO2);
 synth_baseline = struct('name','synth_baseline','type','parameter','form','full','val',synth_baseline);
-%%
+
+%% INITIALIZE output array for result export
 % Store array to be exported to excel sheet
-% INITIALIZE output array
 to_excel_el(1:sim_stop-sim_start,1:31)=0;
 to_excel_heat(1:sim_stop-sim_start,1:39)=0;
 to_excel_cool(1:sim_stop-sim_start,1:23)=0;
 to_excel_co2(1:sim_stop-sim_start,1:14)=0;
 
+%% START SIMULATION using rolling time horizon approach
 for t=1:sim_length
     %% Variable input data to the dispatch model
     %Structures are created to send to GAMS which contain subsets of the
@@ -688,7 +695,6 @@ for t=1:sim_length
     opt_fx_inv_BTES_SO_S_init.uels = {num2cell(t), BTES_SO_BID_uels};
     opt_fx_inv_BES_init.uels = {num2cell(t), BES_BID_uels};
     opt_fx_inv_CWB_init.uels = {num2cell(t), CWB_BID_uels};
-    
     %% Preparing input GDX file (MtoG) and RUN GAMS model
     wgdx('MtoG.gdx', min_totCost_0, min_totCost, min_totPE, min_totCO2, synth_baseline,...
         opt_fx_inv_RMMC, opt_fx_inv_AbsCInv_cap, opt_fx_inv_PV,...
@@ -702,7 +708,8 @@ for t=1:sim_length
         BID, BID_AH_el, BID_nonAH_el, BID_AH_h, BID_nonAH_h, BID_AH_c, BID_nonAH_c, BID_nonBTES,...
         el_demand, h_demand, c_demand, h_Boiler1_0, h_FlueGasCondenser1_0,...
         el_VKA1_0, el_VKA4_0, c_AbsC_0, G_roof, G_facade,...
-        BES_min_SoC, BTES_properties, BTES_model, P1P2_dispatchable, DH_heating_season, DH_heating_season_P2, DC_cooling_season, no_imp_h_season, BAC_savings_period,...
+        BES_min_SoC, BTES_properties, BTES_model, P1P2_dispatchable, DH_heating_season,...
+        DH_heating_season_P2, DC_cooling_season, no_imp_h_season, BAC_savings_period,...
         PVID, PVID_roof, PV_roof_cap, PVID_facade, PV_facade_cap,...
         el_price, el_certificate, tout, BAC_savings_factor, FED_Inv_lim, BusID,...
         opt_fx_inv_BTES_BAC_D_init, opt_fx_inv_BTES_BAC_S_init, opt_fx_inv_BTES_SO_D_init,...
@@ -710,7 +717,7 @@ for t=1:sim_length
         opt_fx_inv_BES_init, Boiler1_prev_disp, Boiler2_prev_disp, opt_fx_inv_CWB_init,...
         DH_Node_ID, DH_Nodes_Transfer_Limits, DC_Node_ID, DC_Nodes_Transfer_Limits,...
         el_exG_slack, h_DH_slack, c_DC_slack, h_exp_AH_hist, h_imp_AH_hist);
-    
+    %% START SIMULATION
     if opt_RunGAMSModel==1
         system 'gams FED_SIMULATOR_MAIN lo=2';
     end
@@ -719,6 +726,7 @@ for t=1:sim_length
     
     [to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2] = fstore_results_excel(Results,to_excel_el, to_excel_heat, to_excel_cool, to_excel_co2, sim_start, sim_stop, t);
 end
+%% Export results to xls
 delete  'result_temp.xlsx';
 copyfile('result_temp_bkup.xlsx', 'result_temp.xlsx') % to add the toprows in the excelfile
 
