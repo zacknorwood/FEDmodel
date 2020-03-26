@@ -9,10 +9,10 @@ COP_HP_DH=305/90.1;  %Based on Alexanders data, COP of the HP in DH system
 
 %New values based on IPCC / electricitymap.org
 % El order: [biomass coal gas hydro nuclear oil solar wind geothermal unknown hydro-discharge hydro-charge]
-CO2intensityProdMix_El = [0 820 490 24 12 782 45 11 38 362 46 0];
+CO2intensityProdMix_El = [230 820 490 24 12 782 45 11 38 362 46 0];
 
 % Heat order: [Biomass-HOB Biomass-CHP Gas-HOB Gas-CHP Oil-HOB RefineryHeat WasteIncineration-CHP]
-CO2intensityProdMix_Heat = [0 0 299 183 339 43 59]; % For academic case
+CO2intensityProdMix_Heat = [79 46 299 183 339 43 59]; % For academic case
 %CO2intensityProdMix_Heat = [79 46 299 183 339 0 59]; % For industrial case
 
 %New values based on NREF - Non-renewable Energy Factors
